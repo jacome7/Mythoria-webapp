@@ -1,0 +1,1 @@
+ALTER TABLE "fiscal_documents" ADD CONSTRAINT "fiscal_documents_recovery_state_check" CHECK ("fiscal_documents"."recovery_state" is null or "fiscal_documents"."recovery_state" in ('reserved', 'submitted', 'reconciled', 'cancelled'));

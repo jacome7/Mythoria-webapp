@@ -1,5 +1,7 @@
 import { and, asc, eq, inArray, isNull, lt, or, sql } from 'drizzle-orm';
 
+import { issueClaimPredicate, issueFence } from './fiscal-document-guards';
+
 import { db } from '@/db';
 import {
   authors,
@@ -32,11 +34,13 @@ type FiscalStatus = FiscalDocument['status'];
 type NormalizedVat = NonNullable<ReturnType<typeof normalizeVatForKeyInvoice>>;
 export type KeyInvoiceVatSource =
   'stripe_checkout_tax_id' | 'author_profile_fiscal_number' | 'none';
-export type FiscalRetrySkipReason = 'insert_document_response_unknown';
+export type FiscalRetrySkipReason =
+  'insert_document_response_unknown' | 'recovery_in_progress' | 'issue_claim_not_acquired';
 export type AdminFiscalRetryBlockReason =
   | 'document_status_not_retryable'
   | 'payment_order_not_completed'
   | 'retry_not_due'
+  | 'keyinvoice_disabled'
   | FiscalRetrySkipReason;
 
 export interface FiscalDocumentRetryResult {
@@ -302,21 +306,28 @@ export async function getKeyInvoiceDocumentPdfWithFallback(
 }
 
 export function retrySkipReasonForDocument(
-  document: Pick<FiscalDocument, 'docNum'>,
+  document: Pick<FiscalDocument, 'docNum'> & Partial<Pick<FiscalDocument, 'recoveryState'>>,
   hasInsertDocumentRequestedEvent: boolean,
 ): FiscalRetrySkipReason | null {
+  if (document.recoveryState && document.recoveryState !== 'cancelled')
+    return 'recovery_in_progress';
   if (document.docNum) return null;
   return hasInsertDocumentRequestedEvent ? 'insert_document_response_unknown' : null;
 }
 
 export function adminRetryBlockReasonForDocument(params: {
-  document: Pick<FiscalDocument, 'status' | 'nextRetryAt' | 'docNum'>;
+  document: Pick<FiscalDocument, 'status' | 'nextRetryAt' | 'docNum'> &
+    Partial<Pick<FiscalDocument, 'recoveryState'>>;
   order: Pick<PaymentOrder, 'status'>;
   hasInsertDocumentRequestedEvent: boolean;
   now?: Date;
 }): AdminFiscalRetryBlockReason | null {
   if (!['pending', 'failed'].includes(params.document.status)) {
     return 'document_status_not_retryable';
+  }
+
+  if (params.document.recoveryState && params.document.recoveryState !== 'cancelled') {
+    return 'recovery_in_progress';
   }
 
   if (params.order.status !== 'completed') {
@@ -448,7 +459,6 @@ async function ensureFiscalDocument(order: PaymentOrder, docType: string): Promi
 }
 
 async function acquireIssueLock(document: FiscalDocument): Promise<FiscalDocument | null> {
-  const staleIssuingBefore = new Date(Date.now() - 15 * 60_000);
   const [locked] = await db
     .update(fiscalDocuments)
     .set({
@@ -458,18 +468,7 @@ async function acquireIssueLock(document: FiscalDocument): Promise<FiscalDocumen
       nextRetryAt: null,
       updatedAt: new Date(),
     })
-    .where(
-      and(
-        eq(fiscalDocuments.id, document.id),
-        or(
-          inArray(fiscalDocuments.status, ['pending', 'failed']),
-          and(
-            eq(fiscalDocuments.status, 'issuing'),
-            lt(fiscalDocuments.updatedAt, staleIssuingBefore),
-          ),
-        ),
-      ),
-    )
+    .where(issueClaimPredicate(document.id))
     .returning();
 
   return locked || null;
@@ -479,7 +478,7 @@ async function markFailed(document: FiscalDocument, error: unknown): Promise<voi
   const message = toErrorMessage(error);
   const nextRetryAt = retryTime(document.attemptCount || 1);
 
-  await db
+  const [failed] = await db
     .update(fiscalDocuments)
     .set({
       status: 'failed',
@@ -487,8 +486,10 @@ async function markFailed(document: FiscalDocument, error: unknown): Promise<voi
       nextRetryAt,
       updatedAt: new Date(),
     })
-    .where(eq(fiscalDocuments.id, document.id));
+    .where(issueFence(document))
+    .returning();
 
+  if (!failed) return;
   await recordFiscalEvent({
     fiscalDocumentId: document.id,
     orderId: document.orderId,
@@ -564,10 +565,11 @@ async function syncRemoteDocumentData(
       ...buildRemoteDocumentSyncValues(document, remoteDocument),
       updatedAt: new Date(),
     })
-    .where(eq(fiscalDocuments.id, document.id))
+    .where(issueFence(document))
     .returning();
 
-  return updated || document;
+  if (!updated) throw new Error('Fiscal issue lock lost');
+  return updated;
 }
 
 async function resolveCustomer(params: {
@@ -665,6 +667,15 @@ export const fiscalDocumentService = {
       return { outcome: 'not_found', document: null };
     }
 
+    if (!isKeyInvoiceEnabled()) {
+      return {
+        outcome: 'not_retryable',
+        document: row.document,
+        orderStatus: row.order.status,
+        reason: 'keyinvoice_disabled',
+      };
+    }
+
     const hasInsertRequest = await hasInsertDocumentRequestedEvent(row.document.id);
     const reason = adminRetryBlockReasonForDocument({
       document: row.document,
@@ -706,14 +717,37 @@ export const fiscalDocumentService = {
       },
     });
 
+    let claimed = false;
+    const document = await this.issueForCompletedStripeOrder(row.order, () => {
+      claimed = true;
+    });
+    if (!claimed) {
+      const current = await getFiscalDocumentWithOrderById(documentId);
+      const currentReason =
+        current &&
+        adminRetryBlockReasonForDocument({
+          document: current.document,
+          order: current.order,
+          hasInsertDocumentRequestedEvent: await hasInsertDocumentRequestedEvent(documentId),
+        });
+      return {
+        outcome: 'not_retryable',
+        document: current?.document || null,
+        orderStatus: current?.order.status || row.order.status,
+        reason: currentReason || 'issue_claim_not_acquired',
+      };
+    }
     return {
       outcome: 'retried',
-      document: await this.issueForCompletedStripeOrder(row.order),
+      document,
       orderStatus: row.order.status,
     };
   },
 
-  async issueForCompletedStripeOrder(order: PaymentOrder): Promise<FiscalDocument | null> {
+  async issueForCompletedStripeOrder(
+    order: PaymentOrder,
+    onClaim?: () => void,
+  ): Promise<FiscalDocument | null> {
     if (!isKeyInvoiceEnabled()) return null;
     if (order.status !== 'completed') return null;
 
@@ -725,6 +759,7 @@ export const fiscalDocumentService = {
 
     const lockedDocument = await acquireIssueLock(initialDocument);
     if (!lockedDocument) return initialDocument;
+    onClaim?.();
 
     try {
       const metadata = metadataForOrder(order);
@@ -809,9 +844,10 @@ export const fiscalDocumentService = {
             nextRetryAt: null,
             updatedAt: new Date(),
           })
-          .where(eq(fiscalDocuments.id, lockedDocument.id))
+          .where(issueFence(lockedDocument))
           .returning();
 
+        if (!draft) throw new Error('Fiscal issue lock lost');
         return draft;
       }
 
@@ -821,7 +857,7 @@ export const fiscalDocumentService = {
         vatResolution,
       });
 
-      await db
+      const [customerUpdated] = await db
         .update(fiscalDocuments)
         .set({
           customerMode: customer.mode,
@@ -834,7 +870,9 @@ export const fiscalDocumentService = {
           taxId: tax.taxId,
           updatedAt: new Date(),
         })
-        .where(eq(fiscalDocuments.id, lockedDocument.id));
+        .where(issueFence(lockedDocument))
+        .returning();
+      if (!customerUpdated) throw new Error('Fiscal issue lock lost');
 
       let documentForPdf = lockedDocument;
 
@@ -906,9 +944,10 @@ export const fiscalDocumentService = {
             stripePaymentIntentId: metadata.stripe?.paymentIntentId || null,
             updatedAt: new Date(),
           })
-          .where(eq(fiscalDocuments.id, lockedDocument.id))
+          .where(issueFence(lockedDocument))
           .returning();
 
+        if (!updated) throw new Error('Fiscal issue lock lost');
         documentForPdf = updated;
       }
 
@@ -1002,9 +1041,10 @@ export const fiscalDocumentService = {
           issuedAt: new Date(),
           updatedAt: new Date(),
         })
-        .where(eq(fiscalDocuments.id, lockedDocument.id))
+        .where(issueFence(lockedDocument))
         .returning();
 
+      if (!issued) throw new Error('Fiscal issue lock lost');
       return issued;
     } catch (error) {
       await markFailed(lockedDocument, error);
@@ -1049,14 +1089,23 @@ export const fiscalDocumentService = {
         await recordFiscalEvent({
           fiscalDocumentId: row.document.id,
           orderId: row.document.orderId,
-          eventType: 'retry_skipped_reconciliation_required',
+          eventType:
+            retrySkippedReason === 'insert_document_response_unknown'
+              ? 'retry_skipped_reconciliation_required'
+              : 'retry_skipped',
           responsePayload: { reason: retrySkippedReason },
         });
         results.push({ document: row.document, retrySkippedReason });
         continue;
       }
 
-      results.push({ document: await this.issueForCompletedStripeOrder(row.order) });
+      let claimed = false;
+      const document = await this.issueForCompletedStripeOrder(row.order, () => {
+        claimed = true;
+      });
+      results.push(
+        claimed ? { document } : { document, retrySkippedReason: 'issue_claim_not_acquired' },
+      );
     }
     return results;
   },

@@ -104,6 +104,23 @@ describe('POST /api/admin/fiscal-documents/[id]/retry', () => {
     });
   });
 
+  it.each([
+    'recovery_in_progress',
+    'insert_document_response_unknown',
+    'issue_claim_not_acquired',
+    'keyinvoice_disabled',
+  ])('returns 409 for blocked retry: %s', async (reason) => {
+    retryByFiscalDocumentIdMock.mockResolvedValue({
+      outcome: 'not_retryable',
+      reason,
+      orderStatus: 'completed',
+      document: null,
+    });
+    const response = await POST(request({}), params());
+    expect(response.status).toBe(409);
+    expect(await response.json()).toMatchObject({ reason, document: null });
+  });
+
   it('returns JSON 409 when the document is not retryable', async () => {
     retryByFiscalDocumentIdMock.mockResolvedValue({
       outcome: 'not_retryable',

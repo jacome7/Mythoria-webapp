@@ -14,6 +14,10 @@ This directory contains comprehensive documentation for the Mythoria WebApp fron
 - **[google-cast-integration.md](./google-cast-integration.md)** - Google Cast sender integration plan for the audiobook player
 - **[chatgpt-app-installation_guid.md](./chatgpt-app-installation_guid.md)** - ChatGPT production configuration, MCP validation, and submission runbook
 
+## Fiscal recovery reference (2026-11-09)
+
+- [KeyInvoice recovery reservations](keyinvoice-recovery-reservation.md): shared issuer fencing, one-shot recovery state, migrations and coordinated rollout requirements. Implemented locally; not deployed by this change.
+
 ## Archive
 
 The `archive/` folder contains historical implementation documents, feature specifications, and configuration guides that have been consolidated into the main documentation files above. These files are preserved for reference but are no longer actively maintained.

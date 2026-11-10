@@ -144,6 +144,23 @@ describe('getKeyInvoiceDocumentPdfWithFallback', () => {
 });
 
 describe('retrySkipReasonForDocument', () => {
+  it.each(['reserved', 'submitted', 'reconciled'])(
+    'blocks recovery state %s even with a remote number',
+    (recoveryState) => {
+      expect(retrySkipReasonForDocument({ docNum: '123', recoveryState }, false)).toBe(
+        'recovery_in_progress',
+      );
+    },
+  );
+
+  it('allows a cancelled recovery subject to the ambiguous insert guard', () => {
+    expect(retrySkipReasonForDocument({ docNum: null, recoveryState: 'cancelled' }, true)).toBe(
+      'insert_document_response_unknown',
+    );
+    expect(
+      retrySkipReasonForDocument({ docNum: null, recoveryState: 'cancelled' }, false),
+    ).toBeNull();
+  });
   it('allows retries before insertDocument is requested', () => {
     expect(retrySkipReasonForDocument({ docNum: null }, false)).toBeNull();
   });
@@ -164,6 +181,20 @@ describe('retrySkipReasonForDocument', () => {
 });
 
 describe('adminRetryBlockReasonForDocument', () => {
+  it('blocks an active recovery before attempting a retry', () => {
+    expect(
+      adminRetryBlockReasonForDocument({
+        document: {
+          status: 'failed',
+          nextRetryAt: null,
+          docNum: '123',
+          recoveryState: 'submitted',
+        },
+        order: { status: 'completed' },
+        hasInsertDocumentRequestedEvent: false,
+      }),
+    ).toBe('recovery_in_progress');
+  });
   const now = new Date('2026-07-01T12:00:00.000Z');
 
   it('allows pending completed documents with no future retry delay', () => {

@@ -1,4 +1,5 @@
 import {
+  check,
   decimal,
   index,
   integer,
@@ -84,19 +85,46 @@ export const fiscalDocuments = pgTable(
     lastError: text('last_error'),
     attemptCount: integer('attempt_count').notNull().default(0),
     nextRetryAt: timestamp('next_retry_at', { withTimezone: true }),
+    recoveryTokenHash: varchar('recovery_token_hash', { length: 64 }),
+    recoveryOwner: text('recovery_owner'),
+    recoveryPayloadHash: varchar('recovery_payload_hash', { length: 64 }),
+    recoveryState: varchar('recovery_state', { length: 16 }),
+    recoveryExpiresAt: timestamp('recovery_expires_at', { withTimezone: true }),
     issuedAt: timestamp('issued_at', { withTimezone: true }),
     createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
     updatedAt: timestamp('updated_at', { withTimezone: true }).defaultNow().notNull(),
   },
   (table) => ({
+    recoveryStateCheck: check(
+      'fiscal_documents_recovery_state_check',
+      sql`${table.recoveryState} is null or ${table.recoveryState} in ('reserved', 'submitted', 'reconciled', 'cancelled')`,
+    ),
     orderIdIdx: uniqueIndex('fiscal_documents_order_id_idx').on(table.orderId),
     authorIdIdx: index('fiscal_documents_author_id_idx').on(table.authorId),
     statusIdx: index('fiscal_documents_status_idx').on(table.status),
     nextRetryAtIdx: index('fiscal_documents_next_retry_at_idx').on(table.nextRetryAt),
-    docIdentityIdx: index('fiscal_documents_keyinvoice_doc_idx').on(
-      table.docType,
-      table.docSeries,
-      table.docNum,
+    docIdentityIdx: uniqueIndex('fiscal_documents_remote_identity_unique')
+      .on(table.provider, table.docType, sql`coalesce(${table.docSeries}, '')`, table.docNum)
+      .where(sql`${table.docNum} is not null`),
+  }),
+);
+
+// Permanent anti-replay ledger; retain rows through all terminal states.
+export const recoveryTokens = pgTable(
+  'recovery_tokens',
+  {
+    tokenHash: varchar('token_hash', { length: 64 }).primaryKey(),
+    fiscalDocumentId: uuid('fiscal_document_id')
+      .notNull()
+      .references(() => fiscalDocuments.id, { onDelete: 'restrict' }),
+    actor: text('actor').notNull(),
+    payloadHash: varchar('payload_hash', { length: 64 }).notNull(),
+    state: varchar('state', { length: 16 }).notNull(),
+  },
+  (table) => ({
+    stateCheck: check(
+      'recovery_tokens_state_check',
+      sql`${table.state} in ('reserved', 'submitted', 'reconciled', 'cancelled')`,
     ),
   }),
 );
