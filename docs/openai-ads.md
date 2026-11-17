@@ -110,7 +110,9 @@ The transport (`capi.ts`) posts to `https://bzr.openai.com/v1/events?pid=<PIXEL_
 
 ## Rollout steps
 
-Current state: the Secret Manager secret `OPENAI_CONVERSIONS_API_KEY` exists and `cloudbuild.yaml` maps it to `OPENAI_ADS_CAPI_KEY`. Events go live from the first deploy.
+Current state (2026-11-17): **live in production** — migration `0049` applied, Cloud Run revision `mythoria-webapp-00241-zck` (git `84e8f62`) serving 100%, the Secret Manager secret `OPENAI_CONVERSIONS_API_KEY` mapped to `OPENAI_ADS_CAPI_KEY`, and the first drain delivered 10 backfilled `story_generated` events with no errors. Only `mythoria-webapp` changed; Story Generation Workflow needs no deploy (its existing `analytics_outbox` rows are fanned out by the WebApp drain).
+
+> Deploy note: Cloud Run traffic had been pinned to a named revision since 2026-11-10, so new revisions received no traffic. It was reset with `gcloud run services update-traffic mythoria-webapp --to-latest --region europe-west9`. If the post-deploy health SHA mismatches, check `spec.traffic` on the service. Roll back with `--to-revisions=<previous-revision>=100`.
 
 1. Make sure the Cloud Build and Cloud Run (Compute Engine default) service accounts have `roles/secretmanager.secretAccessor` on `OPENAI_CONVERSIONS_API_KEY`. `scripts/setup-secrets.ps1` adds these bindings whenever the secret exists (set `OPENAI_CONVERSIONS_API_KEY` in the environment only if you want to add a new secret version). A missing secret or binding fails the deploy.
 2. Apply migration `0049` (`npm run db:migrate`) before deploying. It is additive only; the database is shared by development and production.
@@ -119,6 +121,51 @@ Current state: the Secret Manager secret `OPENAI_CONVERSIONS_API_KEY` exists and
 5. In Ads Manager, create conversion event settings: `order_created` (primary), `lead_created`, `registration_completed`. Custom events are reporting only.
 
 To pause server-side delivery, remove the `OPENAI_ADS_CAPI_KEY` mapping from `--set-secrets` and redeploy: rows then stay pending and expire after about 7 days.
+
+## ChatGPT Ads Manager configuration
+
+Everything on the website side is done. In Ads Manager, the remaining setup lives under the **Conversions** tab.
+
+### 1. Check events are arriving (Conversions → Data Source)
+
+- Open the Web Pixel's menu and choose **Test**. Enter `https://mythoria.pt` and start the test.
+- Use the site in that browser:
+  - Accept **all cookies**, including Advertising; the pixel never loads without Advertising consent.
+  - Browse a few pages, open the credits page, and start a story.
+- In **Event Stream**, browser events are tagged `pixel_sdk` and server events `server_to_server`.
+- Test labelling lasts up to 30 minutes on the same origin, and test events count in normal statistics. Event Stream may show only a sample, with a delay.
+
+### 2. Create conversion event settings
+
+Create one setting per event, all using the same Web Pixel data source (reuse the existing source; don't create a new one):
+
+| Setting         | Event                    | Why                                                                                           |
+| --------------- | ------------------------ | --------------------------------------------------------------------------------------------- |
+| Credit purchase | `order_created`          | The real revenue event. Carries the value in EUR minor units, so you get ROAS. **Main** goal. |
+| Story created   | `lead_created`           | The key activation step (user submits a story for generation).                                |
+| Sign-up         | `registration_completed` | Top of the funnel.                                                                            |
+
+Optionally add custom events for reporting. Their names must match exactly: `story_creation_started`, `story_generated`, `story_shared`, `audiobook_requested`, `self_print_requested`, `print_order_requested`, `promo_code_redeemed`, `partner_application_submitted`, `contact_submitted`. **Custom events can't be used as a campaign's optimization goal.**
+
+### 3. Choose the optimization goal for each campaign
+
+- **Conversion-optimized** campaigns take exactly one active standard event as their goal. **The goal and the event can't be changed after the campaign is created**; optimizing for a different event means creating a new campaign.
+  - `order_created` if there are enough purchases (the best signal).
+  - `lead_created` if purchases are too few for the algorithm to learn. Stories are much more frequent, and a story usually comes before a purchase.
+- The bid is a cost per conversion, but billing is per valid click.
+- If campaign creation fails with "Conversion bidding is not enabled", the account needs it enabled by the OpenAI partner contact.
+- **Click or impression campaigns** can still have these settings attached for tracking, without changing their objective. Updating a campaign's attached settings replaces the whole list, so include every setting to keep.
+
+### 4. Leave "Automatic advanced matching" off
+
+We already send hashed email and user ID ourselves, and only when the visitor accepted Advertising cookies. If it is turned on, the pixel also scans pages for personal data, which bypasses that consent control.
+
+### What to expect in reports
+
+- A purchase or story whose browser and server copies were merged appears **once**. That's the intended deduplication.
+- Visitors who reject Advertising cookies still count as conversions (sent with `opt_out: true`), but without identifiers, so they usually can't be linked to a specific ad click.
+- Click-through conversions use the configured click window. View-through conversions use a fixed 1-day window and are shown as a separate campaign metric, not in "Conversions". When both apply, the click wins.
+- After the first real sign-up, story submission and purchase, check Event Stream to confirm each standard event appears once.
 
 ## CSP hosts (for when a Content-Security-Policy is added)
 
