@@ -611,15 +611,7 @@ export const envManifest: EnvVarDescriptor[] = [
     scopes: ['prod', 'runtime'],
     secret: true,
     source: 'secret-manager',
-    note: 'OpenAI ChatGPT Ads Conversions API key (server-side). Add OPENAI_ADS_CAPI_KEY=OPENAI_ADS_CAPI_KEY:latest to --set-secrets once the secret exists.',
-  },
-  {
-    name: 'OPENAI_ADS_VALIDATE_ONLY',
-    required: false,
-    scopes: ['dev', 'prod', 'runtime'],
-    default: 'true',
-    source: 'substitution',
-    note: "When 'true', OpenAI Ads CAPI events are sent in validate-only mode (first rollout).",
+    note: 'OpenAI ChatGPT Ads Conversions API key (server-side). Secret Manager secret OPENAI_CONVERSIONS_API_KEY, mapped in cloudbuild.yaml --set-secrets as OPENAI_ADS_CAPI_KEY=OPENAI_CONVERSIONS_API_KEY:latest.',
   },
   {
     name: 'NEXT_PUBLIC_GOOGLE_TAG_ID',

@@ -41,7 +41,6 @@ export interface OpenAiCapiEvent {
 }
 
 export interface OpenAiCapiRequestBody {
-  validate_only: boolean;
   integration_source: string;
   events: OpenAiCapiEvent[];
 }
@@ -62,7 +61,6 @@ export function isOpenAiCapiConfigured(): boolean {
 
 export function buildOpenAiCapiRequestBody(events: OpenAiCapiEvent[]): OpenAiCapiRequestBody {
   return {
-    validate_only: process.env.OPENAI_ADS_VALIDATE_ONLY === 'true',
     integration_source: OPENAI_CAPI_INTEGRATION_SOURCE,
     events,
   };

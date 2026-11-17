@@ -464,7 +464,6 @@ async function applyResult(
   const attempts = entry.attempts + 1;
 
   if (result.ok) {
-    const validateOnly = process.env.OPENAI_ADS_VALIDATE_ONLY === 'true';
     await db
       .update(adConversionOutbox)
       .set({
@@ -472,12 +471,11 @@ async function applyResult(
         attempts,
         claimToken: null,
         claimedAt: null,
-        // Validate-only requests are not stored by OpenAI; flag them so they can be told apart.
-        lastError: validateOnly ? 'validate_only' : null,
+        lastError: null,
         adContext: null,
       })
       .where(claimWhere);
-    logAdOutcome(entry, 'delivered', { attempts, isolated, validateOnly });
+    logAdOutcome(entry, 'delivered', { attempts, isolated });
     return 'delivered';
   }
 

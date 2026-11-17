@@ -37,7 +37,6 @@ describe('OpenAI Conversions API transport', () => {
     process.env = { ...ORIGINAL_ENV };
     process.env.OPENAI_ADS_CAPI_KEY = 'capi-key';
     process.env.NEXT_PUBLIC_OPENAI_PIXEL_ID = 'pixel/id';
-    delete process.env.OPENAI_ADS_VALIDATE_ONLY;
   });
 
   afterEach(() => {
@@ -72,19 +71,9 @@ describe('OpenAI Conversions API transport', () => {
     });
     expect(init.signal).toBeInstanceOf(AbortSignal);
     expect(JSON.parse(init.body)).toEqual({
-      validate_only: false,
       integration_source: 'mythoria-webapp',
       events: [event],
     });
-  });
-
-  it('sets validate_only from OPENAI_ADS_VALIDATE_ONLY', async () => {
-    process.env.OPENAI_ADS_VALIDATE_ONLY = 'true';
-    const fetchMock = mockFetchResponse(200);
-
-    await sendOpenAiEvents([event]);
-
-    expect(JSON.parse(fetchMock.mock.calls[0][1].body).validate_only).toBe(true);
   });
 
   it('classifies 400 as permanent and keeps a truncated error body', async () => {

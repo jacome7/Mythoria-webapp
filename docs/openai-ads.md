@@ -95,30 +95,30 @@ Table defined in `src/db/schema/analytics.ts`, created by migration `drizzle/004
    - **Batching:** one request per drain (up to 100 events). On a non-retryable HTTP error for a multi-event batch (one invalid event fails the whole batch), each event is resent alone to isolate the bad one. Isolation stops 2 minutes after the drain started (well inside the 5-minute abandoned-claim window); the rows not reached are released without consuming an attempt (counted as `deferred`) and retried on the next drain.
    - **Retries:** HTTP 429, 5xx, timeouts and network errors retry with backoff `min(60, 2^attempts)` minutes, up to 8 attempts. Other 4xx are permanent and skip the row. 401/403 (bad key) retry in 15 minutes without consuming an attempt.
    - **On success:** `delivered_at` is set and **`ad_context` is nulled**, so no raw IP or user agent is retained. Expired and permanently failed (skipped) rows also null it.
-   - **`validate_only`:** when `OPENAI_ADS_VALIDATE_ONLY=true`, OpenAI does not store events. Rows are still marked delivered with `last_error = 'validate_only'`, and **they are not resent when validate-only is later turned off**.
 4. **Payment-order scrub** (`scrubPaymentOrderAdContext`, after delivery, isolated in its own try/catch, runs even without the API key): removes only the `ads` key (`metadata - 'ads'`, `updated_at` untouched) from up to 500 `payment_orders` per run whose status is `completed`, `cancelled` or `expired`, or that are older than 7 days. `failed` is not treated as terminal because a declined card can be retried in the same Checkout Session; such orders are scrubbed by the 7-day rule (Checkout Sessions expire within 24 hours). Rows locked by a payment worker are skipped (`FOR UPDATE SKIP LOCKED`). The drain response reports `ads.paymentScrub`.
 5. Structured logs use the `[AdConversionOutbox]` prefix with a 12-character hashed `eventRef`, never PII.
 
 ## Environment and configuration
 
-| Variable                         | Kind               | Where configured                                                                                                                      | Notes                                                                                                |
-| -------------------------------- | ------------------ | ------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
-| `NEXT_PUBLIC_OPENAI_PIXEL_ID`    | public, build-time | `cloudbuild.yaml` substitution `_NEXT_PUBLIC_OPENAI_PIXEL_ID`, Dockerfile ARG/ENV, `.env.production`, `.env.local`, `env.manifest.ts` | Public, not a secret: `8DT4ALLW8yvPUUYcaz21vb`. Unset disables everything.                           |
-| `NEXT_PUBLIC_OPENAI_PIXEL_DEBUG` | public, build-time | `cloudbuild.yaml` substitution (`'false'`), Dockerfile, `.env.local` (`true`)                                                         | Enables SDK debug logging in the browser console.                                                    |
-| `OPENAI_ADS_CAPI_KEY`            | secret, runtime    | Secret Manager (`scripts/setup-secrets.ps1`), `--set-secrets` in `cloudbuild.yaml`                                                    | Conversions API key from Ads Manager. Not mapped in Cloud Run until the secret exists (see rollout). |
-| `OPENAI_ADS_VALIDATE_ONLY`       | runtime            | `cloudbuild.yaml` substitution `_OPENAI_ADS_VALIDATE_ONLY` (currently `'true'`), `.env.*`                                             | `'true'` sends `validate_only` to OpenAI.                                                            |
+| Variable                         | Kind               | Where configured                                                                                                                                                                                                                                              | Notes                                                                                                                              |
+| -------------------------------- | ------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
+| `NEXT_PUBLIC_OPENAI_PIXEL_ID`    | public, build-time | `cloudbuild.yaml` substitution `_NEXT_PUBLIC_OPENAI_PIXEL_ID`, Dockerfile ARG/ENV, `.env.production`, `.env.local`, `env.manifest.ts`                                                                                                                         | Public, not a secret: `8DT4ALLW8yvPUUYcaz21vb`. Unset disables everything.                                                         |
+| `NEXT_PUBLIC_OPENAI_PIXEL_DEBUG` | public, build-time | `cloudbuild.yaml` substitution (`'false'`), Dockerfile, `.env.local` (`true`)                                                                                                                                                                                 | Enables SDK debug logging in the browser console.                                                                                  |
+| `OPENAI_ADS_CAPI_KEY`            | secret, runtime    | Secret Manager secret `OPENAI_CONVERSIONS_API_KEY` (`projects/803421888801/secrets/OPENAI_CONVERSIONS_API_KEY`, bound by `scripts/setup-secrets.ps1`), mapped in `cloudbuild.yaml` `--set-secrets` as `OPENAI_ADS_CAPI_KEY=OPENAI_CONVERSIONS_API_KEY:latest` | Conversions API key from Ads Manager. The code reads `OPENAI_ADS_CAPI_KEY`; locally it is unset unless you add it to `.env.local`. |
 
 The transport (`capi.ts`) posts to `https://bzr.openai.com/v1/events?pid=<PIXEL_ID>` with `Authorization: Bearer <key>`, `integration_source: "mythoria-webapp"`, a 10 s timeout, and a limit of 1,000 events per batch. Run `npm run check:env` after any change.
 
 ## Rollout steps
 
-1. Create the Secret Manager secret `OPENAI_ADS_CAPI_KEY` (for example by running `scripts/setup-secrets.ps1` with `OPENAI_ADS_CAPI_KEY` set) and grant `secretAccessor` to the Cloud Build and Cloud Run service accounts. Referencing a missing secret fails the deploy.
-2. In `cloudbuild.yaml`, append `OPENAI_ADS_CAPI_KEY=OPENAI_ADS_CAPI_KEY:latest` to the `--set-secrets` value (see the `TODO(OpenAI Ads)` comment).
-3. Apply migration `0049` (`npm run db:migrate`) before deploying. It is additive only; the database is shared by development and production.
-4. Deploy with `_OPENAI_ADS_VALIDATE_ONLY: 'true'`. Until the key is mapped, server events queue safely in `ad_conversion_outbox` (they expire after about 7 days).
-5. Verify in Ads Manager with the **Test** flow and **Event Stream**: browser events show source `pixel_sdk`, server events `server_to_server`, duplicates collapse. Locally use `NEXT_PUBLIC_OPENAI_PIXEL_DEBUG=true`, land on `/?oppref=test123`, accept all cookies and confirm `oaiq` initializes and `__oppref` / `__obref` are set.
-6. Flip `_OPENAI_ADS_VALIDATE_ONLY` to `'false'` in `cloudbuild.yaml` and redeploy. Events delivered in validate-only mode are not resent.
-7. In Ads Manager, create conversion event settings: `order_created` (primary), `lead_created`, `registration_completed`. Custom events are reporting only.
+Current state: the Secret Manager secret `OPENAI_CONVERSIONS_API_KEY` exists and `cloudbuild.yaml` maps it to `OPENAI_ADS_CAPI_KEY`. Events go live from the first deploy.
+
+1. Make sure the Cloud Build and Cloud Run (Compute Engine default) service accounts have `roles/secretmanager.secretAccessor` on `OPENAI_CONVERSIONS_API_KEY`. `scripts/setup-secrets.ps1` adds these bindings whenever the secret exists (set `OPENAI_CONVERSIONS_API_KEY` in the environment only if you want to add a new secret version). A missing secret or binding fails the deploy.
+2. Apply migration `0049` (`npm run db:migrate`) before deploying. It is additive only; the database is shared by development and production.
+3. Deploy. Server events are sent live to OpenAI from the first drain.
+4. Verify in Ads Manager with the **Test** flow and **Event Stream**: browser events show source `pixel_sdk`, server events `server_to_server`, duplicates collapse. Locally use `NEXT_PUBLIC_OPENAI_PIXEL_DEBUG=true`, land on `/?oppref=test123`, accept all cookies and confirm `oaiq` initializes and `__oppref` / `__obref` are set.
+5. In Ads Manager, create conversion event settings: `order_created` (primary), `lead_created`, `registration_completed`. Custom events are reporting only.
+
+To pause server-side delivery, remove the `OPENAI_ADS_CAPI_KEY` mapping from `--set-secrets` and redeploy: rows then stay pending and expire after about 7 days.
 
 ## CSP hosts (for when a Content-Security-Policy is added)
 
@@ -180,7 +180,6 @@ ORDER BY total DESC;
 | Value                                                         | Meaning                                                                                                     |
 | ------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
 | `awaiting_ad_context`                                         | Waiting up to 2 hours for an attribution row (consent, `oppref`) for this author. Not a failure.            |
-| `validate_only`                                               | Delivered in validate-only mode. Not stored by OpenAI and not resent.                                       |
 | `expired_7d`                                                  | Older than about 7 days when picked up, so OpenAI would reject it. Skipped.                                 |
 | `HTTP 401` / `HTTP 403 ...`                                   | Key rejected. Check `OPENAI_ADS_CAPI_KEY` and the Pixel ID. Retries every 15 minutes, no attempts consumed. |
 | `HTTP 400 ...`                                                | Invalid event (the body explains which field). Isolated and skipped permanently.                            |

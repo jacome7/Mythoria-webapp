@@ -313,7 +313,6 @@ describe('deliverAdConversions', () => {
     jest.clearAllMocks();
     isConfiguredMock.mockReturnValue(true);
     sendOpenAiEventsMock.mockResolvedValue({ ok: true });
-    delete process.env.OPENAI_ADS_VALIDATE_ONLY;
     jest.spyOn(console, 'info').mockImplementation(() => undefined);
   });
 
@@ -375,20 +374,6 @@ describe('deliverAdConversions', () => {
       claimToken: null,
       claimedAt: null,
       lastError: null,
-      adContext: null,
-    });
-  });
-
-  it('flags rows delivered in validate-only mode', async () => {
-    process.env.OPENAI_ADS_VALIDATE_ONLY = 'true';
-    const row = outboxRow();
-    queueSelects([row], [author]);
-    const sets = mockUpdates([row]);
-
-    await deliverAdConversions();
-
-    expect(sets.find((values) => values.deliveredAt)).toMatchObject({
-      lastError: 'validate_only',
       adContext: null,
     });
   });
