@@ -19,6 +19,10 @@ const mockPush = jest.fn();
 const mockReplace = jest.fn();
 const mockPoll = jest.fn();
 const mockFetch = jest.fn();
+const mockTrackOpenAiAdsEvent = jest.fn();
+jest.mock('@/lib/openai-ads/pixel', () => ({
+  trackOpenAiAdsEvent: (...args: unknown[]) => mockTrackOpenAiAdsEvent(...args),
+}));
 const mockSearch = new URLSearchParams();
 let mockInitialText = '';
 let mockLocale = 'en-US';
@@ -265,6 +269,7 @@ beforeEach(() => {
   mockReplace.mockReset();
   mockPoll.mockReset();
   mockFetch.mockReset();
+  mockTrackOpenAiAdsEvent.mockReset();
   mockPoll.mockResolvedValue({ status: 'completed', result: { story: { title: 'Ready' } } });
   mockFetch.mockImplementation(async (url: string) => {
     if (url === '/api/stories')
@@ -815,4 +820,54 @@ it('allows a freeform story at the complete brief limit', () => {
   mockInitialText = 'x'.repeat(40_000);
   renderStep(false);
   expect(screen.getByTestId('next')).toBeEnabled();
+});
+
+describe('OpenAI Ads story_creation_started', () => {
+  const withAdEventId = (endpoint: string, body: Record<string, unknown>) => {
+    const fallback = mockFetch.getMockImplementation()!;
+    mockFetch.mockImplementation(async (url: string, init?: RequestInit) =>
+      url === endpoint ? { ok: true, json: async () => body } : fallback(url, init),
+    );
+  };
+
+  it('fires with the server event id after the legacy draft is created', async () => {
+    withAdEventId('/api/stories', {
+      story: { storyId: draftId },
+      adEventId: `story_start_${draftId}`,
+    });
+    mockInitialText = 'My own story idea';
+    renderStep(false);
+    fireEvent.click(screen.getByTestId('next'));
+    await waitFor(() => expect(mockPush).toHaveBeenCalled());
+    expect(mockTrackOpenAiAdsEvent).toHaveBeenCalledTimes(1);
+    expect(mockTrackOpenAiAdsEvent).toHaveBeenCalledWith({
+      eventType: 'custom',
+      customEventName: 'story_creation_started',
+      eventId: `story_start_${draftId}`,
+      data: { type: 'custom' },
+    });
+  });
+
+  it('fires with the server event id after a template draft is created', async () => {
+    withAdEventId('/api/story-guide/draft', { adEventId: 'story_start_server-id' });
+    renderStep();
+    fireEvent.click(screen.getByRole('button', { name: /Start with a template/ }));
+    fireEvent.click(screen.getByText('Select fiction'));
+    clickContinue();
+    await waitFor(() => expect(structureCalls()).toHaveLength(1));
+    expect(mockTrackOpenAiAdsEvent).toHaveBeenCalledWith(
+      expect.objectContaining({
+        customEventName: 'story_creation_started',
+        eventId: 'story_start_server-id',
+      }),
+    );
+  });
+
+  it('does not fire when the response has no adEventId', async () => {
+    mockInitialText = 'My own story idea';
+    renderStep(false);
+    fireEvent.click(screen.getByTestId('next'));
+    await waitFor(() => expect(mockPush).toHaveBeenCalled());
+    expect(mockTrackOpenAiAdsEvent).not.toHaveBeenCalled();
+  });
 });

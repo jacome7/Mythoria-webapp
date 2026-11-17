@@ -84,6 +84,7 @@ describe('campaign context', () => {
       gclid: 'g-123',
       gbraid: 'gb-123',
       wbraid: 'wb-123',
+      oppref: 'op-123',
       email: 'private@example.com',
       token: 'secret',
     });
@@ -97,10 +98,22 @@ describe('campaign context', () => {
       gclid: 'g-123',
       gbraid: 'gb-123',
       wbraid: 'wb-123',
+      oppref: 'op-123',
     });
 
     params.set('utm_source', 'x'.repeat(256));
     expect(collectCampaignParams(params)).not.toHaveProperty('utm_source');
+
+    // OpenAI click references may be longer: up to 512 characters, matching the server cap.
+    const longOppref = 'o'.repeat(512);
+    params.set('oppref', longOppref);
+    expect(collectCampaignParams(params).oppref).toBe(longOppref);
+    expect(buildPublicRedirectSearch(params).get('oppref')).toBe(longOppref);
+    expect(buildStoryAuthReturnSearch(params).get('oppref')).toBe(longOppref);
+    params.set('oppref', 'o'.repeat(513));
+    expect(collectCampaignParams(params)).not.toHaveProperty('oppref');
+    params.set('utm_campaign', 'c'.repeat(300));
+    expect(collectCampaignParams(params)).not.toHaveProperty('utm_campaign');
   });
 
   it('preserves safe redirect context and removes auth and PII-like parameters', () => {
@@ -109,6 +122,7 @@ describe('campaign context', () => {
         intent: 'Grandparents',
         utm_source: 'newsletter',
         gclid: 'click-1',
+        oppref: 'op-1',
         ref: 'partner',
         email: 'private@example.com',
         code: 'oauth-code',
@@ -119,7 +133,7 @@ describe('campaign context', () => {
     );
 
     expect(safe.toString()).toBe(
-      'utm_source=newsletter&gclid=click-1&ref=partner&intent=grandparents',
+      'utm_source=newsletter&gclid=click-1&oppref=op-1&ref=partner&intent=grandparents',
     );
   });
 

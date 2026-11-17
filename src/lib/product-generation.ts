@@ -14,6 +14,9 @@ import {
 } from '@/db/schema';
 import type { ClientAnalyticsContext } from '@/lib/analytics/ecommerce';
 import { analyticsReference } from '@/lib/analytics/reference';
+import { conversions, type OpenAiConversion } from '@/lib/openai-ads/events';
+import { enqueueAdConversion } from '@/lib/openai-ads/outbox';
+import { sanitizeAdContext, type AdContext } from '@/lib/openai-ads/types';
 
 type ProductCreditEvent = 'audioBookGeneration' | 'selfPrinting';
 
@@ -65,6 +68,12 @@ export interface StartProductGenerationInput {
    * entitlement attempt (`survey_reward:{entitlementId}:{attempt}`).
    */
   funding?: ProductGenerationFunding;
+  /**
+   * OpenAI Ads request context, stored on the request and read when the run is confirmed queued.
+   * Omitted by callers without a browser/consent context (MCP), which then enqueue no conversion.
+   * Ignored for survey-reward funding, which is never reported as a conversion.
+   */
+  adContext?: AdContext | null;
 }
 
 export interface StartProductGenerationResult {
@@ -254,6 +263,7 @@ export async function startProductGeneration(
         pageLocation: input.analyticsContext?.pageLocation,
         pageReferrer: input.analyticsContext?.pageReferrer,
         engagementTimeMsec: input.analyticsContext?.engagementTimeMsec,
+        adContext: sanitizeAdContext(input.adContext) ?? null,
       })
       .returning();
     if (!created) throw new Error('Failed to create product generation request');
@@ -421,7 +431,9 @@ export async function markProductGenerationQueued(
     const queuedAt = new Date();
     const [queued] = await tx
       .update(productGenerationRequests)
-      .set({ status: 'queued', queueReference, queuedAt, updatedAt: queuedAt })
+      // The captured ad context (raw IP / user agent) moves to the conversion outbox below and
+      // is cleared here so it is not retained on the request.
+      .set({ status: 'queued', queueReference, queuedAt, updatedAt: queuedAt, adContext: null })
       .where(
         and(
           eq(productGenerationRequests.runId, runId),
@@ -452,8 +464,30 @@ export async function markProductGenerationQueued(
         .onConflictDoNothing({ target: analyticsOutbox.dedupeKey });
     }
 
+    // OpenAI Ads: credit-funded requests only (survey rewards are excluded); requests without a
+    // captured ad context (MCP, rows created before the column existed) are not reported.
+    const adContext = sanitizeAdContext(request.adContext);
+    if (effective.fundingSource === 'credits' && adContext) {
+      await enqueueAdConversion(tx, {
+        conversion: productAdConversion(effective.actionType, effective.runId),
+        authorId: effective.authorId,
+        adContext,
+        occurredAt: queuedAt,
+      });
+    }
+
     return effective;
   });
+}
+
+/** OpenAI Ads conversion for a product run; its `eventId` is what the start routes return. */
+export function productAdConversion(
+  actionType: ProductGenerationAction,
+  runId: string,
+): OpenAiConversion {
+  return actionType === 'self_print'
+    ? conversions.selfPrintRequested(runId)
+    : conversions.audiobookRequested(runId);
 }
 
 /**
@@ -528,6 +562,8 @@ export async function compensateProductGeneration(
         failureStage,
         failureCode,
         updatedAt: terminalAt,
+        // A failed request is never reported: do not retain its raw IP / user agent.
+        adContext: null,
       })
       .where(eq(productGenerationRequests.runId, request.runId));
 

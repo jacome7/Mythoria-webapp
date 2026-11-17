@@ -22,9 +22,18 @@ jest.mock('@/lib/analytics', () => ({
   getGoogleAnalyticsContext: jest.fn(),
 }));
 jest.mock('@/lib/consent', () => ({ ensureConsentChoice: jest.fn() }));
+const mockTrackOpenAiAdsEvent = jest.fn();
+let mockPixelEnabled = true;
+jest.mock('@/lib/openai-ads/pixel', () => ({
+  trackOpenAiAdsEvent: (...args: unknown[]) => mockTrackOpenAiAdsEvent(...args),
+  isOpenAiPixelEnabled: () => mockPixelEnabled,
+}));
 const catalogue = { packages: [{ id: 2, key: 'ten', credits: 10, price: 9 }] };
 const originalFetch = global.fetch;
 beforeEach(() => {
+  mockTrackOpenAiAdsEvent.mockReset();
+  mockPixelEnabled = true;
+  window.sessionStorage.clear();
   mockSearch = new URLSearchParams('package=2');
   global.fetch = jest.fn().mockResolvedValue({ ok: true, json: async () => catalogue });
 });
@@ -74,4 +83,177 @@ it('offers catalogue retry without silently dropping the intended package', asyn
       '/pt-PT/sign-in?redirect=%2Fpt-PT%2Fbuy-credits%3Fpackage%3D2',
     ),
   );
+});
+it('sends OpenAI contents_viewed for the package list with prices in cents', async () => {
+  render(<BuyCreditsPage />);
+  await waitFor(() => expect(mockTrackOpenAiAdsEvent).toHaveBeenCalledTimes(1));
+  expect(mockTrackOpenAiAdsEvent).toHaveBeenCalledWith(
+    expect.objectContaining({
+      eventType: 'contents_viewed',
+      data: {
+        type: 'contents',
+        contents: [
+          {
+            id: 'ten',
+            name: '10 Mythoria Credits',
+            content_type: 'product',
+            quantity: 1,
+            amount: 900,
+            currency: 'EUR',
+          },
+        ],
+      },
+    }),
+  );
+});
+describe('confirmed Stripe order', () => {
+  const session = {
+    success: true,
+    status: 'completed',
+    orderId: 'order-uuid-1',
+    amount: 900,
+    currency: 'eur',
+    credits: 10,
+    ecommerce: {
+      transaction_id: 'order-uuid-1',
+      currency: 'EUR',
+      value: 8.49,
+      items: [
+        {
+          item_id: 'credit_package_ten',
+          item_name: '10 Mythoria Credits',
+          item_variant: 'ten',
+          price: 9,
+          quantity: 1,
+        },
+      ],
+    },
+  };
+  beforeEach(() => {
+    jest.useFakeTimers();
+    mockSearch = new URLSearchParams('payment=stripe_success&session_id=cs_test_1');
+    jest.spyOn(window.history, 'replaceState').mockImplementation(() => undefined);
+    global.fetch = jest.fn(async (url: string) =>
+      String(url).startsWith('/api/payments/stripe/session')
+        ? { ok: true, json: async () => session }
+        : { ok: true, json: async () => catalogue },
+    ) as unknown as typeof fetch;
+  });
+  afterEach(() => {
+    jest.clearAllTimers();
+    jest.useRealTimers();
+  });
+  const orderCalls = () =>
+    mockTrackOpenAiAdsEvent.mock.calls.filter(([c]) => c.eventType === 'order_created');
+
+  it('fires order_created once per order with the deterministic order event id', async () => {
+    const first = render(<BuyCreditsPage />);
+    await waitFor(() => expect(orderCalls()).toHaveLength(1));
+    expect(orderCalls()[0][0]).toEqual({
+      eventType: 'order_created',
+      eventId: 'order_order-uuid-1',
+      data: {
+        type: 'contents',
+        amount: 900,
+        currency: 'EUR',
+        contents: [
+          {
+            id: 'ten',
+            name: '10 Mythoria Credits',
+            content_type: 'product',
+            quantity: 1,
+            amount: 900,
+            currency: 'EUR',
+          },
+        ],
+      },
+    });
+    first.unmount();
+
+    render(<BuyCreditsPage />);
+    // replaceState runs right after the order tracking call in the same success branch.
+    await waitFor(() => expect(window.history.replaceState).toHaveBeenCalledTimes(2));
+    expect(orderCalls()).toHaveLength(1);
+  });
+
+  it('sends exactly the server-built order_created input when the session API returns it', async () => {
+    const withServerInput = {
+      ...session,
+      adConversion: {
+        orderId: 'order-uuid-1',
+        amountCents: 849,
+        currency: 'EUR',
+        packageKey: 'credit_package_ten',
+        packageName: '10 Mythoria Credits',
+        credits: 10,
+      },
+    };
+    global.fetch = jest.fn(async (url: string) =>
+      String(url).startsWith('/api/payments/stripe/session')
+        ? { ok: true, json: async () => withServerInput }
+        : { ok: true, json: async () => catalogue },
+    ) as unknown as typeof fetch;
+
+    render(<BuyCreditsPage />);
+    await waitFor(() => expect(orderCalls()).toHaveLength(1));
+    expect(orderCalls()[0][0]).toEqual({
+      eventType: 'order_created',
+      eventId: 'order_order-uuid-1',
+      data: {
+        type: 'contents',
+        amount: 849,
+        currency: 'EUR',
+        contents: [
+          {
+            id: 'credit_package_ten',
+            name: '10 Mythoria Credits',
+            content_type: 'product',
+            quantity: 1,
+            amount: 849,
+            currency: 'EUR',
+          },
+        ],
+      },
+    });
+  });
+
+  it('ignores a server input for a different order and falls back to the response totals', async () => {
+    const mismatched = {
+      ...session,
+      adConversion: {
+        orderId: 'another-order',
+        amountCents: 1,
+        currency: 'EUR',
+        packageKey: 'x',
+        packageName: 'x',
+        credits: 1,
+      },
+    };
+    global.fetch = jest.fn(async (url: string) =>
+      String(url).startsWith('/api/payments/stripe/session')
+        ? { ok: true, json: async () => mismatched }
+        : { ok: true, json: async () => catalogue },
+    ) as unknown as typeof fetch;
+
+    render(<BuyCreditsPage />);
+    await waitFor(() => expect(orderCalls()).toHaveLength(1));
+    expect(orderCalls()[0][0]).toMatchObject({
+      eventId: 'order_order-uuid-1',
+      data: { amount: 900 },
+    });
+  });
+
+  it('does not set the order guard while the Pixel is disabled', async () => {
+    mockPixelEnabled = false;
+    const first = render(<BuyCreditsPage />);
+    await waitFor(() => expect(window.history.replaceState).toHaveBeenCalledTimes(1));
+    expect(orderCalls()).toHaveLength(0);
+    expect(window.sessionStorage.getItem('mythoria_oaiq_order_order-uuid-1')).toBeNull();
+    first.unmount();
+
+    mockPixelEnabled = true;
+    render(<BuyCreditsPage />);
+    await waitFor(() => expect(orderCalls()).toHaveLength(1));
+    expect(orderCalls()[0][0].eventId).toBe('order_order-uuid-1');
+  });
 });

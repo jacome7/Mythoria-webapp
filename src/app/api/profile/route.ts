@@ -369,6 +369,8 @@ export async function PATCH(req: NextRequest) {
         email: updated.email,
         welcomeEmailSentAt: updated.welcomeEmailSentAt,
         experimentalFeaturesEnabled: updated.experimentalFeaturesEnabled,
+        // Lets the onboarding page tell a new sign-up from a returning user editing their profile.
+        createdAt: updated.createdAt,
       },
     });
   } catch (err) {

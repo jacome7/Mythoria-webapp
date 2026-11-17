@@ -88,6 +88,77 @@ describe('POST /api/analytics/attribution', () => {
     });
   });
 
+  it('stores the OpenAI click/browser references only with advertising consent', async () => {
+    mockInsert.mockReturnValue({
+      values: jest.fn((values) => ({
+        returning: jest.fn().mockResolvedValue([{ attributionId }]),
+        values,
+      })),
+    });
+    const consent = encodeURIComponent(
+      JSON.stringify({ state: { ad_user_data: 'granted' }, preferences: { advertising: true } }),
+    );
+
+    const response = await POST(
+      new NextRequest('https://mythoria.pt/api/analytics/attribution', {
+        method: 'POST',
+        headers: {
+          'content-type': 'application/json',
+          cookie: `mythoria_consent=${consent}; __obref=ob-1`,
+        },
+        body: JSON.stringify({
+          analyticsContext,
+          oppref: '  opp-1  ',
+          campaign: { utm_source: 'chatgpt', oppref: 'campaign-opp' },
+        }),
+      }),
+    );
+
+    expect(response.status).toBe(200);
+    const insertValues = mockInsert.mock.results[0]?.value.values.mock.calls[0]?.[0];
+    expect(insertValues).toMatchObject({ oppref: 'opp-1', obref: 'ob-1', utmSource: 'chatgpt' });
+    expect(insertValues.opprefCapturedAt).toBeInstanceOf(Date);
+    expect(JSON.stringify(insertValues)).not.toContain('campaign-opp');
+  });
+
+  it('accepts a campaign oppref but never persists it without advertising consent', async () => {
+    mockInsert.mockReturnValue({
+      values: jest.fn((values) => ({
+        returning: jest.fn().mockResolvedValue([{ attributionId }]),
+        values,
+      })),
+    });
+
+    const response = await POST(
+      request({ analyticsContext, oppref: 'opp-1', campaign: { oppref: 'opp-2' } }),
+    );
+
+    expect(response.status).toBe(200);
+    const insertValues = mockInsert.mock.results[0]?.value.values.mock.calls[0]?.[0];
+    expect(insertValues).not.toHaveProperty('oppref');
+    expect(insertValues).not.toHaveProperty('obref');
+    expect(JSON.stringify(insertValues)).not.toContain('opp-');
+  });
+
+  it('clears stored OpenAI references on update once advertising is not granted', async () => {
+    mockSelect.mockReturnValue(selectRows([{ attributionId, clientId: '123.456' }]));
+    const set = jest.fn((_values: Record<string, unknown>) => ({
+      where: () => ({ returning: async () => [{ attributionId }] }),
+    }));
+    mockUpdate.mockReturnValue({ set });
+
+    await POST(request({ analyticsContext, oppref: 'opp-1' }, true));
+
+    expect(set).toHaveBeenCalledWith(
+      expect.objectContaining({ oppref: null, opprefCapturedAt: null, obref: null }),
+    );
+  });
+
+  it('rejects an oversized oppref', async () => {
+    const response = await POST(request({ analyticsContext, oppref: 'x'.repeat(513) }));
+    expect(response.status).toBe(400);
+  });
+
   it('preserves an existing first touch while updating the mutable latest campaign context', async () => {
     const existing = {
       attributionId,

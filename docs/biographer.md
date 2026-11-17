@@ -4,7 +4,7 @@ Implementation branch: `codex/biographer-phase-2` builds on Phase 1. Contributor
 
 ## Configuration and rollout
 
-Keep `BIOGRAPHER_ENABLED=false` until the generated additive migrations are reviewed and applied through the normal release process. Never use the shared development/production database for tests. Migrations in this branch are generated artifacts and have not been applied.
+Keep `BIOGRAPHER_ENABLED=false` until the generated additive migration is reviewed and applied through the controlled release process. See [database recovery and testing](biographer-database-rollout.md): the recovery branch incorporates master and supersedes the unapplied original `0049–0056` feature artifacts with `0050_biographer_complete`. Never run integration fixtures or destructive tests against the shared development/production database. A separately authorized manual smoke test uses real shared data and needs the runbook's precautions. No feature migration has been applied by this preparation.
 
 Set `BIOGRAPHER_LIVE_URL` to the dedicated SGW gateway WSS URL, `BIOGRAPHER_INTERNAL_API_KEY` to the identical independent callback secret in both services, and `BIOGRAPHER_ALLOWED_ORIGINS` to exact comma-separated browser origins. No Google credentials or internal secret are sent to clients. Admin uses Google OIDC via `BIOGRAPHER_INTERNAL_AUDIENCE` and `BIOGRAPHER_ADMIN_SERVICE_ACCOUNTS`.
 

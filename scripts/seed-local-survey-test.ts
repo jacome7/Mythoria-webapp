@@ -2,12 +2,12 @@
  * Creates (or removes) a throw-away survey study with ONE invitation for ONE existing author, so a
  * survey can be exercised end-to-end on a developer machine.
  *
- *   npm run surveys:local-test -- --email you@example.com [--survey demo_all_controls] [--locale en-US]
+ *   npm run surveys:local-test -- --email you@example.com --survey <survey_id> [--locale en-US]
  *       [--version N] [--stories N] [--used-paid-service yes|no] [--started yes|no|unknown] [--reset]
  *       -> dry run: shows what would be created (read-only)
- *   npm run surveys:local-test -- --email you@example.com --apply
+ *   npm run surveys:local-test -- --email you@example.com --survey <survey_id> --apply
  *       -> creates the study `local-test-<survey>` + your invitation and prints the survey URL
- *   npm run surveys:local-test -- --email you@example.com --survey demo_all_controls --cleanup --apply
+ *   npm run surveys:local-test -- --email you@example.com --survey <survey_id> --cleanup --apply
  *       -> deletes everything created above (responses, answers, reward entitlement, invitation, study)
  *
  * The development database is shared with production. Only the named author and a clearly
@@ -19,7 +19,6 @@ import { config } from 'dotenv';
 config({ path: '.env.local', quiet: true });
 
 const COHORT_BY_SURVEY: Record<string, string> = {
-  demo_all_controls: 'C1',
   activation_no_story: 'C1',
   free_creator_no_purchase: 'C2',
   paying_creator: 'C3',
@@ -37,7 +36,7 @@ async function main() {
   const cleanup = process.argv.includes('--cleanup');
   const reset = process.argv.includes('--reset');
   const email = option('email')?.trim().toLowerCase();
-  const surveyId = option('survey') ?? 'demo_all_controls';
+  const surveyId = option('survey');
   const requestedLocale = option('locale');
   const requestedVersion = option('version') ? Number(option('version')) : undefined;
   // Facts that normally come from the audience snapshot; they drive audience-restricted questions.
@@ -47,6 +46,11 @@ async function main() {
   const started = option('started') ?? 'no';
 
   if (!email) throw new Error('--email <your author email> is required');
+  if (!surveyId) {
+    throw new Error(
+      `--survey <survey_id> is required (one of: ${Object.keys(COHORT_BY_SURVEY).join(', ')})`,
+    );
+  }
   const cohortKey = COHORT_BY_SURVEY[surveyId];
   if (!cohortKey) {
     throw new Error(`--survey must be one of: ${Object.keys(COHORT_BY_SURVEY).join(', ')}`);

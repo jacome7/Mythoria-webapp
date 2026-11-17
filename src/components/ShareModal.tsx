@@ -6,6 +6,8 @@ import { Check, Copy, Globe, Info, Lock, Mail, Share2, Users, X } from 'lucide-r
 import { FaFacebook, FaWhatsapp } from 'react-icons/fa';
 import { useLocale, useTranslations } from 'next-intl';
 import { trackEvent } from '@/lib/analytics';
+import { conversions } from '@/lib/openai-ads/events';
+import { trackOpenAiAdsEvent } from '@/lib/openai-ads/pixel';
 import {
   buildStoryShareUrl,
   storyShareEventParams,
@@ -33,6 +35,7 @@ interface ShareData {
   accessLevel?: 'view' | 'edit';
   expiresAt?: string;
   message: string;
+  adEventId?: string;
 }
 
 function scopeForShare(
@@ -124,6 +127,16 @@ export default function ShareModal({
 
       setShareData(data);
       setStoryRef(data.storyRef);
+      // Only new links and publishing count as a share; making the story private does not.
+      const shareRef =
+        data.linkType === 'public' ? `${storyId}-public` : data.url ? data.token : undefined;
+      const shareScope = scopeForShare(data, false);
+      if (shareRef && shareScope && typeof data.adEventId === 'string' && data.adEventId) {
+        trackOpenAiAdsEvent({
+          ...conversions.storyShared(shareRef, shareScope),
+          eventId: data.adEventId,
+        });
+      }
       onShareSuccess?.(data);
     } catch {
       alert(tCommonShareModal('errors.shareLinkCreationFailed'));

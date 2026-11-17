@@ -1,6 +1,10 @@
 import { NextRequest } from 'next/server';
+import { db } from '@/db';
 import { promotionCodeService } from '@/db/services';
 import { getCurrentAuthor } from '@/lib/auth';
+import { resolveAdContextSafely } from '@/lib/openai-ads/context';
+import { conversions } from '@/lib/openai-ads/events';
+import { enqueueAdConversion } from '@/lib/openai-ads/outbox';
 
 export async function POST(req: NextRequest) {
   try {
@@ -23,11 +27,27 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    let adEventId: string | undefined;
+    if (result.redemptionId) {
+      const adConversion = conversions.promoCodeRedeemed(result.redemptionId);
+      adEventId = adConversion.eventId;
+      await enqueueAdConversion(db, {
+        conversion: adConversion,
+        authorId: author.authorId,
+        adContext: await resolveAdContextSafely({
+          headers: req.headers,
+          cookies: req.cookies,
+          authorId: author.authorId,
+        }),
+      });
+    }
+
     // Do not return a localized success message here; clients handle localization via next-intl.
     return Response.json({
       code: result.code,
       creditsGranted: result.creditsGranted,
       newBalance: result.balance,
+      ...(adEventId ? { adEventId } : {}),
     });
   } catch (err) {
     console.error('redeem code error', err);

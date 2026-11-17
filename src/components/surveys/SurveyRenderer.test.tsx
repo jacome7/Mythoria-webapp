@@ -5,9 +5,9 @@ import {
   type SurveyDefinition,
 } from '@/lib/surveys/definition-schema';
 import { getScreens } from '@/lib/surveys/engine';
-import { demoAllControlsV1 } from '@/surveys/definitions/demo_all_controls.v1';
 import { payingCreatorV3 } from '@/surveys/definitions/paying_creator.v3';
 import SurveyRenderer from './SurveyRenderer';
+import { allControlsFixture } from './all-controls.fixture';
 
 jest.mock('next-intl', () => {
   const React = require('react');
@@ -55,7 +55,7 @@ jest.mock('@/lib/analytics', () => ({
   trackEvent: (...args: unknown[]) => mockTrackEvent(...args),
 }));
 
-const demo = surveyDefinitionSchema.parse(demoAllControlsV1);
+const demo = surveyDefinitionSchema.parse(allControlsFixture);
 const TOKEN = 'token-abc.signature';
 
 interface FetchCall {
@@ -178,7 +178,7 @@ describe('SurveyRenderer intro', () => {
     expect(screen.getByText(/learn how we handle your data in our/)).toBeInTheDocument();
 
     expect(mockTrackEvent).toHaveBeenCalledWith('survey_opened', {
-      survey_id: 'demo_all_controls',
+      survey_id: 'test_all_controls',
       survey_version: 1,
       cohort: 'C2',
       page_location: `${window.location.origin}/en-US/survey/:token`,

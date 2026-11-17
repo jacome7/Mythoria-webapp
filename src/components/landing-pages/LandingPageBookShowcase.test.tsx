@@ -6,8 +6,13 @@ import type { LandingPageBook } from '@/content/landing-pages';
 
 const trackEventMock = jest.fn();
 
+const trackOpenAiAdsEventMock = jest.fn();
+
 jest.mock('@/lib/analytics', () => ({
   trackEvent: (...args: unknown[]) => trackEventMock(...args),
+}));
+jest.mock('@/lib/openai-ads/pixel', () => ({
+  trackOpenAiAdsEvent: (...args: unknown[]) => trackOpenAiAdsEventMock(...args),
 }));
 
 const book: LandingPageBook = {
@@ -32,7 +37,10 @@ const book: LandingPageBook = {
 };
 
 describe('LandingPageBookShowcase analytics', () => {
-  beforeEach(() => trackEventMock.mockClear());
+  beforeEach(() => {
+    trackEventMock.mockClear();
+    trackOpenAiAdsEventMock.mockClear();
+  });
 
   it('tracks chapter opening and one start/completion pair without personal story data', () => {
     const { container } = render(
@@ -78,6 +86,24 @@ describe('LandingPageBookShowcase analytics', () => {
     expect(
       trackEventMock.mock.calls.filter(([event]) => event === 'sample_book_open'),
     ).toHaveLength(1);
+    expect(trackOpenAiAdsEventMock).toHaveBeenCalledTimes(1);
+    expect(trackOpenAiAdsEventMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        eventType: 'contents_viewed',
+        eventId: expect.any(String),
+        data: {
+          type: 'contents',
+          contents: [
+            {
+              id: 'ines-e-diogo-um-amor-inesperado',
+              name: 'Inês & Diogo — Um Amor Inesperado',
+              content_type: 'sample_book',
+              quantity: 1,
+            },
+          ],
+        },
+      }),
+    );
     expect(screen.getAllByText('Ler transcrição')).not.toHaveLength(0);
     expect(JSON.stringify(trackEventMock.mock.calls)).not.toContain(book.title);
   });

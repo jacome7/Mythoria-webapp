@@ -9,12 +9,20 @@ import { sanitizeAnalyticsPathname } from '@/lib/analytics/page-context';
 import { analyticsReference } from '@/lib/analytics/reference';
 import { storyShareFromCampaign, type StoryShareContext } from '@/lib/analytics/story-share';
 import type { CampaignParams } from '@/lib/campaign-context';
+import { CONSENT_COOKIE_NAME } from '@/lib/consent';
+import {
+  OBREF_COOKIE_NAME,
+  OPPREF_COOKIE_NAME,
+  readAdvertisingConsent,
+} from '@/lib/openai-ads/context';
+import { AD_CONTEXT_LIMITS } from '@/lib/openai-ads/types';
 
 export const runtime = 'nodejs';
 
 const NORMAL_ATTRIBUTION_MAX_AGE_SECONDS = 24 * 60 * 60;
 const STORY_SHARE_MAX_AGE_SECONDS = 30 * 24 * 60 * 60;
 const optionalValue = z.string().trim().max(255).optional();
+const opprefValue = z.string().trim().max(AD_CONTEXT_LIMITS.oppref).optional();
 const landingSlugValue = z
   .string()
   .trim()
@@ -28,6 +36,8 @@ const attributionSchema = z.object({
   latestPath: z.string().trim().max(160).optional(),
   landingSlug: z.string().trim().max(160).optional(),
   primaryIntent: z.enum(STORY_INTENTS).optional(),
+  // OpenAI Ads click reference. Persisted only with advertising consent; never a GA4 parameter.
+  oppref: opprefValue,
   campaign: z
     .object({
       utm_source: optionalValue,
@@ -39,6 +49,7 @@ const attributionSchema = z.object({
       gclid: optionalValue,
       gbraid: optionalValue,
       wbraid: optionalValue,
+      oppref: opprefValue,
     })
     .optional(),
 });
@@ -96,6 +107,42 @@ async function validateStoryShare(
   return shareLink && analyticsReference(shareLink.storyId) === candidate.itemId
     ? candidate
     : undefined;
+}
+
+function cookieReference(value: string | undefined, maxLength: number): string | undefined {
+  if (!value) return undefined;
+  let decoded = value;
+  try {
+    decoded = decodeURIComponent(value);
+  } catch {
+    // Keep the raw cookie value.
+  }
+  const trimmed = decoded.trim();
+  return trimmed && trimmed.length <= maxLength ? trimmed : undefined;
+}
+
+/**
+ * OpenAI Ads references to persist: identifiers only with advertising consent, explicit nulls to
+ * clear previously stored ones once advertising is no longer granted.
+ */
+function openAiReferenceFields(
+  request: NextRequest,
+  advertisingGranted: boolean,
+  oppref: string | undefined,
+  now: Date,
+) {
+  if (!advertisingGranted) return { oppref: null, opprefCapturedAt: null, obref: null };
+  const clickReference =
+    oppref ||
+    cookieReference(request.cookies.get(OPPREF_COOKIE_NAME)?.value, AD_CONTEXT_LIMITS.oppref);
+  const browserReference = cookieReference(
+    request.cookies.get(OBREF_COOKIE_NAME)?.value,
+    AD_CONTEXT_LIMITS.obref,
+  );
+  return {
+    ...(clickReference ? { oppref: clickReference, opprefCapturedAt: now } : {}),
+    ...(browserReference ? { obref: browserReference } : {}),
+  };
 }
 
 function storyShareFields(context: StoryShareContext | undefined, now: Date) {
@@ -158,8 +205,18 @@ export async function POST(request: NextRequest) {
     const analytics = sanitizeClientAnalyticsContext(body.analyticsContext);
     if (!analytics) return NextResponse.json({ captured: false }, { status: 202 });
 
-    const campaign = (body.campaign || {}) as CampaignParams;
+    // `oppref` is split off the campaign so it never reaches GA4-facing columns or params.
+    const { oppref: campaignOppref, ...campaignParams } = body.campaign || {};
+    const campaign = campaignParams as CampaignParams;
     const now = new Date();
+    const advertisingGranted =
+      readAdvertisingConsent(request.cookies.get(CONSENT_COOKIE_NAME)?.value) === 'granted';
+    const openAiFields = openAiReferenceFields(
+      request,
+      advertisingGranted,
+      body.oppref || campaignOppref,
+      now,
+    );
     const expiresAt = new Date(now.getTime() + NORMAL_ATTRIBUTION_MAX_AGE_SECONDS * 1_000);
     const pageFromContext = analytics.pageLocation
       ? sanitizeAnalyticsPathname(new URL(analytics.pageLocation).pathname)
@@ -244,6 +301,7 @@ export async function POST(request: NextRequest) {
       latestReferrerPath: referrerPath,
       latestAttributionAt: now,
       expiresAt,
+      ...(advertisingGranted ? openAiFields : {}),
       ...(incomingStoryShare
         ? shareFields
         : storyShareFieldsFromRow(existingRow || shareCarryoverRow, now)),
@@ -306,6 +364,7 @@ export async function POST(request: NextRequest) {
               then coalesce(${analyticsAttributions.latestAttributionAt}, ${analyticsAttributions.createdAt})
               else ${now.toISOString()}::timestamptz end`,
             expiresAt,
+            ...openAiFields,
             ...(incomingStoryShare ? shareFields : {}),
             firstLandingPath:
               existingRow.firstLandingPath || existingRow.landingSlug || landingPath,

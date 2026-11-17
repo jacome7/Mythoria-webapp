@@ -34,6 +34,9 @@ import {
   type StoredAnalyticsContext,
 } from '../../lib/analytics/ecommerce';
 import { notificationClient } from '../../lib/notifications/client';
+import { conversions, type CreditPackageConversionInput } from '../../lib/openai-ads/events';
+import { enqueueAdConversion } from '../../lib/openai-ads/outbox';
+import { sanitizeAdContext, type AdContext } from '../../lib/openai-ads/types';
 import { creditPackagesService } from './credit-packages';
 
 type StripeClientConfig = NonNullable<ConstructorParameters<typeof Stripe>[1]>;
@@ -71,6 +74,8 @@ export interface CreateStripeCheckoutRequest extends CreateOrderRequest {
   analyticsConsent?: AnalyticsConsent;
   attributionId?: string;
   emailCampaignRecipientId?: string;
+  /** OpenAI Ads request context, stored as `metadata.ads` for the webhook-time `order_created`. */
+  adContext?: AdContext | null;
 }
 
 export type CalculatedOrderTotals = CreditOrderTotals;
@@ -110,6 +115,7 @@ interface StripeCheckoutMetadata {
     page_referrer?: string;
     engagement_time_msec?: number;
   };
+  ads?: AdContext;
   [key: string]: unknown;
 }
 
@@ -184,6 +190,29 @@ function mergeMetadata(
       ...(base.analytics || {}),
       ...(updates.analytics || {}),
     },
+  };
+}
+
+/**
+ * OpenAI Ads credit-package data for a payment order: the amount Stripe charges (VAT-inclusive,
+ * integer cents; Stripe's final total once known) and the GA4-compatible package id and name.
+ */
+export function buildCreditOrderConversionInput(order: PaymentOrder): CreditPackageConversionInput {
+  const metadata = order.metadata as StripeCheckoutMetadata | null;
+  const creditBundle = order.creditBundle as { credits?: number } | null;
+  const amountTotal = metadata?.stripe?.amountTotal;
+  const amountCents = typeof amountTotal === 'number' ? amountTotal : order.amount;
+  const items = metadata?.orderTotals?.itemsBreakdown ?? [];
+  const credits = metadata?.orderTotals?.totalCredits ?? creditBundle?.credits ?? 0;
+  return {
+    orderId: order.orderId,
+    amountCents: Math.max(0, Math.round(amountCents)),
+    currency: (order.currency || 'EUR').toUpperCase(),
+    packageKey: items.length
+      ? items.map((item) => `credit_package_${item.packageKey || item.packageId}`).join('+')
+      : `credit_package_legacy_${credits}`,
+    packageName: `${credits} Mythoria Credits`,
+    credits,
   };
 }
 
@@ -468,6 +497,7 @@ export const paymentService = {
         }),
       )
       .digest('hex');
+    const adContext = sanitizeAdContext(checkoutData.adContext);
     const order = await db.transaction(async (tx) => {
       await referralLock(tx, `checkout:${checkoutData.userId}:${attemptId}`);
       const [existing] = await tx
@@ -525,6 +555,7 @@ export const paymentService = {
                   },
                 }
               : {}),
+            ...(adContext ? { ads: adContext } : {}),
             stripe: {
               customerId,
             },
@@ -1351,6 +1382,25 @@ export const paymentService = {
             .values(outboxEntry)
             .onConflictDoNothing({ target: analyticsOutbox.dedupeKey });
         }
+      }
+
+      // OpenAI Ads `order_created` is sent regardless of analytics consent; identifiers in the
+      // stored ad context are only present when advertising consent was granted at checkout.
+      // Building the conversion from stored metadata must never roll the payment back.
+      try {
+        const adConversionInput = buildCreditOrderConversionInput(updatedOrder);
+        if (adConversionInput.amountCents > 0) {
+          await enqueueAdConversion(tx, {
+            conversion: conversions.orderCreated(adConversionInput),
+            authorId: updatedOrder.authorId,
+            adContext: sanitizeAdContext(metadata?.ads) ?? null,
+            occurredAt: completedAt,
+          });
+        }
+      } catch (adError) {
+        console.error('[AdConversionOutbox] order_created could not be built', {
+          error: adError instanceof Error ? adError.name : 'unknown',
+        });
       }
 
       console.log(

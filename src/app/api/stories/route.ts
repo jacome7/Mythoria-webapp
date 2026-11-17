@@ -1,7 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { db } from '@/db';
 import { storyService } from '@/db/services';
 import { getCurrentAuthor } from '@/lib/auth';
 import { linkReferralFromRequest } from '@/lib/referrals/http';
+import { resolveAdContextSafely } from '@/lib/openai-ads/context';
+import { conversions } from '@/lib/openai-ads/events';
+import { enqueueAdConversion } from '@/lib/openai-ads/outbox';
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
@@ -60,7 +64,17 @@ export async function POST(request: NextRequest) {
       dedicationMessage,
       status: initialStatus,
     });
-    return NextResponse.json({ story }, { status: 201 });
+    const conversion = conversions.storyCreationStarted(story.storyId);
+    await enqueueAdConversion(db, {
+      conversion,
+      authorId: author.authorId,
+      adContext: await resolveAdContextSafely({
+        headers: request.headers,
+        cookies: request.cookies,
+        authorId: author.authorId,
+      }),
+    });
+    return NextResponse.json({ story, adEventId: conversion.eventId }, { status: 201 });
   } catch (error) {
     console.error('Error creating story:', error);
     return NextResponse.json({ error: 'Failed to create story' }, { status: 500 });

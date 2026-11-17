@@ -5,6 +5,8 @@ import { useTranslations } from 'next-intl';
 import AudiobookGenerationProgress from '@/components/AudiobookGenerationProgress';
 import { getAvailableVoices, getRecommendedVoice, getTTSProvider } from '@/lib/voice-options';
 import { getGoogleAnalyticsContext } from '@/lib/analytics';
+import { conversions } from '@/lib/openai-ads/events';
+import { trackOpenAiAdsEvent } from '@/lib/openai-ads/pixel';
 
 interface AudiobookGenerationTriggerProps {
   storyId: string;
@@ -66,6 +68,13 @@ export default function AudiobookGenerationTrigger({
       // The response will be 202 Accepted, and the workflow will process asynchronously
       const result = await response.json();
       console.log('Audiobook generation started:', result);
+      if (typeof result?.adEventId === 'string' && result.adEventId) {
+        const runId = typeof result.runId === 'string' ? result.runId : '';
+        trackOpenAiAdsEvent({
+          ...conversions.audiobookRequested(runId),
+          eventId: result.adEventId,
+        });
+      }
 
       // The progress component will now start polling for updates
     } catch (error) {

@@ -2,6 +2,10 @@
 const valuesMock = jest.fn();
 const nothingMock = jest.fn();
 const transactionMock = jest.fn();
+const enqueueAdConversionMock = jest.fn();
+jest.mock('@/lib/openai-ads/outbox', () => ({
+  enqueueAdConversion: (...args: unknown[]) => enqueueAdConversionMock(...args),
+}));
 jest.mock('./index', () => ({
   db: {
     transaction: (...args: unknown[]) => transactionMock(...args),
@@ -62,6 +66,18 @@ describe('transactional signup producers', () => {
       }),
     );
     expect(nothingMock).toHaveBeenCalledWith({ target: analyticsOutbox.dedupeKey });
+    expect(enqueueAdConversionMock).toHaveBeenCalledWith(
+      expect.objectContaining({ insert: expect.any(Function) }),
+      expect.objectContaining({
+        conversion: expect.objectContaining({
+          eventType: 'registration_completed',
+          eventId: 'signup_clerk-1',
+        }),
+        authorId: 'author-1',
+        adContext: null,
+        occurredAt: created,
+      }),
+    );
   });
   it('webhook-first author creation records the same date and dedupe key', async () => {
     await authorService.createAuthor({
@@ -78,6 +94,13 @@ describe('transactional signup producers', () => {
         params: { method: 'google' },
       }),
     );
+    const [executor, input] = enqueueAdConversionMock.mock.calls[0];
+    expect(executor).toEqual(expect.objectContaining({ insert: expect.any(Function) }));
+    expect(input).toMatchObject({
+      conversion: { eventType: 'registration_completed', eventId: 'signup_clerk-1' },
+      authorId: 'author-1',
+      occurredAt: created,
+    });
   });
   it.each([undefined, new Date('2025-01-01').getTime(), NaN, now.getTime() + 1])(
     'can create a local author without claiming an unverifiable current signup: %p',
@@ -86,6 +109,7 @@ describe('transactional signup producers', () => {
       await authorService.syncUserOnSignIn({ id: 'clerk-1', createdAt });
       expect(transactionMock).toHaveBeenCalledTimes(1);
       expect(valuesMock).not.toHaveBeenCalled();
+      expect(enqueueAdConversionMock).not.toHaveBeenCalled();
     },
   );
   it('login of an existing author does not enqueue a new signup', async () => {
@@ -100,5 +124,6 @@ describe('transactional signup producers', () => {
     });
     expect(transactionMock).not.toHaveBeenCalled();
     expect(valuesMock).not.toHaveBeenCalled();
+    expect(enqueueAdConversionMock).not.toHaveBeenCalled();
   });
 });

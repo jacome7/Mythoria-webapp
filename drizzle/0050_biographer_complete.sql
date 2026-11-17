@@ -6,6 +6,26 @@ CREATE TABLE "biographer_admin_actions" (
 	"caller" text NOT NULL,
 	"operation" text NOT NULL,
 	"reason" text NOT NULL,
+	"payload" text NOT NULL,
+	"created_at" timestamp with time zone DEFAULT now() NOT NULL
+);
+--> statement-breakpoint
+CREATE TABLE "biographer_assets" (
+	"id" uuid PRIMARY KEY NOT NULL,
+	"project_id" uuid NOT NULL,
+	"participant_id" uuid NOT NULL,
+	"object_path" text NOT NULL,
+	"content_type" text NOT NULL,
+	"caption" text DEFAULT '' NOT NULL,
+	"included" boolean DEFAULT true NOT NULL,
+	"created_at" timestamp with time zone DEFAULT now() NOT NULL
+);
+--> statement-breakpoint
+CREATE TABLE "biographer_book_versions" (
+	"story_id" uuid PRIMARY KEY NOT NULL,
+	"project_id" uuid NOT NULL,
+	"revision" integer NOT NULL,
+	"snapshot" jsonb NOT NULL,
 	"created_at" timestamp with time zone DEFAULT now() NOT NULL
 );
 --> statement-breakpoint
@@ -15,12 +35,36 @@ CREATE TABLE "biographer_events" (
 	"created_at" timestamp with time zone DEFAULT now() NOT NULL
 );
 --> statement-breakpoint
+CREATE TABLE "biographer_invitations" (
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"project_id" uuid NOT NULL,
+	"participant_id" uuid NOT NULL,
+	"invite_hash" text NOT NULL,
+	"resume_hash" text,
+	"session_hash" text,
+	"session_expires_at" timestamp with time zone,
+	"expires_at" timestamp with time zone NOT NULL,
+	"claimed_at" timestamp with time zone,
+	"revoked_at" timestamp with time zone,
+	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
+	CONSTRAINT "biographer_invitations_invite_hash_unique" UNIQUE("invite_hash"),
+	CONSTRAINT "biographer_invitations_resume_hash_unique" UNIQUE("resume_hash"),
+	CONSTRAINT "biographer_invitations_session_hash_unique" UNIQUE("session_hash")
+);
+--> statement-breakpoint
 CREATE TABLE "biographer_participants" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"project_id" uuid NOT NULL,
 	"name" text NOT NULL,
+	"relationship" text DEFAULT '' NOT NULL,
+	"status" text DEFAULT 'invited' NOT NULL,
+	"access_version" integer DEFAULT 0 NOT NULL,
+	"reviewed_revision" integer DEFAULT 0 NOT NULL,
+	"contribution_revision" integer DEFAULT 0 NOT NULL,
+	"last_activity" timestamp with time zone,
+	"follow_up" text,
 	"role" text DEFAULT 'owner' NOT NULL,
-	"consent_at" timestamp with time zone DEFAULT now() NOT NULL
+	"consent_at" timestamp with time zone
 );
 --> statement-breakpoint
 CREATE TABLE "biographer_projects" (
@@ -88,7 +132,13 @@ CREATE TABLE "biographer_turns" (
 );
 --> statement-breakpoint
 ALTER TABLE "biographer_admin_actions" ADD CONSTRAINT "biographer_admin_actions_project_id_biographer_projects_id_fk" FOREIGN KEY ("project_id") REFERENCES "public"."biographer_projects"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "biographer_assets" ADD CONSTRAINT "biographer_assets_project_id_biographer_projects_id_fk" FOREIGN KEY ("project_id") REFERENCES "public"."biographer_projects"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "biographer_assets" ADD CONSTRAINT "biographer_assets_participant_id_biographer_participants_id_fk" FOREIGN KEY ("participant_id") REFERENCES "public"."biographer_participants"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "biographer_book_versions" ADD CONSTRAINT "biographer_book_versions_story_id_stories_story_id_fk" FOREIGN KEY ("story_id") REFERENCES "public"."stories"("story_id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "biographer_book_versions" ADD CONSTRAINT "biographer_book_versions_project_id_biographer_projects_id_fk" FOREIGN KEY ("project_id") REFERENCES "public"."biographer_projects"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "biographer_events" ADD CONSTRAINT "biographer_events_session_id_biographer_sessions_id_fk" FOREIGN KEY ("session_id") REFERENCES "public"."biographer_sessions"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "biographer_invitations" ADD CONSTRAINT "biographer_invitations_project_id_biographer_projects_id_fk" FOREIGN KEY ("project_id") REFERENCES "public"."biographer_projects"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "biographer_invitations" ADD CONSTRAINT "biographer_invitations_participant_id_biographer_participants_id_fk" FOREIGN KEY ("participant_id") REFERENCES "public"."biographer_participants"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "biographer_participants" ADD CONSTRAINT "biographer_participants_project_id_biographer_projects_id_fk" FOREIGN KEY ("project_id") REFERENCES "public"."biographer_projects"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "biographer_projects" ADD CONSTRAINT "biographer_projects_author_id_authors_author_id_fk" FOREIGN KEY ("author_id") REFERENCES "public"."authors"("author_id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "biographer_projects" ADD CONSTRAINT "biographer_projects_story_id_stories_story_id_fk" FOREIGN KEY ("story_id") REFERENCES "public"."stories"("story_id") ON DELETE set null ON UPDATE no action;--> statement-breakpoint
@@ -98,5 +148,6 @@ ALTER TABLE "biographer_sessions" ADD CONSTRAINT "biographer_sessions_project_id
 ALTER TABLE "biographer_sessions" ADD CONSTRAINT "biographer_sessions_participant_id_biographer_participants_id_fk" FOREIGN KEY ("participant_id") REFERENCES "public"."biographer_participants"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "biographer_turns" ADD CONSTRAINT "biographer_turns_project_id_biographer_projects_id_fk" FOREIGN KEY ("project_id") REFERENCES "public"."biographer_projects"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "biographer_turns" ADD CONSTRAINT "biographer_turns_participant_id_biographer_participants_id_fk" FOREIGN KEY ("participant_id") REFERENCES "public"."biographer_participants"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
-CREATE UNIQUE INDEX "biographer_owner_project_unique" ON "biographer_participants" USING btree ("project_id","role");--> statement-breakpoint
+CREATE UNIQUE INDEX "biographer_book_versions_revision_unique" ON "biographer_book_versions" USING btree ("project_id","revision");--> statement-breakpoint
+CREATE UNIQUE INDEX "biographer_owner_project_unique" ON "biographer_participants" USING btree ("project_id") WHERE "biographer_participants"."role" = 'owner';--> statement-breakpoint
 CREATE UNIQUE INDEX "biographer_segment_sequence_unique" ON "biographer_segments" USING btree ("project_id","turn_id","sequence");

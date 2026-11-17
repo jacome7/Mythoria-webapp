@@ -1,6 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { getEnvironmentConfig } from '@/config/environment';
+import { db } from '@/db';
+import { getCurrentAuthor } from '@/lib/auth';
+import { resolveAdContextSafely } from '@/lib/openai-ads/context';
+import { conversions } from '@/lib/openai-ads/events';
+import { enqueueAdConversion } from '@/lib/openai-ads/outbox';
 
 // Partnership application validation schema
 const PartnershipApplicationSchema = z.object({
@@ -19,6 +24,15 @@ const PartnershipApplicationSchema = z.object({
 
 // Get configuration
 const config = getEnvironmentConfig();
+
+/** The signed-in author, if any; the form is public, so failures resolve to anonymous. */
+async function optionalAuthorId(): Promise<string | null> {
+  try {
+    return (await getCurrentAuthor())?.authorId ?? null;
+  } catch {
+    return null;
+  }
+}
 
 export async function POST(request: NextRequest) {
   try {
@@ -124,10 +138,32 @@ export async function POST(request: NextRequest) {
     const ticketData = await ticketResponse.json();
     console.log('Partnership application ticket created successfully:', ticketData.id);
 
+    // OpenAI Ads conversion; never blocks or fails the submission.
+    let adEventId: string | undefined;
+    const ticketId =
+      typeof ticketData?.id === 'string' || typeof ticketData?.id === 'number'
+        ? String(ticketData.id)
+        : undefined;
+    if (ticketId) {
+      const authorId = await optionalAuthorId();
+      const adConversion = conversions.partnerApplication(ticketId);
+      adEventId = adConversion.eventId;
+      await enqueueAdConversion(db, {
+        conversion: adConversion,
+        authorId,
+        adContext: await resolveAdContextSafely({
+          headers: request.headers,
+          cookies: request.cookies,
+          authorId,
+        }),
+      });
+    }
+
     return NextResponse.json({
       success: true,
       message: 'Partnership application submitted successfully',
       ticketId: ticketData.id,
+      ...(adEventId ? { adEventId } : {}),
     });
   } catch (error) {
     console.error('Partnership application API error:', error);

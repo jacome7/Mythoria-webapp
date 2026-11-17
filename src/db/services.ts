@@ -21,6 +21,8 @@ import {
 import { eq, and, or, count, desc, sql, asc, max } from 'drizzle-orm';
 import { ClerkUserForSync } from '@/types/clerk';
 import { clerkCreationTime, canRecoverSignUp, signUpOutboxEntry } from '@/lib/analytics/signup';
+import { conversions } from '@/lib/openai-ads/events';
+import { enqueueAdConversion } from '@/lib/openai-ads/outbox';
 import { pricingService } from './services/pricing';
 import { CharacterRole, CharacterAge, isValidCharacterAge } from '../types/character-enums';
 import { toAbsoluteImageUrl, toRelativeImagePath } from '../utils/image-url';
@@ -136,6 +138,13 @@ export const authorService = {
             params: { method: authorData.signUpMethod || 'unknown' },
           })
           .onConflictDoNothing({ target: analyticsOutbox.dedupeKey });
+        // No browser context in the Clerk webhook: delivery enriches it from the attribution.
+        await enqueueAdConversion(tx, {
+          conversion: conversions.registrationCompleted(authorData.clerkUserId),
+          authorId: author.authorId,
+          adContext: null,
+          occurredAt,
+        });
       }
 
       return author;
@@ -228,6 +237,12 @@ export const authorService = {
                 authorId: created.authorId,
               })
               .onConflictDoNothing({ target: analyticsOutbox.dedupeKey });
+            await enqueueAdConversion(tx, {
+              conversion: conversions.registrationCompleted(clerkUser.id),
+              authorId: created.authorId,
+              adContext: null,
+              occurredAt,
+            });
           }
           return created;
         });
@@ -1170,15 +1185,24 @@ export const promotionCodeService = {
     const ledger = await creditService.addCredits(authorId, promo.creditAmount, 'voucher');
 
     // Record redemption
-    await db.insert(promotionCodeRedemptions).values({
-      promotionCodeId: promo.promotionCodeId,
-      authorId,
-      creditsGranted: promo.creditAmount,
-      creditLedgerEntryId: ledger.id,
-    });
+    const [redemption] = await db
+      .insert(promotionCodeRedemptions)
+      .values({
+        promotionCodeId: promo.promotionCodeId,
+        authorId,
+        creditsGranted: promo.creditAmount,
+        creditLedgerEntryId: ledger.id,
+      })
+      .returning({ redemptionId: promotionCodeRedemptions.promotionCodeRedemptionId });
 
     const balance = await creditService.getAuthorCreditBalance(authorId);
-    return { ok: true as const, code, creditsGranted: promo.creditAmount, balance };
+    return {
+      ok: true as const,
+      code,
+      creditsGranted: promo.creditAmount,
+      balance,
+      redemptionId: redemption?.redemptionId,
+    };
   },
 };
 

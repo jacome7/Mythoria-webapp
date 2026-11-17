@@ -7,6 +7,8 @@ import { useTranslations } from 'next-intl';
 import { useSearchParams } from 'next/navigation';
 import { useUser } from '@clerk/nextjs';
 import { useRouter } from '@/i18n/routing';
+import { conversions } from '@/lib/openai-ads/events';
+import { trackOpenAiAdsEvent } from '@/lib/openai-ads/pixel';
 
 interface ContactFormProps {
   className?: string;
@@ -106,6 +108,13 @@ function ContactFormContent({ className = '' }: ContactFormProps) {
       const result = await response.json();
 
       if (result.success) {
+        if (typeof result.adEventId === 'string' && result.adEventId) {
+          const ticketId = result.ticketId == null ? '' : String(result.ticketId);
+          trackOpenAiAdsEvent({
+            ...conversions.contactSubmitted(ticketId),
+            eventId: result.adEventId,
+          });
+        }
         setResponseMessage(tContactForm('success.ticketCreated'));
         setIsSuccess(true);
         setShowModal(true);

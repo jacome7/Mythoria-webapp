@@ -10,6 +10,8 @@ import ProgressIndicator from '@/components/ProgressIndicator';
 import StoryGenerationProgress from '@/components/StoryGenerationProgress';
 import { getGoogleAnalyticsContext, trackStoryCreation } from '@/lib/analytics';
 import { ensureConsentChoice } from '@/lib/consent';
+import { conversions } from '@/lib/openai-ads/events';
+import { trackOpenAiAdsEvent } from '@/lib/openai-ads/pixel';
 import { getStep1Data } from '@/lib/story-session';
 import { fetchStoryData } from '@/lib/story';
 import { useStorySessionGuard } from '@/hooks/useStorySessionGuard';
@@ -202,6 +204,10 @@ function Step5Page() {
       const result = await response.json();
       console.log('Story generation started:', result);
       setUserCredits(result.remainingCredits);
+      if (typeof result?.adEventId === 'string' && result.adEventId) {
+        const runId = typeof result.runId === 'string' ? result.runId : '';
+        trackOpenAiAdsEvent({ ...conversions.storyLead(runId), eventId: result.adEventId });
+      }
 
       // Show the progress component instead of navigating to next step
       setStoryGenerationStarted(true);

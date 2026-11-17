@@ -49,6 +49,12 @@ describe('/api/profile experimental preference', () => {
     expect((await result.json()).author.experimentalFeaturesEnabled).toBe(true);
     expect(clerk).not.toHaveBeenCalled();
   });
+  it('returns the account creation time after a PATCH', async () => {
+    const createdAt = new Date('2026-11-17T10:00:00.000Z');
+    returning.mockResolvedValue([{ ...author, experimentalFeaturesEnabled: true, createdAt }]);
+    const result = await PATCH(request(true));
+    expect((await result.json()).author.createdAt).toEqual(createdAt);
+  });
   it('persists an explicit opt-out', async () => {
     returning.mockResolvedValue([{ ...author, experimentalFeaturesEnabled: false }]);
     const result = await PATCH(request(false));

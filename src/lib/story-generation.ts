@@ -13,6 +13,9 @@ import { pricingService } from '@/db/services/pricing';
 import type { ClientAnalyticsContext } from '@/lib/analytics/ecommerce';
 import type { StoryIntent } from '@/constants/intents';
 import { analyticsReference } from '@/lib/analytics/reference';
+import { conversions } from '@/lib/openai-ads/events';
+import { enqueueAdConversion } from '@/lib/openai-ads/outbox';
+import type { AdContext } from '@/lib/openai-ads/types';
 
 export interface StartStoryGenerationInput {
   authorId: string;
@@ -28,6 +31,11 @@ export interface StartStoryGenerationInput {
   analyticsContext?: ClientAnalyticsContext;
   analyticsConsent?: AnalyticsConsent;
   productProfile?: 'biographer';
+  /**
+   * OpenAI Ads request context. When omitted (e.g. MCP, which has no browser or consent context)
+   * no `lead_created` conversion is enqueued.
+   */
+  adContext?: AdContext | null;
 }
 
 export interface StartStoryGenerationResult {
@@ -186,6 +194,14 @@ export async function startStoryGeneration(
           credits_spent: pricing.total,
           ...(input.primaryIntent ? { primary_intent: input.primaryIntent } : {}),
         },
+      });
+    }
+
+    if (input.adContext !== undefined) {
+      await enqueueAdConversion(tx, {
+        conversion: conversions.storyLead(runId),
+        authorId: input.authorId,
+        adContext: input.adContext,
       });
     }
 

@@ -108,6 +108,10 @@
         "title": "Google Cloud",
         "description": "Toutes les bases de données et le stockage de fichiers se trouvent dans la multi-région Europe. Google s'appuie sur les clauses contractuelles standard de la Commission pour tout transfert en dehors de l'EEE."
       },
+      "openaiAds": {
+        "title": "OpenAI (ChatGPT Ads)",
+        "description": "Partenaire de mesure des publicités ChatGPT. Lorsque vous avez accepté les cookies publicitaires, nous partageons des événements de conversion (par exemple, inscription, création d'histoire, achats de crédits) et, avec ce consentement, des identifiants hachés (SHA-256), comme votre e-mail, ainsi que votre adresse IP et l'agent utilisateur de votre navigateur, afin de mesurer la performance des publicités. Sans consentement publicitaire, nous n'envoyons que des compteurs de conversions anonymes, sans aucun identifiant."
+      },
       "note": "Aucun autre tiers ne reçoit des données identifiables, sauf si vous intégrez explicitement les services facultatifs (par exemple, le paiement, la liste de diffusion), auquel cas ces processeurs seront répertoriés ici avant l'activation."
     },
     "section6": {
@@ -121,7 +125,7 @@
         "title": "Comment nous gérons vos choix",
         "description": "Nous utilisons Google Consent Mode v2 pour respecter vos préférences de confidentialité. Cela signifie :",
         "analytics": "Les cookies d'analyse nous aident à voir comment les visiteurs utilisent le site (pages visitées, temps passé). Lorsqu'ils sont refusés, nous ne recevons que des données anonymes et agrégées.",
-        "advertising": "Les cookies publicitaires aident à mesurer l'efficacité des campagnes et à afficher des publicités pertinentes. Lorsqu'ils sont refusés, aucune donnée publicitaire n'est collectée ni partagée.",
+        "advertising": "Les cookies publicitaires aident à mesurer l'efficacité des campagnes et à afficher des publicités pertinentes. Lorsqu'ils sont refusés, aucun cookie publicitaire n'est déposé et aucune donnée personnelle publicitaire (identifiants, données de contact hachées, adresse IP, agent utilisateur) n'est collectée ni partagée. Nous pouvons envoyer aux partenaires publicitaires uniquement des compteurs de conversions anonymes, sans identifiant, pour mesurer la performance des campagnes.",
         "essential": "Les cookies essentiels vous maintiennent connecté et le site sécurisé. Ils sont toujours actifs car sans eux le site ne fonctionnerait pas correctement."
       },
       "table": {
@@ -152,6 +156,18 @@
             "cookie": "_gcl_* (Google Ads)",
             "purpose": "Mesurer les conversions publicitaires",
             "expiry": "90 jours",
+            "consent": "Oui"
+          },
+          "oppref": {
+            "cookie": "__oppref (OpenAI / ChatGPT Ads)",
+            "purpose": "Stocke la référence du clic publicitaire issue de l'URL de la page d'atterrissage pour attribuer les conversions aux publicités ChatGPT",
+            "expiry": "30 jours",
+            "consent": "Oui"
+          },
+          "obref": {
+            "cookie": "__obref (OpenAI / ChatGPT Ads)",
+            "purpose": "Référence aléatoire du navigateur utilisée pour mesurer les conversions publicitaires sur notre site",
+            "expiry": "365 jours",
             "consent": "Oui"
           },
           "consent": {
@@ -230,6 +246,6 @@
     "links": {
       "deleteAccount": "Supprimer le compte / Eliminar Conta"
     },
-    "lastUpdated": "Dernière mise à jour : 30 août 2026"
+    "lastUpdated": "Dernière mise à jour : 16 novembre 2026"
   }
 }

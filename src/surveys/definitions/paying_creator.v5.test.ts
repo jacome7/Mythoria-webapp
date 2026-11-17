@@ -2,7 +2,6 @@ import { applyAudience } from '@/lib/surveys/audience';
 import type { SurveyDefinition } from '@/lib/surveys/definition-schema';
 import { validateSurveyDefinition } from '@/lib/surveys/validate-definition';
 import { SURVEY_DEFINITIONS } from './index';
-import { payingCreatorV4 } from './paying_creator.v4';
 import { payingCreatorV5 } from './paying_creator.v5';
 import { activationNoStoryV2 } from './activation_no_story.v2';
 
@@ -13,7 +12,6 @@ type Q = Record<string, unknown> & {
 };
 
 const LOCALES = ['en-US', 'pt-PT', 'es-ES', 'fr-FR', 'de-DE'];
-const v4Questions = payingCreatorV4.questions as unknown as Q[];
 const v5Questions = payingCreatorV5.questions as unknown as Q[];
 const byId = (questions: Q[], id: string) => questions.find((q) => q.id === id)!;
 const optionById = (question: Q, id: string) => question.options!.find((o) => o.id === id)!;
@@ -24,33 +22,20 @@ const MULTI_IDS = ['C01', 'C05B', 'C07', 'C08', 'C10'];
 const EXCLUSIVE_NOTHING_IDS = ['C07', 'C08', 'C10'];
 
 describe('paying_creator v5', () => {
-  it('is registered next to v1-v4 and validates against the schema', () => {
+  it('is registered next to v3 and validates against the schema', () => {
     const versions = SURVEY_DEFINITIONS.filter((d) => d.id === 'paying_creator').map(
       (d) => d.version,
     );
-    expect(versions).toEqual([1, 2, 3, 4, 5]);
+    expect(versions).toEqual([3, 5]);
     expect(payingCreatorV5.id).toBe('paying_creator');
     expect(payingCreatorV5.version).toBe(5);
     const result = validateSurveyDefinition(payingCreatorV5);
     expect(result.ok ? [] : result.errors).toEqual([]);
   });
 
-  it('adds only C05Z, right after C05B, and keeps every other question in v4 order', () => {
+  it('places C05Z right after C05B', () => {
     const ids = v5Questions.map((q) => q.id);
-    expect(ids.filter((id) => id !== 'C05Z')).toEqual(v4Questions.map((q) => q.id));
     expect(ids.indexOf('C05Z')).toBe(ids.indexOf('C05B') + 1);
-  });
-
-  it('leaves every v4 question deep-equal in v5', () => {
-    for (const q4 of v4Questions) {
-      expect(byId(v5Questions, q4.id)).toEqual(q4);
-    }
-  });
-
-  it('keeps definition-level fields identical to v4 apart from the version and questions', () => {
-    const { version: _v4, questions: _q4, ...rest4 } = payingCreatorV4;
-    const { version: _v5, questions: _q5, ...rest5 } = payingCreatorV5;
-    expect(rest5).toEqual(rest4);
   });
 
   describe('C05Z', () => {
@@ -152,11 +137,8 @@ describe('paying_creator v5', () => {
     });
   });
 
-  describe.each([
-    ['v4', payingCreatorV4],
-    ['v5', payingCreatorV5],
-  ])('multi-answer rules (%s)', (_name, def) => {
-    const questions = def.questions as unknown as Q[];
+  describe('multi-answer rules', () => {
+    const questions = v5Questions;
 
     it.each(MULTI_IDS)('%s is multi_choice without help text', (id) => {
       expect(byId(questions, id).type).toBe('multi_choice');

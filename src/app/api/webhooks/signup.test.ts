@@ -4,6 +4,10 @@ const valuesMock = jest.fn();
 const conflictMock = jest.fn();
 const selectMock = jest.fn();
 const createAuthorMock = jest.fn();
+const enqueueAdConversionMock = jest.fn();
+jest.mock('@/lib/openai-ads/outbox', () => ({
+  enqueueAdConversion: (...args: unknown[]) => enqueueAdConversionMock(...args),
+}));
 jest.mock('svix', () => ({
   Webhook: jest.fn(() => ({ verify: (...args: unknown[]) => verifyMock(...args) })),
 }));
@@ -82,6 +86,19 @@ describe('Clerk signup producer', () => {
     expect(query.params).toContain(created.toISOString());
     expect(set).not.toHaveProperty('occurredAt');
     expect(set).not.toHaveProperty('claimToken');
+    expect(enqueueAdConversionMock).toHaveBeenCalledTimes(2);
+    expect(enqueueAdConversionMock).toHaveBeenCalledWith(
+      expect.anything(),
+      expect.objectContaining({
+        conversion: expect.objectContaining({
+          eventType: 'registration_completed',
+          eventId: 'signup_clerk-1',
+        }),
+        authorId: 'author-1',
+        adContext: null,
+        occurredAt: created,
+      }),
+    );
   });
   it('passes Clerk creation time into transactional author creation', async () => {
     selectMock.mockReturnValueOnce(rows([]));
@@ -95,6 +112,7 @@ describe('Clerk signup producer', () => {
     async (value) => {
       expect((await POST(request(value))).status).toBe(200);
       expect(valuesMock).not.toHaveBeenCalled();
+      expect(enqueueAdConversionMock).not.toHaveBeenCalled();
     },
   );
 });

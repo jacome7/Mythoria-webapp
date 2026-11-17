@@ -348,57 +348,15 @@
     {
       "idx": 49,
       "version": "7",
-      "when": 1794862474523,
-      "tag": "0049_biographer_phase_one",
+      "when": 1794870554717,
+      "tag": "0049_openai_ads_conversions",
       "breakpoints": true
     },
     {
       "idx": 50,
       "version": "7",
-      "when": 1794862527513,
-      "tag": "0050_biographer_photo_assets",
-      "breakpoints": true
-    },
-    {
-      "idx": 51,
-      "version": "7",
-      "when": 1794862618773,
-      "tag": "0051_biographer_admin_idempotency",
-      "breakpoints": true
-    },
-    {
-      "idx": 52,
-      "version": "7",
-      "when": 1794907310363,
-      "tag": "0052_biographer_book_versions",
-      "breakpoints": true
-    },
-    {
-      "idx": 53,
-      "version": "7",
-      "when": 1794908143039,
-      "tag": "0053_biographer_photo_inclusion",
-      "breakpoints": true
-    },
-    {
-      "idx": 54,
-      "version": "7",
-      "when": 1794908792512,
-      "tag": "0054_biographer_collaboration",
-      "breakpoints": true
-    },
-    {
-      "idx": 55,
-      "version": "7",
-      "when": 1794910299834,
-      "tag": "0055_biographer_contributor_consent",
-      "breakpoints": true
-    },
-    {
-      "idx": 56,
-      "version": "7",
-      "when": 1794910316520,
-      "tag": "0056_biographer_session_expiry",
+      "when": 1794923488014,
+      "tag": "0050_biographer_complete",
       "breakpoints": true
     }
   ]

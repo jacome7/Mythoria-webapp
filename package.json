@@ -25,6 +25,8 @@
     "i18n:prune:pt-PT:common": "tsx scripts/prune-unused-keys.ts pt-PT common.json",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "tsx -r dotenv/config ./src/db/migrate.ts",
+    "db:biographer": "node --import tsx scripts/biographer-migration.ts",
+    "db:biographer:rehearse": "node scripts/rehearse-biographer-migration.cjs",
     "db:push": "drizzle-kit push",
     "db:reset": "tsx -r dotenv/config ./src/db/reset.ts",
     "db:setup": "npm run db:reset && npm run db:push",

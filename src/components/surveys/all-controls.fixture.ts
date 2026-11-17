@@ -18,16 +18,17 @@ const t = (
 const OTHER = t('Something else', 'Outra coisa', 'Otra cosa', 'Autre chose', 'Etwas anderes');
 
 /**
- * QA / demo survey. Never offered to customers (`internalOnly`).
+ * Test-only fixture: NOT a published survey. It is deliberately absent from
+ * `src/surveys/definitions/index.ts`, so `surveys:publish` never writes it to the database.
  * Exercises every question type, every option flag and every branching feature
  * (equals, in, contains, gte, lt, answered, not_answered, `all`, `any`, screen groups).
  */
-export const demoAllControlsV1 = {
+export const allControlsFixture = {
   schemaVersion: 1,
-  id: 'demo_all_controls',
+  id: 'test_all_controls',
   version: 1,
   purpose:
-    'Internal QA fixture that exercises every survey control, option flag and branching feature. Not shown to customers.',
+    'Test fixture that exercises every survey control, option flag and branching feature. Never published.',
   title: t(
     'Reading habits (demo)',
     'Hábitos de leitura (demonstração)',

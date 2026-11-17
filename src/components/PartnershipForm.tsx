@@ -7,6 +7,8 @@ import { useUser } from '@clerk/nextjs';
 import NextImage from 'next/image';
 import { useTranslations } from 'next-intl';
 import { useRouter } from '@/i18n/routing';
+import { conversions } from '@/lib/openai-ads/events';
+import { trackOpenAiAdsEvent } from '@/lib/openai-ads/pixel';
 
 interface PartnershipFormProps {
   className?: string;
@@ -234,6 +236,13 @@ const PartnershipForm = ({ className = '' }: PartnershipFormProps) => {
       const result = await response.json();
 
       if (response.ok && result.success) {
+        if (typeof result.adEventId === 'string' && result.adEventId) {
+          const ticketId = result.ticketId == null ? '' : String(result.ticketId);
+          trackOpenAiAdsEvent({
+            ...conversions.partnerApplication(ticketId),
+            eventId: result.adEventId,
+          });
+        }
         setResponseMessage(t('successMessage'));
         setIsSuccess(true);
         setShowModal(true);

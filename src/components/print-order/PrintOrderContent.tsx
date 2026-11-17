@@ -8,6 +8,8 @@ import Link from 'next/link';
 import dynamic from 'next/dynamic';
 import { type Address as AddressType } from '@/components/AddressCard';
 import { getGoogleAnalyticsContext, trackPaidAction } from '@/lib/analytics';
+import { conversions } from '@/lib/openai-ads/events';
+import { trackOpenAiAdsEvent } from '@/lib/openai-ads/pixel';
 import type { PaymentOrderDetails } from '@/components/print-order/steps/PaymentStep';
 
 // Lazy load step components
@@ -162,6 +164,13 @@ export default function PrintOrderContent({ storyId }: PrintOrderContentProps) {
           story_id: story.storyId,
           credits_spent: totalCost,
         });
+        if (typeof data.adEventId === 'string' && data.adEventId) {
+          const printRequestId = typeof data.request?.id === 'string' ? data.request.id : '';
+          trackOpenAiAdsEvent({
+            ...conversions.printOrderRequested(printRequestId, numberOfCopies),
+            eventId: data.adEventId,
+          });
+        }
         // Redirect to my-stories instead of confirmation step
         router.push(`/${locale}/my-stories`);
       } else {

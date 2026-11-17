@@ -17,10 +17,21 @@ Updated 2026-11-17. Both phases are implemented in development branches; activat
 - Web App production compilation and static page generation passed using `next build --webpack`. The default Turbopack build cannot resolve the shared external node_modules symlink in these isolated worktrees. Standalone tracing warns about external shared dependencies; this is not a verified deployable worktree image. Use a normal local npm install in CI/container builds.
 - An independent Astra review found and guided fixes for pause/checkpoint races, failed local write recovery, cross-tab contributor binding, stale proposal/review revisions, private image telemetry and closed-participant transcription admission. Focused regression tests cover those corrections.
 
+### Migration recovery branch checks (2026-11-17)
+
+- Merged WebApp master `f6508e3e` into the existing feature working directory. Resolved the unpublished migration-number collision while preserving deployed master's `0049` SQL and snapshot exactly.
+- Full merged WebApp Jest suite: 211 suites / 1,625 tests passed; 2 suites / 13 tests skipped. The new master Step 5 Ads tests now mock the story-scoped pricing URL introduced by Biographer.
+- Full ESLint, strict TypeScript, Prettier and five-locale parity passed. Environment parity reports missing local runtime settings because the feature worktree intentionally has no production environment file; it is not a configured end-to-end test server.
+- The guarded read-only production preflight passed, including the applied Ads baseline and only `0050_biographer_complete` pending. No apply command was run.
+- An embedded PostgreSQL 17.5 rehearsal executed the exact generated SQL and verified atomic rollback, ten tables, 17 validated foreign keys, unchanged synthetic existing story and owner/contributor uniqueness behavior. This does not establish Cloud SQL concurrent-lock or runtime-role behavior.
+- An independent Astra review checked the recovery code and repeated the offline rehearsal; it required an explicit search path, deployment/migration freeze and runtime-role grant verification. The code/runbook include those corrections.
+
 ## Not validated or activated
 
 No migration, deployment, feature activation or shared/production database fixture was run. Worktrees intentionally do not inherit production environment files; environment checks report missing runtime configuration. Authenticated Playwright coverage is authored but has not been run against an isolated, configured server.
 
-Before launch, provision an isolated database, review/apply migrations there and run real concurrent claim/lease/upload tests. Verify private GCS IAM, licensed research entitlement, exact Gemini 3.8 Live EU/avatar access, mobile streaming playback, wake-lock lifecycle, dialect quality, actual modality costs and a full approximately 20,000-word ebook/audio/print journey.
+Use the [database recovery and testing plan](biographer-database-rollout.md), which preserves applied master history and introduces `0050_biographer_complete`. Its PostgreSQL 17.5 embedded rehearsal verifies SQL, transactional rollback, existing synthetic-story preservation and owner/contributor constraints without another Cloud SQL database. A read-only check against the existing production database passes for the corrected sequence. No feature migration has been applied.
+
+Before launch, use free local PostgreSQL with synthetic data for concurrent claim/lease/upload tests. A dedicated manual smoke test on the shared database is a separate controlled step after migration authorization; do not run fixtures or destructive suites there. Verify private GCS IAM, licensed research entitlement, exact Gemini 3.8 Live EU/avatar access, mobile streaming playback, wake-lock lifecycle, dialect quality, actual modality costs and a full approximately 20,000-word ebook/audio/print journey.
 
 Paid-book source deletion currently fails closed and directs the owner to support. Automatic cancellation and credit compensation for source deletion is unfinished; do not enable public rollout until that policy and implementation are completed. Orphan cleanup is implemented as a separate dry-run-by-default command, but has not been executed against a real bucket/database.

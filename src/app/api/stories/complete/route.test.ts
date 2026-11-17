@@ -19,6 +19,15 @@ jest.mock('@/lib/analytics/server-context', () => ({
   resolveServerAnalyticsContext: (...args: unknown[]) => resolveServerAnalyticsContextMock(...args),
 }));
 
+const mockAdContext = {
+  adConsent: 'denied',
+  sourceUrl: 'https://mythoria.pt',
+  capturedAt: '2026-11-16T00:00:00.000Z',
+};
+jest.mock('@/lib/openai-ads/context', () => ({
+  resolveAdContextSafely: jest.fn(async () => mockAdContext),
+}));
+
 import type { NextRequest } from 'next/server';
 import { POST } from './route';
 
@@ -68,12 +77,14 @@ describe('POST /api/stories/complete', () => {
     await expect(response.json()).resolves.toMatchObject({
       status: 'queued',
       remainingCredits: 7,
+      adEventId: 'story_33333333-3333-4333-8333-333333333333',
     });
     expect(startStoryGenerationMock).toHaveBeenCalledWith(
       expect.objectContaining({
         authorId: 'author-1',
         clerkUserId: 'user-1',
         idempotencyKey: validBody.idempotencyKey,
+        adContext: mockAdContext,
       }),
     );
   });
