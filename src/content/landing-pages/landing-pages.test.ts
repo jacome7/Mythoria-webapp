@@ -257,7 +257,7 @@ describe('landing page content registry', () => {
     );
     expect(page?.templateIcons?.sampleChapter?.src).toBe('/Papercut_icons/openBook.webp');
     expect(page?.templateIcons?.professionalPanel?.src).toBe(
-      '/Papercut_icons/fa-heart-business-family-papercut.png',
+      '/Papercut_icons/fa-heart-business-family-papercut.webp',
     );
     expect(page?.templateIcons?.safetyNote?.src).toBe(
       '/Papercut_icons/fa-exclamation-triangle-papercut.webp',
@@ -331,6 +331,19 @@ describe('landing page content registry', () => {
     expect(serialized).not.toContain('comprador B2B');
     expect(serialized).not.toContain('produto premium');
     expect(serialized).not.toContain('programador');
+  });
+
+  it('uses an existing family icon in both landing pages', () => {
+    const autism = getLandingPageBySlug('livro-personalizado-criancas-autistas');
+    const workshops = getLandingPageBySlug('workshops-criancas');
+    const icon = '/Papercut_icons/fa-heart-business-family-papercut.webp';
+
+    expect(autism?.templateIcons?.professionalPanel?.src).toBe(icon);
+    expect(workshops?.templateIcons?.professionalPanel?.src).toBe(icon);
+    expect(workshops?.workshop?.businessBenefits.items.some((item) => item.iconSrc === icon)).toBe(
+      true,
+    );
+    expect(existsSync(join(process.cwd(), 'public', icon.slice(1)))).toBe(true);
   });
 
   it('builds localized landing page index links from the registry', () => {
