@@ -41,13 +41,13 @@ Visitors can arrive through **intent URLs** such as:
 
 These links record the intent and (optionally) the recipient in a cookie, then redirect the visitor to the localized homepage. The hero uses this context to choose the paper-cut **composition** to display (via `src/components/papercut/registry.ts`).
 
-| Resolved intent                                             | Homepage composition        | Shared site theme |
-| ----------------------------------------------------------- | --------------------------- | ----------------- |
-| Empty or invalid, or `christmas`                            | `christmas`                 | Christmas         |
-| `kids` or another valid intent without a custom composition | `kids_fantasy`              | Kids              |
-| `sports_teams`, `romance`, or `grandparents`                | Matching custom composition | Kids              |
+| Resolved intent                           | Homepage composition        | Shared site theme |
+| ----------------------------------------- | --------------------------- | ----------------- |
+| `christmas`                               | `christmas`                 | Christmas         |
+| `sports_teams`, `romance`, `grandparents` | Matching custom composition | Kids              |
+| Empty, invalid, or other valid intent     | `kids_fantasy`              | Kids              |
 
-A valid `?intent=<value>` on a localized homepage or landing page takes precedence. A recognized landing page can provide its own intent. Both sources persist valid context in the 24-hour cookie. Other routes use the stored context. The root layout resolves the initial theme and marks the document with `data-website-theme`; the shared provider keeps the cookie, homepage hero, and sitewide theme in sync during client navigation. With no valid stored selection, Christmas appears as a visual default. The hero CTA preserves its previous story-creation destination in that case. Selecting Christmas explicitly makes `christmas` the hero CTA's story intent.
+A valid `?intent=<value>` on a localized homepage or landing page takes precedence. A recognized landing page can provide its own intent. Both sources persist valid context in the 24-hour cookie. Other routes use the stored context. The root layout resolves the initial theme and marks the document with `data-website-theme`. The shared provider keeps the cookie, homepage hero, and sitewide theme in sync during client navigation. Visitors without a valid intent see Kids. The `/i/christmas` campaign link selects the Christmas theme and sets the hero CTA's story intent to `christmas`.
 
 The paper-cut illustrations in shared surfaces and homepage sections follow the sitewide theme. The homepage gallery uses the resolved campaign intent and recipient to prioritize sample books.
 

@@ -3,9 +3,14 @@ import { STORY_INTENTS } from '@/constants/intents';
 import { resolveComposition } from './registry';
 
 describe('homepage theme precedence', () => {
-  it.each([undefined, null, 'invalid', ' Christmas '])('uses Christmas for %s', (intent) => {
-    expect(resolveWebsiteTheme(intent)).toBe('christmas');
-    expect(resolveComposition(intent).id).toBe('christmas');
+  it.each([undefined, null, 'invalid'])('defaults to Kids for %s', (intent) => {
+    expect(resolveWebsiteTheme(intent)).toBe('kids');
+    expect(resolveComposition(intent).id).toBe('kids_fantasy');
+  });
+
+  it('uses Christmas for the explicit Christmas intent', () => {
+    expect(resolveWebsiteTheme(' Christmas ')).toBe('christmas');
+    expect(resolveComposition(' Christmas ').id).toBe('christmas');
   });
 
   it.each(STORY_INTENTS.filter((intent) => intent !== 'christmas'))(

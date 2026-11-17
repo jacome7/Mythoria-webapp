@@ -25,15 +25,17 @@ function collectHydrationErrors(page: Page): string[] {
 }
 
 test.describe('Homepage hero — default composition', () => {
-  test('renders the generic headline with Christmas art and no campaign intent', async ({
-    page,
-  }) => {
+  test('renders the generic headline with Kids art and no campaign intent', async ({ page }) => {
     await page.goto('/en-US', { waitUntil: 'domcontentloaded' });
 
     const hero = page.locator('section.papercut-hero');
     await expect(hero).toBeVisible();
     await expect(hero.locator('h1')).toHaveText('Every story starts with you');
-    await expect(page.locator('html')).toHaveAttribute('data-website-theme', 'christmas');
+    await expect(page.locator('html')).toHaveAttribute('data-website-theme', 'kids');
+    await expect(hero.locator('.pc-person-slide img').first()).toHaveAttribute(
+      'src',
+      /kids_fantasy/,
+    );
     await expect(hero.getByRole('link', { name: 'Write your own story' })).toHaveAttribute(
       'href',
       /primaryIntent(?:%3D|=)kids_adventures/,
@@ -53,6 +55,21 @@ test.describe('Homepage hero — default composition', () => {
     await page.goto('/en-US', { waitUntil: 'networkidle' });
     expect(failed, `404s on homepage assets:\n${failed.join('\n')}`).toHaveLength(0);
   });
+});
+
+test('Christmas campaign persists on Get Inspired without exposing the public story archive', async ({
+  page,
+}) => {
+  await page.goto('/pt-PT?intent=christmas', { waitUntil: 'domcontentloaded' });
+  await expect(page.locator('html')).toHaveAttribute('data-website-theme', 'christmas');
+  await expect(page.locator('.pc-person-slide img').first()).toHaveAttribute('src', /christmas/);
+
+  await page.locator('header a[href="/pt-PT/get-inspired"]:visible').first().click();
+  await expect(page).toHaveURL(/\/pt-PT\/get-inspired$/);
+  await page.reload({ waitUntil: 'domcontentloaded' });
+  await expect(page.locator('html')).toHaveAttribute('data-website-theme', 'christmas');
+  await expect(page.getByRole('heading', { name: 'Histórias em Destaque' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Mais histórias públicas' })).toHaveCount(0);
 });
 
 test.describe('Homepage hero — mobile motion preferences', () => {
@@ -113,7 +130,7 @@ test.describe('Homepage hero — sports_teams via ?intent= query param', () => {
     await page.goto('/en-US?intent=bogus_unknown_intent', { waitUntil: 'domcontentloaded' });
     const hero = page.locator('section.papercut-hero');
     await expect(hero).toBeVisible();
-    await expect(page.locator('html')).toHaveAttribute('data-website-theme', 'christmas');
+    await expect(page.locator('html')).toHaveAttribute('data-website-theme', 'kids');
   });
 });
 
@@ -149,7 +166,7 @@ test.describe('Homepage hero — sports_teams via /i/ cookie flow', () => {
     await page.goto('/en-US', { waitUntil: 'domcontentloaded' });
     const h1 = page.locator('section.papercut-hero h1');
     await expect(h1).toBeVisible();
-    await expect(page.locator('html')).toHaveAttribute('data-website-theme', 'christmas');
+    await expect(page.locator('html')).toHaveAttribute('data-website-theme', 'kids');
   });
 });
 
@@ -198,7 +215,7 @@ test.describe('Homepage hero — landing page intent handoff', () => {
     page,
   }) => {
     const hydrationErrors = collectHydrationErrors(page);
-    await page.goto('/pt-PT', { waitUntil: 'networkidle' });
+    await page.goto('/pt-PT?intent=christmas', { waitUntil: 'networkidle' });
     await expect(page.locator('html')).toHaveAttribute('data-website-theme', 'christmas');
 
     const documentRequests: string[] = [];

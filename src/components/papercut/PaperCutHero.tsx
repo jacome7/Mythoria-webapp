@@ -13,7 +13,6 @@ import PersonCarousel from './PersonCarousel';
 import { resolveAsset, resolvePersons, type HeroStyleId } from './heroManifest';
 import { resolveComposition } from './registry';
 import { buildHeroCtaHref } from './cta';
-import { kidsFantasy } from './compositions/kidsFantasy';
 import type {
   DecorSlot,
   DecorTuning,
@@ -134,7 +133,7 @@ function buildDecorLayer(style: HeroStyleId, slot: DecorSlot, tuning?: DecorTuni
 
 /**
  * The paper-cut storytelling hero. Picks a style composition from the
- * visitor's intent (defaults to Christmas), then renders one shared
+ * visitor's intent (defaults to Kids Fantasy), then renders one shared
  * skeleton:
  *   1. sky band — cloud/sky decor pairs + sparkles behind the headline,
  *      subtitle and CTA (all copy from the style's translation namespace)
@@ -153,11 +152,9 @@ export default function PaperCutHero() {
   const composition: HeroComposition = resolveComposition(intentContext?.intent);
   const style = composition.id;
   const ns = composition.textNamespace;
-  // The seasonal default changes the artwork. The CTA keeps its existing
-  // story intent until a visitor arrives with a campaign selection.
   const ctaHref = buildHeroCtaHref({
     locale,
-    intent: intentContext?.intent ? composition.storyIntent : kidsFantasy.storyIntent,
+    intent: composition.storyIntent,
     isSignedIn: Boolean(isSignedIn),
   });
 
