@@ -13,6 +13,7 @@ import {
   biographerSessions as sessions,
 } from '@/db/schema/biographer';
 import { BiographerError, ownedProject } from '@/db/services/biographer';
+import { biographerCollaborationEnabled } from './validation';
 
 const COOKIE = 'mythoria_biographer_contributor';
 const makeToken = () => randomBytes(32).toString('base64url');
@@ -23,11 +24,7 @@ const parseToken = (token: string) =>
     .regex(/^[A-Za-z0-9_-]{43}$/)
     .parse(token);
 export function collaborationEnabled() {
-  if (
-    process.env.BIOGRAPHER_ENABLED !== 'true' ||
-    process.env.BIOGRAPHER_COLLABORATION_ENABLED !== 'true'
-  )
-    throw new BiographerError('Not found', 404);
+  if (!biographerCollaborationEnabled()) throw new BiographerError('Not found', 404);
 }
 function publicBase() {
   const value = process.env.BIOGRAPHER_PUBLIC_URL;

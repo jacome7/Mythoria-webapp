@@ -14,7 +14,13 @@ import { useScreenAwake } from '@/hooks/biographer/useScreenAwake';
 import { answerDraft, saveAnswerDraft } from '@/utils/biographer/drafts';
 import { concatenate, wav } from '@/utils/biographer/audio';
 
-export default function BiographerStudio({ projectId }: { projectId: string }) {
+export default function BiographerStudio({
+  projectId,
+  collaborationEnabled,
+}: {
+  projectId: string;
+  collaborationEnabled: boolean;
+}) {
   const t = useTranslations('Biographer');
   const locale = useLocale();
   const router = useRouter();
@@ -32,26 +38,8 @@ export default function BiographerStudio({ projectId }: { projectId: string }) {
   const [busy, setBusy] = useState(false);
   const [awake, setAwake] = useState(true);
   const [tab, setTab] = useState<'talk' | 'memories' | 'people' | 'book'>('talk');
-  const [collaborationEnabled, setCollaborationEnabled] = useState(false);
+  const showCollaboration = collaborationEnabled && Boolean(detail);
   const [unfinishedContributors, setUnfinishedContributors] = useState(0);
-  useEffect(() => {
-    const controller = new AbortController();
-    void fetch(`/api/biographer/projects/${projectId}/contributors`, { signal: controller.signal })
-      .then(async (r) => {
-        if (controller.signal.aborted) return;
-        setCollaborationEnabled(r.ok);
-        if (r.ok) {
-          const data = (await r.json()) as { contributors: Array<{ status: string }> };
-          if (!controller.signal.aborted)
-            setUnfinishedContributors(
-              data.contributors.filter((p) => p.status !== 'finished' && p.status !== 'closed')
-                .length,
-            );
-        }
-      })
-      .catch(() => undefined);
-    return () => controller.abort();
-  }, [projectId]);
   const [draftId, setDraftId] = useState<string>();
   const draftQueue = useRef(Promise.resolve());
   useEffect(() => {
@@ -301,7 +289,7 @@ export default function BiographerStudio({ projectId }: { projectId: string }) {
         </div>
         <div className="flex gap-2 items-center">
           <span className="badge badge-outline">{t('private')}</span>
-          {collaborationEnabled && (
+          {showCollaboration && (
             <button
               className="btn btn-outline btn-sm"
               onClick={() => {
@@ -316,12 +304,7 @@ export default function BiographerStudio({ projectId }: { projectId: string }) {
       </header>
       <div role="tablist" className="tabs tabs-border">
         {(
-          [
-            'talk',
-            'memories',
-            ...(collaborationEnabled ? ['people' as const] : []),
-            'book',
-          ] as const
+          ['talk', 'memories', ...(showCollaboration ? ['people' as const] : []), 'book'] as const
         ).map((name) => (
           <button
             key={name}
@@ -333,7 +316,7 @@ export default function BiographerStudio({ projectId }: { projectId: string }) {
                 live.pause();
                 void load().catch(() => setError(t('failed')));
               }
-              if (name === 'book' && collaborationEnabled)
+              if (name === 'book' && showCollaboration)
                 void fetch(`/api/biographer/projects/${projectId}/contributors`, {
                   cache: 'no-store',
                 })
@@ -637,7 +620,7 @@ export default function BiographerStudio({ projectId }: { projectId: string }) {
             ))}
         </section>
       )}
-      {tab === 'people' && <PeopleMemories projectId={projectId} />}
+      {tab === 'people' && showCollaboration && <PeopleMemories projectId={projectId} />}
       {tab === 'book' && (
         <section className="space-y-5">
           <h2 className="text-xl font-semibold">{t('bookHeading')}</h2>

@@ -41,8 +41,6 @@ it('saves an answer and reviews photographs through the private project endpoint
     assets: [{ id: 'photo-1', caption: 'Andorra', included: true }],
   };
   global.fetch = jest.fn(async (_url, init) => {
-    if (String(_url).endsWith('/contributors'))
-      return { ok: true, json: async () => ({ contributors: [] }) } as Response;
     if (String(_url).endsWith('/interview')) {
       const answer = JSON.parse(String(init?.body));
       project.turns = [{ ...answer, included: true, createdAt: new Date().toISOString() }];
@@ -50,7 +48,7 @@ it('saves an answer and reviews photographs through the private project endpoint
     }
     return { ok: true, json: async () => project } as Response;
   }) as jest.Mock;
-  render(<BiographerStudio projectId="project-1" />);
+  render(<BiographerStudio projectId="project-1" collaborationEnabled={false} />);
   await screen.findByText('A family story');
   fireEvent.change(screen.getByLabelText('write'), {
     target: { value: 'A little café in Andorra' },
@@ -67,6 +65,13 @@ it('saves an answer and reviews photographs through the private project endpoint
   expect(screen.getByAltText('Andorra')).toHaveAttribute(
     'src',
     '/api/biographer/projects/project-1/photos/photo-1',
+  );
+  expect(screen.queryByRole('tab', { name: 'peopleTab' })).not.toBeInTheDocument();
+  fireEvent.click(screen.getByRole('tab', { name: 'book' }));
+  await screen.findByText('bookHelp');
+  expect(global.fetch).not.toHaveBeenCalledWith(
+    '/api/biographer/projects/project-1/contributors',
+    expect.anything(),
   );
 });
 
@@ -94,7 +99,7 @@ it('keeps an uploaded photo and retries its question with the same response iden
     }
     return { ok: true, json: async () => detail } as Response;
   }) as jest.Mock;
-  render(<BiographerStudio projectId="project-1" />);
+  render(<BiographerStudio projectId="project-1" collaborationEnabled />);
   await screen.findByText('A family story');
   fireEvent.change(screen.getByLabelText('photoCaption'), { target: { value: 'Andorra holiday' } });
   fireEvent.change(screen.getByLabelText('addPhoto'), {
@@ -106,4 +111,13 @@ it('keeps an uploaded photo and retries its question with the same response iden
   await waitFor(() => expect(interviewBodies).toHaveLength(2));
   expect(interviewBodies[0]).toEqual(interviewBodies[1]);
   expect(interviewBodies[0].text).toContain('Andorra holiday');
+  expect(screen.getByRole('tab', { name: 'peopleTab' })).toBeInTheDocument();
+  expect(global.fetch).not.toHaveBeenCalledWith(
+    '/api/biographer/projects/project-1/contributors',
+    expect.anything(),
+  );
+  fireEvent.click(screen.getByRole('tab', { name: 'book' }));
+  expect(global.fetch).toHaveBeenCalledWith('/api/biographer/projects/project-1/contributors', {
+    cache: 'no-store',
+  });
 });

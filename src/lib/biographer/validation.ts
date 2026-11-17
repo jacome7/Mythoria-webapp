@@ -47,3 +47,7 @@ export const segmentInput = z
 export function biographerEnabled() {
   return process.env.BIOGRAPHER_ENABLED === 'true';
 }
+
+export function biographerCollaborationEnabled() {
+  return biographerEnabled() && process.env.BIOGRAPHER_COLLABORATION_ENABLED === 'true';
+}
