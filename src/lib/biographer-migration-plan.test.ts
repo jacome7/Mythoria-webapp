@@ -46,3 +46,30 @@ test('rejects a collision, modified SQL, unexpected head and partial schema', ()
   expect(() => assertPreconditions(ledger, [], true, keys, plan)).toThrow();
   expect(() => assertPreconditions(ledger, [], false, ['authors.author_id'], plan)).toThrow();
 });
+
+test('matches PostgreSQL 63-byte identifier truncation for foreign keys', () => {
+  const rawNames = [
+    ...migration.matchAll(/ADD CONSTRAINT "(biographer_[a-z_]+)" FOREIGN KEY/g),
+  ].map((match) => match[1]);
+  const truncated = rawNames.filter((name) => name.length > 63);
+  expect(truncated).toHaveLength(3);
+  expect(truncated.map((name) => name.length).sort()).toEqual([64, 64, 67]);
+  for (const name of truncated) {
+    expect(plan.foreignKeys.some((key) => key.endsWith(`.${name.slice(0, 63)}`))).toBe(true);
+    expect(plan.foreignKeys.some((key) => key.endsWith(`.${name}`))).toBe(false);
+  }
+  expect(new Set(plan.foreignKeys).size).toBe(17);
+});
+
+test('captures every Biographer column from the generated snapshot, including sha256', () => {
+  const snapshot = JSON.parse(readFileSync('drizzle/meta/0050_snapshot.json', 'utf8')) as {
+    tables: Record<string, { columns: Record<string, unknown> }>;
+  };
+  const expected = Object.entries(snapshot.tables)
+    .filter(([name]) => name.startsWith('public.biographer_'))
+    .flatMap(([name, table]) =>
+      Object.keys(table.columns).map((column) => `${name.slice('public.'.length)}.${column}`),
+    );
+  expect(plan.columns).toContain('biographer_segments.sha256');
+  expect([...plan.columns].sort()).toEqual(expected.sort());
+});

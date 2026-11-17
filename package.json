@@ -26,7 +26,7 @@
     "db:generate": "drizzle-kit generate",
     "db:migrate": "tsx -r dotenv/config ./src/db/migrate.ts",
     "db:biographer": "node --import tsx scripts/biographer-migration.ts",
-    "db:biographer:rehearse": "node scripts/rehearse-biographer-migration.cjs",
+    "db:biographer:rehearse": "node --import tsx scripts/rehearse-biographer-migration.cjs",
     "db:push": "drizzle-kit push",
     "db:reset": "tsx -r dotenv/config ./src/db/reset.ts",
     "db:setup": "npm run db:reset && npm run db:push",
@@ -65,7 +65,8 @@
     "test:mcp:smoke:prod": "tsx scripts/mcp-e2e-smoke.ts --base-url=https://mythoria.pt",
     "auth:mcp:token": "tsx scripts/get-mcp-oauth-token.ts",
     "check:env": "tsx ./scripts/check-env-parity.ts",
-    "biographer:cleanup-orphans": "tsx scripts/biographer-orphan-cleanup.ts"
+    "biographer:cleanup-orphans": "tsx scripts/biographer-orphan-cleanup.ts",
+    "biographer:local": "node scripts/biographer-local.mjs"
   },
   "sideEffects": false,
   "dependencies": {

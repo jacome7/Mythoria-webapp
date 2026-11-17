@@ -2,9 +2,11 @@
 
 Implementation branch: `codex/biographer-phase-2` builds on Phase 1. Contributor invitations are implemented but remain disabled until the separate collaboration flag is enabled after rollout checks.
 
+The current working branch is `codex/biographer-production-migration-recovery`. Its consolidated `0050` is applied to the existing shared database after explicit authorization. Use the [local testing guide](biographer-local-testing.md); do not rerun the superseded branch migrations. Public production activation remains off.
+
 ## Configuration and rollout
 
-Keep `BIOGRAPHER_ENABLED=false` until the generated additive migration is reviewed and applied through the controlled release process. See [database recovery and testing](biographer-database-rollout.md): the recovery branch incorporates master and supersedes the unapplied original `0049–0056` feature artifacts with `0050_biographer_complete`. Never run integration fixtures or destructive tests against the shared development/production database. A separately authorized manual smoke test uses real shared data and needs the runbook's precautions. No feature migration has been applied by this preparation.
+Keep public production `BIOGRAPHER_ENABLED=false`. See [database recovery and testing](biographer-database-rollout.md): the recovery branch incorporates master and supersedes the unapplied original `0049–0056` feature artifacts with `0050_biographer_complete`, now applied after explicit authorization. Never run integration fixtures or destructive tests against the shared development/production database. The authorized manual local smoke test uses real shared data and needs the runbook's precautions; feature activation is local only.
 
 Set `BIOGRAPHER_LIVE_URL` to the dedicated SGW gateway WSS URL, `BIOGRAPHER_INTERNAL_API_KEY` to the identical independent callback secret in both services, and `BIOGRAPHER_ALLOWED_ORIGINS` to exact comma-separated browser origins. No Google credentials or internal secret are sent to clients. Admin uses Google OIDC via `BIOGRAPHER_INTERNAL_AUDIENCE` and `BIOGRAPHER_ADMIN_SERVICE_ACCOUNTS`.
 

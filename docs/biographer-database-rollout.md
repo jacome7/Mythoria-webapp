@@ -2,7 +2,7 @@
 
 Prepared 2026-11-17 on `codex/biographer-production-migration-recovery`, in
 `/Users/andreaperavieira/Developer/Mythoria/biographer-phase-1/mythoria-webapp`.
-Production migration, backups, infrastructure changes and feature activation are **not authorized or performed** by this preparation.
+This document records the original preparation plan. The user subsequently authorized execution: `0050` is now applied. See the [execution record](biographer-migration-applied-2026-11-17.md) and [local testing guide](biographer-local-testing.md). Production application deployment and public feature activation remain off.
 
 ## What the investigation established
 

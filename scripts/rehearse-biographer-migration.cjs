@@ -4,6 +4,8 @@ const { readFileSync } = require('node:fs');
 const { resolve } = require('node:path');
 const { createHash } = require('node:crypto');
 const { generateMigration } = require('drizzle-kit/api');
+const { postflight } = require('../src/lib/biographer-migration-checks.ts');
+const { buildPlan } = require('../src/lib/biographer-migration-plan.ts');
 
 async function main() {
   const arg = process.argv[2];
@@ -44,6 +46,17 @@ async function main() {
   const headHash = createHash('sha256')
     .update(readFileSync('drizzle/0049_openai_ads_conversions.sql', 'utf8'))
     .digest('hex');
+  const plan = buildPlan(
+    journal,
+    readFileSync('drizzle/0049_openai_ads_conversions.sql', 'utf8'),
+    sql,
+  );
+  const postflightClient = {
+    async query(query, values) {
+      const result = await db.query(query, values);
+      return { rows: result.rows, rowCount: result.rows.length };
+    },
+  };
   const tables = Object.keys(target.tables).filter((name) => name.startsWith('public.biographer_'));
   const countBiographer = async () =>
     Number(
@@ -105,6 +118,7 @@ async function main() {
 
     await db.exec('BEGIN');
     await apply();
+    await postflight(postflightClient, plan);
     await assert.rejects(db.query('SELECT 1/0'), (error) => error.code === '22012');
     await db.exec('ROLLBACK');
     assert.equal(await countBiographer(), 0);
@@ -118,6 +132,7 @@ async function main() {
       "BEGIN; SET LOCAL lock_timeout='2s'; SET LOCAL statement_timeout='30s'; SET LOCAL transaction_timeout='60s'",
     );
     await apply();
+    await postflight(postflightClient, plan);
     assert.equal(await countBiographer(), 10);
     assert.equal(await hasEnum(), 1);
     const fks = (
@@ -192,6 +207,7 @@ async function main() {
           tables: tables.length,
           validatedForeignKeys: fks,
           rollbackVerified: true,
+          exactRunnerPostflightVerified: true,
           existingStoryUnchanged: true,
           ownerUniquenessAndMultipleContributorsVerified: true,
           productionConnections: 0,

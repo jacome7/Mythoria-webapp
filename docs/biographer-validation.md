@@ -1,6 +1,6 @@
 # Biographer implementation validation
 
-Updated 2026-11-17. Both phases are implemented in development branches; activation remains off.
+Updated 2026-11-17. Both phases are implemented in development branches. Production schema migration is applied; public production activation remains off. Local single-author testing is configured.
 
 ## Branches and entry points
 
@@ -28,9 +28,9 @@ Updated 2026-11-17. Both phases are implemented in development branches; activat
 
 ## Not validated or activated
 
-No migration, deployment, feature activation or shared/production database fixture was run. Worktrees intentionally do not inherit production environment files; environment checks report missing runtime configuration. Authenticated Playwright coverage is authored but has not been run against an isolated, configured server.
+After the earlier preparation checks above, the user explicitly authorized migration and local setup. See the [execution record](biographer-migration-applied-2026-11-17.md): `0050` committed and separate postflight passed. The first attempt rolled back because the verifier mishandled a digit-containing column and shortened constraint names; the corrected exact postflight passed locally before retry. Full merged tests now pass 1,627 tests. Local runtime configuration and Google ADC are in place; the WebApp, SGW API and avatar gateway respond successfully. A bounded synthetic Gemini 3.8 Live avatar handshake succeeded. No production application deployment, public activation or shared-database fixture suite was run.
 
-Use the [database recovery and testing plan](biographer-database-rollout.md), which preserves applied master history and introduces `0050_biographer_complete`. Its PostgreSQL 17.5 embedded rehearsal verifies SQL, transactional rollback, existing synthetic-story preservation and owner/contributor constraints without another Cloud SQL database. A read-only check against the existing production database passes for the corrected sequence. No feature migration has been applied.
+The [local testing guide](biographer-local-testing.md) distinguishes ready interview testing from missing research entitlement/key and local full-book orchestration. Authenticated browser conversation, real recording recovery, dialect/media quality and full narrative acceptance still require manual verification. The PostgreSQL 17.5 embedded rehearsal verifies SQL, exact postflight, transactional rollback, existing synthetic-story preservation and owner/contributor constraints without another Cloud SQL database.
 
 Before launch, use free local PostgreSQL with synthetic data for concurrent claim/lease/upload tests. A dedicated manual smoke test on the shared database is a separate controlled step after migration authorization; do not run fixtures or destructive suites there. Verify private GCS IAM, licensed research entitlement, exact Gemini 3.8 Live EU/avatar access, mobile streaming playback, wake-lock lifecycle, dialect quality, actual modality costs and a full approximately 20,000-word ebook/audio/print journey.
 

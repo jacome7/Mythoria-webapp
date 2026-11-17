@@ -64,7 +64,7 @@ export function buildPlan(
     const table = statement.match(/^CREATE TABLE "(biographer_[a-z_]+)" \(([\s\S]+)\);$/);
     if (table) {
       tables.push(table[1]);
-      for (const match of table[2].matchAll(/^\s*"([a-z_]+)"\s/gm))
+      for (const match of table[2].matchAll(/^\s*"([a-z_][a-z0-9_]*)"\s/gm))
         columns.push(`${table[1]}.${match[1]}`);
       continue;
     }
@@ -72,7 +72,8 @@ export function buildPlan(
       /^ALTER TABLE "(biographer_[a-z_]+)" ADD CONSTRAINT "(biographer_[a-z_]+)" FOREIGN KEY \("[a-z_]+"\) REFERENCES "public"\."(biographer_[a-z_]+|authors|stories)"\("[a-z_]+"\) ON DELETE (?:cascade|set null) ON UPDATE no action;$/,
     );
     if (fk) {
-      foreignKeys.push(`${fk[1]}.${fk[2]}`);
+      // PostgreSQL stores identifiers at most 63 bytes; these names are restricted to ASCII.
+      foreignKeys.push(`${fk[1]}.${fk[2].slice(0, 63)}`);
       continue;
     }
     const index = statement.match(
@@ -88,6 +89,7 @@ export function buildPlan(
     tables.length !== 10 ||
     new Set(tables).size !== 10 ||
     foreignKeys.length !== 17 ||
+    new Set(foreignKeys).size !== foreignKeys.length ||
     indexes.length !== 3 ||
     statements.length !== 31
   ) {

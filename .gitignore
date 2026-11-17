@@ -204,3 +204,6 @@ _mockups/
 
 # Codex tool attachments (local only)
 .codex-attachments/
+
+# Local Biographer process state and private logs
+.biographer-local/
