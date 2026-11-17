@@ -3,7 +3,11 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import Image from 'next/image';
 import { readGuestIntent, guestIntentHeaders, type GuestIntent } from '@/utils/biographer/guest';
-import { useBiographerLive, type LiveEvent } from '@/hooks/biographer/useBiographerLive';
+import {
+  reportAvatarVideo,
+  useBiographerLive,
+  type LiveEvent,
+} from '@/hooks/biographer/useBiographerLive';
 import { useScreenAwake } from '@/hooks/biographer/useScreenAwake';
 import { answerDraft, saveAnswerDraft } from '@/utils/biographer/drafts';
 import { concatenate, wav } from '@/utils/biographer/audio';
@@ -299,6 +303,9 @@ export default function GuestStudio() {
                     <video
                       ref={video}
                       src={live.videoUrl}
+                      onWaiting={reportAvatarVideo}
+                      onPlaying={reportAvatarVideo}
+                      onError={reportAvatarVideo}
                       autoPlay
                       playsInline
                       className="w-full h-full object-contain"

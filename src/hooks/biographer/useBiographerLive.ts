@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState, type SyntheticEvent } from 'react';
 import { concatenate, fromBase64, toBase64 } from '@/utils/biographer/audio';
 import { guestIntentHeaders } from '@/utils/biographer/guest';
 import {
@@ -12,6 +12,26 @@ import {
 
 // Gemini Live Avatar labels its H.264/AAC fragmented MP4 stream as bare video/mp4.
 const avatarMp4Type = 'video/mp4; codecs="avc1.42C01F, mp4a.40.2"';
+
+function liveDiagnostic(event: string, details?: Record<string, number | string | boolean>) {
+  if (process.env.NODE_ENV === 'development') console.info('[Biographer live]', event, details);
+}
+
+export function reportAvatarVideo(event: SyntheticEvent<HTMLVideoElement>) {
+  if (process.env.NODE_ENV !== 'development') return;
+  const video = event.currentTarget;
+  let bufferedAhead = 0;
+  for (let i = 0; i < video.buffered.length; i++) {
+    if (video.buffered.start(i) <= video.currentTime && video.buffered.end(i) > video.currentTime)
+      bufferedAhead = video.buffered.end(i) - video.currentTime;
+  }
+  liveDiagnostic(`video-${event.type}`, {
+    positionMs: Math.round(video.currentTime * 1000),
+    bufferedAheadMs: Math.round(bufferedAhead * 1000),
+    readyState: video.readyState,
+    mediaError: video.error?.code ?? 0,
+  });
+}
 
 export type LiveState =
   'paused' | 'connecting' | 'listening' | 'speaking' | 'reconnecting' | 'recording';
@@ -282,6 +302,7 @@ export function useBiographerLive(
         };
       } else if (event.mimeType.startsWith('video/')) {
         if (typeof MediaSource === 'undefined') {
+          liveDiagnostic('media-source-unavailable');
           setError(true);
           pause();
           return;
@@ -289,6 +310,7 @@ export function useBiographerLive(
         if (!playback.current.media) {
           const mimeType = event.mimeType === 'video/mp4' ? avatarMp4Type : event.mimeType;
           if (!MediaSource.isTypeSupported(mimeType)) {
+            liveDiagnostic('media-type-unsupported');
             setError(true);
             pause();
             return;
@@ -306,6 +328,7 @@ export function useBiographerLive(
               try {
                 buffer = media.addSourceBuffer(mimeType);
               } catch {
+                liveDiagnostic('source-buffer-creation-failed');
                 setError(true);
                 pause();
                 return;
@@ -320,6 +343,7 @@ export function useBiographerLive(
                   try {
                     buffer.appendBuffer(playback.current.chunks.shift()!);
                   } catch {
+                    liveDiagnostic('source-buffer-append-failed');
                     setError(true);
                     pause();
                   }
@@ -328,6 +352,7 @@ export function useBiographerLive(
               buffer.addEventListener('updateend', append);
               buffer.addEventListener('error', () => {
                 if (playback.current.buffer !== buffer) return;
+                liveDiagnostic('source-buffer-decode-failed');
                 setError(true);
                 pause();
               });
@@ -342,6 +367,7 @@ export function useBiographerLive(
           try {
             buffer.appendBuffer(playback.current.chunks.shift()!);
           } catch {
+            liveDiagnostic('source-buffer-append-failed');
             setError(true);
             pause();
           }
@@ -424,6 +450,7 @@ export function useBiographerLive(
       turn.current = crypto.randomUUID();
       sequence.current = 0;
       const socket = new WebSocket(session.liveUrl);
+      let lastVideoAt: number | undefined;
       resources.current.socket = socket;
       socket.onopen = () =>
         socket.send(
@@ -462,10 +489,17 @@ export function useBiographerLive(
           }
         }
         if (event.type === 'media') {
+          if (process.env.NODE_ENV === 'development' && event.mimeType?.startsWith('video/')) {
+            const now = performance.now();
+            const gapMs = lastVideoAt === undefined ? 0 : Math.round(now - lastVideoAt);
+            lastVideoAt = now;
+            if (gapMs > 750) liveDiagnostic('video-delivery-gap', { gapMs });
+          }
           setState('speaking');
           play(event);
         }
         if (event.type === 'interrupted') {
+          liveDiagnostic('interrupted');
           stopPlayback();
           setState('listening');
         }
@@ -480,6 +514,9 @@ export function useBiographerLive(
         }
         if (event.type === 'reconnecting') setState('reconnecting');
         if (event.type === 'error') {
+          liveDiagnostic('gateway-error', {
+            code: /^[A-Z_]{1,60}$/.test(event.code ?? '') ? event.code! : 'UNKNOWN',
+          });
           setError(true);
           pause();
         }
@@ -487,11 +524,13 @@ export function useBiographerLive(
       };
       socket.onerror = () => {
         if (socket !== resources.current.socket) return;
+        liveDiagnostic('socket-error');
         setError(true);
         pause();
       };
-      socket.onclose = () => {
+      socket.onclose = (event) => {
         if (resources.current.socket === socket) {
+          liveDiagnostic('socket-closed', { code: event.code, clean: event.wasClean });
           setError(true);
           pause();
         }
@@ -544,7 +583,10 @@ export function useBiographerLive(
 
   useEffect(() => {
     const onHidden = () => {
-      if (document.visibilityState === 'hidden') pause();
+      if (document.visibilityState === 'hidden') {
+        if (resources.current.socket) liveDiagnostic('page-hidden');
+        pause();
+      }
     };
     const leave = (event: BeforeUnloadEvent) => {
       if (saving !== 'saved') {

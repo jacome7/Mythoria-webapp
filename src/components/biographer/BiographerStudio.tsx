@@ -9,7 +9,11 @@ import { setCurrentStoryId, setStep1Data } from '@/lib/story-session';
 import { LiteraryPersona } from '@/types/story-enums';
 import { Link } from '@/i18n/routing';
 import type { BiographerProjectDetail, BiographerTurn } from '@/types/biographer';
-import { useBiographerLive, type LiveEvent } from '@/hooks/biographer/useBiographerLive';
+import {
+  reportAvatarVideo,
+  useBiographerLive,
+  type LiveEvent,
+} from '@/hooks/biographer/useBiographerLive';
 import { useScreenAwake } from '@/hooks/biographer/useScreenAwake';
 import { answerDraft, saveAnswerDraft } from '@/utils/biographer/drafts';
 import { concatenate, wav } from '@/utils/biographer/audio';
@@ -360,6 +364,9 @@ export default function BiographerStudio({
                 <video
                   ref={video}
                   src={live.videoUrl}
+                  onWaiting={reportAvatarVideo}
+                  onPlaying={reportAvatarVideo}
+                  onError={reportAvatarVideo}
                   autoPlay
                   playsInline
                   className="w-full h-full object-contain"

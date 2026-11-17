@@ -49,6 +49,10 @@ No author/project/turn fixtures were inserted by setup. Provider testing used a 
 
 **Collaboration:** `BIOGRAPHER_COLLABORATION_ENABLED=false`. First finish the single-author test. Later collaboration testing needs a reachable trusted WebApp URL for invitees, matching allowed origins, and dedicated test participants.
 
+## Diagnosing avatar playback
+
+Open Chrome DevTools → Console and filter for `[Biographer live]` before starting a test interview. Keep the interview tab visible. If the avatar freezes, compare `video-waiting` and its `bufferedAheadMs` with the nearest `video-delivery-gap`, `source-buffer-decode-failed`, or `socket-closed` event. A delivery gap can also occur normally between replies. Check `.biographer-local/avatar.log` for a gateway or provider close at the time the browser stopped. The diagnostic events contain timings and error codes, without audio, transcripts, or credentials.
+
 **Public launch:** paid-book source deletion still needs cancellation/refund integration, and full narrative/ebook/audio/print/mobile acceptance remains outstanding. See [validation](biographer-validation.md).
 
 ## Checks actually performed
