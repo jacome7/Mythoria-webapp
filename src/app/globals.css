@@ -90,6 +90,7 @@ body {
 }
 
 .homepage-paper-bg {
+  overflow-x: clip;
   background: #fff7e6;
 }
 

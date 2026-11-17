@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import Image from 'next/image';
+import BlogImage, { BLOG_FALLBACK_IMAGE } from '@/components/BlogImage';
 import { Calendar, Clock } from 'lucide-react';
 import InlineMarkdown from '@/lib/blog/InlineMarkdown';
 import ScrollFadeIn from '@/components/ScrollFadeIn';
@@ -67,7 +67,7 @@ export default function BlogListContent({
                 </div>
               </div>
             ) : (
-              <div className="grid gap-8 md:gap-12">
+              <div className="grid grid-cols-1 gap-8 md:gap-12">
                 {posts.map((post, index) => (
                   <ScrollFadeIn
                     key={post.id}
@@ -83,19 +83,18 @@ export default function BlogListContent({
                       {/* Post Image */}
                       <div className="lg:w-2/5">
                         <figure className="h-64 lg:h-full">
-                          <Image
-                            src={post.heroImageUrl || '/placeholder-story-image.jpg'}
+                          <BlogImage
+                            src={post.heroImageUrl || BLOG_FALLBACK_IMAGE}
                             alt={post.title}
                             width={600}
                             height={400}
                             className="w-full h-full object-cover"
-                            unoptimized={post.heroImageUrl?.startsWith('http')}
                           />
                         </figure>
                       </div>
 
                       {/* Post Content */}
-                      <div className="lg:w-3/5 card-body p-8">
+                      <div className="lg:w-3/5 card-body min-w-0 p-8 [overflow-wrap:anywhere]">
                         <div className="flex flex-wrap items-center gap-4 text-sm text-base-content/60 mb-4">
                           <div className="flex items-center gap-2">
                             <Calendar className="w-4 h-4" />

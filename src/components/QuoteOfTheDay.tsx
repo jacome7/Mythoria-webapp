@@ -1,6 +1,6 @@
 'use client';
 
-import Image from 'next/image';
+import ThemedArtwork from '@/components/ThemedArtwork';
 import { useState, useEffect } from 'react';
 import styles from './QuoteOfTheDay.module.css';
 import { homepageAsset } from '@/constants/homepageAssets';
@@ -107,7 +107,7 @@ export default function QuoteOfTheDay() {
     <section className="my-16">
       <div className="container mx-auto px-4">
         <div className={`${styles.card} ${isCardVisible ? styles.visible : styles.hidden}`}>
-          <Image
+          <ThemedArtwork
             src={homepageAsset('cloud_small.webp')}
             alt=""
             width={200}
@@ -116,7 +116,7 @@ export default function QuoteOfTheDay() {
             className={styles.cloudLeft}
             aria-hidden="true"
           />
-          <Image
+          <ThemedArtwork
             src={homepageAsset('cloud_small.webp')}
             alt=""
             width={200}
@@ -125,7 +125,7 @@ export default function QuoteOfTheDay() {
             className={styles.cloudRight}
             aria-hidden="true"
           />
-          <Image
+          <ThemedArtwork
             src={homepageAsset('sparkle_a.webp')}
             alt=""
             width={128}
@@ -134,7 +134,7 @@ export default function QuoteOfTheDay() {
             className={styles.starLeft}
             aria-hidden="true"
           />
-          <Image
+          <ThemedArtwork
             src={homepageAsset('sparkle_c.webp')}
             alt=""
             width={128}

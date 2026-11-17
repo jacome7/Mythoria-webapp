@@ -41,18 +41,15 @@ Visitors can arrive through **intent URLs** such as:
 
 These links record the intent and (optionally) the recipient in a cookie, then redirect the visitor to the localized homepage. The hero uses this context to choose the paper-cut **composition** to display (via `src/components/papercut/registry.ts`).
 
-**Active intent → composition mapping:**
+| Resolved intent                                             | Homepage composition        | Shared site theme |
+| ----------------------------------------------------------- | --------------------------- | ----------------- |
+| Empty or invalid, or `christmas`                            | `christmas`                 | Christmas         |
+| `kids` or another valid intent without a custom composition | `kids_fantasy`              | Kids              |
+| `sports_teams`, `romance`, or `grandparents`                | Matching custom composition | Kids              |
 
-| Intent         | Composition    | URL               |
-| -------------- | -------------- | ----------------- |
-| _(default)_    | `kids_fantasy` | `/`               |
-| `sports_teams` | `sports_teams` | `/i/sports_teams` |
-| `romance`      | `romance`      | `/i/romance`      |
-| `grandparents` | `grandparents` | `/i/grandparents` |
+A valid `?intent=<value>` on a localized homepage or landing page takes precedence. A recognized landing page can provide its own intent. Both sources persist valid context in the 24-hour cookie. Other routes use the stored context. The root layout resolves the initial theme and marks the document with `data-website-theme`; the shared provider keeps the cookie, homepage hero, and sitewide theme in sync during client navigation. With no valid stored selection, Christmas appears as a visual default. The hero CTA preserves its previous story-creation destination in that case. Selecting Christmas explicitly makes `christmas` the hero CTA's story intent.
 
-**Query param override:** appending `?intent=<value>` to any homepage URL switches the composition without setting a cookie — useful for campaign previews and QA. Precedence: `?intent=` query param > intent cookie > default. The override is read via `useIntentOverride` in a `useEffect` (not `useSearchParams`) to avoid breaking static prerendering of the hero.
-
-**Phase-1 section assets policy:** only the hero is intent-skinned. All sections below the hero (Footer, Header, HowItWorks, etc.) use the `kids_fantasy` asset folder via `homepageAsset()` from `src/constants/homepageAssets.ts`. The homepage book gallery is intent-prioritized through the intent cookie, so a visitor with `grandparents` context sees grandparents sample books first. Per-intent section art is a phase-2 candidate.
+The paper-cut illustrations in shared surfaces and homepage sections follow the sitewide theme. The homepage gallery uses the resolved campaign intent and recipient to prioritize sample books.
 
 **Locale-aware hero assets:** background/foreground/person assets may carry a locale suffix (e.g. `background_mobile_pt-PT.webp`, `person1_pt-PT.webp`). Resolution happens at build time through `src/components/papercut/heroManifest.ts` with the deterministic fallback chain `exact locale → en-US → pt-PT → unsuffixed → first available` — missing variants never 404. Each style folder documents its assets in `assets_metadata.json` (validated by `npm run homepage:assets`) and lists outstanding designer work in `MISSING_ASSETS.md`.
 
@@ -67,7 +64,7 @@ These links record the intent and (optionally) the recipient in a cookie, then r
   - `/i/:intent` → redirects to `/{locale}`
   - `/i/:intent/:recipient` → redirects to `/{locale}`
 
-Locales are derived from the `Accept-Language` header and must match `SUPPORTED_LOCALES`. If no match is found, `en-US` is used by default.
+Locale resolution checks the explicit `locale` query parameter, then the `NEXT_LOCALE` cookie, then `Accept-Language`. It uses the default supported locale if none match.
 
 ---
 
@@ -99,7 +96,7 @@ Key UI sections and their sources:
 - **Paper-cut hero + CTA**
   - Rendered by `src/components/papercut/PaperCutHero.tsx` (mounted full-bleed in `page.tsx`, before the page container).
   - The renderer owns the canonical skeleton (decor template, scene sandwich, feature card); `PaperCutHero` resolves a style composition from the intent cookie (`resolveComposition`), assets by slot name through `heroManifest.ts`, and renders `PaperCutLayer` decor, an `ArtDirectedImage` background/foreground pair and the `PersonCarousel` inside a `PaperCutStage`, plus `FeatureCard`.
-  - Copy comes from `HomePage.intents.<styleId>.hero.*` (`headline`, `subtitle`, `subtitleEmphasized`, `cta`, `alt.person`, `features.feature{1..3}.*`) — the default style reads `intents.kids_fantasy.hero.*`.
+  - Copy comes from `HomePage.intents.<styleId>.hero.*` (`headline`, `subtitle`, `subtitleEmphasized`, `cta`, `alt.person`, `features.feature{1..3}.*`) — Christmas shares the Kids Fantasy copy with its own carousel image description.
   - To author a new style, see the [Paper-Cut Design System](../papercut-design-system.md).
 - **Sample audience cards (Kids, Groups, Adults, Companies)**
   - Hardcoded sample story links pointing to public story slugs.
@@ -149,9 +146,7 @@ The **intent system** supports marketing and onboarding links that pre-contextua
 #### Redirect behavior
 
 - Both intent routes redirect to the localized homepage (`/{locale}`).
-- Locale detection uses `Accept-Language` and falls back to `en-US`.
-- `/i/:intent` uses `NEXT_PUBLIC_BASE_URL` (or host header) to build the redirect, with a fallback to `https://mythoria.pt`.
-- `/i/:intent/:recipient` uses `request.url` as its base URL when constructing the redirect.
+- Both compatibility URLs return a 308 to the canonical public origin with the validated intent and supported attribution parameters.
 
 ---
 
@@ -161,7 +156,7 @@ The **intent system** supports marketing and onboarding links that pre-contextua
 - **Paper-cut hero:** `src/components/papercut/` (renderer, compositions, registry) — see the [Paper-Cut Design System](../papercut-design-system.md)
 - **Sample gallery (unused on homepage):** `src/components/InfiniteGallery.tsx`
 - **Intent routes:** `src/app/i/[intent]/route.ts` and `src/app/i/[intent]/[recipient]/route.ts`
-- **Intent helpers:** `src/constants/intents.ts`, `src/constants/recipients.ts`, `src/types/intent-context.ts`, `src/hooks/useIntentContext.ts`, `src/hooks/useIntentOverride.ts` (`?intent=` query param)
+- **Intent helpers:** `src/constants/intents.ts`, `src/constants/recipients.ts`, `src/types/intent-context.ts`, `src/hooks/useIntentContext.ts`, `src/hooks/useHomepageTheme.tsx`
 - **Section asset helper:** `src/constants/homepageAssets.ts` (`homepageAsset()` used by Footer, Header, HowItWorks, etc.)
 - **Translations:** `src/messages/<locale>/HomePage.json`, `src/messages/<locale>/StoryCounter.json`
 - **Sample book data:** `public/SampleBooks/SampleBooks.json`

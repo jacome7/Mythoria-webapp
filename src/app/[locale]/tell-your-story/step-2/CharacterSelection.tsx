@@ -1,6 +1,7 @@
 'use client';
 
 import Image from 'next/image';
+import ThemedArtwork from '@/components/ThemedArtwork';
 import { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useTranslations } from 'next-intl';
@@ -167,7 +168,7 @@ export default function CharacterSelection({
       {triggerVariant === 'card' ? (
         <button type="button" className={styles.closedCard} onClick={openModal}>
           <span className={styles.closedIconWrap} aria-hidden="true">
-            <Image
+            <ThemedArtwork
               src="/Papercut_icons/characters.webp"
               alt=""
               width={120}

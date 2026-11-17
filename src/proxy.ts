@@ -87,33 +87,28 @@ export async function getPublicSeoResponse(req: NextRequest): Promise<NextRespon
   return NextResponse.redirect(destination ?? redirectRequired, 308);
 }
 
-function applyLandingPageIntentCookie(req: NextRequest, response: NextResponse): NextResponse {
-  const [locale, lpSegment, slug, ...rest] = req.nextUrl.pathname.split('/').filter(Boolean);
-  if (lpSegment !== 'lp' || !slug || rest.length > 0) return response;
+export function applyPublicContextCookies(req: NextRequest, response: NextResponse): NextResponse {
+  const [locale, section, slug, ...rest] = req.nextUrl.pathname.split('/').filter(Boolean);
+  const isHomepage = !section;
+  const isLandingPage = section === 'lp' && Boolean(slug) && rest.length === 0;
+  if (!SUPPORTED_LOCALES.includes(locale) || (!isHomepage && !isLandingPage)) return response;
 
-  const intentContext = getLandingPageIntentContext(locale, slug);
-  if (!intentContext) return response;
-
-  response.cookies.set(INTENT_CONTEXT_COOKIE, serializeIntentContext(intentContext), {
-    httpOnly: false,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: 'lax',
-    maxAge: INTENT_CONTEXT_MAX_AGE,
-    path: '/',
-  });
-
-  return response;
-}
-
-function applyHomepageIntentCookie(req: NextRequest, response: NextResponse): NextResponse {
-  const segments = req.nextUrl.pathname.split('/').filter(Boolean);
-  if (segments.length !== 1 || !SUPPORTED_LOCALES.includes(segments[0])) return response;
+  if (
+    req.headers.has('next-router-prefetch') ||
+    req.headers.has('next-router-segment-prefetch') ||
+    req.headers.get('purpose') === 'prefetch'
+  ) {
+    return response;
+  }
 
   const intent = getValidatedIntent(req.nextUrl.searchParams.get('intent'));
-  if (!intent) return response;
+  const landing = isLandingPage ? getLandingPageIntentContext(locale, slug) : null;
+  if (!intent && !landing) return response;
 
-  const existing = parseIntentContext(req.cookies.get(INTENT_CONTEXT_COOKIE)?.value);
-  response.cookies.set(INTENT_CONTEXT_COOKIE, serializeIntentContext({ ...existing, intent }), {
+  const base = landing ?? parseIntentContext(req.cookies.get(INTENT_CONTEXT_COOKIE)?.value);
+  const context = intent ? { ...base, intent } : base;
+  if (!context) return response;
+  response.cookies.set(INTENT_CONTEXT_COOKIE, serializeIntentContext(context), {
     httpOnly: false,
     secure: process.env.NODE_ENV === 'production',
     sameSite: 'lax',
@@ -121,10 +116,6 @@ function applyHomepageIntentCookie(req: NextRequest, response: NextResponse): Ne
     path: '/',
   });
   return response;
-}
-
-function applyPublicContextCookies(req: NextRequest, response: NextResponse): NextResponse {
-  return applyHomepageIntentCookie(req, applyLandingPageIntentCookie(req, response));
 }
 
 export const proxy = clerkMiddleware(

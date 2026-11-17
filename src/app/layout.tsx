@@ -6,6 +6,9 @@ import AnalyticsProvider from '../components/AnalyticsProvider';
 import OpenAIAdsPixel from '../components/OpenAIAdsPixel';
 import { headers } from 'next/headers';
 import { SUPPORTED_LOCALES } from '@/config/locales';
+import { getIntentContext } from '@/app/i/actions';
+import { resolveWebsiteTheme } from '@/constants/websiteTheme';
+import { HomepageThemeProvider } from '@/hooks/useHomepageTheme';
 import './globals.css';
 
 // Base metadata for non-localized routes only
@@ -20,7 +23,7 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   // Get the pathname from headers to determine locale
-  const headersList = await headers();
+  const [headersList, initialIntentContext] = await Promise.all([headers(), getIntentContext()]);
   const pathname = headersList.get('x-pathname') || '';
 
   // Extract locale from pathname (e.g., /en-US/sign-in -> en-US)
@@ -51,7 +54,11 @@ export default async function RootLayout({
 
   return (
     <ClerkProvider localization={clerkLocalization}>
-      <html lang={locale} data-theme="autumn">
+      <html
+        lang={locale}
+        data-theme="autumn"
+        data-website-theme={resolveWebsiteTheme(initialIntentContext?.intent)}
+      >
         <head>
           <GoogleAnalytics
             measurementId={process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID || 'G-86D0QFW197'}
@@ -76,7 +83,9 @@ export default async function RootLayout({
           <OpenAIAdsPixel />
           <div className="flex flex-col min-h-screen">
             <AnalyticsProvider>
-              <main className="flex-grow">{children}</main>
+              <HomepageThemeProvider initialIntentContext={initialIntentContext}>
+                <main className="flex-grow">{children}</main>
+              </HomepageThemeProvider>
             </AnalyticsProvider>
           </div>
         </body>

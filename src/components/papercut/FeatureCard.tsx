@@ -7,7 +7,7 @@ import type { FeatureItem, Translator } from './types';
  */
 export default function FeatureCard({ items, t }: { items: FeatureItem[]; t: Translator }) {
   return (
-    <div className="relative z-30 mx-auto -mt-20 w-full max-w-4xl px-2 sm:-mt-24 sm:px-4">
+    <div className="pc-hero-features relative z-30 mx-auto -mt-20 w-full max-w-4xl px-2 sm:-mt-24 sm:px-4">
       {/* Warm cream card (matches the mockup) — solid rgba so it works without a
           Tailwind arbitrary-color-opacity build step. */}
       <div

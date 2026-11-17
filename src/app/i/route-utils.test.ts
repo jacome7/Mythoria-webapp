@@ -55,4 +55,23 @@ describe('legacy intent compatibility route', () => {
     expect(response.headers.get('location')).toBe('https://mythoria.pt/en-US?utm_campaign=test');
     expect(response.headers.get('set-cookie')).toBeNull();
   });
+
+  it.each(['christmas', 'kids'] as const)(
+    'preserves %s and the recipient through the production compatibility redirect',
+    (intent) => {
+      const response = buildLegacyIntentResponse(
+        new NextRequest(`https://mythoria.pt/i/${intent}/child?locale=de-DE&oppref=click`),
+        intent,
+        'child',
+      );
+      expect(response.status).toBe(308);
+      expect(response.headers.get('location')).toBe(
+        `https://mythoria.pt/de-DE?oppref=click&intent=${intent}`,
+      );
+      expect(JSON.parse(response.cookies.get('mythoria_intent_context')!.value)).toEqual({
+        intent,
+        recipient: 'child',
+      });
+    },
+  );
 });

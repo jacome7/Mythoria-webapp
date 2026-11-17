@@ -17,8 +17,6 @@ import { getTemplateForSample } from '@/lib/story-templates/catalog';
 
 interface HomepageBookGalleryProps {
   storyTemplatesEnabled?: boolean;
-  initialIntentContext?: IntentContext | null;
-  intentOverrideActive?: boolean;
 }
 
 const AUTO_SCROLL_INTERVAL_MS = 3600;
@@ -59,18 +57,13 @@ function sortBooksByContext(
 }
 
 export default function HomepageBookGallery({
-  initialIntentContext = null,
-  intentOverrideActive = false,
   storyTemplatesEnabled = false,
 }: HomepageBookGalleryProps) {
   const t = useTranslations('HomePage.gallery');
   const tTemplates = useTranslations('StoryTemplates');
   const tGraphicalStyles = useTranslations('GraphicalStyles');
   const currentLocale = useLocale();
-  const cookieIntentContext = useIntentContext();
-  const intentContext = intentOverrideActive
-    ? initialIntentContext
-    : (initialIntentContext ?? cookieIntentContext);
+  const intentContext = useIntentContext();
 
   const [books, setBooks] = useState<SampleBook[]>([]);
   const [selectedBook, setSelectedBook] = useState<SampleBook | null>(null);

@@ -4,6 +4,8 @@
  */
 
 export const STORY_INTENTS = [
+  'christmas',
+  'kids',
   'romance',
   'milestones_celebrations',
   'kids_bedtime',

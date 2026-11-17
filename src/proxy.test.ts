@@ -23,8 +23,12 @@ jest.mock('@/i18n/routing', () => ({
   },
 }));
 
-import { NextRequest } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
+import { getLandingPageIntentContext } from '@/content/landing-pages';
+import { parseIntentContext } from '@/lib/campaign-context';
+import { INTENT_CONTEXT_COOKIE } from '@/types/intent-context';
 import {
+  applyPublicContextCookies,
   getCanonicalRedirectResponse,
   getCanonicalRequestRedirect,
   getPublicSeoResponse,
@@ -122,5 +126,43 @@ describe('proxy canonical redirects', () => {
       new NextRequest('https://mythoria.pt/undefined/p/undefined'),
     );
     expect(malformedStory?.status).toBe(404);
+  });
+});
+
+describe('campaign intent cookie', () => {
+  function applyCookie(path: string, headers?: HeadersInit) {
+    const request = new NextRequest(`https://mythoria.pt${path}`, { headers });
+    const response = applyPublicContextCookies(request, NextResponse.next());
+    return parseIntentContext(response.cookies.get(INTENT_CONTEXT_COOKIE)?.value);
+  }
+
+  it('preserves the recipient when an explicit homepage intent changes', () => {
+    const existing = encodeURIComponent('{"intent":"romance","recipient":"child"}');
+    const headers = { cookie: `${INTENT_CONTEXT_COOKIE}=${existing}` };
+    expect(applyCookie('/pt-PT?intent=Christmas', headers)).toEqual({
+      intent: 'christmas',
+      recipient: 'child',
+    });
+    expect(applyCookie('/pt-PT?intent=kids', headers)).toEqual({
+      intent: 'kids',
+      recipient: 'child',
+    });
+    expect(applyCookie('/pt-PT?intent=unknown', headers)).toBeNull();
+    expect(applyCookie('/pt-PT', headers)).toBeNull();
+  });
+
+  it('lets explicit intent override the intent of a localized landing page', () => {
+    jest.mocked(getLandingPageIntentContext).mockReturnValue({
+      intent: 'romance',
+    });
+    const path = '/pt-PT/lp/livro-personalizado-para-casais';
+    expect(applyCookie(path)).toEqual({ intent: 'romance' });
+    expect(applyCookie(`${path}?intent=unknown`)).toEqual({ intent: 'romance' });
+    expect(applyCookie(`${path}?intent=christmas`)).toEqual({ intent: 'christmas' });
+    expect(applyCookie(path, { 'next-router-prefetch': '1' })).toBeNull();
+  });
+
+  it('leaves other route query parameters scoped to their own pages', () => {
+    expect(applyCookie('/de-DE/aboutUs?intent=kids')).toBeNull();
   });
 });

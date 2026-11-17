@@ -1,6 +1,6 @@
 'use client';
 
-import Image from 'next/image';
+import ThemedArtwork from '@/components/ThemedArtwork';
 import Link from 'next/link';
 import { useLocale, useTranslations } from 'next-intl';
 import styles from './HomepageCta.module.css';
@@ -13,7 +13,7 @@ export default function HomepageCta() {
   return (
     <section className="my-16">
       <div className={styles.card}>
-        <Image
+        <ThemedArtwork
           src={homepageAsset('cta_decor_left.webp')}
           alt=""
           width={256}
@@ -22,7 +22,7 @@ export default function HomepageCta() {
           className={styles.leaf}
           aria-hidden="true"
         />
-        <Image
+        <ThemedArtwork
           src={homepageAsset('cta_decor_right.webp')}
           alt=""
           width={256}
@@ -31,7 +31,7 @@ export default function HomepageCta() {
           className={styles.mushroom}
           aria-hidden="true"
         />
-        <Image
+        <ThemedArtwork
           src={homepageAsset('sparkle_c.webp')}
           alt=""
           width={128}
@@ -40,7 +40,7 @@ export default function HomepageCta() {
           className={styles.starLeft}
           aria-hidden="true"
         />
-        <Image
+        <ThemedArtwork
           src={homepageAsset('sparkle_b.webp')}
           alt=""
           width={128}

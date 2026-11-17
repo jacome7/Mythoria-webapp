@@ -1,6 +1,6 @@
 'use client';
 
-import Image from 'next/image';
+import ThemedArtwork from '@/components/ThemedArtwork';
 import { useState } from 'react';
 import type { CSSProperties } from 'react';
 import { useTranslations } from 'next-intl';
@@ -49,7 +49,7 @@ function FeatureCard({
     >
       <span className="flex h-full items-start gap-4 p-5 text-left sm:gap-5 sm:p-6">
         <span className={styles.iconStage} style={iconStyle} aria-hidden="true">
-          <Image
+          <ThemedArtwork
             src={icon.src}
             alt=""
             width={icon.width}

@@ -243,3 +243,28 @@
     filter: brightness(1.05);
   }
 }
+
+:global([data-website-theme='christmas']) .footer {
+  --footer-navy: #fff7e6;
+  background-color: #17374c;
+}
+
+:global([data-website-theme='christmas']) .footer::before {
+  height: 1.6rem;
+  background: linear-gradient(var(--pc-app-paper, #fff7e6), transparent);
+}
+
+:global([data-website-theme='christmas']) .primaryLink,
+:global([data-website-theme='christmas']) .legal {
+  text-shadow: 0 1px 4px #102838;
+}
+
+:global([data-website-theme='christmas']) .divider::before,
+:global([data-website-theme='christmas']) .divider::after {
+  background: #f1d69c80;
+}
+
+:global([data-website-theme='christmas']) .separator,
+:global([data-website-theme='christmas']) .legalSeparator {
+  color: #f1d69c;
+}

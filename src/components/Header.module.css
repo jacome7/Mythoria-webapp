@@ -397,3 +397,14 @@
     filter: drop-shadow(0 9px 7px rgba(28, 43, 35, 0.28)) brightness(1.05);
   }
 }
+
+:global([data-website-theme='christmas']) .header {
+  background: #fff7e9;
+  border-color: #decbaa;
+}
+
+@media (max-width: 640px) {
+  :global([data-website-theme='christmas']) .header:not(.compactWizard) {
+    min-height: 3.45rem;
+  }
+}

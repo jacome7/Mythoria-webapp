@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import LandingCreationLink from './landing-pages/LandingCreationLink';
 import Image from 'next/image';
+import ThemedArtwork from '@/components/ThemedArtwork';
 import { UserButton, useUser } from '@clerk/nextjs';
 import { useTranslations } from 'next-intl';
 import { useEffect, useState } from 'react';
@@ -310,7 +311,7 @@ const Header = ({ compactWizard = false }: { compactWizard?: boolean }) => {
         {!isSignedIn ? (
           <div className={styles.authSlot}>
             <Link href={`/${locale}/sign-in`} className={styles.signInButton}>
-              <Image
+              <ThemedArtwork
                 src={homepageAsset('button.webp')}
                 alt=""
                 fill

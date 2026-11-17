@@ -1,7 +1,7 @@
 'use client';
 
 import { Handshake, MapPin } from 'lucide-react';
-import Image from 'next/image';
+import ThemedArtwork from '@/components/ThemedArtwork';
 import { useRef } from 'react';
 import { useTranslations } from 'next-intl';
 import PartnershipForm from './PartnershipForm';
@@ -29,7 +29,7 @@ const PartnersPageContent = () => {
   return (
     <div className={styles.pageShell}>
       <section className={styles.heroCard}>
-        <Image
+        <ThemedArtwork
           className={`${styles.decorImage} ${styles.heroStarTop}`}
           src="/Papercut_icons/sparkle_a.webp"
           alt=""
@@ -54,21 +54,21 @@ const PartnersPageContent = () => {
             </div>
           </div>
           <div className={styles.heroArt} aria-hidden="true">
-            <Image
+            <ThemedArtwork
               className={`${styles.decorImage} ${styles.heroCloud}`}
               src="/Papercut_icons/cloud_right.webp"
               alt=""
               width={489}
               height={317}
             />
-            <Image
+            <ThemedArtwork
               className={`${styles.decorImage} ${styles.heroStarSide}`}
               src="/Papercut_icons/sparkle_b.webp"
               alt=""
               width={128}
               height={136}
             />
-            <Image
+            <ThemedArtwork
               className={styles.heroImage}
               src="/Papercut_icons/partners_page.webp"
               alt=""

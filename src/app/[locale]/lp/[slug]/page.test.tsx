@@ -10,6 +10,8 @@ const permanentRedirectMock = jest.fn((url: string) => {
 jest.mock('next/navigation', () => ({
   notFound: () => notFoundMock(),
   permanentRedirect: (url: string) => permanentRedirectMock(url),
+  usePathname: () => '/pt-PT/lp/livro-personalizado-para-casais',
+  useSearchParams: () => new URLSearchParams(),
 }));
 
 jest.mock('next-intl/server', () => ({

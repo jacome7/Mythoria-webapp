@@ -1,6 +1,6 @@
 'use client';
 
-import Image from 'next/image';
+import ThemedArtwork from '@/components/ThemedArtwork';
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import styles from './StoryCounter.module.css';
@@ -89,7 +89,7 @@ const StoryCounter = ({ count, description, className }: StoryCounterProps) => {
 
   return (
     <div className={`${styles.counterCard} ${className ?? ''}`}>
-      <Image
+      <ThemedArtwork
         src={homepageAsset('sparkle_a.webp')}
         alt=""
         width={128}
@@ -97,7 +97,7 @@ const StoryCounter = ({ count, description, className }: StoryCounterProps) => {
         className={styles.starOne}
         aria-hidden="true"
       />
-      <Image
+      <ThemedArtwork
         src={homepageAsset('sparkle_b.webp')}
         alt=""
         width={128}
@@ -121,7 +121,7 @@ const StoryCounter = ({ count, description, className }: StoryCounterProps) => {
           )}
           <div className={styles.countDescription}>{displayDescription}</div>
         </div>
-        <Image
+        <ThemedArtwork
           src={homepageAsset('number_of_stories_icon.webp')}
           alt=""
           width={128}

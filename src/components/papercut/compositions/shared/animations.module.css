@@ -126,6 +126,12 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .root :global(.pc-motion-layer),
+  .root :global(.pc-person-slide) {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+
   .root :global(.pc-img) {
     animation: none !important;
     will-change: auto !important;

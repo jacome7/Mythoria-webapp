@@ -1,32 +1,39 @@
 'use client';
-import React from 'react';
+import { useEffect, useSyncExternalStore } from 'react';
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { PapercutCard, PapercutEmptyState, PapercutPage } from '@/components/papercut';
 
-// Separated client component to satisfy lint rules and avoid require()
-const OfflineClient: React.FC = () => {
-  const t = useTranslations('Offline');
-  const [online, setOnline] = React.useState(
-    typeof navigator !== 'undefined' ? navigator.onLine : false,
-  );
-  const [redirecting, setRedirecting] = React.useState(false);
+function subscribeToConnectivity(onChange: () => void) {
+  window.addEventListener('online', onChange);
+  window.addEventListener('offline', onChange);
+  return () => {
+    window.removeEventListener('online', onChange);
+    window.removeEventListener('offline', onChange);
+  };
+}
 
-  React.useEffect(() => {
+export default function OfflineClient() {
+  const t = useTranslations('Offline');
+  const online = useSyncExternalStore(
+    subscribeToConnectivity,
+    () => navigator.onLine,
+    () => false,
+  );
+
+  useEffect(() => {
+    let redirectTimer: number | undefined;
     function handleOnline() {
-      setOnline(true);
-      setRedirecting(true);
-      setTimeout(() => {
-        window.location.replace('/');
-      }, 1200);
+      window.clearTimeout(redirectTimer);
+      redirectTimer = window.setTimeout(() => window.location.replace('/'), 1200);
     }
     function handleOffline() {
-      setOnline(false);
-      setRedirecting(false);
+      window.clearTimeout(redirectTimer);
     }
     window.addEventListener('online', handleOnline);
     window.addEventListener('offline', handleOffline);
     return () => {
+      window.clearTimeout(redirectTimer);
       window.removeEventListener('online', handleOnline);
       window.removeEventListener('offline', handleOffline);
     };
@@ -56,15 +63,9 @@ const OfflineClient: React.FC = () => {
           <li>{t('tips.wait')}</li>
         </ul>
         <div className="mt-6 text-sm opacity-70" role="status" aria-live="polite">
-          {redirecting
-            ? t('status.backOnline')
-            : online
-              ? t('status.backOnline')
-              : t('status.stillOffline')}
+          {online ? t('status.backOnline') : t('status.stillOffline')}
         </div>
       </PapercutCard>
     </PapercutPage>
   );
-};
-
-export default OfflineClient;
+}

@@ -193,6 +193,8 @@ export interface HeroComposition {
   decor?: Partial<Record<DecorSlot, DecorTuning>>;
   /** Person carousel band geometry overrides. */
   person?: PersonPlacement;
+  /** Alternate person description for artwork that shares copy with another composition. */
+  personAltKey?: `intents.${HeroStyleId}.hero.alt.person`;
   /** How long each person stays centered before rotating, ms. Default 4000. */
   personHoldMs?: number;
   /** Canonical story intent carried into the creation journey. */

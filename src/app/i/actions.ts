@@ -9,8 +9,7 @@ import {
 import { parseIntentContext, serializeIntentContext } from '@/lib/campaign-context';
 
 /**
- * Store intent context in an HTTP-only cookie
- * This is called from the intent detection route before redirecting
+ * Store intent context in a cookie shared by the server and browser.
  */
 export async function storeIntentContext(context: IntentContext): Promise<void> {
   const cookieStore = await cookies();
@@ -25,8 +24,7 @@ export async function storeIntentContext(context: IntentContext): Promise<void> 
 }
 
 /**
- * Retrieve intent context from cookie
- * This is called on the homepage to pass context to InfiniteGallery
+ * Retrieve the validated intent context for the server-rendered website theme.
  */
 export async function getIntentContext(): Promise<IntentContext | null> {
   const cookieStore = await cookies();

@@ -1,7 +1,7 @@
 import { buildHeroCtaHref } from './cta';
 
 describe('buildHeroCtaHref', () => {
-  it.each(['romance', 'grandparents', 'sports_teams', 'kids_adventures'] as const)(
+  it.each(['christmas', 'romance', 'grandparents', 'sports_teams', 'kids_adventures'] as const)(
     'sends signed-out %s visitors to sign-up and preserves their story intent',
     (intent) => {
       expect(buildHeroCtaHref({ locale: 'pt-PT', intent, isSignedIn: false })).toBe(
