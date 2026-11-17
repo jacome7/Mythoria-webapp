@@ -57,6 +57,15 @@ jest.mock('@/lib/product-generation', () => ({
   compensateProductGeneration: (...args: unknown[]) => compensateProductGenerationMock(...args),
 }));
 
+const mockAdContext = {
+  adConsent: 'denied',
+  sourceUrl: 'https://mythoria.pt',
+  capturedAt: '2026-11-16T00:00:00.000Z',
+};
+jest.mock('@/lib/openai-ads/context', () => ({
+  resolveAdContextSafely: jest.fn(async () => mockAdContext),
+}));
+
 import type { NextRequest } from 'next/server';
 import { InsufficientProductCreditsError } from '@/lib/product-generation';
 import { POST } from './route';
@@ -143,5 +152,37 @@ describe('POST /api/stories/[storyId]/self-print', () => {
       'queue',
       'workflow_enqueue_failed',
     );
+  });
+
+  it('passes the ad context to the durable request and returns the self-print event id', async () => {
+    getAuthorCreditBalanceMock.mockResolvedValue(10);
+    startProductGenerationMock.mockResolvedValue({
+      request: { runId: 'workflow-id-fixed', status: 'pending' },
+      remainingCredits: 6,
+      duplicate: false,
+    });
+    sgwFetchMock.mockResolvedValue({
+      ok: true,
+      status: 202,
+      json: async () => ({
+        success: true,
+        workflowId: 'workflow-id-fixed',
+        executionId: 'execution-1',
+        recipients: [{ email: 'reader@example.com' }],
+      }),
+    });
+
+    const response = (await POST(request({ emails: ['reader@example.com'] }), {
+      params: Promise.resolve({ storyId: 'story-1' }),
+    })) as { status: number; json: () => Promise<unknown> };
+
+    expect(response.status).toBe(200);
+    expect(startProductGenerationMock).toHaveBeenCalledWith(
+      expect.objectContaining({ actionType: 'self_print', adContext: mockAdContext }),
+    );
+    await expect(response.json()).resolves.toMatchObject({
+      success: true,
+      adEventId: 'self_print_workflow-id-fixed',
+    });
   });
 });

@@ -12,6 +12,8 @@ import {
 } from 'drizzle-orm/pg-core';
 import { authors } from './authors';
 import { stories } from './stories';
+import type { OpenAiEventData } from '@/lib/openai-ads/events';
+import type { AdContext } from '@/lib/openai-ads/types';
 
 export interface AnalyticsConsent {
   analyticsStorage: 'granted';
@@ -57,6 +59,10 @@ export const analyticsAttributions = pgTable(
     storyShareScope: varchar('story_share_scope', { length: 32 }),
     storyShareTouchedAt: timestamp('story_share_touched_at', { withTimezone: true }),
     storyShareExpiresAt: timestamp('story_share_expires_at', { withTimezone: true }),
+    // OpenAI Ads click/browser references; stored only with advertising consent.
+    oppref: varchar('oppref', { length: 512 }),
+    opprefCapturedAt: timestamp('oppref_captured_at', { withTimezone: true }),
+    obref: varchar('obref', { length: 255 }),
     createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
     linkedAt: timestamp('linked_at', { withTimezone: true }),
     expiresAt: timestamp('expires_at', { withTimezone: true }).notNull(),
@@ -200,6 +206,8 @@ export const productGenerationRequests = pgTable(
       .notNull(),
     // Logical reference to survey_reward_entitlements (no FK: avoids a circular schema import).
     rewardEntitlementId: uuid('reward_entitlement_id'),
+    // OpenAI Ads context captured at request time, read when the run is confirmed queued.
+    adContext: jsonb('ad_context').$type<AdContext>(),
     createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
     updatedAt: timestamp('updated_at', { withTimezone: true }).defaultNow().notNull(),
   },
@@ -219,6 +227,52 @@ export const productGenerationRequests = pgTable(
   }),
 );
 
+/**
+ * Durable outbox of server-side ad conversions (OpenAI Conversions API).
+ * `adContext` may hold a raw IP / user agent and must be nulled once the row is delivered.
+ */
+export const adConversionOutbox = pgTable(
+  'ad_conversion_outbox',
+  {
+    outboxId: uuid('outbox_id').primaryKey().defaultRandom(),
+    destination: varchar('destination', { length: 32 }).default('openai').notNull(),
+    eventId: varchar('event_id', { length: 255 }).notNull(),
+    eventType: varchar('event_type', { length: 40 }).notNull(),
+    customEventName: varchar('custom_event_name', { length: 64 }),
+    // customEventName ?? eventType: the name the destination deduplicates on.
+    dedupeName: varchar('dedupe_name', { length: 64 }).notNull(),
+    sourceOutboxId: uuid('source_outbox_id').references(() => analyticsOutbox.outboxId, {
+      onDelete: 'set null',
+    }),
+    authorId: uuid('author_id').references(() => authors.authorId, { onDelete: 'set null' }),
+    data: jsonb('data').$type<OpenAiEventData>().notNull(),
+    adContext: jsonb('ad_context').$type<AdContext>(),
+    occurredAt: timestamp('occurred_at', { withTimezone: true }).defaultNow().notNull(),
+    availableAt: timestamp('available_at', { withTimezone: true }).defaultNow().notNull(),
+    attempts: integer('attempts').default(0).notNull(),
+    claimToken: uuid('claim_token'),
+    claimedAt: timestamp('claimed_at', { withTimezone: true }),
+    deliveredAt: timestamp('delivered_at', { withTimezone: true }),
+    skippedAt: timestamp('skipped_at', { withTimezone: true }),
+    lastError: text('last_error'),
+    createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
+  },
+  (table) => ({
+    dedupeUnique: uniqueIndex('ad_conversion_outbox_dedupe_unique').on(
+      table.destination,
+      table.dedupeName,
+      table.eventId,
+    ),
+    pendingIdx: index('ad_conversion_outbox_pending_idx').on(
+      table.deliveredAt,
+      table.skippedAt,
+      table.availableAt,
+    ),
+    sourceOutboxIdx: index('ad_conversion_outbox_source_outbox_id_idx').on(table.sourceOutboxId),
+    authorIdIdx: index('ad_conversion_outbox_author_id_idx').on(table.authorId),
+  }),
+);
+
 export type AnalyticsAttribution = typeof analyticsAttributions.$inferSelect;
 export type NewAnalyticsAttribution = typeof analyticsAttributions.$inferInsert;
 export type AnalyticsOutboxEntry = typeof analyticsOutbox.$inferSelect;
@@ -227,3 +281,5 @@ export type StoryGenerationRequest = typeof storyGenerationRequests.$inferSelect
 export type NewStoryGenerationRequest = typeof storyGenerationRequests.$inferInsert;
 export type ProductGenerationRequest = typeof productGenerationRequests.$inferSelect;
 export type NewProductGenerationRequest = typeof productGenerationRequests.$inferInsert;
+export type AdConversionOutboxEntry = typeof adConversionOutbox.$inferSelect;
+export type NewAdConversionOutboxEntry = typeof adConversionOutbox.$inferInsert;

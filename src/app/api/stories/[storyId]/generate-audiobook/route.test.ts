@@ -50,6 +50,15 @@ jest.mock('@/lib/product-generation', () => ({
   compensateProductGeneration: (...args: unknown[]) => compensateProductGenerationMock(...args),
 }));
 
+const mockAdContext = {
+  adConsent: 'granted',
+  sourceUrl: 'https://mythoria.pt/en-US/stories/listen/:id',
+  capturedAt: '2026-11-16T00:00:00.000Z',
+};
+jest.mock('@/lib/openai-ads/context', () => ({
+  resolveAdContextSafely: jest.fn(async () => mockAdContext),
+}));
+
 import type { NextRequest } from 'next/server';
 import { POST } from './route';
 
@@ -169,6 +178,7 @@ describe('POST /api/stories/[storyId]/generate-audiobook', () => {
         storyId: 'story-1',
         idempotencyKey: 'request-1',
         creditsSpent: 5,
+        adContext: mockAdContext,
       }),
     );
     expect(publishAudiobookRequestMock).toHaveBeenCalledWith(
@@ -178,6 +188,10 @@ describe('POST /api/stories/[storyId]/generate-audiobook', () => {
       publishAudiobookRequestMock.mock.invocationCallOrder[0],
     );
     expect(markProductGenerationQueuedMock).toHaveBeenCalledWith('run-fixed-123', 'message-1');
+    await expect(response.json()).resolves.toMatchObject({
+      runId: 'run-fixed-123',
+      adEventId: 'audiobook_run-fixed-123',
+    });
   });
 
   it('compensates credits idempotently and reverts status when publish fails', async () => {

@@ -6,6 +6,9 @@ const transactionMock = jest.fn();
 const publishStoryRequestMock = jest.fn();
 const validateEventMock = jest.fn();
 const sendEventMock = jest.fn();
+const fanOutAdConversionsMock = jest.fn();
+const deliverAdConversionsMock = jest.fn();
+const scrubPaymentOrderAdContextMock = jest.fn();
 
 jest.mock('@/db', () => ({
   db: {
@@ -26,7 +29,19 @@ jest.mock('./ga4', () => ({
   },
 }));
 
-import { compensateGeneration, deliverAnalytics, publishGenerations } from './outbox';
+jest.mock('@/lib/openai-ads/outbox', () => ({
+  fanOutAdConversions: () => fanOutAdConversionsMock(),
+  deliverAdConversions: () => deliverAdConversionsMock(),
+  scrubPaymentOrderAdContext: () => scrubPaymentOrderAdContextMock(),
+  safeAdErrorMessage: () => 'query failed',
+}));
+
+import {
+  compensateGeneration,
+  deliverAnalytics,
+  drainDurableOutboxes,
+  publishGenerations,
+} from './outbox';
 
 function selectionFor(rows: unknown[]) {
   const limit = jest.fn().mockResolvedValue(rows);
@@ -342,5 +357,46 @@ describe('durable outbox drains', () => {
     );
     expect(set.mock.calls[0]?.[0]).not.toHaveProperty('status');
     expect(set).toHaveBeenNthCalledWith(2, expect.objectContaining({ status: 'delivery_failed' }));
+  });
+});
+
+describe('OpenAI Ads drain', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+    mockPendingRows([]);
+    fanOutAdConversionsMock.mockResolvedValue({ created: 0 });
+    deliverAdConversionsMock.mockResolvedValue({
+      delivered: 1,
+      failed: 0,
+      skipped: 0,
+      deferred: 0,
+    });
+  });
+
+  it('scrubs the payment-order ad context after delivering conversions', async () => {
+    scrubPaymentOrderAdContextMock.mockResolvedValue({ scrubbed: 2 });
+
+    const result = await drainDurableOutboxes();
+
+    expect(result.ads).toEqual({
+      fanOut: { created: 0 },
+      delivery: { delivered: 1, failed: 0, skipped: 0, deferred: 0 },
+      paymentScrub: { scrubbed: 2 },
+    });
+    expect(deliverAdConversionsMock.mock.invocationCallOrder[0]).toBeLessThan(
+      scrubPaymentOrderAdContextMock.mock.invocationCallOrder[0],
+    );
+  });
+
+  it('isolates a failed scrub from the rest of the drain', async () => {
+    jest.spyOn(console, 'error').mockImplementation(() => undefined);
+    scrubPaymentOrderAdContextMock.mockRejectedValue(new Error('boom'));
+
+    const result = await drainDurableOutboxes();
+
+    expect(result.ads.paymentScrub).toEqual({ error: 'payment_scrub_failed' });
+    expect(result.ads.delivery).toEqual({ delivered: 1, failed: 0, skipped: 0, deferred: 0 });
+    expect(result.analytics).toEqual({ delivered: 0, failed: 0, skipped: 0, deferred: 0 });
+    expect(result.generation).toEqual({ published: 0, failed: 0 });
   });
 });

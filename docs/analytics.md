@@ -46,6 +46,10 @@ The workflow service records terminal events only after its authoritative termin
 
 `value` is net item revenue excluding tax and shipping. `tax` and `shipping` are separate. Items carry authoritative discount, coupon, variant, quantity, and net unit price where available. `gross_value`, `gross_unit_price`, and `payment_type` are not sent. A partial refund includes items only when Stripe identifies them; otherwise it contains the authoritative partial value without an invented allocation.
 
+## OpenAI ChatGPT Ads
+
+Conversions for OpenAI ChatGPT Ads (browser Pixel plus server Conversions API) are documented in [openai-ads.md](openai-ads.md). They use their own `ad_conversion_outbox` table and are gated by Advertising consent, not analytics consent. Delivery shares the scheduler drain: `POST /api/internal/analytics/drain` runs `drainDurableOutboxes()`, which also fans SGW `story_generation_completed` rows out into `story_generated` and delivers the ad outbox. Ad failures are isolated from GA4 delivery and generation publishing.
+
 ## References
 
 - [GA4 recommended events](https://developers.google.com/analytics/devguides/collection/ga4/reference/events)

@@ -11,6 +11,12 @@ import {
   type AnalyticsConsent,
 } from '@/db/schema';
 import { publishStoryRequest } from '@/lib/pubsub';
+import {
+  deliverAdConversions,
+  fanOutAdConversions,
+  safeAdErrorMessage,
+  scrubPaymentOrderAdContext,
+} from '@/lib/openai-ads/outbox';
 import { ga4Service } from './ga4';
 import { ANALYTICS_BASE_URL, sanitizeAnalyticsPageUrl } from './page-context';
 import { storyShareEventParams, storyShareFromCampaign } from './story-share';
@@ -510,9 +516,41 @@ export async function publishGenerations(): Promise<{ published: number; failed:
   return { published, failed };
 }
 
+async function drainAdConversions() {
+  // OpenAI Ads delivery is isolated: its failures must never break GA4 or generation draining.
+  let fanOut: { created: number } | { error: string };
+  try {
+    fanOut = await fanOutAdConversions();
+  } catch (error) {
+    console.error('[AdConversionOutbox] fan-out failed', { error: safeAdErrorMessage(error) });
+    fanOut = { error: 'fan_out_failed' };
+  }
+  let delivery: Awaited<ReturnType<typeof deliverAdConversions>> | { error: string };
+  try {
+    delivery = await deliverAdConversions();
+  } catch (error) {
+    console.error('[AdConversionOutbox] delivery failed', { error: safeAdErrorMessage(error) });
+    delivery = { error: 'delivery_failed' };
+  }
+  let paymentScrub: { scrubbed: number } | { error: string };
+  try {
+    paymentScrub = await scrubPaymentOrderAdContext();
+  } catch (error) {
+    console.error('[AdConversionOutbox] payment ad context scrub failed', {
+      error: safeAdErrorMessage(error),
+    });
+    paymentScrub = { error: 'payment_scrub_failed' };
+  }
+  return { fanOut, delivery, paymentScrub };
+}
+
 export async function drainDurableOutboxes() {
-  const [generation, analytics] = await Promise.all([publishGenerations(), deliverAnalytics()]);
-  return { generation, analytics };
+  const [generation, analytics, ads] = await Promise.all([
+    publishGenerations(),
+    deliverAnalytics(),
+    drainAdConversions(),
+  ]);
+  return { generation, analytics, ads };
 }
 
 export function normalizeAnalyticsConsent(

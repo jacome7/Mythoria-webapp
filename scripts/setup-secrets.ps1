@@ -113,6 +113,7 @@ $SgwWebhookSecret = $env:SGW_WEBHOOK_SECRET
 $AdminApiKey = $env:ADMIN_API_KEY
 $NotificationApiKey = $env:NOTIFICATION_ENGINE_API_KEY
 $LeadBounceApiSecret = $env:LEAD_BOUNCE_API_SECRET
+$OpenAiAdsCapiKey = $env:OPENAI_ADS_CAPI_KEY # optional: OpenAI ChatGPT Ads Conversions API key
 
 Write-Host "Setting up Google Cloud Secret Manager secrets for project: $ProjectId" -ForegroundColor Green
 
@@ -286,6 +287,14 @@ $NotificationApiKey.Trim() | Set-Content -Path temp_secret.txt -NoNewline; gclou
 Write-Host "Creating Lead Bounce API secret..." -ForegroundColor Blue
 $LeadBounceApiSecret.Trim() | Set-Content -Path temp_secret.txt -NoNewline; gcloud secrets create LEAD_BOUNCE_API_SECRET --data-file=temp_secret.txt --replication-policy='automatic'; Remove-Item temp_secret.txt
 
+# Optional: OpenAI ChatGPT Ads CAPI key (only created when a value is supplied via env, never stored in files)
+if ($OpenAiAdsCapiKey) {
+    Write-Host "Creating or updating OpenAI Ads CAPI key secret..." -ForegroundColor Blue
+    Set-GcpSecretValue -Name OPENAI_ADS_CAPI_KEY -Value $OpenAiAdsCapiKey
+} else {
+    Write-Host "OPENAI_ADS_CAPI_KEY not provided; skipping OpenAI Ads CAPI secret (optional)." -ForegroundColor Yellow
+}
+
 # Grant permissions to Cloud Build service account
 Write-Host "Granting permissions to Cloud Build service account..." -ForegroundColor Blue
 $projectNumber = (gcloud projects describe $ProjectId --format='value(projectNumber)')
@@ -307,6 +316,7 @@ gcloud secrets add-iam-policy-binding STRIPE_WEBHOOK_SECRET --member="serviceAcc
 gcloud secrets add-iam-policy-binding KEYINVOICE_API_KEY --member="serviceAccount:$cloudBuildServiceAccount" --role="roles/secretmanager.secretAccessor"
 gcloud secrets add-iam-policy-binding SGW_WEBHOOK_SECRET --member="serviceAccount:$cloudBuildServiceAccount" --role="roles/secretmanager.secretAccessor"
 gcloud secrets add-iam-policy-binding LEAD_BOUNCE_API_SECRET --member="serviceAccount:$cloudBuildServiceAccount" --role="roles/secretmanager.secretAccessor"
+if ($OpenAiAdsCapiKey) { gcloud secrets add-iam-policy-binding OPENAI_ADS_CAPI_KEY --member="serviceAccount:$cloudBuildServiceAccount" --role="roles/secretmanager.secretAccessor" }
 
 # Grant permissions to Cloud Run service account (Compute Engine default)
 Write-Host "Granting permissions to Cloud Run service account..." -ForegroundColor Blue
@@ -328,6 +338,7 @@ gcloud secrets add-iam-policy-binding STRIPE_WEBHOOK_SECRET --member="serviceAcc
 gcloud secrets add-iam-policy-binding KEYINVOICE_API_KEY --member="serviceAccount:$computeServiceAccount" --role="roles/secretmanager.secretAccessor"
 gcloud secrets add-iam-policy-binding SGW_WEBHOOK_SECRET --member="serviceAccount:$computeServiceAccount" --role="roles/secretmanager.secretAccessor"
 gcloud secrets add-iam-policy-binding LEAD_BOUNCE_API_SECRET --member="serviceAccount:$computeServiceAccount" --role="roles/secretmanager.secretAccessor"
+if ($OpenAiAdsCapiKey) { gcloud secrets add-iam-policy-binding OPENAI_ADS_CAPI_KEY --member="serviceAccount:$computeServiceAccount" --role="roles/secretmanager.secretAccessor" }
 
 
 Write-Host "✅ Secrets setup completed successfully!" -ForegroundColor Green
@@ -349,6 +360,7 @@ Write-Host "  - STRIPE_WEBHOOK_SECRET" -ForegroundColor White
 Write-Host "  - KEYINVOICE_API_KEY" -ForegroundColor White
 Write-Host "  - SGW_WEBHOOK_SECRET" -ForegroundColor White
 Write-Host "  - LEAD_BOUNCE_API_SECRET" -ForegroundColor White
+if ($OpenAiAdsCapiKey) { Write-Host "  - OPENAI_ADS_CAPI_KEY" -ForegroundColor White }
 
 Write-Host ""
 Write-Host "To verify secrets were created, run:" -ForegroundColor Cyan

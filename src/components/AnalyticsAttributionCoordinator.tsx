@@ -22,6 +22,7 @@ import {
   type ConsentUpdatedDetail,
 } from '@/lib/consent';
 import { extractLandingSlug, sanitizeInternalReturnPath } from '@/lib/auth-return';
+import { OAIQ_LOADED_EVENT, hasAdvertisingConsent } from '@/lib/openai-ads/pixel';
 
 const PERSISTED_CAMPAIGN_KEYS = [
   'utm_source',
@@ -33,7 +34,14 @@ const PERSISTED_CAMPAIGN_KEYS = [
   'gclid',
   'gbraid',
   'wbraid',
+  'oppref',
 ] as const;
+
+const OPPREF_QUERY_KEY = 'oppref';
+/** Time the OpenAI Pixel SDK gets to read `oppref` from the URL after it loads. */
+const OPPREF_SDK_READ_DELAY_MS = 1_500;
+/** Upper bound on keeping `oppref` in the URL while waiting for the Pixel to load. */
+const OPPREF_STRIP_TIMEOUT_MS = 5_000;
 
 let transientCampaign: CampaignParams = {};
 let transientLandingPath: string | undefined;
@@ -46,6 +54,7 @@ let linkedUserId: string | undefined;
 let currentAuthenticatedUserId: string | undefined;
 let linkedCampaignUserId: string | undefined;
 let campaignLinkInFlight: Promise<void> | undefined;
+let pendingOpprefStrip: (() => void) | undefined;
 const LINK_RETRY_DELAYS_MS = [0, 250, 500, 1_000, 2_000] as const;
 // Twelve attempts over 5m04s cover the worker's five-minute claim lease.
 // After exhaustion there is no timer loop; a later navigation/capture can try again.
@@ -119,9 +128,51 @@ function appendTransientReturnContext(url: URL): void {
   }
 }
 
+function removeQueryParams(keys: readonly string[]): void {
+  const url = new URL(window.location.href);
+  if (!keys.some((key) => url.searchParams.has(key))) return;
+  for (const key of keys) url.searchParams.delete(key);
+  window.history.replaceState(window.history.state, '', `${url.pathname}${url.search}${url.hash}`);
+}
+
+function stripOpprefNow(): void {
+  pendingOpprefStrip?.();
+  removeQueryParams([OPPREF_QUERY_KEY]);
+}
+
+/**
+ * The OpenAI Pixel reads `oppref` from the landing URL itself, so with Advertising consent the
+ * parameter stays until the SDK has loaded (plus a short read delay), or until a timeout.
+ */
+function scheduleOpprefStrip(): void {
+  if (pendingOpprefStrip) return;
+  const timers = new Set<number>();
+  const finish = () => {
+    for (const timer of timers) window.clearTimeout(timer);
+    window.removeEventListener(OAIQ_LOADED_EVENT, handleLoaded);
+    pendingOpprefStrip = undefined;
+    removeQueryParams([OPPREF_QUERY_KEY]);
+  };
+  const handleLoaded = () => {
+    for (const timer of timers) window.clearTimeout(timer);
+    timers.clear();
+    timers.add(window.setTimeout(finish, OPPREF_SDK_READ_DELAY_MS));
+  };
+  pendingOpprefStrip = finish;
+  if (window.__mythoriaOaiqLoaded) {
+    handleLoaded();
+  } else {
+    timers.add(window.setTimeout(finish, OPPREF_STRIP_TIMEOUT_MS));
+    window.addEventListener(OAIQ_LOADED_EVENT, handleLoaded, { once: true });
+  }
+}
+
 function stripCampaignFromCurrentUrl(): void {
   const url = new URL(window.location.href);
-  for (const key of CAMPAIGN_QUERY_KEYS) url.searchParams.delete(key);
+  const deferOppref = url.searchParams.has(OPPREF_QUERY_KEY) && hasAdvertisingConsent();
+  for (const key of CAMPAIGN_QUERY_KEYS) {
+    if (key !== OPPREF_QUERY_KEY || !deferOppref) url.searchParams.delete(key);
+  }
   for (const key of [
     'landing_path',
     'landingPath',
@@ -133,6 +184,8 @@ function stripCampaignFromCurrentUrl(): void {
     url.searchParams.delete(key);
   }
   window.history.replaceState(window.history.state, '', `${url.pathname}${url.search}${url.hash}`);
+  if (deferOppref) scheduleOpprefStrip();
+  else pendingOpprefStrip?.();
 }
 
 async function linkAuthenticatedAttribution(userId: string): Promise<void> {
@@ -311,6 +364,7 @@ export default function AnalyticsAttributionCoordinator() {
     const handleConsentUpdated = (event: Event) => {
       clearGoogleAnalyticsContextCache();
       const detail = (event as CustomEvent<ConsentUpdatedDetail>).detail;
+      if (detail.preferences?.advertising !== true) stripOpprefNow();
       if (detail.state.analytics_storage !== 'granted') {
         transientCampaign = {};
         transientLandingPath = undefined;

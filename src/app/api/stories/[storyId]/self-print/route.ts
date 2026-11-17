@@ -7,6 +7,8 @@ import { SELF_PRINTING_SERVICE_CODE } from '@/constants/pricing';
 import { resolveServerAnalyticsContext } from '@/lib/analytics/server-context';
 import { InsufficientProductCreditsError, startProductGeneration } from '@/lib/product-generation';
 import { launchSelfPrintWorkflow } from '@/lib/product-launch';
+import { resolveAdContextSafely } from '@/lib/openai-ads/context';
+import { adEventId } from '@/lib/openai-ads/events';
 
 interface SelfPrintRequestBody {
   email?: string;
@@ -116,6 +118,11 @@ export async function POST(
       authorId: author.authorId,
       storedConsentValue: request.cookies.get('mythoria_consent')?.value,
     });
+    const adContext = await resolveAdContextSafely({
+      headers: request.headers,
+      cookies: request.cookies,
+      authorId: author.authorId,
+    });
     const started = await startProductGeneration({
       actionType: 'self_print',
       authorId: author.authorId,
@@ -129,6 +136,7 @@ export async function POST(
       analyticsConsent: analytics.consent,
       primaryIntent: analytics.primaryIntent,
       landingSlug: analytics.landingSlug,
+      adContext,
     });
     const workflowId = started.request.runId;
 
@@ -148,6 +156,7 @@ export async function POST(
         recipients: normalizedRequestedEmails,
         creditsDeducted: pricing.credits,
         balance: { previous: currentBalance, current: started.remainingCredits },
+        adEventId: adEventId.selfPrint(workflowId),
       });
     }
 
@@ -189,6 +198,7 @@ export async function POST(
         previous: currentBalance,
         current: started.remainingCredits,
       },
+      adEventId: adEventId.selfPrint(workflowId),
     });
   } catch (error) {
     if (error instanceof InsufficientProductCreditsError) {

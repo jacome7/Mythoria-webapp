@@ -8,6 +8,8 @@ import { eq, and, isNull, sql } from 'drizzle-orm';
 import { detectUserLocaleFromEmail } from '@/utils/locale-utils';
 import { authorService } from '@/db/services';
 import { clerkCreationTime, canRecoverSignUp, signUpOutboxEntry } from '@/lib/analytics/signup';
+import { conversions } from '@/lib/openai-ads/events';
+import { enqueueAdConversion } from '@/lib/openai-ads/outbox';
 
 async function ensureSignUpOutbox(
   clerkUserId: string,
@@ -36,6 +38,13 @@ async function ensureSignUpOutbox(
         params: sql`${analyticsOutbox.params} || ${JSON.stringify({ method })}::jsonb`,
       },
     });
+  // Idempotent (unique event id): the author-creation transaction usually enqueued it already.
+  await enqueueAdConversion(db, {
+    conversion: conversions.registrationCompleted(clerkUserId),
+    authorId,
+    adContext: null,
+    occurredAt,
+  });
 }
 
 export async function POST(req: Request) {

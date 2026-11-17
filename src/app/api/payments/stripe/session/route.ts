@@ -1,7 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 import { fiscalDocumentService, paymentService } from '@/db/services';
-import { buildPaymentOrderPurchasePayload } from '@/db/services/payment';
+import {
+  buildCreditOrderConversionInput,
+  buildPaymentOrderPurchasePayload,
+} from '@/db/services/payment';
+import type { CreditPackageConversionInput } from '@/lib/openai-ads/events';
 import { getCurrentAuthor } from '@/lib/auth';
 
 export const runtime = 'nodejs';
@@ -14,6 +18,24 @@ interface StripeMetadata {
     paymentMethodType?: string | null;
     paymentStatus?: string | null;
   };
+}
+
+/**
+ * The exact OpenAI Ads `order_created` input the server enqueued for this order, so the browser
+ * Pixel sends the same value/contents. Omitted (never fails the request) when it cannot be built.
+ */
+function orderConversionFor(
+  order: Parameters<typeof buildCreditOrderConversionInput>[0],
+): CreditPackageConversionInput | undefined {
+  if (order.status !== 'completed') return undefined;
+  try {
+    return buildCreditOrderConversionInput(order);
+  } catch (error) {
+    console.error('[AdConversion] order_created input could not be built', {
+      error: error instanceof Error ? error.name : 'unknown',
+    });
+    return undefined;
+  }
 }
 
 export async function GET(request: NextRequest) {
@@ -41,6 +63,7 @@ export async function GET(request: NextRequest) {
     const metadata = order.metadata as StripeMetadata | null;
     const creditBundle = order.creditBundle as { credits: number; price: number };
     const fiscalDocument = await fiscalDocumentService.getByOrderId(order.orderId);
+    const adConversion = orderConversionFor(order);
 
     return NextResponse.json({
       success: true,
@@ -66,6 +89,7 @@ export async function GET(request: NextRequest) {
           }
         : null,
       ecommerce: buildPaymentOrderPurchasePayload(order),
+      ...(adConversion ? { adConversion } : {}),
     });
   } catch (error) {
     console.error('Error fetching Stripe checkout session:', error);

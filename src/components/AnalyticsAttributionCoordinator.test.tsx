@@ -2,7 +2,13 @@
 
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import Link from 'next/link';
-import { clearConsent, consentStateFromPreferences, saveConsent } from '@/lib/consent';
+import {
+  clearConsent,
+  consentStateFromPreferences,
+  saveConsent,
+  updateGoogleConsent,
+} from '@/lib/consent';
+import { OAIQ_LOADED_EVENT } from '@/lib/openai-ads/pixel';
 import AnalyticsAttributionCoordinator from './AnalyticsAttributionCoordinator';
 
 let mockUseUserValue = { isLoaded: true, isSignedIn: false, user: null as { id: string } | null };
@@ -49,6 +55,118 @@ describe('AnalyticsAttributionCoordinator', () => {
     expect(destination.searchParams.has('email')).toBe(false);
     expect(window.localStorage).toHaveLength(0);
     expect(window.sessionStorage).toHaveLength(0);
+  });
+
+  it('carries the OpenAI oppref click reference through same-origin navigation', () => {
+    window.history.replaceState({}, '', '/pt-PT?oppref=op-carry&utm_source=chatgpt');
+    render(
+      <>
+        <AnalyticsAttributionCoordinator />
+        <Link href="/pt-PT/sign-up" onClick={(event) => event.preventDefault()}>
+          Continue
+        </Link>
+      </>,
+    );
+
+    fireEvent.click(screen.getByRole('link', { name: 'Continue' }));
+    const destination = new URL(
+      (screen.getByRole('link', { name: 'Continue' }) as HTMLAnchorElement).href,
+    );
+    expect(destination.searchParams.get('oppref')).toBe('op-carry');
+  });
+
+  describe('oppref URL cleanup', () => {
+    function grantConsent(advertising: boolean) {
+      const preferences = { analytics: true, advertising };
+      saveConsent(consentStateFromPreferences(preferences), preferences);
+      window.gtag = jest.fn((...args: unknown[]) => {
+        if (args[0] === 'get')
+          (args[3] as (value: unknown) => void)(args[2] === 'client_id' ? '123.456' : 1712345678);
+      });
+      const fetchMock = jest.fn(
+        async (_input: RequestInfo | URL, _init?: RequestInit) =>
+          new Response(JSON.stringify({ captured: true }), { status: 200 }),
+      );
+      global.fetch = fetchMock as unknown as typeof fetch;
+      return fetchMock;
+    }
+
+    const search = () => new URLSearchParams(window.location.search);
+
+    beforeEach(() => {
+      jest.useFakeTimers({ doNotFake: ['nextTick', 'queueMicrotask', 'setImmediate'] });
+      delete window.__mythoriaOaiqLoaded;
+    });
+
+    it('keeps oppref until the Pixel SDK has loaded and read it', async () => {
+      window.history.replaceState({}, '', '/pt-PT?oppref=op-loaded&utm_source=chatgpt');
+      const fetchMock = grantConsent(true);
+      render(<AnalyticsAttributionCoordinator />);
+      await act(async () => {
+        await jest.advanceTimersByTimeAsync(0);
+      });
+
+      const body = JSON.parse(String(fetchMock.mock.calls[0][1]?.body)) as {
+        campaign: Record<string, string>;
+      };
+      expect(body.campaign).toMatchObject({ oppref: 'op-loaded', utm_source: 'chatgpt' });
+      expect(search().has('utm_source')).toBe(false);
+      expect(search().get('oppref')).toBe('op-loaded');
+
+      await act(async () => {
+        await jest.advanceTimersByTimeAsync(3_000);
+        window.__mythoriaOaiqLoaded = true;
+        window.dispatchEvent(new Event(OAIQ_LOADED_EVENT));
+        await jest.advanceTimersByTimeAsync(1_400);
+      });
+      expect(search().get('oppref')).toBe('op-loaded');
+
+      await act(async () => {
+        await jest.advanceTimersByTimeAsync(200);
+      });
+      expect(search().has('oppref')).toBe(false);
+    });
+
+    it('drops oppref after a timeout when the Pixel never loads', async () => {
+      window.history.replaceState({}, '', '/pt-PT?oppref=op-timeout');
+      grantConsent(true);
+      render(<AnalyticsAttributionCoordinator />);
+      await act(async () => {
+        await jest.advanceTimersByTimeAsync(4_900);
+      });
+      expect(search().get('oppref')).toBe('op-timeout');
+      await act(async () => {
+        await jest.advanceTimersByTimeAsync(200);
+      });
+      expect(search().has('oppref')).toBe(false);
+    });
+
+    it('drops oppref immediately without advertising consent', async () => {
+      window.history.replaceState({}, '', '/pt-PT?oppref=op-denied&utm_source=chatgpt');
+      grantConsent(false);
+      render(<AnalyticsAttributionCoordinator />);
+      await act(async () => {
+        await jest.advanceTimersByTimeAsync(0);
+      });
+      expect(search().has('utm_source')).toBe(false);
+      expect(search().has('oppref')).toBe(false);
+    });
+
+    it('drops a pending oppref as soon as advertising consent is revoked', async () => {
+      window.history.replaceState({}, '', '/pt-PT?oppref=op-revoked');
+      grantConsent(true);
+      render(<AnalyticsAttributionCoordinator />);
+      await act(async () => {
+        await jest.advanceTimersByTimeAsync(0);
+      });
+      expect(search().get('oppref')).toBe('op-revoked');
+
+      const preferences = { analytics: true, advertising: false };
+      const state = consentStateFromPreferences(preferences);
+      saveConsent(state, preferences);
+      act(() => updateGoogleConsent(state));
+      expect(search().has('oppref')).toBe(false);
+    });
   });
 
   it('captures attribution then retries a short authenticated 401 race without duplicates', async () => {

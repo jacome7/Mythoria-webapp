@@ -3,11 +3,16 @@ import { z } from 'zod';
 import { linkReferralFromRequest, referralHttpError } from '@/lib/referrals/http';
 import { ReferralError } from '@/lib/referrals/policy';
 
+import { db } from '@/db';
 import { paymentService } from '@/db/services';
+import { buildCreditOrderConversionInput } from '@/db/services/payment';
 import { getCurrentAuthor } from '@/lib/auth';
 import { resolveServerAnalyticsContext } from '@/lib/analytics/server-context';
 import { normalizeLocale } from '@/utils/locale-utils';
 import { readEmailCampaignAttribution } from '@/lib/email-campaign-attribution';
+import { resolveAdContextSafely } from '@/lib/openai-ads/context';
+import { conversions } from '@/lib/openai-ads/events';
+import { enqueueAdConversion } from '@/lib/openai-ads/outbox';
 
 export const runtime = 'nodejs';
 
@@ -94,6 +99,11 @@ export async function POST(request: NextRequest) {
     if (analyticsConsent && !analyticsContext) {
       console.warn('[Analytics] Stripe checkout has no consented GA4 context');
     }
+    const adContext = await resolveAdContextSafely({
+      headers: request.headers,
+      cookies: request.cookies,
+      authorId: author.authorId,
+    });
 
     const { order, checkoutSession, ecommerce } = await paymentService.createStripeCheckoutSession({
       userId: author.authorId,
@@ -111,10 +121,27 @@ export async function POST(request: NextRequest) {
       analyticsConsent,
       attributionId,
       emailCampaignRecipientId: readEmailCampaignAttribution(request),
+      adContext,
     });
 
     if (!checkoutSession.url) {
       return NextResponse.json({ error: 'Stripe checkout URL was not created' }, { status: 502 });
+    }
+
+    // The Stripe session already exists: an ad tracking failure must not fail the checkout.
+    let adEventId: string | undefined;
+    try {
+      const adConversion = conversions.checkoutStarted(buildCreditOrderConversionInput(order));
+      await enqueueAdConversion(db, {
+        conversion: adConversion,
+        authorId: author.authorId,
+        adContext,
+      });
+      adEventId = adConversion.eventId;
+    } catch (adError) {
+      console.error('[AdConversionOutbox] checkout_started could not be built', {
+        error: adError instanceof Error ? adError.name : 'unknown',
+      });
     }
 
     return NextResponse.json({
@@ -126,6 +153,7 @@ export async function POST(request: NextRequest) {
       currency: order.currency,
       credits: (order.creditBundle as { credits: number }).credits,
       ecommerce,
+      ...(adEventId ? { adEventId } : {}),
     });
   } catch (error) {
     if (error instanceof ReferralError) return referralHttpError(error);

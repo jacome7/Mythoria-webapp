@@ -18,6 +18,9 @@ import { normalizeLocale } from '@/utils/locale-utils';
 import { resolveServerAnalyticsContext } from '@/lib/analytics/server-context';
 import { analyticsReference } from '@/lib/analytics/reference';
 import { printOrderRequestedOutboxEntry } from '@/lib/product-generation';
+import { resolveAdContextSafely } from '@/lib/openai-ads/context';
+import { conversions } from '@/lib/openai-ads/events';
+import { enqueueAdConversion } from '@/lib/openai-ads/outbox';
 
 export async function GET(request: NextRequest) {
   try {
@@ -370,6 +373,19 @@ export async function POST(request: NextRequest) {
       });
     }
 
+    // OpenAI Ads conversion (independent of analytics consent; never throws).
+    const adConversion = conversions.printOrderRequested(newRequest[0].id, numberOfCopies);
+    await enqueueAdConversion(db, {
+      conversion: adConversion,
+      authorId: author.authorId,
+      adContext: await resolveAdContextSafely({
+        headers: request.headers,
+        cookies: request.cookies,
+        authorId: author.authorId,
+      }),
+      occurredAt: newRequest[0].requestedAt,
+    });
+
     // ---------------------------------------------------------------
     // Send user notification email (non-blocking; best-effort)
     // ---------------------------------------------------------------
@@ -487,6 +503,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       success: true,
       request: fullRequest[0],
+      adEventId: adConversion.eventId,
     });
   } catch (error) {
     console.error('Error creating print request:', error);

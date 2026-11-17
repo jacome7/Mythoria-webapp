@@ -108,6 +108,10 @@
         "title": "Google Cloud",
         "description": "Todas las bases de datos y archivos están en la región múltiple europea. Google se apoya en las Cláusulas Contractuales Tipo de la Comisión para cualquier transferencia fuera del EEE."
       },
+      "openaiAds": {
+        "title": "OpenAI (ChatGPT Ads)",
+        "description": "Socio de medición de los anuncios de ChatGPT. Cuando has aceptado las cookies de publicidad, compartimos eventos de conversión (por ejemplo, registro, creación de cuentos, compras de créditos) y, con ese consentimiento, identificadores con hash (SHA-256), como tu correo electrónico, además de la dirección IP y el agente de usuario del navegador, para medir el rendimiento de los anuncios. Sin consentimiento de publicidad, solo enviamos recuentos anónimos de conversiones, sin identificadores."
+      },
       "note": "Ningún otro tercero recibe datos identificables salvo que actives servicios opcionales (p. ej., pago, boletín), en cuyo caso los encargados se listarán aquí antes de la activación."
     },
     "section6": {
@@ -121,7 +125,7 @@
         "title": "Cómo gestionamos tus elecciones",
         "description": "Usamos Google Consent Mode v2 para respetar tus preferencias de privacidad. Esto significa:",
         "analytics": "Las cookies de análisis nos ayudan a ver cómo los visitantes usan el sitio (páginas visitadas, tiempo empleado). Cuando se rechazan, solo recibimos datos anónimos y agregados.",
-        "advertising": "Las cookies de publicidad ayudan a medir la eficacia de las campañas y a mostrar anuncios relevantes. Cuando se rechazan, no se recoge ni comparte ningún dato publicitario.",
+        "advertising": "Las cookies de publicidad ayudan a medir la eficacia de las campañas y a mostrar anuncios relevantes. Cuando se rechazan, no se instalan cookies de publicidad ni se recogen o comparten datos personales publicitarios (identificadores, datos de contacto con hash, dirección IP, agente de usuario). Solo podemos enviar a los socios publicitarios recuentos anónimos de conversiones, sin identificadores, para medir el rendimiento de las campañas.",
         "essential": "Las cookies esenciales te mantienen conectado y el sitio seguro. Están siempre activas porque sin ellas el sitio no funcionaría correctamente."
       },
       "table": {
@@ -152,6 +156,18 @@
             "cookie": "_gcl_* (Google Ads)",
             "purpose": "Medir conversiones de anuncios",
             "expiry": "90 días",
+            "consent": "Sí"
+          },
+          "oppref": {
+            "cookie": "__oppref (OpenAI / ChatGPT Ads)",
+            "purpose": "Guarda la referencia del clic en el anuncio, procedente de la URL de la página de destino, para atribuir conversiones a los anuncios de ChatGPT",
+            "expiry": "30 días",
+            "consent": "Sí"
+          },
+          "obref": {
+            "cookie": "__obref (OpenAI / ChatGPT Ads)",
+            "purpose": "Referencia aleatoria del navegador utilizada para medir las conversiones de anuncios en nuestro sitio",
+            "expiry": "365 días",
             "consent": "Sí"
           },
           "consent": {
@@ -230,6 +246,6 @@
     "links": {
       "deleteAccount": "Eliminar cuenta"
     },
-    "lastUpdated": "Última actualización: 30 de agosto de 2026"
+    "lastUpdated": "Última actualización: 16 de noviembre de 2026"
   }
 }

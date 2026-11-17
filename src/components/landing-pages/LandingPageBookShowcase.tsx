@@ -7,6 +7,8 @@ import Link from 'next/link';
 import { BookOpen, ExternalLink, FileText, Headphones, X } from 'lucide-react';
 import type { LandingPageBook, LandingPageTemplateIcon } from '@/content/landing-pages';
 import { trackEvent } from '@/lib/analytics';
+import { conversions } from '@/lib/openai-ads/events';
+import { trackOpenAiAdsEvent } from '@/lib/openai-ads/pixel';
 
 interface LandingPageBookShowcaseProps {
   books: LandingPageBook[];
@@ -89,6 +91,11 @@ export default function LandingPageBookShowcase({
     if (booksOpened.current.has(slug)) return;
     booksOpened.current.add(slug);
     trackSampleEvent('sample_book_open', book);
+    trackOpenAiAdsEvent(
+      conversions.contentsViewed([
+        { id: slug, name: book.title, content_type: 'sample_book', quantity: 1 },
+      ]),
+    );
   };
   const handleAudioStart = (book: LandingPageBook) => {
     handleBookOpen(book);

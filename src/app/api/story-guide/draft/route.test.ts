@@ -11,6 +11,24 @@ jest.mock('@/db/services', () => ({
 }));
 jest.mock('@/lib/auth', () => ({ getCurrentAuthor: jest.fn() }));
 jest.mock('@/lib/referrals/http', () => ({ linkReferralFromRequest: jest.fn() }));
+const mockDb = { marker: 'db' };
+const mockEnqueueAdConversion = jest.fn();
+const mockAdContext = {
+  adConsent: 'denied',
+  sourceUrl: 'https://mythoria.pt',
+  capturedAt: '2026-11-16T00:00:00.000Z',
+};
+jest.mock('@/db', () => ({
+  get db() {
+    return mockDb;
+  },
+}));
+jest.mock('@/lib/openai-ads/outbox', () => ({
+  enqueueAdConversion: (...args: unknown[]) => mockEnqueueAdConversion(...args),
+}));
+jest.mock('@/lib/openai-ads/context', () => ({
+  resolveAdContextSafely: jest.fn(async () => mockAdContext),
+}));
 
 const draftId = 'e23a1f19-cce9-4b55-a9b7-9696a137fa97';
 const body = { draftId, title: 'Draft', plotDescription: 'A story', storyLanguage: 'en-US' };
@@ -53,6 +71,22 @@ describe('guided story draft API', () => {
     expect(jest.mocked(linkReferralFromRequest).mock.invocationCallOrder[0]).toBeLessThan(
       jest.mocked(storyService.createStory).mock.invocationCallOrder[0],
     );
+  });
+
+  it('enqueues the story_creation_started conversion and returns its event id', async () => {
+    mockEnqueueAdConversion.mockResolvedValue(true);
+    const response = await POST(request());
+    expect(response.status).toBe(200);
+    expect(await response.json()).toMatchObject({ adEventId: `story_start_${draftId}` });
+    expect(mockEnqueueAdConversion).toHaveBeenCalledWith(mockDb, {
+      conversion: expect.objectContaining({
+        eventType: 'custom',
+        customEventName: 'story_creation_started',
+        eventId: `story_start_${draftId}`,
+      }),
+      authorId: 'author-1',
+      adContext: mockAdContext,
+    });
   });
 
   it.each([false, true])(

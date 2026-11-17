@@ -6,6 +6,26 @@ import { eq, and, or, gt } from 'drizzle-orm';
 import { routing, isValidLocale } from '@/i18n/routing';
 import { authorService, PublicStoryValidationError, storyService } from '@/db/services';
 import { analyticsReference } from '@/lib/analytics/reference';
+import { cookiesFromHeaders, resolveAdContextSafely } from '@/lib/openai-ads/context';
+import { conversions, type OpenAiConversion } from '@/lib/openai-ads/events';
+import { enqueueAdConversion } from '@/lib/openai-ads/outbox';
+
+/** Enqueues the OpenAI Ads `story_shared` conversion; never throws. */
+async function enqueueStoryShared(
+  request: Request,
+  authorId: string,
+  conversion: OpenAiConversion,
+): Promise<void> {
+  await enqueueAdConversion(db, {
+    conversion,
+    authorId,
+    adContext: await resolveAdContextSafely({
+      headers: request.headers,
+      cookies: cookiesFromHeaders(request.headers),
+      authorId,
+    }),
+  });
+}
 
 // Helper function to get locale and translations
 async function getTranslations(request: Request) {
@@ -125,12 +145,17 @@ export async function POST(request: Request, context: { params: Promise<{ storyI
         return NextResponse.json({ error: 'Story not found or access denied' }, { status: 404 });
       }
 
+      // One stable id per story: repeated public toggles deduplicate.
+      const adConversion = conversions.storyShared(`${storyId}_public`, 'public');
+      await enqueueStoryShared(request, author.authorId, adConversion);
+
       return NextResponse.json({
         success: true,
         linkType: 'public',
         url: `/p/${published.slug}`,
         storyRef: analyticsReference(storyId),
         message: t('sharing.publicAccessible'),
+        adEventId: adConversion.eventId,
       });
     }
 
@@ -167,6 +192,12 @@ export async function POST(request: Request, context: { params: Promise<{ storyI
 
     const shareToken = shareLink[0].id;
     const shareUrl = allowEdit ? `/s/${shareToken}/edit` : `/s/${shareToken}`;
+    // The share link id is a bearer token: only its opaque reference may reach OpenAI.
+    const adConversion = conversions.storyShared(
+      analyticsReference(shareToken),
+      allowEdit ? 'private_edit' : 'private_view',
+    );
+    await enqueueStoryShared(request, author.authorId, adConversion);
     return NextResponse.json({
       success: true,
       linkType: 'private',
@@ -176,6 +207,7 @@ export async function POST(request: Request, context: { params: Promise<{ storyI
       accessLevel,
       expiresAt: expiresAt.toISOString(),
       message: `Private ${accessLevel} link created`,
+      adEventId: adConversion.eventId,
     });
   } catch (error) {
     if (error instanceof PublicStoryValidationError) {

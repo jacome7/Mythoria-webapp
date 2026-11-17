@@ -1,5 +1,5 @@
 // AUTO-GENERATED FILE. Run: npm run i18n:keys
-// Total keys: 3087
+// Total keys: 3097
 export type TranslationKey =
   | 'AIImageEditor.buttons.applyPhoto'
   | 'AIImageEditor.cancelButton'
@@ -1548,6 +1548,8 @@ export type TranslationKey =
   | 'PrivacyPolicy.section5.note'
   | 'PrivacyPolicy.section5.openai.description'
   | 'PrivacyPolicy.section5.openai.title'
+  | 'PrivacyPolicy.section5.openaiAds.description'
+  | 'PrivacyPolicy.section5.openaiAds.title'
   | 'PrivacyPolicy.section5.title'
   | 'PrivacyPolicy.section6.content'
   | 'PrivacyPolicy.section6.title'
@@ -1584,6 +1586,14 @@ export type TranslationKey =
   | 'PrivacyPolicy.section7.table.rows.emailCampaign.cookie'
   | 'PrivacyPolicy.section7.table.rows.emailCampaign.expiry'
   | 'PrivacyPolicy.section7.table.rows.emailCampaign.purpose'
+  | 'PrivacyPolicy.section7.table.rows.obref.consent'
+  | 'PrivacyPolicy.section7.table.rows.obref.cookie'
+  | 'PrivacyPolicy.section7.table.rows.obref.expiry'
+  | 'PrivacyPolicy.section7.table.rows.obref.purpose'
+  | 'PrivacyPolicy.section7.table.rows.oppref.consent'
+  | 'PrivacyPolicy.section7.table.rows.oppref.cookie'
+  | 'PrivacyPolicy.section7.table.rows.oppref.expiry'
+  | 'PrivacyPolicy.section7.table.rows.oppref.purpose'
   | 'PrivacyPolicy.section7.table.rows.session.consent'
   | 'PrivacyPolicy.section7.table.rows.session.cookie'
   | 'PrivacyPolicy.section7.table.rows.session.expiry'

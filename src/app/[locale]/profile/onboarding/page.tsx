@@ -20,8 +20,51 @@ import Link from 'next/link';
 import { useLocale, useTranslations } from 'next-intl';
 import { useUser } from '@clerk/nextjs';
 import PromotionCodeRedeemer from '@/components/PromotionCodeRedeemer';
+import { conversions } from '@/lib/openai-ads/events';
+import { isOpenAiPixelEnabled, trackOpenAiAdsEvent } from '@/lib/openai-ads/pixel';
 import { SUPPORTED_LOCALES } from '@/config/locales';
 import { getCountryOptions, localeToCountry } from '@/utils/countries';
+
+/** Only accounts created this recently count as a new registration for OpenAI Ads. */
+const REGISTRATION_WINDOW_MS = 24 * 60 * 60 * 1000;
+
+/**
+ * Whether the account was created within `REGISTRATION_WINDOW_MS`. Prefers the author's
+ * `createdAt` from the PATCH /api/profile response, falling back to Clerk's `user.createdAt`.
+ * Unknown or unparseable creation times count as not new, so returning users editing their
+ * profile never report a registration.
+ */
+function isNewlyCreatedAccount(
+  serverCreatedAt: unknown,
+  clerkCreatedAt: Date | null | undefined,
+): boolean {
+  const source =
+    typeof serverCreatedAt === 'string' || serverCreatedAt instanceof Date
+      ? serverCreatedAt
+      : clerkCreatedAt;
+  if (!source) return false;
+  const createdMs = new Date(source).getTime();
+  if (!Number.isFinite(createdMs)) return false;
+  const ageMs = Date.now() - createdMs;
+  return ageMs >= -5 * 60 * 1000 && ageMs < REGISTRATION_WINDOW_MS;
+}
+
+/**
+ * Sends `registration_completed` to OpenAI Ads once per browser session (id is deterministic),
+ * and only for accounts created in the last 24 hours.
+ * The guard is only set while the Pixel can send, so consent granted later still gets the event.
+ */
+function trackRegistrationCompleted(clerkUserId: string | undefined, isNewAccount: boolean) {
+  if (!clerkUserId || !isNewAccount || !isOpenAiPixelEnabled()) return;
+  const guardKey = `mythoria_oaiq_signup_${clerkUserId}`;
+  try {
+    if (window.sessionStorage.getItem(guardKey)) return;
+    window.sessionStorage.setItem(guardKey, '1');
+  } catch {
+    // Storage unavailable: OpenAI still deduplicates on the deterministic event id.
+  }
+  trackOpenAiAdsEvent(conversions.registrationCompleted(clerkUserId));
+}
 
 // Value lists; labels resolved via i18n (see messages OnboardingProfile.options)
 const GENDER_OPTIONS = ['female', 'male', 'prefer_not_to_say'] as const;
@@ -178,6 +221,8 @@ export default function OnboardingProfilePage() {
     })();
   }, [locale]);
 
+  const clerkUserId = user?.id;
+  const clerkCreatedAt = user?.createdAt;
   const patchProfile = useCallback(
     async (patch: Partial<ProfileData>) => {
       if (!profile) return;
@@ -207,6 +252,10 @@ export default function OnboardingProfilePage() {
           const data = await res.json();
           const nextProfile = mapAuthorToProfile(data.author);
           setProfile(nextProfile);
+          trackRegistrationCompleted(
+            clerkUserId,
+            isNewlyCreatedAccount(data.author?.createdAt, clerkCreatedAt),
+          );
           lastSavedDisplayNameRef.current = nextProfile.displayName.trim();
           if (storageKeyRef.current === null && typeof window !== 'undefined') {
             const dedupeId = data.author?.email || data.author?.authorId;
@@ -263,7 +312,7 @@ export default function OnboardingProfilePage() {
         setSaving(false);
       }
     },
-    [profile, t],
+    [profile, t, clerkUserId, clerkCreatedAt],
   );
 
   const debouncedPatch = useCallback(

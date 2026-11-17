@@ -3,6 +3,8 @@ import { z } from 'zod';
 import { getCurrentAuthor } from '@/lib/auth';
 import { resolveServerAnalyticsContext } from '@/lib/analytics/server-context';
 import { startStoryGeneration } from '@/lib/story-generation';
+import { resolveAdContextSafely } from '@/lib/openai-ads/context';
+import { adEventId } from '@/lib/openai-ads/events';
 
 const completeStorySchema = z.object({
   storyId: z.string().uuid(),
@@ -39,6 +41,12 @@ export async function POST(request: NextRequest) {
       console.warn('[Analytics] Story completion has no consented GA4 context');
     }
 
+    const adContext = await resolveAdContextSafely({
+      headers: request.headers,
+      cookies: request.cookies,
+      authorId: author.authorId,
+    });
+
     const result = await startStoryGeneration({
       authorId: author.authorId,
       clerkUserId: author.clerkUserId,
@@ -52,10 +60,15 @@ export async function POST(request: NextRequest) {
       primaryIntent,
       analyticsContext,
       analyticsConsent,
+      adContext,
     });
 
     return NextResponse.json(
-      { message: 'Story generation queued successfully', ...result },
+      {
+        message: 'Story generation queued successfully',
+        ...result,
+        adEventId: adEventId.storyLead(result.runId),
+      },
       { status: 202 },
     );
   } catch (error) {

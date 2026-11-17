@@ -2,6 +2,11 @@
 
 const transactionMock = jest.fn();
 const calculateCreditsMock = jest.fn();
+const enqueueAdConversionMock = jest.fn();
+
+jest.mock('@/lib/openai-ads/outbox', () => ({
+  enqueueAdConversion: (...args: unknown[]) => enqueueAdConversionMock(...args),
+}));
 
 jest.mock('@/db', () => ({
   db: { transaction: (...args: unknown[]) => transactionMock(...args) },
@@ -155,5 +160,37 @@ describe('startStoryGeneration', () => {
         consent: input.analyticsContext.consent,
       }),
     );
+  });
+
+  it('enqueues the lead_created conversion in the same transaction when an ad context is given', async () => {
+    const { tx } = createTransaction([[], [], [{ storyId: 'story-1' }], [{ totalCredits: 10 }]]);
+    const adContext = {
+      adConsent: 'granted' as const,
+      oppref: 'opp-1',
+      sourceUrl: 'https://mythoria.pt/en-US/tell-your-story/step-5',
+      capturedAt: '2026-11-16T10:00:00.000Z',
+    };
+
+    const result = await startStoryGeneration({ ...input, adContext });
+
+    expect(enqueueAdConversionMock).toHaveBeenCalledWith(tx, {
+      conversion: expect.objectContaining({
+        eventType: 'lead_created',
+        eventId: `story_${result.runId}`,
+      }),
+      authorId: 'author-1',
+      adContext,
+    });
+  });
+
+  it('does not enqueue a conversion without an ad context (MCP) or for a duplicate run', async () => {
+    createTransaction([[], [], [{ storyId: 'story-1' }], [{ totalCredits: 10 }]]);
+    await startStoryGeneration(input);
+    createTransaction([
+      [{ authorId: 'author-1', storyId: 'story-1', runId: 'run-existing', status: 'published' }],
+      [{ totalCredits: 7 }],
+    ]);
+    await startStoryGeneration({ ...input, adContext: null });
+    expect(enqueueAdConversionMock).not.toHaveBeenCalled();
   });
 });

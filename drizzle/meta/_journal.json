@@ -344,6 +344,13 @@
       "when": 1794249219220,
       "tag": "0048_keyinvoice_recovery_ledger",
       "breakpoints": true
+    },
+    {
+      "idx": 49,
+      "version": "7",
+      "when": 1794870554717,
+      "tag": "0049_openai_ads_conversions",
+      "breakpoints": true
     }
   ]
 }

@@ -108,6 +108,10 @@
         "title": "Google Cloud",
         "description": "Alle Datenbanken und die Dateispeicherung befinden sich in der europäischen Multi-Region. Für Übermittlungen außerhalb des EWR stützt sich Google auf die Standardvertragsklauseln der Kommission."
       },
+      "openaiAds": {
+        "title": "OpenAI (ChatGPT Ads)",
+        "description": "Mess-Partner für ChatGPT-Werbung. Wenn du Werbe-Cookies akzeptiert hast, teilen wir Conversion-Ereignisse (z. B. Registrierung, Story-Erstellung, Credit-Käufe) und – mit dieser Einwilligung – gehashte (SHA-256) Kennungen wie deine E-Mail-Adresse sowie IP-Adresse und Browser-User-Agent, um die Werbeleistung zu messen. Ohne Werbe-Einwilligung senden wir nur anonyme Conversion-Zahlen ohne Kennungen."
+      },
       "note": "Keine weiteren Dritten erhalten identifizierbare Daten, es sei denn, Sie aktivieren ausdrücklich optionale Dienste (z. B. Zahlung, Newsletter); in diesem Fall werden die jeweiligen Auftragsverarbeiter vor Inbetriebnahme hier aufgeführt."
     },
     "section6": {
@@ -121,7 +125,7 @@
         "title": "So verarbeiten wir deine Entscheidungen",
         "description": "Wir nutzen Google Consent Mode v2, um deine Datenschutzpräferenzen zu respektieren. Das bedeutet:",
         "analytics": "Analyse-Cookies helfen uns zu sehen, wie Besucher die Seite nutzen (besuchte Seiten, Verweildauer). Bei Ablehnung erhalten wir nur anonyme, aggregierte Daten.",
-        "advertising": "Werbe-Cookies helfen, die Wirksamkeit von Kampagnen zu messen und relevante Werbung zu zeigen. Bei Ablehnung werden keine Werbedaten erfasst oder geteilt.",
+        "advertising": "Werbe-Cookies helfen, die Wirksamkeit von Kampagnen zu messen und relevante Werbung zu zeigen. Bei Ablehnung werden keine Werbe-Cookies gesetzt und keine personenbezogenen Werbedaten (Kennungen, gehashte Kontaktdaten, IP-Adresse, User-Agent) erfasst oder geteilt. An Werbepartner senden wir höchstens anonyme Conversion-Zahlen ohne Kennungen, um die Kampagnenleistung zu messen.",
         "essential": "Essentielle Cookies halten dich eingeloggt und die Seite sicher. Sie sind immer aktiv, da die Seite ohne sie nicht richtig funktionieren würde."
       },
       "table": {
@@ -152,6 +156,18 @@
             "cookie": "_gcl_* (Google Ads)",
             "purpose": "Werbe-Conversions messen",
             "expiry": "90 Tage",
+            "consent": "Ja"
+          },
+          "oppref": {
+            "cookie": "__oppref (OpenAI / ChatGPT Ads)",
+            "purpose": "Speichert die Klick-Referenz der Anzeige aus der URL der Landingpage, um Conversions ChatGPT-Anzeigen zuzuordnen",
+            "expiry": "30 Tage",
+            "consent": "Ja"
+          },
+          "obref": {
+            "cookie": "__obref (OpenAI / ChatGPT Ads)",
+            "purpose": "Zufällige Browser-Referenz zur Messung von Werbe-Conversions auf unserer Seite",
+            "expiry": "365 Tage",
             "consent": "Ja"
           },
           "consent": {
@@ -230,6 +246,6 @@
     "links": {
       "deleteAccount": "Konto löschen"
     },
-    "lastUpdated": "Zuletzt aktualisiert: 30. August 2026"
+    "lastUpdated": "Zuletzt aktualisiert: 16. November 2026"
   }
 }

@@ -1,6 +1,11 @@
 /** @jest-environment node */
 
 const transactionMock = jest.fn();
+const enqueueAdConversionMock = jest.fn();
+
+jest.mock('@/lib/openai-ads/outbox', () => ({
+  enqueueAdConversion: (...args: unknown[]) => enqueueAdConversionMock(...args),
+}));
 
 jest.mock('@/db', () => ({
   db: { transaction: (...args: unknown[]) => transactionMock(...args) },
@@ -170,6 +175,116 @@ describe('product generation requests', () => {
       }),
     );
     expect(JSON.stringify(insertValues.mock.calls)).not.toContain('run_id');
+  });
+
+  it('stores the sanitized ad context on a credit-funded request', async () => {
+    const selectRows = [[], [], [{ totalCredits: 10 }]];
+    const insertValues = jest.fn((values: Record<string, unknown>) => ({
+      returning: jest
+        .fn()
+        .mockResolvedValue('actionType' in values ? [{ runId: 'run-1', status: 'pending' }] : []),
+    }));
+    const tx = {
+      execute: jest.fn().mockResolvedValue(undefined),
+      select: jest.fn(() => ({
+        from: jest.fn(() => ({
+          where: jest.fn().mockResolvedValue(selectRows.shift() || []),
+        })),
+      })),
+      insert: jest.fn(() => ({ values: insertValues })),
+      update: jest.fn(() => ({
+        set: jest.fn(() => ({ where: jest.fn().mockResolvedValue(undefined) })),
+      })),
+    };
+    transactionMock.mockImplementation(async (callback) => callback(tx));
+
+    await startProductGeneration({
+      ...input,
+      adContext: {
+        adConsent: 'denied',
+        oppref: 'must-be-dropped',
+        sourceUrl: 'https://mythoria.pt/en-US/stories/listen/:id',
+        capturedAt: '2026-11-16T10:00:00.000Z',
+      },
+    });
+
+    expect(insertValues).toHaveBeenCalledWith(
+      expect.objectContaining({
+        actionType: 'audiobook_generation',
+        adContext: {
+          adConsent: 'denied',
+          sourceUrl: 'https://mythoria.pt/en-US/stories/listen/:id',
+          capturedAt: '2026-11-16T10:00:00.000Z',
+        },
+      }),
+    );
+  });
+
+  describe('OpenAI Ads conversion on queue confirmation', () => {
+    const adContext = {
+      adConsent: 'granted' as const,
+      oppref: 'opp-1',
+      sourceUrl: 'https://mythoria.pt/en-US/stories/:id',
+      capturedAt: '2026-11-16T10:00:00.000Z',
+    };
+    const pendingRow = (overrides: Record<string, unknown>) => ({
+      runId: 'run-1',
+      actionType: 'self_print',
+      storyId: 'story-1',
+      authorId: 'author-1',
+      status: 'pending',
+      consent: null,
+      fundingSource: 'credits',
+      adContext,
+      ...overrides,
+    });
+    function queueTx(row: Record<string, unknown>) {
+      const tx = {
+        select: jest.fn(() => ({
+          from: jest.fn(() => ({ where: jest.fn().mockResolvedValue([row]) })),
+        })),
+        update: jest.fn(() => ({
+          set: jest.fn(() => ({
+            where: jest.fn(() => ({
+              returning: jest.fn().mockResolvedValue([{ ...row, status: 'queued' }]),
+            })),
+          })),
+        })),
+        insert: jest.fn(() => ({
+          values: jest.fn(() => ({ onConflictDoNothing: jest.fn().mockResolvedValue(undefined) })),
+        })),
+      };
+      transactionMock.mockImplementation(async (callback) => callback(tx));
+      return tx;
+    }
+
+    it.each([
+      ['self_print', 'self_print_requested', 'self_print_run-1'],
+      ['audiobook_generation', 'audiobook_requested', 'audiobook_run-1'],
+    ])('enqueues the %s conversion in the queue transaction', async (actionType, name, eventId) => {
+      const tx = queueTx(pendingRow({ actionType }));
+      await markProductGenerationQueued('run-1', 'message-1');
+      expect(enqueueAdConversionMock).toHaveBeenCalledWith(tx, {
+        conversion: expect.objectContaining({ customEventName: name, eventId }),
+        authorId: 'author-1',
+        adContext,
+        occurredAt: expect.any(Date),
+      });
+      // The raw context must not stay on the request once it has been handed to the outbox.
+      const setMock = tx.update.mock.results[0].value.set as jest.Mock;
+      expect(setMock).toHaveBeenCalledWith(
+        expect.objectContaining({ status: 'queued', adContext: null }),
+      );
+    });
+
+    it.each([
+      ['survey reward funding', { fundingSource: 'survey_reward' }],
+      ['no captured ad context (MCP)', { adContext: null }],
+    ])('skips the conversion for %s', async (_label, overrides) => {
+      queueTx(pendingRow(overrides));
+      await markProductGenerationQueued('run-1', 'message-1');
+      expect(enqueueAdConversionMock).not.toHaveBeenCalled();
+    });
   });
 
   it('does not refund an already compensated request twice', async () => {

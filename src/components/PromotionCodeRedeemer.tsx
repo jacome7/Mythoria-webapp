@@ -4,6 +4,8 @@ import React, { useState } from 'react';
 // Using next-intl directly (pattern consistent with other components like BillingInformation/CreditsDisplay)
 import { useTranslations } from 'next-intl';
 import { trackEvent } from '@/lib/analytics';
+import { conversions } from '@/lib/openai-ads/events';
+import { trackOpenAiAdsEvent } from '@/lib/openai-ads/pixel';
 
 interface Props {
   onRedeemed?: (delta: number, newBalance: number) => void;
@@ -46,6 +48,9 @@ export const PromotionCodeRedeemer: React.FC<Props> = ({ onRedeemed, compact }) 
         credits_granted: data.creditsGranted,
         new_balance: data.newBalance,
       });
+      if (typeof data.adEventId === 'string' && data.adEventId) {
+        trackOpenAiAdsEvent({ ...conversions.promoCodeRedeemed(''), eventId: data.adEventId });
+      }
       onRedeemed?.(data.creditsGranted, data.newBalance);
     } catch {
       setStatus('error');

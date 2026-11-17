@@ -19,6 +19,12 @@ export default function ManageCookiesButton() {
     clearConsent();
     await fetch('/api/referrals/clear', { method: 'POST' }).catch(() => undefined);
     await fetch('/api/analytics/attribution/revoke', { method: 'POST' }).catch(() => undefined);
+    // Withdraw OpenAI Pixel consent so it drops its `__oppref` / `__obref` cookies.
+    try {
+      window.oaiq?.('consent', false);
+    } catch {
+      // A third-party failure must never block the consent reset.
+    }
     window.location.reload();
   };
 

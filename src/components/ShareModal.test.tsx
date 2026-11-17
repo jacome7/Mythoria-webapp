@@ -3,6 +3,7 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 
 const trackEventMock = jest.fn();
+const trackOpenAiAdsEventMock = jest.fn();
 
 jest.mock('next-intl', () => ({
   useLocale: () => 'en-US',
@@ -10,6 +11,9 @@ jest.mock('next-intl', () => ({
 }));
 jest.mock('@/lib/analytics', () => ({
   trackEvent: (...args: unknown[]) => trackEventMock(...args),
+}));
+jest.mock('@/lib/openai-ads/pixel', () => ({
+  trackOpenAiAdsEvent: (...args: unknown[]) => trackOpenAiAdsEventMock(...args),
 }));
 
 import ShareModal from './ShareModal';
@@ -160,5 +164,124 @@ describe('ShareModal', () => {
     await waitFor(() => expect(cancelledShare).toHaveBeenCalledTimes(1));
     await waitFor(() => expect(navigator.clipboard.writeText).toHaveBeenCalledTimes(1));
     expect(trackEventMock).not.toHaveBeenCalled();
+  });
+  describe('OpenAI Ads story_shared', () => {
+    const storyId = '00000000-0000-4000-8000-000000000001';
+
+    function mockSharePost(postBody: Record<string, unknown>) {
+      global.fetch = jest.fn((_, init?: RequestInit) =>
+        Promise.resolve(
+          new Response(
+            JSON.stringify(init?.method === 'POST' ? postBody : { success: true, storyRef }),
+            { status: 200, headers: { 'Content-Type': 'application/json' } },
+          ),
+        ),
+      );
+    }
+
+    function renderPrivateModal(isPublic = false) {
+      return render(
+        <ShareModal
+          isOpen
+          onClose={jest.fn()}
+          storyId={storyId}
+          storyTitle="Story"
+          isPublic={isPublic}
+          slug={isPublic ? 'safe-public-slug' : undefined}
+        />,
+      );
+    }
+
+    it('fires story_shared with the server event id for a new private link', async () => {
+      mockSharePost({
+        success: true,
+        linkType: 'private',
+        url: '/s/link-123',
+        token: 'link-123',
+        accessLevel: 'view',
+        storyRef,
+        message: 'Created',
+        adEventId: 'share_link-123',
+      });
+      renderPrivateModal();
+      fireEvent.click(screen.getByRole('button', { name: 'generateLink' }));
+
+      await waitFor(() => expect(trackOpenAiAdsEventMock).toHaveBeenCalledTimes(1));
+      expect(trackOpenAiAdsEventMock).toHaveBeenCalledWith(
+        expect.objectContaining({
+          eventType: 'custom',
+          customEventName: 'story_shared',
+          eventId: 'share_link-123',
+          data: expect.objectContaining({
+            contents: [expect.objectContaining({ id: 'story_share_private_view' })],
+          }),
+        }),
+      );
+    });
+
+    it('fires story_shared with the public scope when the story is published', async () => {
+      mockSharePost({
+        success: true,
+        linkType: 'public',
+        url: '/p/slug',
+        storyRef,
+        message: 'Public',
+        adEventId: `share_${storyId}-public`,
+      });
+      renderPrivateModal();
+      fireEvent.click(screen.getAllByRole('checkbox')[1]);
+      fireEvent.click(screen.getByRole('button', { name: 'generateLink' }));
+
+      await waitFor(() =>
+        expect(trackOpenAiAdsEventMock).toHaveBeenCalledWith(
+          expect.objectContaining({
+            customEventName: 'story_shared',
+            eventId: `share_${storyId}-public`,
+            data: expect.objectContaining({
+              contents: [expect.objectContaining({ id: 'story_share_public' })],
+            }),
+          }),
+        ),
+      );
+    });
+
+    it('does not fire without a server event id', async () => {
+      mockSharePost({
+        success: true,
+        linkType: 'private',
+        url: '/s/link-123',
+        token: 'link-123',
+        accessLevel: 'view',
+        storyRef,
+        message: 'Created',
+      });
+      renderPrivateModal();
+      fireEvent.click(screen.getByRole('button', { name: 'generateLink' }));
+
+      await screen.findByText('Created');
+      expect(trackOpenAiAdsEventMock).not.toHaveBeenCalled();
+    });
+
+    it('does not fire when a public story is made private', async () => {
+      mockSharePost({
+        success: true,
+        linkType: 'private',
+        url: '',
+        storyRef,
+        message: 'Now private',
+        adEventId: 'share_should-not-fire',
+      });
+      renderPrivateModal(true);
+      fireEvent.click(screen.getByRole('checkbox'));
+      fireEvent.click(screen.getByRole('button', { name: 'makePrivate' }));
+
+      await waitFor(() =>
+        expect(
+          (global.fetch as jest.Mock).mock.calls.some(([, init]) => init?.method === 'POST'),
+        ).toBe(true),
+      );
+      await screen.findByText('Now private');
+      expect(trackOpenAiAdsEventMock).not.toHaveBeenCalled();
+    });
   });
 });

@@ -108,6 +108,10 @@
         "title": "Google Cloud",
         "description": "All databases and file storage sit in the europe multi-region. Google relies on the Commission's Standard Contractual Clauses for any transfer outside the EEA."
       },
+      "openaiAds": {
+        "title": "OpenAI (ChatGPT Ads)",
+        "description": "Measurement partner for ChatGPT ads. When you have accepted advertising cookies, we share conversion events (e.g. sign-up, story creation, credit purchases) and, with that consent, hashed (SHA-256) identifiers such as your e-mail, plus your IP address and browser user agent, to measure ad performance. Without advertising consent we send only anonymous conversion counts, with no identifiers."
+      },
       "note": "No other third-party receives identifiable data unless you explicitly integrate optional services (e.g. payment, mailing list), in which case those processors will be listed here before activation."
     },
     "section6": {
@@ -121,7 +125,7 @@
         "title": "How we handle your choices",
         "description": "We use Google Consent Mode v2 to respect your privacy preferences. This means:",
         "analytics": "Analytics cookies help us see how visitors use our site (pages visited, time spent). When denied, we receive only anonymous, aggregate data.",
-        "advertising": "Advertising cookies help measure campaign effectiveness and show relevant ads. When denied, no advertising data is collected or shared.",
+        "advertising": "Advertising cookies help measure campaign effectiveness and show relevant ads. When denied, no advertising cookies are set and no personal advertising data (identifiers, hashed contact data, IP address, user agent) is collected or shared. We may send advertising partners only anonymous conversion counts, without identifiers, to measure campaign performance.",
         "essential": "Essential cookies keep you logged in and the site secure. These are always on because without them the site wouldn't work properly."
       },
       "table": {
@@ -152,6 +156,18 @@
             "cookie": "_gcl_* (Google Ads)",
             "purpose": "Measure ad conversions",
             "expiry": "90 days",
+            "consent": "Yes"
+          },
+          "oppref": {
+            "cookie": "__oppref (OpenAI / ChatGPT Ads)",
+            "purpose": "Stores the ad click reference from the landing-page URL to attribute conversions to ChatGPT ads",
+            "expiry": "30 days",
+            "consent": "Yes"
+          },
+          "obref": {
+            "cookie": "__obref (OpenAI / ChatGPT Ads)",
+            "purpose": "Random browser reference used to measure ad conversions on our site",
+            "expiry": "365 days",
             "consent": "Yes"
           },
           "consent": {
@@ -230,6 +246,6 @@
     "links": {
       "deleteAccount": "Delete Account / Eliminar Conta"
     },
-    "lastUpdated": "Last updated: 30 August 2026"
+    "lastUpdated": "Last updated: 16 November 2026"
   }
 }

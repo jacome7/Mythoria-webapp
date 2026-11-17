@@ -23,6 +23,8 @@ import { useAudiobookProgress } from '@/hooks/useAudiobookProgress';
 import { getAvailableVoices, getRecommendedVoice, getTTSProvider } from '@/lib/voice-options';
 import { TargetAudience } from '@/types/story-enums';
 import { getGoogleAnalyticsContext } from '@/lib/analytics';
+import { conversions } from '@/lib/openai-ads/events';
+import { trackOpenAiAdsEvent } from '@/lib/openai-ads/pixel';
 
 interface Story {
   storyId: string;
@@ -335,6 +337,13 @@ export default function ListenStoryPage() {
 
       if (response.ok) {
         const result = await response.json();
+        if (typeof result?.adEventId === 'string' && result.adEventId) {
+          const runId = typeof result.runId === 'string' ? result.runId : '';
+          trackOpenAiAdsEvent({
+            ...conversions.audiobookRequested(runId),
+            eventId: result.adEventId,
+          });
+        }
         previousProgress.current = 'generating';
         await refreshProgress();
 

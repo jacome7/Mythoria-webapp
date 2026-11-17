@@ -21,7 +21,10 @@ export async function POST(request: NextRequest) {
           ? eq(analyticsAttributions.authorId, author.authorId)
           : undefined;
   if (revokeFilter) {
-    await db.update(analyticsAttributions).set({ expiresAt: new Date() }).where(revokeFilter);
+    await db
+      .update(analyticsAttributions)
+      .set({ expiresAt: new Date(), oppref: null, opprefCapturedAt: null, obref: null })
+      .where(revokeFilter);
   }
   const response = NextResponse.json({ revoked: true });
   response.cookies.set('mythoria_attribution', '', {

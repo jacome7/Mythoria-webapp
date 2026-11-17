@@ -180,6 +180,12 @@ export default async function PrivacyPolicyPage({ params }: PrivacyPolicyPagePro
                   </h3>
                   <p>{tPrivacyPolicy('section5.google.description')}</p>
                 </div>
+                <div>
+                  <h3 className="text-lg font-medium mb-2">
+                    {tPrivacyPolicy('section5.openaiAds.title')}
+                  </h3>
+                  <p>{tPrivacyPolicy('section5.openaiAds.description')}</p>
+                </div>
                 <p className="text-sm text-gray-600">{tPrivacyPolicy('section5.note')}</p>
               </div>
             </section>
@@ -221,6 +227,24 @@ export default async function PrivacyPolicyPage({ params }: PrivacyPolicyPagePro
                       <td>{tPrivacyPolicy('section7.table.rows.analytics.purpose')}</td>
                       <td>{tPrivacyPolicy('section7.table.rows.analytics.expiry')}</td>
                       <td>{tPrivacyPolicy('section7.table.rows.analytics.consent')}</td>
+                    </tr>
+                    <tr>
+                      <td>{tPrivacyPolicy('section7.table.rows.ads.cookie')}</td>
+                      <td>{tPrivacyPolicy('section7.table.rows.ads.purpose')}</td>
+                      <td>{tPrivacyPolicy('section7.table.rows.ads.expiry')}</td>
+                      <td>{tPrivacyPolicy('section7.table.rows.ads.consent')}</td>
+                    </tr>
+                    <tr>
+                      <td>{tPrivacyPolicy('section7.table.rows.oppref.cookie')}</td>
+                      <td>{tPrivacyPolicy('section7.table.rows.oppref.purpose')}</td>
+                      <td>{tPrivacyPolicy('section7.table.rows.oppref.expiry')}</td>
+                      <td>{tPrivacyPolicy('section7.table.rows.oppref.consent')}</td>
+                    </tr>
+                    <tr>
+                      <td>{tPrivacyPolicy('section7.table.rows.obref.cookie')}</td>
+                      <td>{tPrivacyPolicy('section7.table.rows.obref.purpose')}</td>
+                      <td>{tPrivacyPolicy('section7.table.rows.obref.expiry')}</td>
+                      <td>{tPrivacyPolicy('section7.table.rows.obref.consent')}</td>
                     </tr>
                     <tr>
                       <td>{tPrivacyPolicy('section7.table.rows.consent.cookie')}</td>

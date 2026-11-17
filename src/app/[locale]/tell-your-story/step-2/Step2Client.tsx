@@ -17,6 +17,8 @@ import { useRouter } from '@/i18n/routing';
 import StepNavigation from '@/components/StepNavigation';
 import ProgressIndicator from '@/components/ProgressIndicator';
 import { trackStoryCreation } from '@/lib/analytics';
+import { conversions } from '@/lib/openai-ads/events';
+import { trackOpenAiAdsEvent } from '@/lib/openai-ads/pixel';
 import MediaCapture from './MediaCapture';
 import CharacterSelection from './CharacterSelection';
 import WritingTips from './WritingTips';
@@ -44,6 +46,22 @@ import {
 } from '@/lib/story-templates/submission';
 
 type ContentType = 'text' | 'images' | 'audio';
+
+/** Reads the server-issued OpenAI Ads event id from a draft response without affecting the flow. */
+async function readAdEventId(response: Response): Promise<unknown> {
+  try {
+    const data = await response.json();
+    return data?.adEventId;
+  } catch {
+    return undefined;
+  }
+}
+
+/** Fires the browser half of `story_creation_started`, deduplicated with the server by `adEventId`. */
+function trackStoryCreationStarted(storyId: string, adEventId: unknown) {
+  if (typeof adEventId !== 'string' || !adEventId) return;
+  trackOpenAiAdsEvent({ ...conversions.storyCreationStarted(storyId), eventId: adEventId });
+}
 
 const modalSurfaceClass =
   'modal-box !bg-[#fff7e6] !bg-gradient-to-br !from-[#fff8e8] !to-[#f7deb8] border border-[#5e401a]/20 shadow-[0_18px_30px_rgba(74,48,14,0.13)]';
@@ -576,6 +594,7 @@ function Step2Content({
           }),
         });
         if (!response.ok) throw new Error(tTemplates('structureError'));
+        trackStoryCreationStarted(saved.storyId, await readAdEventId(response));
       } else if (!storyId) {
         const response = await fetch('/api/stories', {
           method: 'POST',
@@ -590,6 +609,7 @@ function Step2Content({
         if (!response.ok) throw new Error(tStoryStepsStep2('errors.failedCreate'));
         const data = await response.json();
         storyId = data.story.storyId;
+        if (storyId) trackStoryCreationStarted(storyId, data?.adEventId);
         if (userId && storyId) {
           saved = { owner: userId, storyId, fingerprint, completed: false };
           saveStep2Submission(saved, templatesEnabled);

@@ -22,6 +22,21 @@ jest.mock('@/db/services', () => ({
   },
 }));
 
+const mockDb = { marker: 'db' };
+const mockEnqueueAdConversion = jest.fn();
+const mockAdContext = {
+  adConsent: 'denied',
+  sourceUrl: 'https://mythoria.pt',
+  capturedAt: '2026-11-16T00:00:00.000Z',
+};
+jest.mock('@/db', () => ({ db: mockDb }));
+jest.mock('@/lib/openai-ads/outbox', () => ({
+  enqueueAdConversion: (...args: unknown[]) => mockEnqueueAdConversion(...args),
+}));
+jest.mock('@/lib/openai-ads/context', () => ({
+  resolveAdContextSafely: jest.fn(async () => mockAdContext),
+}));
+
 import type { NextRequest } from 'next/server';
 import { POST } from './route';
 
@@ -38,6 +53,25 @@ describe('POST /api/stories', () => {
     expect(response.status).toBe(400);
     await expect(response.json()).resolves.toEqual({ error: 'Title is required' });
     expect(createStoryMock).not.toHaveBeenCalled();
+    expect(mockEnqueueAdConversion).not.toHaveBeenCalled();
+  });
+
+  it('enqueues story_creation_started after creation and returns its event id', async () => {
+    createStoryMock.mockResolvedValue({ storyId: 'story-9', status: 'temporary' });
+    const response = (await POST({
+      json: async () => ({ title: 'Quest' }),
+    } as unknown as NextRequest)) as { status: number; json: () => Promise<unknown> };
+
+    expect(response.status).toBe(201);
+    await expect(response.json()).resolves.toMatchObject({ adEventId: 'story_start_story-9' });
+    expect(mockEnqueueAdConversion).toHaveBeenCalledWith(mockDb, {
+      conversion: expect.objectContaining({
+        customEventName: 'story_creation_started',
+        eventId: 'story_start_story-9',
+      }),
+      authorId: 'author-1',
+      adContext: mockAdContext,
+    });
   });
 
   it('defaults status to temporary unless explicitly allowed', async () => {

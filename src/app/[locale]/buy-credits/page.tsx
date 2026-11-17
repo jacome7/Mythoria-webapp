@@ -17,6 +17,12 @@ import ScrollFadeIn from '@/components/ScrollFadeIn';
 import { useCart } from '@/hooks/useCart';
 import { getGoogleAnalyticsContext, trackCommerce } from '@/lib/analytics';
 import { ensureConsentChoice } from '@/lib/consent';
+import {
+  conversions,
+  type CreditPackageConversionInput,
+  type OpenAiContentItem,
+} from '@/lib/openai-ads/events';
+import { isOpenAiPixelEnabled, trackOpenAiAdsEvent } from '@/lib/openai-ads/pixel';
 import type { GA4CheckoutPayload, GA4EcommerceItem } from '@/lib/analytics/ecommerce';
 import type { CreditPackage } from '@/types/cart';
 
@@ -37,6 +43,83 @@ const toAnalyticsItem = (pkg: CreditPackage, quantity: number): GA4EcommerceItem
   price: pkg.price,
   quantity,
 });
+
+const toOpenAiContentItem = (pkg: CreditPackage): OpenAiContentItem => ({
+  id: pkg.key || String(pkg.id),
+  name: `${pkg.credits} Mythoria Credits`,
+  content_type: 'product',
+  quantity: 1,
+  amount: Math.round(pkg.price * 100),
+  currency: 'EUR',
+});
+
+interface CreditOrderResponse {
+  orderId?: unknown;
+  amount?: unknown;
+  currency?: unknown;
+  credits?: unknown;
+  ecommerce?: { items?: GA4EcommerceItem[] } | null;
+  /** Session API only: the exact `order_created` input the server enqueued for this order. */
+  adConversion?: unknown;
+}
+
+/** Builds the OpenAI Ads order input from a checkout/session API response (amount in cents). */
+const toCreditPackageConversion = (
+  data: CreditOrderResponse,
+): CreditPackageConversionInput | null => {
+  if (typeof data.orderId !== 'string' || !data.orderId) return null;
+  if (typeof data.amount !== 'number' || !Number.isFinite(data.amount)) return null;
+  const credits = typeof data.credits === 'number' ? data.credits : 0;
+  const items = Array.isArray(data.ecommerce?.items) ? data.ecommerce.items : [];
+  const single = items.length === 1 ? items[0] : undefined;
+  return {
+    orderId: data.orderId,
+    amountCents: Math.max(0, Math.round(data.amount)),
+    currency: typeof data.currency === 'string' && data.currency ? data.currency : 'EUR',
+    packageKey: single?.item_variant || single?.item_id || 'credit_bundle',
+    packageName: single?.item_name || `${credits} Mythoria Credits`,
+    credits,
+  };
+};
+
+const isNonEmptyString = (value: unknown): value is string =>
+  typeof value === 'string' && value.length > 0;
+
+/** The server-built `order_created` input, when the session API returned a well-formed one. */
+const serverOrderConversion = (data: CreditOrderResponse): CreditPackageConversionInput | null => {
+  const input = data.adConversion as Partial<CreditPackageConversionInput> | null | undefined;
+  if (!input || typeof input !== 'object') return null;
+  if (!isNonEmptyString(input.orderId) || input.orderId !== data.orderId) return null;
+  if (typeof input.amountCents !== 'number' || !Number.isFinite(input.amountCents)) return null;
+  if (!isNonEmptyString(input.currency) || !isNonEmptyString(input.packageKey)) return null;
+  if (!isNonEmptyString(input.packageName)) return null;
+  return {
+    orderId: input.orderId,
+    amountCents: input.amountCents,
+    currency: input.currency,
+    packageKey: input.packageKey,
+    packageName: input.packageName,
+    credits: typeof input.credits === 'number' ? input.credits : 0,
+  };
+};
+
+/**
+ * Fires `order_created` once per order and browser session (the server deduplicates too). The
+ * guard is only set while the Pixel can send, so consent granted later still gets the event.
+ */
+const trackOpenAiOrderCreated = (data: CreditOrderResponse) => {
+  // Prefer the server's input so the Pixel and Conversions API report the same value.
+  const input = serverOrderConversion(data) ?? toCreditPackageConversion(data);
+  if (!input || !isOpenAiPixelEnabled()) return;
+  const guardKey = `mythoria_oaiq_order_${input.orderId}`;
+  try {
+    if (window.sessionStorage.getItem(guardKey)) return;
+    window.sessionStorage.setItem(guardKey, '1');
+  } catch {
+    // Storage unavailable: fall through, OpenAI deduplicates on the deterministic event id.
+  }
+  trackOpenAiAdsEvent(conversions.orderCreated(input));
+};
 
 function BuyCreditsContent() {
   const searchParams = useSearchParams();
@@ -120,6 +203,7 @@ function BuyCreditsContent() {
           }
 
           if (data.status === 'completed') {
+            trackOpenAiOrderCreated(data);
             setPaymentStatus('success');
             setPaymentMessage(tBuyCreditsPage('payment.success'));
             clearCart();
@@ -185,6 +269,9 @@ function BuyCreditsContent() {
         item_list_name: 'Mythoria credit packages',
         items: sortedPackages.map((pkg: CreditPackage) => toAnalyticsItem(pkg, 1)),
       });
+      if (sortedPackages.length > 0) {
+        trackOpenAiAdsEvent(conversions.contentsViewed(sortedPackages.map(toOpenAiContentItem)));
+      }
     } catch (error) {
       console.error('Error fetching credit packages:', error);
       setPackagesError(tPricingPage('errors.loadingFailed'));
@@ -221,6 +308,7 @@ function BuyCreditsContent() {
         items: [item],
       });
       trackCommerce.addToCart({ currency: 'EUR', value: pkg.price, items: [item] });
+      trackOpenAiAdsEvent(conversions.itemsAdded([toOpenAiContentItem(pkg)]));
     }
     addToCart(packageId);
     setTimeout(scrollToCartItems, 100);
@@ -307,6 +395,14 @@ function BuyCreditsContent() {
         trackCommerce.checkoutStarted(data.ecommerce as GA4CheckoutPayload);
       } else {
         console.error('Stripe checkout did not include its ecommerce payload');
+      }
+
+      const checkoutConversion = toCreditPackageConversion(data);
+      if (checkoutConversion && typeof data.adEventId === 'string' && data.adEventId) {
+        trackOpenAiAdsEvent({
+          ...conversions.checkoutStarted(checkoutConversion),
+          eventId: data.adEventId,
+        });
       }
 
       window.location.href = data.checkoutUrl;

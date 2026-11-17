@@ -6,6 +6,8 @@ import { randomUUID } from 'crypto';
 import { resolveServerAnalyticsContext } from '@/lib/analytics/server-context';
 import { InsufficientProductCreditsError, startProductGeneration } from '@/lib/product-generation';
 import { launchAudiobookWorkflow } from '@/lib/product-launch';
+import { resolveAdContextSafely } from '@/lib/openai-ads/context';
+import { adEventId } from '@/lib/openai-ads/events';
 
 export async function POST(
   request: NextRequest,
@@ -63,6 +65,11 @@ export async function POST(
       authorId: author.authorId,
       storedConsentValue: request.cookies.get('mythoria_consent')?.value,
     });
+    const adContext = await resolveAdContextSafely({
+      headers: request.headers,
+      cookies: request.cookies,
+      authorId: author.authorId,
+    });
     const started = await startProductGeneration({
       actionType: 'audiobook_generation',
       authorId: author.authorId,
@@ -76,6 +83,7 @@ export async function POST(
       analyticsConsent: analytics.consent,
       primaryIntent: analytics.primaryIntent,
       landingSlug: analytics.landingSlug,
+      adContext,
     });
     const runId = started.request.runId;
 
@@ -96,6 +104,7 @@ export async function POST(
           status: started.request.status,
           creditsDeducted: audiobookPricing.credits,
           newBalance: started.remainingCredits,
+          adEventId: adEventId.audiobook(runId),
         },
         { status: 202 },
       );
@@ -125,6 +134,7 @@ export async function POST(
         status: 'queued',
         creditsDeducted: audiobookPricing.credits,
         newBalance: started.remainingCredits,
+        adEventId: adEventId.audiobook(runId),
       },
       { status: 202 },
     );

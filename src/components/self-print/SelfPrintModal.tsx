@@ -7,6 +7,8 @@ import { useTranslations } from 'next-intl';
 import { Link } from '@/i18n/routing';
 import { fetchSelfPrintPricing } from '@/lib/pricing/fetch-self-print-pricing';
 import { getGoogleAnalyticsContext, trackPaidAction } from '@/lib/analytics';
+import { conversions } from '@/lib/openai-ads/events';
+import { trackOpenAiAdsEvent } from '@/lib/openai-ads/pixel';
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -61,6 +63,8 @@ interface SelfPrintErrorResponse {
 
 interface SelfPrintSuccessResponse extends SelfPrintSuccessPayload {
   success: true;
+  /** OpenAI Ads `event_id` shared with the server conversion. */
+  adEventId?: string;
 }
 
 type SelfPrintResponse = SelfPrintSuccessResponse | SelfPrintErrorResponse;
@@ -219,6 +223,12 @@ export function SelfPrintModal({
         story_id: data.storyId,
         credits_spent: data.creditsDeducted,
       });
+      if (typeof data.adEventId === 'string' && data.adEventId) {
+        trackOpenAiAdsEvent({
+          ...conversions.selfPrintRequested(data.workflowId ?? ''),
+          eventId: data.adEventId,
+        });
+      }
     } catch (error) {
       console.error('Failed to queue self-print workflow', error);
       setSubmitError(t('errors.generic'));

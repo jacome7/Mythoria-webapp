@@ -1,9 +1,13 @@
 import { STORY_BRIEF_MAX_LENGTH } from '@/lib/story-templates/story-input-limit';
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
+import { db } from '@/db';
 import { storyService, StoryDraftOwnershipError } from '@/db/services';
 import { getCurrentAuthor } from '@/lib/auth';
 import { linkReferralFromRequest } from '@/lib/referrals/http';
+import { resolveAdContextSafely } from '@/lib/openai-ads/context';
+import { conversions } from '@/lib/openai-ads/events';
+import { enqueueAdConversion } from '@/lib/openai-ads/outbox';
 
 const draftSchema = z
   .object({
@@ -46,7 +50,18 @@ export async function POST(request: NextRequest) {
     ) {
       return NextResponse.json({ error: 'Story is no longer an editable draft' }, { status: 409 });
     }
-    return NextResponse.json({ story }, { status: 200 });
+    // Draft retries reuse the same story id, so the outbox unique index deduplicates them.
+    const conversion = conversions.storyCreationStarted(story.storyId);
+    await enqueueAdConversion(db, {
+      conversion,
+      authorId: author.authorId,
+      adContext: await resolveAdContextSafely({
+        headers: request.headers,
+        cookies: request.cookies,
+        authorId: author.authorId,
+      }),
+    });
+    return NextResponse.json({ story, adEventId: conversion.eventId }, { status: 200 });
   } catch (error) {
     if (error instanceof StoryDraftOwnershipError) {
       return NextResponse.json({ error: 'Not found' }, { status: 404 });
