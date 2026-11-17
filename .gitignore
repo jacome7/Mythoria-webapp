@@ -201,3 +201,6 @@ _mockups/
 
 # Local reference attachments (not application assets)
 .codex-remote-attachments/
+
+# Codex tool attachments (local only)
+.codex-attachments/

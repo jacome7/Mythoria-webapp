@@ -45,11 +45,11 @@ const collectTexts = (): Array<[string, Localized]> => {
 };
 
 describe('free_creator_no_purchase v3', () => {
-  it('is registered next to v1 and v2 and validates against the schema', () => {
+  it('is registered next to v2 and validates against the schema', () => {
     const versions = SURVEY_DEFINITIONS.filter((d) => d.id === 'free_creator_no_purchase').map(
       (d) => d.version,
     );
-    expect(versions).toEqual([1, 2, 3]);
+    expect(versions).toEqual([2, 3]);
     expect(freeCreatorNoPurchaseV3.id).toBe('free_creator_no_purchase');
     expect(freeCreatorNoPurchaseV3.version).toBe(3);
     const result = validateSurveyDefinition(freeCreatorNoPurchaseV3);
