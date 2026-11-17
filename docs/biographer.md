@@ -28,7 +28,7 @@ Admin command API `/api/internal/biographer/command` exposes listProjects, getPr
 
 ## Remaining release validation
 
-Run real isolated-database integration tests for admission contention, segment persistence failure and command idempotency; verify GCS privacy and gateway project entitlement. Confirm same question/answer survives reconnect and browser termination. Test 20,000-word output, persona/source preservation and independent paid-item compensation. Do not activate before operator pricing and research entitlement are configured.
+Run real isolated-database integration tests for admission contention, segment persistence failure and command idempotency; verify GCS privacy and gateway project entitlement. Confirm same question/answer survives reconnect and browser termination. Test 20,000-word output, persona/source preservation and independent paid-item compensation. Do not activate before operator pricing is configured. Proposals use memories and optional author-provided setting; no external search subscription is required.
 
 ## Source revisions and recovery
 

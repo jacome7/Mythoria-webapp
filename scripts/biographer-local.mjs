@@ -19,6 +19,7 @@ const workflow = resolve(webapp, '../story-generation-workflow');
 const state = resolve(webapp, '.biographer-local');
 const mode = process.argv[2] || 'status';
 const environments = new Map();
+const npmCli = process.env.npm_execpath;
 if (!['start', 'stop', 'status'].includes(mode) || process.argv.length > 3)
   throw new Error('Usage: npm run biographer:local -- start|stop|status');
 const services = [
@@ -26,13 +27,15 @@ const services = [
     name: 'webapp',
     cwd: webapp,
     entry: resolve(webapp, 'node_modules/next/dist/bin/next'),
-    args: ['dev', '--hostname', 'localhost', '--port', '3000'],
+    script: 'dev',
+    args: ['--hostname', 'localhost', '--port', '3000'],
     port: 3000,
   },
   {
     name: 'workflow',
     cwd: workflow,
     entry: resolve(workflow, 'src/index.ts'),
+    script: 'dev',
     args: [],
     port: 8080,
   },
@@ -40,6 +43,7 @@ const services = [
     name: 'avatar',
     cwd: workflow,
     entry: resolve(workflow, 'src/biographer-live.ts'),
+    script: 'dev:biographer-live',
     args: [],
     port: 8082,
   },
@@ -72,6 +76,8 @@ const listening = (port) =>
   });
 
 if (mode === 'start') {
+  if (!npmCli || !existsSync(npmCli))
+    throw new Error('Start through npm run biographer:local -- start');
   // This launcher does not migrate, seed, call providers, publish workflows or run notifications.
   const webEnv = parse(readFileSync(resolve(webapp, '.env.local')));
   const workflowEnv = parse(readFileSync(resolve(workflow, '.env.local')));
@@ -108,7 +114,7 @@ for (const service of services) {
     const fd = openSync(log, 'a', 0o600);
     const child = spawn(
       process.execPath,
-      [...(service.name === 'webapp' ? [] : ['--import', 'tsx']), service.entry, ...service.args],
+      [npmCli, 'run', service.script, ...(service.args.length ? ['--', ...service.args] : [])],
       {
         cwd: service.cwd,
         env: {
