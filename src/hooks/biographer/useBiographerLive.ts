@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { concatenate, fromBase64, pcm16, toBase64 } from '@/utils/biographer/audio';
+import { concatenate, fromBase64, toBase64 } from '@/utils/biographer/audio';
 import { guestIntentHeaders } from '@/utils/biographer/guest';
 import {
   pendingSegments,
@@ -9,6 +9,9 @@ import {
   savePending,
   type PendingSegment,
 } from '@/utils/biographer/pending';
+
+// Gemini Live Avatar labels its H.264/AAC fragmented MP4 stream as bare video/mp4.
+const avatarMp4Type = 'video/mp4; codecs="avc1.42C01F, mp4a.40.2"';
 
 export type LiveState =
   'paused' | 'connecting' | 'listening' | 'speaking' | 'reconnecting' | 'recording';
@@ -42,7 +45,7 @@ export function useBiographerLive(
     socket?: WebSocket;
     stream?: MediaStream;
     context?: AudioContext;
-    processor?: ScriptProcessorNode;
+    processor?: AudioWorkletNode;
     source?: MediaStreamAudioSourceNode;
     sessionId?: string;
   }>({});
@@ -284,7 +287,8 @@ export function useBiographerLive(
           return;
         }
         if (!playback.current.media) {
-          if (!MediaSource.isTypeSupported(event.mimeType)) {
+          const mimeType = event.mimeType === 'video/mp4' ? avatarMp4Type : event.mimeType;
+          if (!MediaSource.isTypeSupported(mimeType)) {
             setError(true);
             pause();
             return;
@@ -297,9 +301,10 @@ export function useBiographerLive(
           media.addEventListener(
             'sourceopen',
             () => {
+              if (playback.current.media !== media) return;
               let buffer: SourceBuffer;
               try {
-                buffer = media.addSourceBuffer(event.mimeType!);
+                buffer = media.addSourceBuffer(mimeType);
               } catch {
                 setError(true);
                 pause();
@@ -307,7 +312,11 @@ export function useBiographerLive(
               }
               playback.current.buffer = buffer;
               const append = () => {
-                if (!buffer.updating && playback.current.chunks.length) {
+                if (
+                  playback.current.buffer === buffer &&
+                  !buffer.updating &&
+                  playback.current.chunks.length
+                ) {
                   try {
                     buffer.appendBuffer(playback.current.chunks.shift()!);
                   } catch {
@@ -317,6 +326,11 @@ export function useBiographerLive(
                 }
               };
               buffer.addEventListener('updateend', append);
+              buffer.addEventListener('error', () => {
+                if (playback.current.buffer !== buffer) return;
+                setError(true);
+                pause();
+              });
               append();
             },
             { once: true },
@@ -333,6 +347,26 @@ export function useBiographerLive(
           }
         }
       }
+    },
+    [pause],
+  );
+
+  const capture = useCallback(
+    (context: AudioContext, stream: MediaStream, onAudio: (data: ArrayBuffer) => void) => {
+      const source = context.createMediaStreamSource(stream);
+      const processor = new AudioWorkletNode(context, 'biographer-capture');
+      resources.current.source = source;
+      resources.current.processor = processor;
+      processor.port.onmessage = (event: MessageEvent<ArrayBuffer>) => {
+        if (resources.current.processor === processor) onAudio(event.data);
+      };
+      processor.onprocessorerror = () => {
+        if (resources.current.processor !== processor) return;
+        setError(true);
+        pause();
+      };
+      source.connect(processor);
+      processor.connect(context.destination);
     },
     [pause],
   );
@@ -359,9 +393,12 @@ export function useBiographerLive(
       }
       resources.current.stream = stream;
       const context = new AudioContext();
-      await context.resume();
       resources.current.context = context;
+      await context.resume();
+      if (epoch.current !== startingEpoch) return;
       playback.current.context = context;
+      await context.audioWorklet.addModule('/audio/biographer-capture.js');
+      if (epoch.current !== startingEpoch) return;
       const response = await fetch(`${basePath}/sessions`, {
         method: 'POST',
         headers: {
@@ -398,6 +435,7 @@ export function useBiographerLive(
           }),
         );
       socket.onmessage = (message) => {
+        if (socket !== resources.current.socket) return;
         let event: LiveEvent;
         try {
           event = JSON.parse(String(message.data)) as LiveEvent;
@@ -407,24 +445,21 @@ export function useBiographerLive(
         if (event.type === 'ready') {
           if (!resources.current.stream || socket !== resources.current.socket) return;
           setState('listening');
-          const source = context.createMediaStreamSource(stream);
-          // AudioWorklet migration can replace this isolated capture node without changing the archival protocol.
-          const processor = context.createScriptProcessor(2048, 1, 1);
-          processor.onaudioprocess = (audio) => {
-            if (socket.readyState !== WebSocket.OPEN) return;
-            const data = pcm16(audio.inputBuffer.getChannelData(0), context.sampleRate);
-            socket.send(
-              JSON.stringify({ type: 'audio', data: toBase64(data), turnId: turn.current }),
-            );
-            archive.current.push(data);
-            setSaving('saving');
-            if (archive.current.reduce((total, item) => total + item.byteLength, 0) >= 32000)
-              flush();
-          };
-          resources.current.source = source;
-          resources.current.processor = processor;
-          source.connect(processor);
-          processor.connect(context.destination);
+          try {
+            capture(context, stream, (data) => {
+              if (socket.readyState !== WebSocket.OPEN) return;
+              socket.send(
+                JSON.stringify({ type: 'audio', data: toBase64(data), turnId: turn.current }),
+              );
+              archive.current.push(data);
+              setSaving('saving');
+              if (archive.current.reduce((total, item) => total + item.byteLength, 0) >= 32000)
+                flush();
+            });
+          } catch {
+            setError(true);
+            pause();
+          }
         }
         if (event.type === 'media') {
           setState('speaking');
@@ -451,20 +486,22 @@ export function useBiographerLive(
         eventRef.current(event);
       };
       socket.onerror = () => {
+        if (socket !== resources.current.socket) return;
         setError(true);
         pause();
       };
       socket.onclose = () => {
         if (resources.current.socket === socket) {
-          flush();
+          setError(true);
           pause();
         }
       };
     } catch {
+      if (epoch.current !== startingEpoch) return;
       setError(true);
       pause();
     }
-  }, [authorId, basePath, flush, guest, pause, play, projectId, stopPlayback]);
+  }, [authorId, basePath, capture, flush, guest, pause, play, projectId, stopPlayback]);
 
   const startLocalRecording = useCallback(async () => {
     if (failedSegments.current.length) {
@@ -484,39 +521,26 @@ export function useBiographerLive(
       }
       resources.current.stream = stream;
       const context = new AudioContext();
-      await context.resume();
-      if (epoch.current !== startingEpoch) {
-        stream.getTracks().forEach((track) => track.stop());
-        await context.close();
-        return;
-      }
       resources.current.context = context;
+      await context.resume();
+      if (epoch.current !== startingEpoch) return;
       resources.current.sessionId = crypto.randomUUID();
       turn.current = crypto.randomUUID();
       sequence.current = 0;
-      const source = context.createMediaStreamSource(stream);
-      const processor = context.createScriptProcessor(2048, 1, 1);
-      processor.onaudioprocess = (audio) => {
-        try {
-          const data = pcm16(audio.inputBuffer.getChannelData(0), context.sampleRate);
-          archive.current.push(data);
-          setSaving('local');
-          if (archive.current.reduce((total, item) => total + item.byteLength, 0) >= 32000) flush();
-        } catch {
-          setError(true);
-          pause();
-        }
-      };
-      resources.current.source = source;
-      resources.current.processor = processor;
-      source.connect(processor);
-      processor.connect(context.destination);
+      await context.audioWorklet.addModule('/audio/biographer-capture.js');
+      if (epoch.current !== startingEpoch) return;
+      capture(context, stream, (data) => {
+        archive.current.push(data);
+        setSaving('local');
+        if (archive.current.reduce((total, item) => total + item.byteLength, 0) >= 32000) flush();
+      });
       setState('recording');
     } catch {
+      if (epoch.current !== startingEpoch) return;
       setError(true);
       pause();
     }
-  }, [authorId, flush, pause]);
+  }, [authorId, capture, flush, pause]);
 
   useEffect(() => {
     const onHidden = () => {

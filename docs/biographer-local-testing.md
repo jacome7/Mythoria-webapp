@@ -58,6 +58,7 @@ No author/project/turn fixtures were inserted by setup. Provider testing used a 
 - Corrected migration's exact postflight checks passed inside embedded PostgreSQL 17.5 rehearsal and against committed production state.
 - Google ADC can read Gemini 3.8 Live metadata and has object create/get/delete permissions on the new private bucket.
 - Two brief synthetic Gemini 3.8 Live EU connection checks used avatar `Ben`, voice `Puck`; the final check received Google's explicit setup acknowledgement and closed immediately (approximately four seconds). This verifies provider setup, not a complete authenticated browser conversation or dialect/media quality.
+- Chrome playback was verified with a synthetic Gemini avatar response. Gemini sends fragmented H.264/AAC as `video/mp4`. The app supplies both codec identifiers to MediaSource so Chrome can open the stream. Microphone capture uses AudioWorklet on localhost or HTTPS and sends mono 16 kHz PCM.
 - Gateway rejected a disallowed origin and unauthenticated text without creating a project/provider session.
 - Matching Puppeteer Chrome installed; a synthetic PDF rendered locally. Ghostscript initialization succeeded; existing ICC profiles are present.
 - WebApp: 211 suites / 1,627 tests passed, 13 tests skipped; lint/typecheck passed. SGW typecheck and environment validation passed. WebApp environment parity reports the existing `STORY_TEMPLATES_ENABLED` manifest discrepancy only.

@@ -21,6 +21,7 @@ const segment = {
 };
 
 describe('live archival recovery', () => {
+  const originalWorklet = globalThis.AudioWorkletNode;
   beforeEach(() => {
     jest.clearAllMocks();
     Object.defineProperty(globalThis.crypto, 'subtle', {
@@ -28,6 +29,12 @@ describe('live archival recovery', () => {
       value: { digest: jest.fn().mockResolvedValue(new Uint8Array([0xab]).buffer) },
     });
     pending.mockResolvedValue([segment]);
+  });
+  afterEach(() => {
+    Object.defineProperty(globalThis, 'AudioWorkletNode', {
+      configurable: true,
+      value: originalWorklet,
+    });
   });
   it('retains local audio when the server acknowledgement does not identify the saved bytes', async () => {
     global.fetch = jest.fn().mockResolvedValue({
@@ -80,6 +87,7 @@ describe('live archival recovery', () => {
     class MockAudioContext {
       state = 'running';
       sampleRate = 48000;
+      audioWorklet = { addModule: jest.fn().mockResolvedValue(undefined) };
       resume = jest.fn().mockResolvedValue(undefined);
       close = jest.fn().mockResolvedValue(undefined);
     }
@@ -129,6 +137,80 @@ describe('live archival recovery', () => {
     Object.defineProperty(globalThis, 'WebSocket', { configurable: true, value: oldSocket });
     Object.defineProperty(globalThis, 'AudioContext', { configurable: true, value: oldContext });
   });
+  it('adds codecs for bare mp4 video without pausing', async () => {
+    pending.mockResolvedValue([]);
+    const stop = jest.fn();
+    Object.defineProperty(navigator, 'mediaDevices', {
+      configurable: true,
+      value: { getUserMedia: jest.fn().mockResolvedValue({ getTracks: () => [{ stop }] }) },
+    });
+    Object.defineProperty(document, 'visibilityState', { configurable: true, value: 'visible' });
+    Object.defineProperty(globalThis.crypto, 'randomUUID', {
+      configurable: true,
+      value: () => 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa',
+    });
+    class Context {
+      state = 'running';
+      audioWorklet = { addModule: jest.fn().mockResolvedValue(undefined) };
+      resume = jest.fn().mockResolvedValue(undefined);
+      close = jest.fn().mockResolvedValue(undefined);
+    }
+    class Socket {
+      static OPEN = 1;
+      readyState = 1;
+      onmessage?: (event: { data: string }) => void;
+      send = jest.fn();
+      close = jest.fn();
+      constructor(_url: string) {
+        socket = this;
+      }
+    }
+    let socket: Socket;
+    const videoType = 'video/mp4; codecs="avc1.42C01F, mp4a.40.2"';
+    const supported = jest.fn((type: string) => type === videoType);
+    const append = jest.fn();
+    const addSourceBuffer = jest.fn(() => ({ addEventListener: jest.fn(), appendBuffer: append }));
+    class Media extends EventTarget {
+      static isTypeSupported = supported;
+      addSourceBuffer = addSourceBuffer;
+    }
+    const oldSocket = globalThis.WebSocket;
+    const oldContext = globalThis.AudioContext;
+    const oldMedia = globalThis.MediaSource;
+    const oldCreate = URL.createObjectURL;
+    const oldRevoke = URL.revokeObjectURL;
+    Object.defineProperty(globalThis, 'AudioContext', { configurable: true, value: Context });
+    Object.defineProperty(globalThis, 'WebSocket', { configurable: true, value: Socket });
+    Object.defineProperty(globalThis, 'MediaSource', { configurable: true, value: Media });
+    const createUrl = jest.fn().mockReturnValue('blob:test');
+    URL.createObjectURL = createUrl;
+    URL.revokeObjectURL = jest.fn();
+    global.fetch = jest.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({ sessionId: 'session', ticket: 'ticket', liveUrl: 'wss://example.test' }),
+    });
+    const { result, unmount } = renderHook(() => useBiographerLive('project', 'author', jest.fn()));
+    await act(async () => {
+      await result.current.start();
+    });
+    act(() =>
+      socket.onmessage?.({
+        data: JSON.stringify({ type: 'media', mimeType: 'video/mp4', data: 'AA==' }),
+      }),
+    );
+    expect(supported).toHaveBeenCalledWith(videoType);
+    act(() => createUrl.mock.calls[0][0].dispatchEvent(new Event('sourceopen')));
+    expect(addSourceBuffer).toHaveBeenCalledWith(videoType);
+    expect(append).toHaveBeenCalledWith(new Uint8Array([0]));
+    expect(result.current.state).toBe('speaking');
+    expect(stop).not.toHaveBeenCalled();
+    unmount();
+    Object.defineProperty(globalThis, 'WebSocket', { configurable: true, value: oldSocket });
+    Object.defineProperty(globalThis, 'AudioContext', { configurable: true, value: oldContext });
+    Object.defineProperty(globalThis, 'MediaSource', { configurable: true, value: oldMedia });
+    URL.createObjectURL = oldCreate;
+    URL.revokeObjectURL = oldRevoke;
+  });
   it('starts audio sequence numbers at zero for each completed live answer', async () => {
     pending.mockResolvedValue([]);
     (savePending as jest.Mock).mockResolvedValue(undefined);
@@ -147,7 +229,7 @@ describe('live archival recovery', () => {
     const processor = {
       connect: jest.fn(),
       disconnect: jest.fn(),
-      onaudioprocess: (_event: unknown) => {},
+      port: { onmessage: (_event: { data: ArrayBuffer }) => {} },
     };
     class Context {
       sampleRate = 16000;
@@ -157,9 +239,7 @@ describe('live archival recovery', () => {
       createMediaStreamSource() {
         return { connect: jest.fn(), disconnect: jest.fn() };
       }
-      createScriptProcessor() {
-        return processor;
-      }
+      audioWorklet = { addModule: jest.fn().mockResolvedValue(undefined) };
     }
     class Socket {
       static OPEN = 1;
@@ -177,6 +257,10 @@ describe('live archival recovery', () => {
     let socket: Socket;
     const oldSocket = globalThis.WebSocket;
     const oldContext = globalThis.AudioContext;
+    Object.defineProperty(globalThis, 'AudioWorkletNode', {
+      configurable: true,
+      value: jest.fn(() => processor),
+    });
     Object.defineProperty(globalThis, 'AudioContext', { configurable: true, value: Context });
     Object.defineProperty(globalThis, 'WebSocket', { configurable: true, value: Socket });
     global.fetch = jest.fn().mockResolvedValue({
@@ -192,17 +276,13 @@ describe('live archival recovery', () => {
       await result.current.start();
     });
     act(() => socket.onmessage?.({ data: JSON.stringify({ type: 'ready' }) }));
-    act(() =>
-      processor.onaudioprocess({ inputBuffer: { getChannelData: () => new Float32Array(16000) } }),
-    );
+    act(() => processor.port.onmessage({ data: new ArrayBuffer(32000) }));
     await waitFor(() => expect(savePending).toHaveBeenCalledTimes(1));
     const first = (savePending as jest.Mock).mock.calls[0][0];
     act(() =>
       socket.onmessage?.({ data: JSON.stringify({ type: 'turn_complete', turnId: first.turnId }) }),
     );
-    act(() =>
-      processor.onaudioprocess({ inputBuffer: { getChannelData: () => new Float32Array(16000) } }),
-    );
+    act(() => processor.port.onmessage({ data: new ArrayBuffer(32000) }));
     await waitFor(() => expect(savePending).toHaveBeenCalledTimes(2));
     const second = (savePending as jest.Mock).mock.calls[1][0];
     expect(first.sequence).toBe(0);
@@ -229,7 +309,7 @@ describe('live archival recovery', () => {
     const processor = {
       connect: jest.fn(),
       disconnect: jest.fn(),
-      onaudioprocess: (_event: unknown) => {},
+      port: { onmessage: (_event: { data: ArrayBuffer }) => {} },
     };
     class Context {
       sampleRate = 16000;
@@ -239,11 +319,13 @@ describe('live archival recovery', () => {
       createMediaStreamSource() {
         return { connect: jest.fn(), disconnect: jest.fn() };
       }
-      createScriptProcessor() {
-        return processor;
-      }
+      audioWorklet = { addModule: jest.fn().mockResolvedValue(undefined) };
     }
     const originalContext = globalThis.AudioContext;
+    Object.defineProperty(globalThis, 'AudioWorkletNode', {
+      configurable: true,
+      value: jest.fn(() => processor),
+    });
     Object.defineProperty(globalThis, 'AudioContext', { configurable: true, value: Context });
     global.fetch = jest.fn().mockRejectedValue(new Error('offline'));
     const { result, unmount } = renderHook(() => useBiographerLive('project', 'author', jest.fn()));
@@ -251,9 +333,7 @@ describe('live archival recovery', () => {
       await result.current.startLocalRecording();
     });
     expect(result.current.state).toBe('recording');
-    act(() =>
-      processor.onaudioprocess({ inputBuffer: { getChannelData: () => new Float32Array(16000) } }),
-    );
+    act(() => processor.port.onmessage({ data: new ArrayBuffer(32000) }));
     await waitFor(() =>
       expect(savePending).toHaveBeenCalledWith(
         expect.objectContaining({ authorId: 'author', projectId: 'project', durationMs: 1000 }),
@@ -286,7 +366,7 @@ describe('live archival recovery', () => {
     const processor = {
       connect: jest.fn(),
       disconnect: jest.fn(),
-      onaudioprocess: (_event: unknown) => {},
+      port: { onmessage: (_event: { data: ArrayBuffer }) => {} },
     };
     class Context {
       sampleRate = 16000;
@@ -296,19 +376,19 @@ describe('live archival recovery', () => {
       createMediaStreamSource() {
         return { connect: jest.fn(), disconnect: jest.fn() };
       }
-      createScriptProcessor() {
-        return processor;
-      }
+      audioWorklet = { addModule: jest.fn().mockResolvedValue(undefined) };
     }
     const originalContext = globalThis.AudioContext;
+    Object.defineProperty(globalThis, 'AudioWorkletNode', {
+      configurable: true,
+      value: jest.fn(() => processor),
+    });
     Object.defineProperty(globalThis, 'AudioContext', { configurable: true, value: Context });
     const { result, unmount } = renderHook(() => useBiographerLive('project', 'author', jest.fn()));
     await act(async () => {
       await result.current.startLocalRecording();
     });
-    act(() =>
-      processor.onaudioprocess({ inputBuffer: { getChannelData: () => new Float32Array(16000) } }),
-    );
+    act(() => processor.port.onmessage({ data: new ArrayBuffer(32000) }));
     await waitFor(() => expect(result.current.saving).toBe('attention'));
     await act(async () => {
       await result.current.sync();

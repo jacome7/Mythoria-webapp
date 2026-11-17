@@ -1,20 +1,3 @@
-/** Downsample captured PCM and encode exactly the signed 16-bit format Gemini accepts. */
-export function pcm16(input: Float32Array, inputRate: number, outputRate = 16000): ArrayBuffer {
-  if (inputRate < outputRate || outputRate <= 0) throw new Error('Unsupported sample rate');
-  const ratio = inputRate / outputRate;
-  const output = new ArrayBuffer(Math.floor(input.length / ratio) * 2);
-  const view = new DataView(output);
-  for (let i = 0; i < view.byteLength / 2; i++) {
-    const start = Math.floor(i * ratio);
-    const end = Math.min(input.length, Math.floor((i + 1) * ratio));
-    let total = 0;
-    for (let j = start; j < end; j++) total += input[j];
-    const value = Math.max(-1, Math.min(1, total / Math.max(1, end - start)));
-    view.setInt16(i * 2, value < 0 ? value * 32768 : value * 32767, true);
-  }
-  return output;
-}
-
 export function toBase64(buffer: ArrayBuffer): string {
   const bytes = new Uint8Array(buffer);
   let value = '';
