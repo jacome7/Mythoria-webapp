@@ -183,6 +183,7 @@ async function captureConsentedAttribution(
   pathname: string,
   authenticatedUserId?: string,
 ): Promise<void> {
+  if (/\/biographer\/(?:invite|resume|contribution)(?:\/|$)/.test(pathname)) return;
   const consent = getStoredConsent()?.state;
   if (consent?.analytics_storage !== 'granted') return;
 

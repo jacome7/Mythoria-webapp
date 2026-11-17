@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { concatenate, fromBase64, pcm16, toBase64 } from '@/utils/biographer/audio';
+import { guestIntentHeaders } from '@/utils/biographer/guest';
 import {
   pendingSegments,
   removePending,
@@ -28,7 +29,9 @@ export function useBiographerLive(
   projectId: string,
   authorId: string,
   onEvent: (event: LiveEvent) => void,
+  guest = false,
 ) {
+  const basePath = guest ? '/api/biographer/contribution' : `/api/biographer/projects/${projectId}`;
   const [state, setState] = useState<LiveState>('paused');
   const [saving, setSaving] = useState<SaveState>('saved');
   const [error, setError] = useState(false);
@@ -65,20 +68,17 @@ export function useBiographerLive(
     if (uploading.current || !authorId) return;
     uploading.current = true;
     try {
-      while (failedSegments.current.length) {
-        await savePending(failedSegments.current[0]);
-        failedSegments.current.shift();
-      }
-      const pending = await pendingSegments(authorId, projectId);
-      if (pending.length) setSaving('saving');
-      for (const segment of pending) {
+      const upload = async (segment: PendingSegment) => {
         const digest = await crypto.subtle.digest('SHA-256', segment.data);
         const sha256 = [...new Uint8Array(digest)]
           .map((byte) => byte.toString(16).padStart(2, '0'))
           .join('');
-        const response = await fetch(`/api/biographer/projects/${projectId}/segments`, {
+        const response = await fetch(`${basePath}/segments`, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: {
+            'Content-Type': 'application/json',
+            ...(guest ? guestIntentHeaders({ projectId, participantId: authorId }) : {}),
+          },
           body: JSON.stringify({
             id: segment.id,
             turnId: segment.turnId,
@@ -89,7 +89,47 @@ export function useBiographerLive(
             durationMs: segment.durationMs,
           }),
         });
-        if (!response.ok) throw new Error('Upload failed');
+        if (!response.ok) {
+          const payload = await response
+            .clone()
+            .json()
+            .catch(() => ({}));
+          if (
+            guest &&
+            (response.status === 401 ||
+              (response.status === 409 && String(payload.error || '').includes('session changed')))
+          ) {
+            setError(true);
+            const current = resources.current;
+            current.processor?.disconnect();
+            current.source?.disconnect();
+            current.stream?.getTracks().forEach((track) => track.stop());
+            const buffers = archive.current.splice(0);
+            if (buffers.length && current.sessionId) {
+              const data = concatenate(buffers);
+              const tail: PendingSegment = {
+                id: crypto.randomUUID(),
+                authorId,
+                projectId,
+                sessionId: current.sessionId,
+                turnId: turn.current,
+                sequence: sequence.current++,
+                durationMs: Math.round(data.byteLength / 32),
+                data,
+              };
+              try {
+                await savePending(tail);
+              } catch {
+                failedSegments.current.push(tail);
+              }
+            }
+            if (current.context) void current.context.close();
+            current.socket?.close();
+            resources.current = {};
+            setState('paused');
+          }
+          throw new Error('Upload failed');
+        }
         const ack = await response.json();
         if (
           ack.saved !== true ||
@@ -99,6 +139,15 @@ export function useBiographerLive(
         )
           throw new Error('Invalid save acknowledgement');
         await removePending(segment.id);
+      };
+      const pending = await pendingSegments(authorId, projectId);
+      if (pending.length) setSaving('saving');
+      for (const segment of pending) await upload(segment);
+      while (failedSegments.current.length) {
+        const segment = failedSegments.current[0];
+        await savePending(segment);
+        failedSegments.current.shift();
+        await upload(segment);
       }
       const remaining = await pendingSegments(authorId, projectId);
       setSaving(
@@ -114,7 +163,7 @@ export function useBiographerLive(
     } finally {
       uploading.current = false;
     }
-  }, [authorId, projectId]);
+  }, [authorId, projectId, basePath, guest]);
 
   const flush = useCallback(() => {
     const buffers = archive.current.splice(0);
@@ -313,9 +362,12 @@ export function useBiographerLive(
       await context.resume();
       resources.current.context = context;
       playback.current.context = context;
-      const response = await fetch(`/api/biographer/projects/${projectId}/sessions`, {
+      const response = await fetch(`${basePath}/sessions`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          ...(guest ? guestIntentHeaders({ projectId, participantId: authorId }) : {}),
+        },
         body: '{}',
       });
       if (!response.ok) throw new Error('Session unavailable');
@@ -325,8 +377,9 @@ export function useBiographerLive(
         liveUrl: string;
       };
       if (epoch.current !== startingEpoch) {
-        void fetch(`/api/biographer/projects/${projectId}/sessions/${session.sessionId}`, {
+        void fetch(`${basePath}/sessions/${session.sessionId}`, {
           method: 'PATCH',
+          headers: guest ? guestIntentHeaders({ projectId, participantId: authorId }) : {},
         });
         return;
       }
@@ -388,6 +441,7 @@ export function useBiographerLive(
         ) {
           flush();
           turn.current = crypto.randomUUID();
+          sequence.current = 0;
         }
         if (event.type === 'reconnecting') setState('reconnecting');
         if (event.type === 'error') {
@@ -410,7 +464,7 @@ export function useBiographerLive(
       setError(true);
       pause();
     }
-  }, [flush, pause, play, projectId, stopPlayback]);
+  }, [authorId, basePath, flush, guest, pause, play, projectId, stopPlayback]);
 
   const startLocalRecording = useCallback(async () => {
     if (failedSegments.current.length) {

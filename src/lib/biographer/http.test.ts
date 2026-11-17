@@ -9,7 +9,7 @@ jest.mock('@/db/services/biographer', () => ({
     }
   },
 }));
-import { internal, owner } from './http';
+import { internal, owner, body } from './http';
 import { getCurrentAuthor } from '@/lib/auth';
 describe('Biographer authentication', () => {
   const original = { ...process.env };
@@ -33,5 +33,19 @@ describe('Biographer authentication', () => {
     expect(() =>
       internal(new Request('https://app.test', { headers: { 'x-api-key': 'wrong' } })),
     ).toThrow();
+  });
+});
+
+describe('Biographer bounded request reading', () => {
+  it('bounds chunked bodies even when Content-Length is absent', async () => {
+    const request = new Request('https://app.test', { method: 'POST', body: ' '.repeat(3000001) });
+    await expect(body(request)).rejects.toMatchObject({ status: 413 });
+  });
+  it('parses a bounded JSON body', async () => {
+    const request = new Request('https://app.test', {
+      method: 'POST',
+      body: JSON.stringify({ text: 'A memory' }),
+    });
+    await expect(body(request)).resolves.toEqual({ text: 'A memory' });
   });
 });

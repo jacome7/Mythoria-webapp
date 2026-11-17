@@ -2,6 +2,7 @@ export const ANALYTICS_BASE_URL = 'https://mythoria.pt';
 
 const UUID_SEGMENT =
   /\/[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}(?=\/|$)/gi;
+const BIOGRAPHER_CREDENTIAL_SEGMENT = /(\/biographer\/(?:invite|resume)\/)[^/]+/gi;
 const PRIVATE_SHARE_SEGMENT = /(\/s\/)[^/]+/gi;
 // `/survey/<bearer token>` carries an invitation credential. `/survey/reward/<id>` is a different
 // route whose id is an entitlement uuid (already redacted by UUID_SEGMENT; the explicit rule below
@@ -31,6 +32,7 @@ export function sanitizeAnalyticsPathname(pathname: string): string | undefined 
   return pathname
     .replace(UUID_SEGMENT, '/:id')
     .replace(PRIVATE_SHARE_SEGMENT, '$1:token')
+    .replace(BIOGRAPHER_CREDENTIAL_SEGMENT, '$1:token')
     .replace(SURVEY_REWARD_SEGMENT, '$1:id')
     .replace(SURVEY_TOKEN_SEGMENT, '$1:token')
     .replace(/\/{2,}/g, '/');

@@ -9,6 +9,7 @@ import {
   biographerSessions as sessions,
   biographerEvents as events,
   biographerAssets as assets,
+  biographerInvitations as invitations,
 } from '@/db/schema/biographer';
 import { projectInput, projectPatch, turnInput, turnPatch } from '@/lib/biographer/validation';
 export class BiographerError extends Error {
@@ -87,7 +88,7 @@ export async function createProject(authorId: string, name: string, input: unkno
       .returning();
     const [participant] = await tx
       .insert(participants)
-      .values({ projectId: project.id, name, role: 'owner' })
+      .values({ projectId: project.id, name, role: 'owner', consentAt: new Date() })
       .returning();
     return { project, participant };
   });
@@ -155,7 +156,12 @@ export async function editTurn(
     await tx.execute(sql`select pg_advisory_xact_lock(hashtext(${projectId}))`);
     const [turn] = await tx
       .update(turns)
-      .set({ ...value, revision: sql`${turns.revision}+1`, updatedAt: new Date() })
+      .set({
+        ...value,
+        ...(value.text !== undefined ? { final: true } : {}),
+        revision: sql`${turns.revision}+1`,
+        updatedAt: new Date(),
+      })
       .where(and(eq(turns.projectId, projectId), eq(turns.id, turnId), eq(turns.role, 'user')))
       .returning();
     if (!turn) throw new BiographerError('Response not found', 404);
@@ -171,29 +177,56 @@ export async function editTurn(
     return { turn };
   });
 }
-export async function issueSession(authorId: string, projectId: string) {
-  const { project, participant } = await detail(authorId, projectId);
-  if (!project.liveEnabled) throw new BiographerError('Live interviews paused', 423);
+export async function issueSession(
+  authorId: string,
+  projectId: string,
+  guest?: { participantId: string; accessVersion: number },
+) {
   const liveUrl = process.env.BIOGRAPHER_LIVE_URL;
   if (!liveUrl || (!liveUrl.startsWith('wss://') && !liveUrl.startsWith('ws://localhost:')))
     throw new BiographerError('Live interviews unavailable', 503);
   const ticket = randomBytes(32).toString('base64url');
-  const [session] = await db
-    .insert(sessions)
-    .values({
-      projectId,
-      participantId: participant.id,
-      ticketHash: hashTicket(ticket),
-      ticketExpiresAt: new Date(Date.now() + 60000),
-      leaseId: randomUUID(),
-    })
-    .returning();
-  return {
-    sessionId: session.id,
-    ticket,
-    liveUrl,
-    remainingSeconds: Math.max(0, project.allowanceSeconds - project.liveSeconds),
-  };
+  return db.transaction(async (tx) => {
+    await tx.execute(sql`select pg_advisory_xact_lock(hashtext(${projectId}))`);
+    const [project] = await tx
+      .select()
+      .from(projects)
+      .where(and(eq(projects.id, projectId), eq(projects.authorId, authorId)));
+    if (!project || project.status === 'deleting')
+      throw new BiographerError('Project not found', 404);
+    if (!project.liveEnabled) throw new BiographerError('Live interviews paused', 423);
+    const [participant] = await tx
+      .select()
+      .from(participants)
+      .where(
+        guest
+          ? and(
+              eq(participants.id, guest.participantId),
+              eq(participants.projectId, projectId),
+              eq(participants.role, 'contributor'),
+              eq(participants.accessVersion, guest.accessVersion),
+            )
+          : and(eq(participants.projectId, projectId), eq(participants.role, 'owner')),
+      );
+    if (!participant || participant.status === 'closed')
+      throw new BiographerError('Contributions closed', 423);
+    const [session] = await tx
+      .insert(sessions)
+      .values({
+        projectId,
+        participantId: participant.id,
+        ticketHash: hashTicket(ticket),
+        ticketExpiresAt: new Date(Date.now() + 60000),
+        leaseId: randomUUID(),
+      })
+      .returning();
+    return {
+      sessionId: session.id,
+      ticket,
+      liveUrl,
+      remainingSeconds: Math.max(0, project.allowanceSeconds - project.liveSeconds),
+    };
+  });
 }
 export async function admitSession(ticket: string, projectId: string, sessionId: string) {
   return db.transaction(async (tx) => {
@@ -234,11 +267,42 @@ export async function admitSession(ticket: string, projectId: string, sessionId:
         reservedSeconds: reserve,
       })
       .where(eq(sessions.id, sessionId));
-    const history = await tx
-      .select({ role: turns.role, text: turns.text })
+    const [speaker] = await tx
+      .select()
+      .from(participants)
+      .where(eq(participants.id, session.participantId));
+    if (!speaker || speaker.status === 'closed')
+      throw new BiographerError('Contributions closed', 423);
+    const allHistory = await tx
+      .select({
+        id: turns.id,
+        role: turns.role,
+        text: turns.text,
+        participantId: turns.participantId,
+        contributorName: participants.name,
+      })
       .from(turns)
+      .innerJoin(participants, eq(participants.id, turns.participantId))
       .where(and(eq(turns.projectId, projectId), eq(turns.included, true)))
       .orderBy(asc(turns.createdAt));
+    const history = allHistory
+      .filter((turn) => turn.participantId === speaker.id)
+      .slice(-80)
+      .map(({ role, text }) => ({ role, text: text.slice(0, 4000) }));
+    const sharedMemories =
+      speaker.role === 'contributor'
+        ? allHistory
+            .filter(
+              (turn) =>
+                turn.participantId !== speaker.id && turn.role === 'user' && turn.text.trim(),
+            )
+            .slice(-30)
+            .map((turn) => ({
+              sourceId: turn.id,
+              contributorName: turn.contributorName,
+              text: turn.text.slice(0, 2000),
+            }))
+        : [];
     const projectPhotos = await tx
       .select({ caption: assets.caption })
       .from(assets)
@@ -248,14 +312,17 @@ export async function admitSession(ticket: string, projectId: string, sessionId:
       participantId: session.participantId,
       authorId: project.authorId,
       locale: project.locale,
-      history: history.slice(-80),
+      history,
       remainingSeconds: remaining,
       leaseId: session.leaseId,
       context: {
         projectTitle: project.title,
         subject: project.subject,
         purpose: project.purpose,
-        photoCaptions: projectPhotos.map((photo) => photo.caption).filter(Boolean),
+        photoCaptions: projectPhotos.map((photo) => photo.caption.slice(0, 2000)).filter(Boolean),
+        relationship: speaker.relationship,
+        sharedMemories,
+        followUps: speaker.followUp ? [speaker.followUp] : [],
       },
     };
   });
@@ -320,6 +387,36 @@ export async function checkpoint(input: {
     if (!session?.consumedAt || session.endedAt)
       throw new BiographerError('Session not found', 404);
     await tx.execute(sql`select pg_advisory_xact_lock(hashtext(${session.projectId}))`);
+    const [currentSession] = await tx
+      .select()
+      .from(sessions)
+      .where(eq(sessions.id, input.sessionId));
+    const [participant] = await tx
+      .select()
+      .from(participants)
+      .where(eq(participants.id, session.participantId));
+    if (
+      !currentSession?.consumedAt ||
+      currentSession.endedAt ||
+      !participant ||
+      participant.status === 'closed'
+    )
+      throw new BiographerError('Session not found', 404);
+    if (participant.role === 'contributor') {
+      const [invitation] = await tx
+        .select({ id: invitations.id })
+        .from(invitations)
+        .where(
+          and(
+            eq(invitations.projectId, session.projectId),
+            eq(invitations.participantId, participant.id),
+            sql`${invitations.claimedAt} IS NOT NULL`,
+            sql`${invitations.revokedAt} IS NULL`,
+          ),
+        );
+      if (!invitation || !participant.consentAt)
+        throw new BiographerError('Session not found', 404);
+    }
     const inserted = await tx
       .insert(events)
       .values({ eventId: input.eventId, sessionId: session.id })
@@ -357,6 +454,17 @@ export async function checkpoint(input: {
           updatedAt: new Date(),
         },
       });
+    if (input.role === 'user')
+      await tx
+        .update(participants)
+        .set({
+          status: 'started',
+          lastActivity: new Date(),
+          contributionRevision: sql`${participants.contributionRevision}+1`,
+        })
+        .where(
+          and(eq(participants.id, session.participantId), eq(participants.role, 'contributor')),
+        );
     await tx
       .update(projects)
       .set({

@@ -24,7 +24,25 @@ export function internal(request: Request) {
 export async function body(request: Request) {
   const length = Number(request.headers.get('content-length'));
   if (length > 3000000) throw new BiographerError('Request too large', 413);
-  return request.json();
+  const reader = request.body?.getReader();
+  if (!reader) throw new SyntaxError('Missing JSON body');
+  const chunks: Uint8Array[] = [];
+  let bytes = 0;
+  try {
+    while (true) {
+      const chunk = await reader.read();
+      if (chunk.done) break;
+      bytes += chunk.value.byteLength;
+      if (bytes > 3000000) {
+        await reader.cancel();
+        throw new BiographerError('Request too large', 413);
+      }
+      chunks.push(chunk.value);
+    }
+  } finally {
+    reader.releaseLock();
+  }
+  return JSON.parse(Buffer.concat(chunks).toString('utf8'));
 }
 export function id(value: string) {
   return z.uuid().parse(value);

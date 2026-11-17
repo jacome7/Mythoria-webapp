@@ -1,6 +1,7 @@
 'use client';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
+import PeopleMemories from './PeopleMemories';
 import { useAuth } from '@clerk/nextjs';
 import { useLocale, useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
@@ -22,6 +23,7 @@ export default function BiographerStudio({ projectId }: { projectId: string }) {
   const [place, setPlace] = useState('');
   const [period, setPeriod] = useState('');
   const [caption, setCaption] = useState('');
+  const [pendingPhotoQuestion, setPendingPhotoQuestion] = useState<{ id: string; text: string }>();
   const [photoEdits, setPhotoEdits] = useState<Record<string, string>>({});
   const { userId } = useAuth();
   const [detail, setDetail] = useState<BiographerProjectDetail>();
@@ -29,7 +31,27 @@ export default function BiographerStudio({ projectId }: { projectId: string }) {
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
   const [awake, setAwake] = useState(true);
-  const [tab, setTab] = useState<'talk' | 'memories' | 'book'>('talk');
+  const [tab, setTab] = useState<'talk' | 'memories' | 'people' | 'book'>('talk');
+  const [collaborationEnabled, setCollaborationEnabled] = useState(false);
+  const [unfinishedContributors, setUnfinishedContributors] = useState(0);
+  useEffect(() => {
+    const controller = new AbortController();
+    void fetch(`/api/biographer/projects/${projectId}/contributors`, { signal: controller.signal })
+      .then(async (r) => {
+        if (controller.signal.aborted) return;
+        setCollaborationEnabled(r.ok);
+        if (r.ok) {
+          const data = (await r.json()) as { contributors: Array<{ status: string }> };
+          if (!controller.signal.aborted)
+            setUnfinishedContributors(
+              data.contributors.filter((p) => p.status !== 'finished' && p.status !== 'closed')
+                .length,
+            );
+        }
+      })
+      .catch(() => undefined);
+    return () => controller.abort();
+  }, [projectId]);
   const [draftId, setDraftId] = useState<string>();
   const draftQueue = useRef(Promise.resolve());
   useEffect(() => {
@@ -188,8 +210,19 @@ export default function BiographerStudio({ projectId }: { projectId: string }) {
       setSettingsDirty(false);
       await load();
     });
+  const askAboutPhoto = async (pending: { id: string; text: string }) => {
+    const response = await fetch(`/api/biographer/projects/${projectId}/interview`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id: pending.id, role: 'user', text: pending.text, final: true }),
+    });
+    if (!response.ok) throw new Error();
+    setPendingPhotoQuestion(undefined);
+    await load();
+  };
   const uploadPhoto = (file: File) =>
     action(async () => {
+      live.pause();
       const form = new FormData();
       form.set('file', file);
       form.set('caption', caption);
@@ -198,9 +231,19 @@ export default function BiographerStudio({ projectId }: { projectId: string }) {
         body: form,
       });
       if (!response.ok) throw new Error();
+      const pending = {
+        id: crypto.randomUUID(),
+        text: [t('photoAdded'), caption.trim()].filter(Boolean).join(' '),
+      };
+      setPendingPhotoQuestion(pending);
       setCaption('');
       setProposal(undefined);
       await load();
+      try {
+        await askAboutPhoto(pending);
+      } catch {
+        setError(t('photoQuestionPending'));
+      }
     });
   const updatePhoto = (id: string, update: { caption?: string; included?: boolean }) =>
     action(async () => {
@@ -256,10 +299,30 @@ export default function BiographerStudio({ projectId }: { projectId: string }) {
           </Link>
           <h1 className="text-2xl font-bold">{detail?.project.title || t('title')}</h1>
         </div>
-        <span className="badge badge-outline">{t('private')}</span>
+        <div className="flex gap-2 items-center">
+          <span className="badge badge-outline">{t('private')}</span>
+          {collaborationEnabled && (
+            <button
+              className="btn btn-outline btn-sm"
+              onClick={() => {
+                live.pause();
+                setTab('people');
+              }}
+            >
+              {t('invitePeople')}
+            </button>
+          )}
+        </div>
       </header>
       <div role="tablist" className="tabs tabs-border">
-        {(['talk', 'memories', 'book'] as const).map((name) => (
+        {(
+          [
+            'talk',
+            'memories',
+            ...(collaborationEnabled ? ['people' as const] : []),
+            'book',
+          ] as const
+        ).map((name) => (
           <button
             key={name}
             role="tab"
@@ -270,13 +333,37 @@ export default function BiographerStudio({ projectId }: { projectId: string }) {
                 live.pause();
                 void load().catch(() => setError(t('failed')));
               }
+              if (name === 'book' && collaborationEnabled)
+                void fetch(`/api/biographer/projects/${projectId}/contributors`, {
+                  cache: 'no-store',
+                })
+                  .then(async (r) => {
+                    if (r.ok) {
+                      const data = (await r.json()) as { contributors: Array<{ status: string }> };
+                      setUnfinishedContributors(
+                        data.contributors.filter(
+                          (p) => p.status !== 'finished' && p.status !== 'closed',
+                        ).length,
+                      );
+                    }
+                  })
+                  .catch(() => undefined);
               setTab(name);
             }}
           >
-            {t(name)}
+            {name === 'people' ? t('peopleTab') : t(name)}
           </button>
         ))}
       </div>
+      {pendingPhotoQuestion && (
+        <button
+          className="btn btn-outline"
+          disabled={busy}
+          onClick={() => void action(() => askAboutPhoto(pendingPhotoQuestion))}
+        >
+          {t('retryPhotoQuestion')}
+        </button>
+      )}
       {(error || live.error) && (
         <p role="alert" className="alert alert-warning">
           {error || t('connectionLost')}
@@ -550,6 +637,7 @@ export default function BiographerStudio({ projectId }: { projectId: string }) {
             ))}
         </section>
       )}
+      {tab === 'people' && <PeopleMemories projectId={projectId} />}
       {tab === 'book' && (
         <section className="space-y-5">
           <h2 className="text-xl font-semibold">{t('bookHeading')}</h2>
@@ -741,6 +829,11 @@ export default function BiographerStudio({ projectId }: { projectId: string }) {
                 </ul>
               )}
               <p>{t('proposalReview')}</p>
+              {unfinishedContributors > 0 && (
+                <p className="alert alert-info">
+                  {t('unfinishedAuthors', { count: unfinishedContributors })}
+                </p>
+              )}
               {settingsDirty && <p className="text-warning">{t('refreshDirection')}</p>}
               {editingProposal ? (
                 <button

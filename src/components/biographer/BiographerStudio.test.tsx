@@ -41,6 +41,8 @@ it('saves an answer and reviews photographs through the private project endpoint
     assets: [{ id: 'photo-1', caption: 'Andorra', included: true }],
   };
   global.fetch = jest.fn(async (_url, init) => {
+    if (String(_url).endsWith('/contributors'))
+      return { ok: true, json: async () => ({ contributors: [] }) } as Response;
     if (String(_url).endsWith('/interview')) {
       const answer = JSON.parse(String(init?.body));
       project.turns = [{ ...answer, included: true, createdAt: new Date().toISOString() }];
@@ -66,4 +68,42 @@ it('saves an answer and reviews photographs through the private project endpoint
     'src',
     '/api/biographer/projects/project-1/photos/photo-1',
   );
+});
+
+it('keeps an uploaded photo and retries its question with the same response identity', async () => {
+  Object.defineProperty(globalThis.crypto, 'randomUUID', {
+    configurable: true,
+    value: () => 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa',
+  });
+  const detail = {
+    project: { title: 'A family story', revision: 0, proposal: null },
+    participant: { id: 'participant' },
+    turns: [],
+    segments: [],
+    assets: [],
+  };
+  const interviewBodies: Array<{ id: string; text: string }> = [];
+  global.fetch = jest.fn(async (url, init) => {
+    if (String(url).endsWith('/contributors'))
+      return { ok: true, json: async () => ({ contributors: [] }) } as Response;
+    if (String(url).endsWith('/photos') && init?.method === 'POST')
+      return { ok: true, json: async () => ({}) } as Response;
+    if (String(url).endsWith('/interview')) {
+      interviewBodies.push(JSON.parse(String(init?.body)));
+      return { ok: interviewBodies.length > 1, json: async () => ({}) } as Response;
+    }
+    return { ok: true, json: async () => detail } as Response;
+  }) as jest.Mock;
+  render(<BiographerStudio projectId="project-1" />);
+  await screen.findByText('A family story');
+  fireEvent.change(screen.getByLabelText('photoCaption'), { target: { value: 'Andorra holiday' } });
+  fireEvent.change(screen.getByLabelText('addPhoto'), {
+    target: { files: [new File(['picture'], 'photo.png', { type: 'image/png' })] },
+  });
+  const retry = await screen.findByRole('button', { name: 'retryPhotoQuestion' });
+  await waitFor(() => expect(retry).toBeEnabled());
+  fireEvent.click(retry);
+  await waitFor(() => expect(interviewBodies).toHaveLength(2));
+  expect(interviewBodies[0]).toEqual(interviewBodies[1]);
+  expect(interviewBodies[0].text).toContain('Andorra holiday');
 });

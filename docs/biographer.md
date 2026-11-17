@@ -1,6 +1,6 @@
-# AI Biographer — Phase 1
+# AI Biographer — Phases 1 and 2
 
-Implementation branch: `codex/biographer-phase-1`. Phase 2 contributor invitations are not exposed by this release. Core schema is participant-ready but only the authenticated project owner has access.
+Implementation branch: `codex/biographer-phase-2` builds on Phase 1. Contributor invitations are implemented but remain disabled until the separate collaboration flag is enabled after rollout checks.
 
 ## Configuration and rollout
 
@@ -34,4 +34,10 @@ Each approved revision is stored in `biographer_book_versions` against its own s
 
 Saved audio creates a pending user response before its first acknowledged segment. An explicit `POST /projects/:projectId/turns/:turnId/transcribe` recovers an empty unedited transcript from ordered saved PCM via SGW. It does not inject archival audio into a live conversation; a failed job preserves the recording and a concurrent user correction or new segment aborts the commit.
 
-Owner deletion is retryable and disables access before purging the private bucket prefix. The implementation refuses deletion when any related story has a paid request, requiring support intervention: cancellation and refund integration for that case is still a launch blocker. Source objects uploaded when a database commit fails may require reconciliation. A time-bounded orphan cleanup process and its safety checks must be implemented before activation.
+Owner deletion is retryable and disables access before purging the private bucket prefix. The implementation refuses deletion when any related story has a paid request, requiring support intervention: cancellation and refund integration for that case is still a launch blocker. Source objects uploaded when a database commit fails may require reconciliation. Run `npm run biographer:cleanup-orphans` to preview orphan candidates; `npm run biographer:cleanup-orphans -- --apply` deletes only objects older than 24 hours after checking asset and segment references under the project lock. Each delete uses a generation precondition. Do not run against the shared production bucket during tests.
+
+## Phase 2 collaboration
+
+`BIOGRAPHER_COLLABORATION_ENABLED` defaults off. Set `BIOGRAPHER_PUBLIC_URL` to the trusted HTTPS application origin before use. Invitation and return secrets are URL fragments and are exchanged only via `POST /api/biographer/access`; contributor requests require a scoped HttpOnly cookie and project/participant intent headers. An invite is claimed once, while its separate return capability can be rotated; rotation/revocation terminates existing participant sessions. The owner can review source turns and assets, exclude material, and mark exact contribution revisions reviewed. The core project model remains authoritative.
+
+Do not activate Phase 2 until migrations 0054–0056 are reviewed and applied in a controlled rollout. Verify real isolated-database invitation races, quota contention, signed admission and revocation, mobile playback, owner review and contributor privacy. The live gateway remains restricted to scoped participant admission.

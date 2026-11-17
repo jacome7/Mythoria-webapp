@@ -42,3 +42,19 @@ describe('analytics page context privacy boundary', () => {
     expect(params.page_location.endsWith('/en-US/survey/:token')).toBe(true);
   });
 });
+
+describe('Biographer bearer credential redaction', () => {
+  it('removes invitation and private return credentials from analytics URLs', () => {
+    const token = 'A'.repeat(43);
+    for (const route of ['invite', 'resume']) {
+      expect(sanitizeAnalyticsPathname(`/en-US/biographer/${route}/${token}`)).toBe(
+        `/en-US/biographer/${route}/:token`,
+      );
+      expect(
+        sanitizeAnalyticsPageUrl(
+          `https://mythoria.pt/pt-PT/biographer/${route}/${token}?tracking=1`,
+        ),
+      ).toBe(`https://mythoria.pt/pt-PT/biographer/${route}/:token`);
+    }
+  });
+});

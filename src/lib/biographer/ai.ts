@@ -1,9 +1,10 @@
-import { and, eq } from 'drizzle-orm';
+import { and, desc, eq, sql } from 'drizzle-orm';
 import { z } from 'zod';
 import { literaryPersonaEnum } from '@/db/schema/enums';
 import { randomUUID } from 'node:crypto';
 import { db } from '@/db';
 import {
+  biographerParticipants as participants,
   biographerProjects as projects,
   biographerTurns as turns,
   biographerBookVersions as versions,
@@ -24,21 +25,37 @@ async function call(path: string, payload: unknown) {
 export async function interview(authorId: string, projectId: string, input: unknown) {
   const { turn } = { turn: await saveTurn(authorId, projectId, input) };
   const data = await detail(authorId, projectId);
+  const { biographerAssets } = await import('@/db/schema/biographer');
+  const photos = await db
+    .select({ objectPath: biographerAssets.objectPath, contentType: biographerAssets.contentType })
+    .from(biographerAssets)
+    .where(
+      and(
+        eq(biographerAssets.projectId, projectId),
+        eq(biographerAssets.participantId, data.participant.id),
+        eq(biographerAssets.included, true),
+      ),
+    )
+    .orderBy(desc(biographerAssets.createdAt))
+    .limit(3);
   const result = await call('/api/biographer/interview', {
+    participantId: data.participant.id,
+    photoReferences: photos.map((photo) => ({ ...photo, participantId: data.participant.id })),
+
     authorId,
     projectId,
     locale: data.project.locale,
     history: data.turns
       .filter((t) => t.included)
       .slice(-80)
-      .map((t) => ({ role: t.role, text: t.text })),
+      .map((t) => ({ role: t.role, text: t.text.slice(0, 4000) })),
     context: {
       projectTitle: data.project.title,
       subject: data.project.subject,
       purpose: data.project.purpose,
       photoCaptions: data.assets
         .filter((a) => a.included)
-        .map((a) => a.caption)
+        .map((a) => a.caption.slice(0, 2000))
         .filter(Boolean)
         .slice(-20),
     },
@@ -74,12 +91,22 @@ export async function proposal(authorId: string, projectId: string, input: unkno
     .parse(input);
   const data = await detail(authorId, projectId);
   const included = data.turns.filter((t) => t.included);
+  const people = await db
+    .select({ id: participants.id, name: participants.name })
+    .from(participants)
+    .where(eq(participants.projectId, projectId));
+  const names = new Map(people.map((person) => [person.id, person.name]));
   if (!included.some((t) => t.role === 'user'))
     throw new BiographerError('Share a memory before creating your book proposal');
+  if (included.some((t) => t.role === 'user' && (!t.final || !t.text.trim())))
+    throw new BiographerError(
+      'Finish transcribing or exclude pending recordings before creating a proposal',
+      409,
+    );
   const result = await call('/api/biographer/proposal', {
     authorId,
     projectId,
-    history: included.map(({ role, text }) => ({ role, text })),
+    history: included.slice(-8).map(({ role, text }) => ({ role, text })),
     context: {
       projectTitle: data.project.title,
       subject: data.project.subject,
@@ -88,13 +115,20 @@ export async function proposal(authorId: string, projectId: string, input: unkno
       period: settings.researchPlaces
         .map((p) => p.period)
         .filter(Boolean)
-        .join('; '),
+        .join('; ')
+        .slice(0, 200),
     },
     locale: data.project.locale,
     title: data.project.title,
     subject: data.project.subject,
     purpose: data.project.purpose,
-    turns: included.map(({ id, role, text }) => ({ id, role, text })),
+    turns: included.map(({ id, role, text, participantId }) => ({
+      id,
+      role,
+      text,
+      participantId,
+      contributorName: names.get(participantId) || 'Contributor',
+    })),
     persona: settings.literaryPersona,
     targetWords: 20000,
   });
@@ -107,7 +141,12 @@ export async function proposal(authorId: string, projectId: string, input: unkno
     throw new BiographerError('Invalid book proposal', 502);
   const [project] = await db
     .update(projects)
-    .set({ proposal: result, proposalRevision: data.project.revision })
+    .set({
+      proposal: result,
+      revision: sql`${projects.revision}+1`,
+      proposalRevision: sql`${projects.revision}+1`,
+      updatedAt: new Date(),
+    })
     .where(and(eq(projects.id, projectId), eq(projects.revision, data.project.revision)))
     .returning();
   if (!project)
@@ -115,7 +154,7 @@ export async function proposal(authorId: string, projectId: string, input: unkno
       'Memories changed while preparing the proposal. Please try again.',
       409,
     );
-  return { proposal: result, revision: data.project.revision };
+  return { proposal: result, revision: project.revision };
 }
 export async function approve(authorId: string, projectId: string, revision: number) {
   return db.transaction(async (tx) => {
@@ -135,8 +174,15 @@ export async function approve(authorId: string, projectId: string, revision: num
       .where(and(eq(versions.projectId, projectId), eq(versions.revision, revision)));
     if (existingVersion) return { storyId: existingVersion.storyId };
     const source = await tx
-      .select({ id: turns.id, role: turns.role, text: turns.text })
+      .select({
+        id: turns.id,
+        role: turns.role,
+        text: turns.text,
+        participantId: turns.participantId,
+        contributorName: participants.name,
+      })
       .from(turns)
+      .innerJoin(participants, eq(participants.id, turns.participantId))
       .where(and(eq(turns.projectId, projectId), eq(turns.included, true)));
     const p = project.proposal;
     const [story] = await tx

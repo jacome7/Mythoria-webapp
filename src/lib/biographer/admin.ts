@@ -2,7 +2,11 @@ import { OAuth2Client } from 'google-auth-library';
 import { z } from 'zod';
 import { eq, desc, sql } from 'drizzle-orm';
 import { db } from '@/db';
-import { biographerProjects, biographerAdminActions } from '@/db/schema/biographer';
+import {
+  biographerProjects,
+  biographerAdminActions,
+  biographerParticipants,
+} from '@/db/schema/biographer';
 import { BiographerError } from '@/db/services/biographer';
 const oidc = new OAuth2Client();
 export async function verifyAdmin(request: Request) {
@@ -80,7 +84,16 @@ export async function adminCommand(value: unknown, caller: string) {
       .from(biographerProjects)
       .where(eq(biographerProjects.id, c.input.projectId));
     if (!p) throw new BiographerError('Project not found', 404);
-    return dto(p);
+    const people = await db
+      .select({ status: biographerParticipants.status })
+      .from(biographerParticipants)
+      .where(eq(biographerParticipants.projectId, p.id));
+    return {
+      ...dto(p),
+      participantCount: people.length,
+      startedCount: people.filter((v) => ['started', 'finished'].includes(v.status)).length,
+      finishedCount: people.filter((v) => v.status === 'finished').length,
+    };
   }
   return db.transaction(async (tx) => {
     await tx.execute(sql`select pg_advisory_xact_lock(hashtext(${c.input.projectId}))`);
@@ -128,6 +141,15 @@ export async function adminCommand(value: unknown, caller: string) {
       .from(biographerProjects)
       .where(eq(biographerProjects.id, c.input.projectId));
     if (!p) throw new BiographerError('Project not found', 404);
-    return dto(p);
+    const people = await db
+      .select({ status: biographerParticipants.status })
+      .from(biographerParticipants)
+      .where(eq(biographerParticipants.projectId, p.id));
+    return {
+      ...dto(p),
+      participantCount: people.length,
+      startedCount: people.filter((v) => ['started', 'finished'].includes(v.status)).length,
+      finishedCount: people.filter((v) => v.status === 'finished').length,
+    };
   });
 }

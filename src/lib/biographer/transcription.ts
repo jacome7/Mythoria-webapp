@@ -4,6 +4,7 @@ import {
   biographerSegments as segments,
   biographerTurns as turns,
   biographerProjects as projects,
+  biographerParticipants as participants,
 } from '@/db/schema/biographer';
 import { BiographerError, ownedProject } from '@/db/services/biographer';
 import { readSegment } from '@/lib/biographer/storage';
@@ -29,13 +30,33 @@ export function validateRecoverySegments(
 }
 
 /** Explicit recovery of saved PCM. Never sends archival audio into a live session. */
-export async function recoverTranscription(authorId: string, projectId: string, turnId: string) {
+export async function recoverTranscription(
+  authorId: string,
+  projectId: string,
+  turnId: string,
+  guest?: { participantId: string; accessVersion: number },
+) {
   const project = await ownedProject(authorId, projectId);
+  if (guest) {
+    const [participant] = await db
+      .select()
+      .from(participants)
+      .where(
+        and(
+          eq(participants.id, guest.participantId),
+          eq(participants.projectId, projectId),
+          eq(participants.accessVersion, guest.accessVersion),
+        ),
+      );
+    if (!participant || participant.status === 'closed')
+      throw new BiographerError('Contributions closed', 423);
+  }
   const [turn] = await db
     .select()
     .from(turns)
     .where(and(eq(turns.id, turnId), eq(turns.projectId, projectId), eq(turns.role, 'user')));
-  if (!turn) throw new BiographerError('Response not found', 404);
+  if (!turn || (guest && turn.participantId !== guest.participantId))
+    throw new BiographerError('Response not found', 404);
   if (turn.text || turn.revision || turn.final)
     throw new BiographerError('This response already has a transcript', 409);
   const saved = await db
@@ -92,6 +113,25 @@ export async function recoverTranscription(authorId: string, projectId: string, 
       .from(segments)
       .where(and(eq(segments.projectId, projectId), eq(segments.turnId, turnId)))
       .orderBy(asc(segments.sequence));
+    const [currentParticipant] = guest
+      ? await tx
+          .select()
+          .from(participants)
+          .where(
+            and(
+              eq(participants.id, guest.participantId),
+              eq(participants.projectId, projectId),
+              eq(participants.accessVersion, guest.accessVersion),
+            ),
+          )
+      : [];
+    if (
+      guest &&
+      (!currentParticipant ||
+        currentParticipant.status === 'closed' ||
+        current?.participantId !== guest.participantId)
+    )
+      throw new BiographerError('Contributions closed', 423);
     if (
       !currentProject ||
       currentProject.status === 'deleting' ||
@@ -111,6 +151,15 @@ export async function recoverTranscription(authorId: string, projectId: string, 
       .set({ text, originalText: text, final: true, updatedAt: new Date() })
       .where(eq(turns.id, turnId))
       .returning();
+    if (guest)
+      await tx
+        .update(participants)
+        .set({
+          status: 'started',
+          lastActivity: new Date(),
+          contributionRevision: sql`${participants.contributionRevision}+1`,
+        })
+        .where(eq(participants.id, guest.participantId));
     await tx
       .update(projects)
       .set({

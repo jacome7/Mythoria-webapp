@@ -35,6 +35,19 @@ export interface EnvVarDescriptor {
 
 export const envManifest: EnvVarDescriptor[] = [
   {
+    name: 'BIOGRAPHER_COLLABORATION_ENABLED',
+    required: false,
+    scopes: ['runtime', 'dev', 'prod'],
+    default: 'false',
+    note: 'Enables accountless contributor invitation and interview routes after Phase 2 migration and pilot.',
+  },
+  {
+    name: 'BIOGRAPHER_PUBLIC_URL',
+    required: false,
+    scopes: ['runtime', 'dev', 'prod'],
+    note: 'Trusted HTTPS origin used to construct personal invitation and resume links.',
+  },
+  {
     name: 'BIOGRAPHER_ENABLED',
     required: false,
     scopes: ['runtime', 'dev', 'prod'],

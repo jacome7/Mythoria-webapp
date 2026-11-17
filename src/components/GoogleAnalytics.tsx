@@ -24,6 +24,13 @@ export default function GoogleAnalytics({
   // Generate the inline script to initialize gtag and set consent defaults.
   // We read the cookie manually here because this script runs before React hydration.
   const initScript = `
+    (function() {
+    if (new RegExp('^/[A-Za-z]{2}-[A-Za-z]{2}/biographer/(invite|resume)/?$').test(window.location.pathname)) {
+      var privateFragment = window.location.hash.slice(1);
+      if (/^[A-Za-z0-9_-]{43}$/.test(privateFragment)) window.__mythoriaBiographerFragment = privateFragment;
+      window.history.replaceState(null, '', window.location.pathname + window.location.search);
+      return;
+    }
     window.dataLayer = window.dataLayer || [];
     window.gtag = window.gtag || function(){window.dataLayer.push(arguments);};
 
@@ -75,6 +82,7 @@ export default function GoogleAnalytics({
     window.gtag('config', ${JSON.stringify(measurementId)}, { send_page_view: false${debugConfig} });
     ${googleAdsId ? `window.gtag('config', ${JSON.stringify(googleAdsId)}, { send_page_view: false });` : ''}
     ${googleTagId ? `window.gtag('config', ${JSON.stringify(googleTagId)}, { send_page_view: false });` : ''}
+    })();
   `;
 
   return (

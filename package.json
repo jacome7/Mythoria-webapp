@@ -62,7 +62,8 @@
     "test:mcp:smoke": "tsx scripts/mcp-e2e-smoke.ts --base-url=http://192.168.1.10:3000",
     "test:mcp:smoke:prod": "tsx scripts/mcp-e2e-smoke.ts --base-url=https://mythoria.pt",
     "auth:mcp:token": "tsx scripts/get-mcp-oauth-token.ts",
-    "check:env": "tsx ./scripts/check-env-parity.ts"
+    "check:env": "tsx ./scripts/check-env-parity.ts",
+    "biographer:cleanup-orphans": "tsx scripts/biographer-orphan-cleanup.ts"
   },
   "sideEffects": false,
   "dependencies": {

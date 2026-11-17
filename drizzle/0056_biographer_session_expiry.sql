@@ -1,0 +1,1 @@
+ALTER TABLE "biographer_invitations" ADD COLUMN "session_expires_at" timestamp with time zone;

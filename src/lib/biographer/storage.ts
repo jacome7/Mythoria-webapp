@@ -14,9 +14,30 @@ function bucket() {
   if (!name) throw new BiographerError('Private media storage unavailable', 503);
   return new Storage().bucket(name);
 }
-export async function saveSegment(authorId: string, projectId: string, input: unknown) {
+export async function saveSegment(
+  authorId: string,
+  projectId: string,
+  input: unknown,
+  guest?: { participantId: string; accessVersion: number },
+) {
   const value = segmentInput.parse(input);
-  const { participant } = await detail(authorId, projectId);
+  const { participant: ownerParticipant } = await detail(authorId, projectId);
+  const { biographerParticipants } = await import('@/db/schema/biographer');
+  const [guestParticipant] = guest
+    ? await db
+        .select()
+        .from(biographerParticipants)
+        .where(
+          and(
+            eq(biographerParticipants.id, guest.participantId),
+            eq(biographerParticipants.projectId, projectId),
+            eq(biographerParticipants.accessVersion, guest.accessVersion),
+          ),
+        )
+    : [];
+  const participant = guest ? guestParticipant : ownerParticipant;
+  if (!participant || participant.status === 'closed')
+    throw new BiographerError('Contributions closed', 423);
   const bytes = Buffer.from(value.data, 'base64');
   if (
     !bytes.length ||
@@ -46,6 +67,20 @@ export async function saveSegment(authorId: string, projectId: string, input: un
       .where(and(eq(projects.id, projectId), eq(projects.authorId, authorId)));
     if (!project || project.status === 'deleting')
       throw new BiographerError('Project not found', 404);
+    if (guest) {
+      const [current] = await tx
+        .select()
+        .from(biographerParticipants)
+        .where(
+          and(
+            eq(biographerParticipants.id, guest.participantId),
+            eq(biographerParticipants.projectId, projectId),
+            eq(biographerParticipants.accessVersion, guest.accessVersion),
+          ),
+        );
+      if (!current || current.status === 'closed')
+        throw new BiographerError('Contributions closed', 423);
+    }
     try {
       await file.save(bytes, {
         resumable: false,
@@ -80,6 +115,22 @@ export async function saveSegment(authorId: string, projectId: string, input: un
         originalText: '',
         final: false,
       });
+    }
+    const insertedSegments = await tx
+      .insert(segments)
+      .values(row)
+      .onConflictDoNothing()
+      .returning({ id: segments.id });
+    if (insertedSegments.length) {
+      if (guest)
+        await tx
+          .update(biographerParticipants)
+          .set({
+            status: 'started',
+            lastActivity: new Date(),
+            contributionRevision: sql`${biographerParticipants.contributionRevision}+1`,
+          })
+          .where(eq(biographerParticipants.id, guest.participantId));
       await tx
         .update(projects)
         .set({
@@ -90,7 +141,6 @@ export async function saveSegment(authorId: string, projectId: string, input: un
         })
         .where(eq(projects.id, projectId));
     }
-    await tx.insert(segments).values(row).onConflictDoNothing();
     const [saved] = await tx
       .select()
       .from(segments)
@@ -118,8 +168,30 @@ export async function readSegment(authorId: string, projectId: string, id: strin
   return { segment, bytes };
 }
 
-export async function savePhoto(authorId: string, projectId: string, file: File, caption: string) {
-  const { participant } = await detail(authorId, projectId);
+export async function savePhoto(
+  authorId: string,
+  projectId: string,
+  file: File,
+  caption: string,
+  guest?: { participantId: string; accessVersion: number },
+) {
+  const { participant: ownerParticipant } = await detail(authorId, projectId);
+  const { biographerParticipants } = await import('@/db/schema/biographer');
+  const [guestParticipant] = guest
+    ? await db
+        .select()
+        .from(biographerParticipants)
+        .where(
+          and(
+            eq(biographerParticipants.id, guest.participantId),
+            eq(biographerParticipants.projectId, projectId),
+            eq(biographerParticipants.accessVersion, guest.accessVersion),
+          ),
+        )
+    : [];
+  const participant = guest ? guestParticipant : ownerParticipant;
+  if (!participant || participant.status === 'closed')
+    throw new BiographerError('Contributions closed', 423);
   const { biographerAssets, biographerProjects } = await import('@/db/schema/biographer');
   if (file.size > 10485760 || !['image/jpeg', 'image/png', 'image/webp'].includes(file.type))
     throw new BiographerError('Use a JPEG, PNG or WebP photograph under 10 MB');
@@ -144,6 +216,20 @@ export async function savePhoto(authorId: string, projectId: string, file: File,
       .where(and(eq(projects.id, projectId), eq(projects.authorId, authorId)));
     if (!project || project.status === 'deleting')
       throw new BiographerError('Project not found', 404);
+    if (guest) {
+      const [current] = await tx
+        .select()
+        .from(biographerParticipants)
+        .where(
+          and(
+            eq(biographerParticipants.id, guest.participantId),
+            eq(biographerParticipants.projectId, projectId),
+            eq(biographerParticipants.accessVersion, guest.accessVersion),
+          ),
+        );
+      if (!current || current.status === 'closed')
+        throw new BiographerError('Contributions closed', 423);
+    }
     const existing = await tx
       .select({ id: biographerAssets.id })
       .from(biographerAssets)
@@ -168,6 +254,15 @@ export async function savePhoto(authorId: string, projectId: string, file: File,
         caption: caption.slice(0, 4000),
       })
       .returning();
+    if (guest)
+      await tx
+        .update(biographerParticipants)
+        .set({
+          status: 'started',
+          lastActivity: new Date(),
+          contributionRevision: sql`${biographerParticipants.contributionRevision}+1`,
+        })
+        .where(eq(biographerParticipants.id, guest.participantId));
     await tx
       .update(biographerProjects)
       .set({
