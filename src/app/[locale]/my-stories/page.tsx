@@ -1,5 +1,7 @@
 'use client';
 
+import BiographerEntry from '@/components/biographer/BiographerEntry';
+
 import { useEffect, useState } from 'react';
 import { Show } from '@clerk/nextjs';
 import { Link } from '@/i18n/routing';
@@ -75,6 +77,7 @@ export default function MyStoriesPage() {
               </Link>
             </div>
           </div>
+          <BiographerEntry />
           <SurveyRewardBanner />
           <MyStoriesTable />
         </div>

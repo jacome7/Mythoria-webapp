@@ -80,13 +80,17 @@ function Step5Page() {
 
   const fetchEbookPricing = async () => {
     try {
-      const response = await fetch('/api/pricing/services');
+      const response = await fetch(
+        `/api/pricing/services?storyId=${encodeURIComponent(currentStoryId || '')}`,
+      );
       if (!response.ok) {
         throw new Error('Failed to fetch pricing data');
       }
       const data = await response.json();
       const ebook = data.services.find(
-        (service: ServiceResponse) => service.serviceCode === 'eBookGeneration',
+        (service: ServiceResponse) =>
+          service.serviceCode ===
+          (data.productProfile === 'biographer' ? 'biographerBookGeneration' : 'eBookGeneration'),
       );
       if (ebook) {
         setEbookPricing(ebook);

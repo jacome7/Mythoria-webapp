@@ -92,3 +92,23 @@ describe('pricingService.getInitialAuthorCredits', () => {
     await expect(pricingService.getInitialAuthorCredits()).resolves.toBe(5);
   });
 });
+
+describe('Biographer pricing', () => {
+  it('fails closed when a selected product price is absent', async () => {
+    jest
+      .spyOn(pricingService, 'getPricingByServiceCodes')
+      .mockResolvedValue([{ serviceCode: 'biographerBookGeneration', credits: 12 } as Pricing]);
+    await expect(
+      pricingService.calculateCreditsForFeatures({ ebook: true, audiobook: true }, 'biographer'),
+    ).rejects.toThrow('every selected product');
+  });
+  it('uses separate configured product codes', async () => {
+    const get = jest
+      .spyOn(pricingService, 'getPricingByServiceCodes')
+      .mockResolvedValue([{ serviceCode: 'biographerBookGeneration', credits: 12 } as Pricing]);
+    await expect(
+      pricingService.calculateCreditsForFeatures({ ebook: true }, 'biographer'),
+    ).resolves.toMatchObject({ total: 12 });
+    expect(get).toHaveBeenCalledWith(['biographerBookGeneration']);
+  });
+});

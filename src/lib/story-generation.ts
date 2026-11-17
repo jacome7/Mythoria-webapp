@@ -27,6 +27,7 @@ export interface StartStoryGenerationInput {
   primaryIntent?: StoryIntent;
   analyticsContext?: ClientAnalyticsContext;
   analyticsConsent?: AnalyticsConsent;
+  productProfile?: 'biographer';
 }
 
 export interface StartStoryGenerationResult {
@@ -40,9 +41,6 @@ export interface StartStoryGenerationResult {
 export async function startStoryGeneration(
   input: StartStoryGenerationInput,
 ): Promise<StartStoryGenerationResult> {
-  const pricing = await pricingService.calculateCreditsForFeatures(input.features);
-  if (pricing.total <= 0) throw new Error('No active pricing exists for the selected features');
-
   return db.transaction(async (tx) => {
     await tx.execute(sql`select pg_advisory_xact_lock(hashtext(${input.authorId}))`);
 
@@ -91,11 +89,26 @@ export async function startStoryGeneration(
       };
     }
 
+    if (process.env.BIOGRAPHER_ENABLED === 'true') {
+      await tx.execute(
+        sql`select pg_advisory_xact_lock(hashtext(project_id::text)) from biographer_book_versions where story_id = ${input.storyId}`,
+      );
+    }
     const [story] = await tx
-      .select({ storyId: stories.storyId })
+      .select({ storyId: stories.storyId, additionalRequests: stories.additionalRequests })
       .from(stories)
       .where(and(eq(stories.storyId, input.storyId), eq(stories.authorId, input.authorId)));
     if (!story) throw new Error('Story not found');
+    if (
+      story.additionalRequests?.includes('[MYTHORIA_BIOGRAPHER_V1]') &&
+      process.env.BIOGRAPHER_ENABLED !== 'true'
+    )
+      throw new Error('Biographer purchases are paused');
+
+    const profile =
+      input.productProfile || (await pricingService.getStoryProductProfile(input.storyId));
+    const pricing = await pricingService.calculateCreditsForFeatures(input.features, profile);
+    if (pricing.total <= 0) throw new Error('No active pricing exists for the selected features');
 
     const [balance] = await tx
       .select({ totalCredits: authorCreditBalances.totalCredits })
@@ -106,12 +119,11 @@ export async function startStoryGeneration(
 
     const runId = randomUUID();
     for (const item of pricing.breakdown) {
-      const creditEventType =
-        item.serviceCode === 'printOrder'
-          ? 'printOrder'
-          : item.serviceCode === 'audioBookGeneration'
-            ? 'audioBookGeneration'
-            : 'eBookGeneration';
+      const creditEventType = ['printOrder', 'biographerPrintOrder'].includes(item.serviceCode)
+        ? 'printOrder'
+        : ['audioBookGeneration', 'biographerAudioBookGeneration'].includes(item.serviceCode)
+          ? 'audioBookGeneration'
+          : 'eBookGeneration';
       await tx.insert(creditLedger).values({
         authorId: input.authorId,
         amount: -item.credits,

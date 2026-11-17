@@ -27,6 +27,7 @@ jest.mock('@/db/services', () => ({
     getStoryById: (...args: unknown[]) => getStoryByIdMock(...args),
   },
   pricingService: {
+    getStoryProductProfile: jest.fn().mockResolvedValue('standard'),
     getPricingByServiceCode: (...args: unknown[]) => getPricingByServiceCodeMock(...args),
   },
   creditService: {

@@ -22,6 +22,10 @@ jest.mock('@/components/ClientAuthWrapper', () => ({
     signedOutFallback: React.ReactNode;
   }) => (mockAuth.isLoaded ? (mockAuth.isSignedIn ? children : signedOutFallback) : null),
 }));
+jest.mock('@/components/biographer/BiographerEntry', () => ({
+  __esModule: true,
+  default: () => null,
+}));
 jest.mock('@/components/StepNavigation', () => ({ __esModule: true, default: () => null }));
 jest.mock('@/components/ProgressIndicator', () => ({ __esModule: true, default: () => null }));
 jest.mock('@/lib/analytics', () => ({

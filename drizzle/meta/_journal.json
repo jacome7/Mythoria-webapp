@@ -344,6 +344,41 @@
       "when": 1794249219220,
       "tag": "0048_keyinvoice_recovery_ledger",
       "breakpoints": true
+    },
+    {
+      "idx": 49,
+      "version": "7",
+      "when": 1794862474523,
+      "tag": "0049_biographer_phase_one",
+      "breakpoints": true
+    },
+    {
+      "idx": 50,
+      "version": "7",
+      "when": 1794862527513,
+      "tag": "0050_biographer_photo_assets",
+      "breakpoints": true
+    },
+    {
+      "idx": 51,
+      "version": "7",
+      "when": 1794862618773,
+      "tag": "0051_biographer_admin_idempotency",
+      "breakpoints": true
+    },
+    {
+      "idx": 52,
+      "version": "7",
+      "when": 1794907310363,
+      "tag": "0052_biographer_book_versions",
+      "breakpoints": true
+    },
+    {
+      "idx": 53,
+      "version": "7",
+      "when": 1794908143039,
+      "tag": "0053_biographer_photo_inclusion",
+      "breakpoints": true
     }
   ]
 }

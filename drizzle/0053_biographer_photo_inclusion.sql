@@ -1,0 +1,1 @@
+ALTER TABLE "biographer_assets" ADD COLUMN "included" boolean DEFAULT true NOT NULL;

@@ -1,10 +1,21 @@
 import { NextResponse, NextRequest } from 'next/server';
-import { pricingService } from '@/db/services';
+import { pricingService, storyService } from '@/db/services';
+import { getCurrentAuthor } from '@/lib/auth';
 
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
     const serviceCode = searchParams.get('serviceCode');
+    const storyId = searchParams.get('storyId');
+    let productProfile: 'standard' | 'biographer' = 'standard';
+    if (storyId) {
+      const author = await getCurrentAuthor();
+      if (!author) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      const story = await storyService.getStoryById(storyId);
+      if (!story || story.authorId !== author.authorId)
+        return NextResponse.json({ error: 'Story not found' }, { status: 404 });
+      productProfile = await pricingService.getStoryProductProfile(storyId);
+    }
 
     if (serviceCode) {
       // Get pricing for specific service code
@@ -79,6 +90,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({
       success: true,
       services,
+      productProfile,
     });
   } catch (error) {
     console.error('Error fetching pricing for services:', error);

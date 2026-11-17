@@ -38,7 +38,6 @@
         "outlineTitle": "Need a starting point?",
         "outlineDownload": "Download story outline",
         "outlineHelp": "An editable guide to characters, setting and key events. Replace the prompts with your own notes before importing.",
-
         "title": "I already have a document",
         "button": "Import document",
         "formats": "TXT, DOCX or PDF · up to 5 MB",
@@ -448,6 +447,11 @@
             "name": "The Folklore Traditionalist",
             "description": "Timeless, fable-like voice that speaks in symbols, omens, and gentle morals.",
             "sample": "And so, on a Sunday by the northern sea, Rodrigo the elder set the ball before John, the younger. The wind tested them, yet patience returned as the tide, until the child's touch grew sure."
+          },
+          "contextual-storyteller": {
+            "name": "The Contextual Storyteller",
+            "description": "Warm storytelling rooted in your memories and researched places, with minimal invention.",
+            "sample": "Your memories lead the story. Verified context brings the places and their time into focus."
           }
         }
       },

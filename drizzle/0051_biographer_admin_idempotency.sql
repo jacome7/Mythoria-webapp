@@ -1,0 +1,1 @@
+ALTER TABLE "biographer_admin_actions" ADD COLUMN "payload" text NOT NULL;

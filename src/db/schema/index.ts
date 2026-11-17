@@ -30,3 +30,5 @@ export * from './surveys';
 
 // Relations
 export * from './relations';
+
+export * from './biographer';

@@ -121,6 +121,7 @@ export const graphicalStyleEnum = pgEnum('graphical_style', [
 ]);
 
 export const literaryPersonaEnum = pgEnum('literary_persona', [
+  'contextual-storyteller',
   'storyteller',
   'adventurous-narrator',
   'fun-reporter',
