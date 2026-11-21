@@ -26,8 +26,6 @@ export default function GoogleAnalytics({
   const initScript = `
     (function() {
     if (new RegExp('^/[A-Za-z]{2}-[A-Za-z]{2}/biographer/(invite|resume)/?$').test(window.location.pathname)) {
-      var privateFragment = window.location.hash.slice(1);
-      if (/^[A-Za-z0-9_-]{43}$/.test(privateFragment)) window.__mythoriaBiographerFragment = privateFragment;
       window.history.replaceState(null, '', window.location.pathname + window.location.search);
       return;
     }

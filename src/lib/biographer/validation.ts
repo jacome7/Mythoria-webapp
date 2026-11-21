@@ -27,6 +27,7 @@ export const segmentInput = z
   .object({
     id: z.uuid(),
     turnId: z.uuid(),
+    capturedAt: z.iso.datetime().optional(),
     sequence: z.number().int().min(0).max(100000),
     contentType: z.enum([
       'audio/pcm;rate=16000',

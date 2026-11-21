@@ -1,13 +1,15 @@
 import { Storage } from '@google-cloud/storage';
 import { createHash } from 'node:crypto';
-import { and, eq, sql } from 'drizzle-orm';
+import { and, eq, or, sql } from 'drizzle-orm';
 import { db } from '@/db';
+import { storyWhispererInterviews } from '@/db/schema/story-whisperer';
 import {
   biographerSegments as segments,
   biographerProjects as projects,
   biographerTurns as turns,
 } from '@/db/schema/biographer';
-import { BiographerError, detail } from '@/db/services/biographer';
+import { BiographerError, detail, ownedProject } from '@/db/services/biographer';
+import { audioRetentionMs, hasCompleteTranscript } from './audio-retention';
 import { segmentInput } from './validation';
 function bucket() {
   const name = process.env.BIOGRAPHER_STORAGE_BUCKET;
@@ -21,23 +23,9 @@ export async function saveSegment(
   guest?: { participantId: string; accessVersion: number },
 ) {
   const value = segmentInput.parse(input);
-  const { participant: ownerParticipant } = await detail(authorId, projectId);
+  const capturedAt = value.capturedAt ? new Date(value.capturedAt) : new Date();
+  if (capturedAt.getTime() > Date.now() + 60000) throw new BiographerError('Invalid capture time');
   const { biographerParticipants } = await import('@/db/schema/biographer');
-  const [guestParticipant] = guest
-    ? await db
-        .select()
-        .from(biographerParticipants)
-        .where(
-          and(
-            eq(biographerParticipants.id, guest.participantId),
-            eq(biographerParticipants.projectId, projectId),
-            eq(biographerParticipants.accessVersion, guest.accessVersion),
-          ),
-        )
-    : [];
-  const participant = guest ? guestParticipant : ownerParticipant;
-  if (!participant || participant.status === 'closed')
-    throw new BiographerError('Contributions closed', 423);
   const bytes = Buffer.from(value.data, 'base64');
   if (
     !bytes.length ||
@@ -45,20 +33,6 @@ export async function saveSegment(
     createHash('sha256').update(bytes).digest('hex') !== value.sha256
   )
     throw new BiographerError('Invalid audio checksum');
-  const objectPath = `biographer/${projectId}/${participant.id}/${value.turnId}/${value.sequence}-${value.id}`;
-  const file = bucket().file(objectPath);
-  const row = {
-    id: value.id,
-    projectId,
-    participantId: participant.id,
-    turnId: value.turnId,
-    sequence: value.sequence,
-    objectPath,
-    contentType: value.contentType,
-    sha256: value.sha256,
-    bytes: bytes.length,
-    durationMs: value.durationMs,
-  };
   const saved = await db.transaction(async (tx) => {
     await tx.execute(sql`select pg_advisory_xact_lock(hashtext(${projectId}))`);
     const [project] = await tx
@@ -67,20 +41,77 @@ export async function saveSegment(
       .where(and(eq(projects.id, projectId), eq(projects.authorId, authorId)));
     if (!project || project.status === 'deleting')
       throw new BiographerError('Project not found', 404);
-    if (guest) {
-      const [current] = await tx
-        .select()
-        .from(biographerParticipants)
-        .where(
-          and(
-            eq(biographerParticipants.id, guest.participantId),
-            eq(biographerParticipants.projectId, projectId),
-            eq(biographerParticipants.accessVersion, guest.accessVersion),
-          ),
-        );
-      if (!current || current.status === 'closed')
-        throw new BiographerError('Contributions closed', 423);
+    const [participant] = await tx
+      .select()
+      .from(biographerParticipants)
+      .where(
+        and(
+          eq(biographerParticipants.projectId, projectId),
+          guest
+            ? and(
+                eq(biographerParticipants.id, guest.participantId),
+                eq(biographerParticipants.accessVersion, guest.accessVersion),
+              )
+            : eq(biographerParticipants.role, 'owner'),
+        ),
+      );
+    if (!participant || participant.status === 'closed')
+      throw new BiographerError('Contributions closed', 423);
+    const [whisperer] = await tx
+      .select({ id: storyWhispererInterviews.projectId })
+      .from(storyWhispererInterviews)
+      .where(eq(storyWhispererInterviews.projectId, projectId));
+    if (whisperer) {
+      if (!value.capturedAt) throw new BiographerError('Capture time required');
+      if (capturedAt.getTime() <= Date.now() - audioRetentionMs)
+        throw new BiographerError('Recording expired', 410);
     }
+    const objectPath = `biographer/${projectId}/${participant.id}/${value.turnId}/${value.sequence}-${value.id}`;
+    const row = {
+      id: value.id,
+      projectId,
+      participantId: participant.id,
+      turnId: value.turnId,
+      sequence: value.sequence,
+      objectPath,
+      contentType: value.contentType,
+      sha256: value.sha256,
+      bytes: bytes.length,
+      durationMs: value.durationMs,
+      createdAt: new Date(Math.min(Date.now(), capturedAt.getTime())),
+    };
+    const [existingTurn] = await tx.select().from(turns).where(eq(turns.id, value.turnId));
+    if (
+      existingTurn &&
+      (existingTurn.projectId !== projectId ||
+        existingTurn.participantId !== participant.id ||
+        existingTurn.role !== 'user')
+    )
+      throw new BiographerError('Response conflict', 409);
+    if (whisperer && existingTurn && hasCompleteTranscript(existingTurn)) return row;
+    const [existing] = await tx
+      .select()
+      .from(segments)
+      .where(
+        or(
+          eq(segments.id, value.id),
+          and(
+            eq(segments.projectId, projectId),
+            eq(segments.turnId, value.turnId),
+            eq(segments.sequence, value.sequence),
+          ),
+        ),
+      );
+    if (existing) {
+      if (
+        existing.id !== row.id ||
+        existing.objectPath !== row.objectPath ||
+        existing.sha256 !== row.sha256
+      )
+        throw new BiographerError('Audio sequence conflict', 409);
+      return existing;
+    }
+    const file = bucket().file(objectPath);
     try {
       await file.save(bytes, {
         resumable: false,
@@ -97,14 +128,6 @@ export async function saveSegment(
       const [meta] = await file.getMetadata();
       if (meta.metadata?.sha256 !== value.sha256) throw new BiographerError('Audio conflict', 409);
     }
-    const [existingTurn] = await tx.select().from(turns).where(eq(turns.id, value.turnId));
-    if (
-      existingTurn &&
-      (existingTurn.projectId !== projectId ||
-        existingTurn.participantId !== participant.id ||
-        existingTurn.role !== 'user')
-    )
-      throw new BiographerError('Response conflict', 409);
     if (!existingTurn) {
       await tx.insert(turns).values({
         id: value.turnId,
@@ -158,12 +181,26 @@ export async function saveSegment(
   return { saved: true, id: saved.id, sequence: saved.sequence, sha256: saved.sha256 };
 }
 export async function readSegment(authorId: string, projectId: string, id: string) {
-  await detail(authorId, projectId);
+  await ownedProject(authorId, projectId);
   const [segment] = await db
     .select()
     .from(segments)
     .where(and(eq(segments.id, id), eq(segments.projectId, projectId)));
   if (!segment) throw new BiographerError('Audio not found', 404);
+  const [whisperer] = await db
+    .select({ id: storyWhispererInterviews.projectId })
+    .from(storyWhispererInterviews)
+    .where(eq(storyWhispererInterviews.projectId, projectId));
+  if (whisperer) {
+    if (segment.createdAt.getTime() <= Date.now() - audioRetentionMs)
+      throw new BiographerError('Recording expired', 410);
+    const [turn] = await db
+      .select({ final: turns.final, text: turns.text, interrupted: turns.interrupted })
+      .from(turns)
+      .where(eq(turns.id, segment.turnId));
+    if (turn && hasCompleteTranscript(turn))
+      throw new BiographerError('Recording transcribed', 410);
+  }
   const [bytes] = await bucket().file(segment.objectPath).download();
   return { segment, bytes };
 }

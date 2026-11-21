@@ -4,6 +4,7 @@ jest.mock('@/lib/story-templates/create-document-worker', () => ({
 import React, { useState } from 'react';
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import Step2Client from './Step2Client';
+import StoryWhisperer from '@/components/story-whisperer/StoryWhisperer';
 import { getStoryTemplate, getStoryTemplates } from '@/lib/story-templates/catalog';
 import { createTemplateJourney, type StoryTemplateJourney } from '@/lib/story-templates/journey';
 import {
@@ -15,6 +16,8 @@ import { TEMPLATE_SESSION_KEY } from '@/hooks/useStoryTemplateJourney';
 import type { StoryTemplate } from '@/types/story-template';
 import type { UploadedImage, UploadedAudio } from '@/hooks/useStep2Session';
 
+let mockRecordingDictation = false;
+const mockStopDictation = jest.fn();
 const mockPush = jest.fn();
 const mockReplace = jest.fn();
 const mockPoll = jest.fn();
@@ -106,6 +109,20 @@ jest.mock('@/lib/analytics', () => ({
 }));
 jest.mock('@/hooks/useIntentContext', () => ({ useIntentContext: () => null }));
 jest.mock('@/hooks/useJobPolling', () => ({ useJobPolling: () => ({ pollJob: mockPoll }) }));
+jest.mock('@/hooks/biographer/useBiographerLive', () => ({
+  useBiographerLive: () => ({ state: 'paused', saving: 'saved', pause: jest.fn() }),
+}));
+jest.mock('@/hooks/biographer/useBiographerDictation', () => ({
+  useBiographerDictation: () => ({
+    state: mockRecordingDictation ? 'recording' : 'idle',
+    hasPending: mockRecordingDictation,
+    stop: mockStopDictation,
+  }),
+}));
+jest.mock('@/utils/biographer/drafts', () => ({
+  answerDraft: async () => undefined,
+  saveAnswerDraft: async () => undefined,
+}));
 jest.mock('@/hooks/useStep2Session', () => ({
   useStep2Session: () => {
     const [storyText, setStoryText] = useState(mockInitialText);
@@ -869,5 +886,243 @@ describe('OpenAI Ads story_creation_started', () => {
     fireEvent.click(screen.getByTestId('next'));
     await waitFor(() => expect(mockPush).toHaveBeenCalled());
     expect(mockTrackOpenAiAdsEvent).not.toHaveBeenCalled();
+  });
+});
+
+describe('Story Whisperer in Step 2', () => {
+  const projectId = '39b4d055-55f0-47bd-ba4e-d27ed6710bec';
+  const requestId = '389d7bd7-2b13-4cc9-8649-f67da5c59927';
+
+  beforeEach(() => {
+    HTMLDialogElement.prototype.showModal = function () {
+      this.setAttribute('open', '');
+    };
+    HTMLDialogElement.prototype.close = function () {
+      this.removeAttribute('open');
+    };
+  });
+
+  it('can stop dictation after the first audio has been journaled', async () => {
+    mockRecordingDictation = true;
+    try {
+      render(
+        <StoryWhisperer
+          draftId={draftId}
+          owner={owner}
+          onClose={jest.fn()}
+          onOtherInputs={jest.fn()}
+          onInterview={jest.fn()}
+          onContinue={jest.fn()}
+          availablePhotos={3}
+          inputsBlocked={false}
+          interview={{
+            projectId,
+            revision: 1,
+            turns: [],
+            assets: [],
+            readiness: {
+              ready: false,
+              areas: { characters: 'missing', setting: 'missing', plot: 'missing' },
+              missing: ['characters', 'setting', 'plot'],
+              hint: '',
+            },
+          }}
+        />,
+      );
+      fireEvent.click(screen.getByRole('button', { name: 'resumeChat' }));
+      const stop = await screen.findByRole('button', { name: 'stopDictation' });
+      await waitFor(() => expect(stop).toBeEnabled());
+      fireEvent.click(stop);
+      expect(mockStopDictation).toHaveBeenCalledTimes(1);
+    } finally {
+      mockRecordingDictation = false;
+    }
+  });
+
+  it.each(['success', 'lost response', 'terminal failure'])(
+    'uses the existing outline job before Step 3 (%s)',
+    async (scenario) => {
+      const loseResponse = scenario === 'lost response';
+      const terminalFailure = scenario === 'terminal failure';
+      const secondRequestId = '53cf3b47-c9fe-437f-9670-3c467ead9bb9';
+      if (terminalFailure)
+        mockPoll.mockResolvedValueOnce({ status: 'failed', error: 'Workflow unavailable' });
+      let ready = false;
+      let firstStructure = true;
+      let boundDraftId: string | undefined;
+      const fallback = mockFetch.getMockImplementation()!;
+      mockFetch.mockImplementation(async (url: string, init?: RequestInit) => {
+        if (loseResponse && firstStructure && url === '/api/stories/genai-structure') {
+          firstStructure = false;
+          throw new Error('Response lost');
+        }
+        if (url.startsWith('/api/story-whisperer/')) {
+          boundDraftId = url.split('/')[3];
+          if (url.endsWith('/interview')) {
+            expect(payload([url, init])).toMatchObject({
+              text: 'Nina finds a lost dog in Lisbon.',
+            });
+            ready = true;
+          }
+          if (url.endsWith('/handoff')) {
+            const input = payload([url, init]);
+            expect(input).toMatchObject({ revision: 2, brief: '' });
+            return {
+              ok: true,
+              json: async () => ({
+                draftId: boundDraftId,
+                structureRequestId: input.retryOf === requestId ? secondRequestId : requestId,
+                userDescription: 'Nina finds a lost dog in Lisbon.',
+                imageObjectPaths: ['author/inputs/dog.webp'],
+              }),
+            };
+          }
+          return {
+            ok: true,
+            json: async () => ({
+              interview: {
+                projectId,
+                revision: ready ? 2 : 0,
+                assets: [],
+                turns: [],
+                readiness: {
+                  ready,
+                  missing: ready ? [] : ['characters', 'setting', 'plot'],
+                  areas: Object.fromEntries(
+                    ['characters', 'setting', 'plot'].map((area) => [
+                      area,
+                      ready ? 'ready' : 'missing',
+                    ]),
+                  ),
+                  hint: '',
+                },
+              },
+            }),
+          };
+        }
+        return fallback(url, init);
+      });
+      render(
+        <Step2Client templatesEnabled whispererEnabled templates={getStoryTemplates(mockLocale)} />,
+      );
+      fireEvent.click(await screen.findByRole('button', { name: 'title subtitle' }));
+      const start = screen.getByRole('button', { name: 'start' });
+      expect(start).toBeDisabled();
+      fireEvent.click(screen.getByRole('checkbox', { name: 'consent' }));
+      fireEvent.click(start);
+
+      const next = await screen.findByRole('button', { name: 'continue' });
+      expect(sessionStorage.getItem(`storyWhispererDraft:${owner}`)).toBe(boundDraftId);
+      expect(localStorage.getItem(`lastStoryWhispererDraft:${owner}`)).toBe(boundDraftId);
+      expect(next).toBeDisabled();
+      const reply = screen.getByRole('textbox', { name: 'reply' });
+      await waitFor(() => expect(reply).toBeEnabled());
+      fireEvent.change(reply, { target: { value: 'Nina finds a lost dog in Lisbon.' } });
+      fireEvent.click(screen.getByRole('button', { name: 'send' }));
+      await waitFor(() => expect(next).toBeEnabled());
+      fireEvent.click(next);
+      if (loseResponse || terminalFailure) {
+        const recover = await screen.findByRole('button', { name: 'retryOutline' });
+        expect(mockPush).not.toHaveBeenCalled();
+        fireEvent.click(recover);
+      }
+      await waitFor(() => expect(mockPush).toHaveBeenCalledWith('/tell-your-story/step-3'));
+
+      expect(
+        payload(mockFetch.mock.calls.find(([url]) => url === '/api/story-guide/draft')!),
+      ).toMatchObject({ draftId: boundDraftId, storyWhisperer: true });
+      expect(structureCalls()).toHaveLength(loseResponse || terminalFailure ? 2 : 1);
+      if (terminalFailure)
+        expect(payload(structureCalls()[1]).structureRequestId).toBe(secondRequestId);
+      if (loseResponse) expect(structureCalls()[1][1]?.body).toBe(structureCalls()[0][1]?.body);
+      expect(payload(structureCalls()[0])).toMatchObject({
+        storyId: boundDraftId,
+        structureRequestId: requestId,
+        userDescription: 'Nina finds a lost dog in Lisbon.',
+        imageObjectPaths: ['author/inputs/dog.webp'],
+        storyWhisperer: true,
+      });
+      expect(mockPoll).toHaveBeenCalledWith('job-new');
+      expect(readStep2Submission(owner, true)).toMatchObject({
+        storyId: boundDraftId,
+        completed: true,
+      });
+    },
+  );
+
+  it.each(['same tab', 'browser reopened'])(
+    'prompts a returning author before showing a conversation (%s)',
+    async (scenario) => {
+      const tabKey = `storyWhispererDraft:${owner}`;
+      if (scenario === 'same tab') sessionStorage.setItem(tabKey, draftId);
+      else localStorage.setItem(`lastStoryWhispererDraft:${owner}`, draftId);
+      mockFetch.mockResolvedValue({
+        ok: true,
+        json: async () => ({
+          interview: {
+            projectId,
+            revision: 1,
+            turns: [
+              { id: 'message', role: 'user', text: 'Saved reply', included: true, final: true },
+            ],
+            assets: [],
+            readiness: {
+              ready: false,
+              areas: { characters: 'developing', setting: 'missing', plot: 'missing' },
+              missing: ['characters', 'setting', 'plot'],
+              hint: '',
+            },
+          },
+        }),
+      });
+      render(
+        <Step2Client templatesEnabled whispererEnabled templates={getStoryTemplates(mockLocale)} />,
+      );
+      const resume = await screen.findByRole('button', { name: 'resume' });
+      expect(mockFetch).not.toHaveBeenCalled();
+      if (scenario === 'browser reopened') expect(sessionStorage.getItem(tabKey)).toBeNull();
+      fireEvent.click(resume);
+      expect(await screen.findByText('resumePrompt')).toBeVisible();
+      expect(sessionStorage.getItem(tabKey)).toBe(draftId);
+      expect(screen.queryByText('Saved reply')).not.toBeInTheDocument();
+      expect(screen.queryByRole('button', { name: 'liveVoice' })).not.toBeInTheDocument();
+      fireEvent.click(screen.getByRole('button', { name: 'reset' }));
+      expect(screen.getByText('resetConfirm')).toBeVisible();
+      fireEvent.click(screen.getByRole('button', { name: 'cancel' }));
+      expect(mockFetch).toHaveBeenCalledTimes(1);
+      fireEvent.click(screen.getByRole('button', { name: 'resumeChat' }));
+      expect(await screen.findByText('Saved reply')).toBeVisible();
+    },
+  );
+  it('forgets a permanently deleted interview pointer and opens a fresh consent screen', async () => {
+    const tabKey = `storyWhispererDraft:${owner}`;
+    const lastKey = `lastStoryWhispererDraft:${owner}`;
+    sessionStorage.setItem(tabKey, draftId);
+    localStorage.setItem(lastKey, draftId);
+    mockFetch.mockResolvedValueOnce({ ok: false, status: 410 });
+    render(
+      <Step2Client templatesEnabled whispererEnabled templates={getStoryTemplates(mockLocale)} />,
+    );
+
+    fireEvent.click(await screen.findByRole('button', { name: 'resume' }));
+    expect(await screen.findByText('welcome')).toBeVisible();
+    expect(mockFetch).toHaveBeenCalledWith(`/api/story-whisperer/${draftId}`, {
+      cache: 'no-store',
+    });
+    expect(sessionStorage.getItem(tabKey)).toBeNull();
+    expect(localStorage.getItem(lastKey)).toBeNull();
+  });
+
+  it('keeps an unrelated same-tab draft separate from the last active interview', async () => {
+    localStorage.setItem(`lastStoryWhispererDraft:${owner}`, draftId);
+    mockInitialText = 'A new story in this tab';
+    render(
+      <Step2Client templatesEnabled whispererEnabled templates={getStoryTemplates(mockLocale)} />,
+    );
+    fireEvent.click(await screen.findByRole('button', { name: 'Continue my story' }));
+    fireEvent.click(screen.getByRole('button', { name: 'title subtitle' }));
+    expect(await screen.findByText('welcome')).toBeVisible();
+    expect(sessionStorage.getItem(`storyWhispererDraft:${owner}`)).not.toBe(draftId);
+    expect(mockFetch).not.toHaveBeenCalled();
   });
 });

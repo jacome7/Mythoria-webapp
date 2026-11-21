@@ -32,3 +32,6 @@ export * from './surveys';
 export * from './relations';
 
 export * from './biographer';
+export * from './whisperer-voice';
+
+export * from './story-whisperer';

@@ -134,7 +134,7 @@ export default getRequestConfig(async ({ requestLocale }) => {
     messages: {
       Referrals: (await import(`../messages/${locale}/Referrals.json`)).default,
       SurveyReward: (await import(`../messages/${locale}/SurveyReward.json`)).default,
-      Biographer: (await import(`../messages/${locale}/Biographer.json`)).default,
+      ...ns((await import(`../messages/${locale}/StoryWhisperer.json`)).default, 'StoryWhisperer'),
       ...ns(headerMessages, 'Header'),
       ...ns(footerMessages, 'Footer'),
       ...ns(stepNavigationMessages, 'StepNavigation'),

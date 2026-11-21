@@ -1,6 +1,7 @@
 export interface AnswerDraft {
   id: string;
   text: string;
+  dictationIds?: string[];
 }
 const DATABASE = 'mythoria-biographer-drafts';
 function open(): Promise<IDBDatabase> {
@@ -29,23 +30,58 @@ export async function answerDraft(
     db.close();
   }
 }
-export async function saveAnswerDraft(
+async function updateAnswerDraft(
   authorId: string,
   projectId: string,
-  draft: AnswerDraft | null,
-): Promise<void> {
+  update: (current: AnswerDraft | undefined) => AnswerDraft | null,
+): Promise<AnswerDraft | null> {
   const db = await open();
   try {
-    await new Promise<void>((resolve, reject) => {
-      const tx = db.transaction('drafts', 'readwrite');
+    return await new Promise((resolve, reject) => {
+      const tx = db.transaction('drafts', 'readwrite', { durability: 'strict' });
       const store = tx.objectStore('drafts');
-      if (draft) store.put(draft, `${authorId}:${projectId}`);
-      else store.delete(`${authorId}:${projectId}`);
-      tx.oncomplete = () => resolve();
+      const key = `${authorId}:${projectId}`;
+      let saved: AnswerDraft | null;
+      const request = store.get(key);
+      request.onsuccess = () => {
+        saved = update(request.result);
+        if (saved) store.put(saved, key);
+        else store.delete(key);
+      };
+      tx.oncomplete = () => resolve(saved);
       tx.onerror = () => reject(tx.error);
       tx.onabort = () => reject(tx.error);
     });
   } finally {
     db.close();
   }
+}
+
+export async function saveAnswerDraft(
+  authorId: string,
+  projectId: string,
+  draft: AnswerDraft | null,
+): Promise<void> {
+  await updateAnswerDraft(authorId, projectId, (current) => {
+    if (!draft) return null;
+    return { ...draft, dictationIds: current?.dictationIds };
+  });
+}
+
+/** Commit the editable text and receipt together before the recording is removed. */
+export function appendAnswerDictation(
+  authorId: string,
+  projectId: string,
+  segmentId: string,
+  transcript: string,
+  draftId: string,
+): Promise<AnswerDraft | null> {
+  return updateAnswerDraft(authorId, projectId, (current) => {
+    if (current?.dictationIds?.includes(segmentId)) return current;
+    return {
+      id: draftId,
+      text: [current?.text.trimEnd(), transcript].filter(Boolean).join(' '),
+      dictationIds: [...(current?.dictationIds ?? []), segmentId],
+    };
+  });
 }

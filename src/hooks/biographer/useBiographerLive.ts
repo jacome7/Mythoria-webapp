@@ -1,45 +1,27 @@
 'use client';
 
-import { useCallback, useEffect, useRef, useState, type SyntheticEvent } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { concatenate, fromBase64, toBase64 } from '@/utils/biographer/audio';
 import { guestIntentHeaders } from '@/utils/biographer/guest';
 import {
+  clearPending,
   pendingSegments,
   removePending,
   savePending,
   type PendingSegment,
 } from '@/utils/biographer/pending';
 
-// Gemini Live Avatar labels its H.264/AAC fragmented MP4 stream as bare video/mp4.
-const avatarMp4Type = 'video/mp4; codecs="avc1.42C01F, mp4a.40.2"';
-
 function liveDiagnostic(event: string, details?: Record<string, number | string | boolean>) {
   if (process.env.NODE_ENV === 'development') console.info('[Biographer live]', event, details);
 }
 
-export function reportAvatarVideo(event: SyntheticEvent<HTMLVideoElement>) {
-  if (process.env.NODE_ENV !== 'development') return;
-  const video = event.currentTarget;
-  let bufferedAhead = 0;
-  for (let i = 0; i < video.buffered.length; i++) {
-    if (video.buffered.start(i) <= video.currentTime && video.buffered.end(i) > video.currentTime)
-      bufferedAhead = video.buffered.end(i) - video.currentTime;
-  }
-  liveDiagnostic(`video-${event.type}`, {
-    positionMs: Math.round(video.currentTime * 1000),
-    bufferedAheadMs: Math.round(bufferedAhead * 1000),
-    readyState: video.readyState,
-    mediaError: video.error?.code ?? 0,
-  });
-}
-
-export type LiveState =
-  'paused' | 'connecting' | 'listening' | 'speaking' | 'reconnecting' | 'recording';
+export type LiveState = 'paused' | 'connecting' | 'listening' | 'speaking' | 'reconnecting';
 export type SaveState = 'saved' | 'saving' | 'local' | 'attention';
 export interface LiveEvent {
   type: string;
   role?: 'user' | 'assistant';
   turnId?: string;
+  nextTurnId?: string;
   text?: string;
   final?: boolean;
   mimeType?: string;
@@ -58,7 +40,6 @@ export function useBiographerLive(
   const [state, setState] = useState<LiveState>('paused');
   const [saving, setSaving] = useState<SaveState>('saved');
   const [error, setError] = useState(false);
-  const [videoUrl, setVideoUrl] = useState<string>();
   const eventRef = useRef(onEvent);
   eventRef.current = onEvent;
   const resources = useRef<{
@@ -74,6 +55,7 @@ export function useBiographerLive(
   const sequence = useRef(0);
   const queue = useRef(Promise.resolve());
   const uploading = useRef(false);
+  const dirtyAudio = useRef(false);
   const queuedWrites = useRef(0);
   const failedSegments = useRef<PendingSegment[]>([]);
   const epoch = useRef(0);
@@ -81,23 +63,26 @@ export function useBiographerLive(
     context?: AudioContext;
     next: number;
     sources: AudioBufferSourceNode[];
-    media?: MediaSource;
-    buffer?: SourceBuffer;
-    chunks: Uint8Array<ArrayBuffer>[];
-  }>({ next: 0, sources: [], chunks: [] });
-  const videoUrlRef = useRef<string | undefined>(undefined);
+  }>({ next: 0, sources: [] });
+  const archiveStartedAt = useRef<string | undefined>(undefined);
+  const uploadRequest = useRef<AbortController | undefined>(undefined);
+  const resetInProgress = useRef(false);
 
   const sync = useCallback(async () => {
-    if (uploading.current || !authorId) return;
+    if (uploading.current || resetInProgress.current || !authorId) return;
     uploading.current = true;
+    const controller = new AbortController();
+    uploadRequest.current = controller;
     try {
       const upload = async (segment: PendingSegment) => {
+        if (controller.signal.aborted) return;
         const digest = await crypto.subtle.digest('SHA-256', segment.data);
         const sha256 = [...new Uint8Array(digest)]
           .map((byte) => byte.toString(16).padStart(2, '0'))
           .join('');
         const response = await fetch(`${basePath}/segments`, {
           method: 'POST',
+          signal: controller.signal,
           headers: {
             'Content-Type': 'application/json',
             ...(guest ? guestIntentHeaders({ projectId, participantId: authorId }) : {}),
@@ -110,8 +95,13 @@ export function useBiographerLive(
             data: toBase64(segment.data),
             sha256,
             durationMs: segment.durationMs,
+            capturedAt: segment.capturedAt,
           }),
         });
+        if (response.status === 410) {
+          await removePending(segment.id);
+          return;
+        }
         if (!response.ok) {
           const payload = await response
             .clone()
@@ -130,6 +120,8 @@ export function useBiographerLive(
             const buffers = archive.current.splice(0);
             if (buffers.length && current.sessionId) {
               const data = concatenate(buffers);
+              const capturedAt = archiveStartedAt.current ?? new Date().toISOString();
+              archiveStartedAt.current = undefined;
               const tail: PendingSegment = {
                 id: crypto.randomUUID(),
                 authorId,
@@ -139,6 +131,7 @@ export function useBiographerLive(
                 sequence: sequence.current++,
                 durationMs: Math.round(data.byteLength / 32),
                 data,
+                capturedAt,
               };
               try {
                 await savePending(tail);
@@ -164,32 +157,39 @@ export function useBiographerLive(
         await removePending(segment.id);
       };
       const pending = await pendingSegments(authorId, projectId);
-      if (pending.length) setSaving('saving');
+      if (pending.length) {
+        dirtyAudio.current = true;
+        setSaving('saving');
+      }
       for (const segment of pending) await upload(segment);
-      while (failedSegments.current.length) {
+      while (failedSegments.current.length && !controller.signal.aborted) {
         const segment = failedSegments.current[0];
         await savePending(segment);
         failedSegments.current.shift();
         await upload(segment);
       }
+      if (controller.signal.aborted) return;
       const remaining = await pendingSegments(authorId, projectId);
-      setSaving(
+      dirtyAudio.current = Boolean(
         remaining.length ||
-          queuedWrites.current ||
-          archive.current.length ||
-          failedSegments.current.length
-          ? 'saving'
-          : 'saved',
+        queuedWrites.current ||
+        archive.current.length ||
+        failedSegments.current.length,
       );
+      setSaving(dirtyAudio.current ? 'saving' : 'saved');
     } catch {
-      setSaving(navigator.onLine ? 'attention' : 'local');
+      if (!controller.signal.aborted && dirtyAudio.current)
+        setSaving(navigator.onLine ? 'attention' : 'local');
     } finally {
       uploading.current = false;
+      uploadRequest.current = undefined;
     }
   }, [authorId, projectId, basePath, guest]);
 
   const flush = useCallback(() => {
     const buffers = archive.current.splice(0);
+    const capturedAt = archiveStartedAt.current ?? new Date().toISOString();
+    archiveStartedAt.current = undefined;
     if (!buffers.length || !resources.current.sessionId) return;
     const data = concatenate(buffers);
     const segment: PendingSegment = {
@@ -201,7 +201,9 @@ export function useBiographerLive(
       sequence: sequence.current++,
       durationMs: Math.round(data.byteLength / 32),
       data,
+      capturedAt,
     };
+    dirtyAudio.current = true;
     setSaving('saving');
     queuedWrites.current += 1;
     queue.current = queue.current
@@ -215,13 +217,18 @@ export function useBiographerLive(
         failedSegments.current.push(segment);
         const tail = archive.current.splice(0);
         if (tail.length) {
+          const capturedAt = archiveStartedAt.current ?? new Date().toISOString();
+          archiveStartedAt.current = undefined;
           const data = concatenate(tail);
           failedSegments.current.push({
             ...segment,
+            sessionId: resources.current.sessionId ?? segment.sessionId,
+            turnId: turn.current,
             id: crypto.randomUUID(),
             sequence: sequence.current++,
             durationMs: Math.round(data.byteLength / 32),
             data,
+            capturedAt,
           });
         }
         setSaving('attention');
@@ -247,24 +254,11 @@ export function useBiographerLive(
     });
     playback.current.sources = [];
     playback.current.next = 0;
-    playback.current.chunks = [];
-    if (playback.current.buffer && !playback.current.buffer.updating) {
-      try {
-        playback.current.buffer.abort();
-      } catch {
-        /* Stream ended. */
-      }
-    }
-    if (videoUrlRef.current) URL.revokeObjectURL(videoUrlRef.current);
-    videoUrlRef.current = undefined;
-    playback.current.media = undefined;
-    playback.current.buffer = undefined;
-    setVideoUrl(undefined);
   }, []);
 
   const pause = useCallback(() => {
     epoch.current += 1;
-    flush();
+    if (!resetInProgress.current) flush();
     const current = resources.current;
     current.processor?.disconnect();
     current.source?.disconnect();
@@ -278,104 +272,51 @@ export function useBiographerLive(
     setState('paused');
   }, [flush, stopPlayback]);
 
-  const play = useCallback(
-    (event: LiveEvent) => {
-      if (!event.data || !event.mimeType) return;
-      const bytes = fromBase64(event.data);
-      if (event.mimeType.startsWith('audio/pcm')) {
-        const context = playback.current.context;
-        if (!context || context.state === 'closed') return;
-        const buffer = context.createBuffer(1, Math.floor(bytes.length / 2), 24000);
-        const samples = buffer.getChannelData(0);
-        const view = new DataView(bytes.buffer);
-        for (let i = 0; i < samples.length; i++) samples[i] = view.getInt16(i * 2, true) / 32768;
-        const source = context.createBufferSource();
-        source.buffer = buffer;
-        source.connect(context.destination);
-        const start = Math.max(context.currentTime, playback.current.next);
-        source.start(start);
-        playback.current.next = start + buffer.duration;
-        playback.current.sources.push(source);
-        source.onended = () => {
-          playback.current.sources = playback.current.sources.filter((item) => item !== source);
-          if (!playback.current.sources.length) setState('listening');
-        };
-      } else if (event.mimeType.startsWith('video/')) {
-        if (typeof MediaSource === 'undefined') {
-          liveDiagnostic('media-source-unavailable');
-          setError(true);
-          pause();
-          return;
-        }
-        if (!playback.current.media) {
-          const mimeType = event.mimeType === 'video/mp4' ? avatarMp4Type : event.mimeType;
-          if (!MediaSource.isTypeSupported(mimeType)) {
-            liveDiagnostic('media-type-unsupported');
-            setError(true);
-            pause();
-            return;
-          }
-          const media = new MediaSource();
-          playback.current.media = media;
-          const url = URL.createObjectURL(media);
-          videoUrlRef.current = url;
-          setVideoUrl(url);
-          media.addEventListener(
-            'sourceopen',
-            () => {
-              if (playback.current.media !== media) return;
-              let buffer: SourceBuffer;
-              try {
-                buffer = media.addSourceBuffer(mimeType);
-              } catch {
-                liveDiagnostic('source-buffer-creation-failed');
-                setError(true);
-                pause();
-                return;
-              }
-              playback.current.buffer = buffer;
-              const append = () => {
-                if (
-                  playback.current.buffer === buffer &&
-                  !buffer.updating &&
-                  playback.current.chunks.length
-                ) {
-                  try {
-                    buffer.appendBuffer(playback.current.chunks.shift()!);
-                  } catch {
-                    liveDiagnostic('source-buffer-append-failed');
-                    setError(true);
-                    pause();
-                  }
-                }
-              };
-              buffer.addEventListener('updateend', append);
-              buffer.addEventListener('error', () => {
-                if (playback.current.buffer !== buffer) return;
-                liveDiagnostic('source-buffer-decode-failed');
-                setError(true);
-                pause();
-              });
-              append();
-            },
-            { once: true },
-          );
-        }
-        playback.current.chunks.push(bytes);
-        const buffer = playback.current.buffer;
-        if (buffer && !buffer.updating) {
-          try {
-            buffer.appendBuffer(playback.current.chunks.shift()!);
-          } catch {
-            liveDiagnostic('source-buffer-append-failed');
-            setError(true);
-            pause();
-          }
-        }
-      }
-    },
-    [pause],
-  );
+  const reset = useCallback(async () => {
+    resetInProgress.current = true;
+    uploadRequest.current?.abort();
+    pause();
+    try {
+      await queue.current;
+      failedSegments.current = [];
+      archive.current = [];
+      archiveStartedAt.current = undefined;
+      await clearPending(authorId, projectId);
+      dirtyAudio.current = false;
+      setSaving('saved');
+      setError(false);
+    } finally {
+      resetInProgress.current = false;
+    }
+  }, [authorId, pause, projectId]);
+
+  const play = useCallback((event: LiveEvent) => {
+    const mime = /^audio\/pcm(?:;\s*rate=(\d+))?$/.exec(event.mimeType ?? '');
+    const context = playback.current.context;
+    if (!event.data || !mime || !context || context.state === 'closed') return;
+    const rate = mime[1] ? Number(mime[1]) : 24000;
+    if (!Number.isInteger(rate) || rate < 8000 || rate > 48000) return;
+    const bytes = fromBase64(event.data);
+    if (!bytes.length || bytes.length % 2) return;
+    const buffer = context.createBuffer(1, bytes.length / 2, rate);
+    const samples = buffer.getChannelData(0);
+    const view = new DataView(bytes.buffer);
+    for (let i = 0; i < samples.length; i++) samples[i] = view.getInt16(i * 2, true) / 32768;
+    const source = context.createBufferSource();
+    source.buffer = buffer;
+    source.connect(context.destination);
+    const start = Math.max(context.currentTime, playback.current.next);
+    source.start(start);
+    playback.current.next = start + buffer.duration;
+    playback.current.sources.push(source);
+    source.onended = () => {
+      source.disconnect();
+      if (!playback.current.sources.includes(source)) return;
+      playback.current.sources = playback.current.sources.filter((item) => item !== source);
+      if (!playback.current.sources.length) setState('listening');
+    };
+    setState('speaking');
+  }, []);
 
   const capture = useCallback(
     (context: AudioContext, stream: MediaStream, onAudio: (data: ArrayBuffer) => void) => {
@@ -450,7 +391,6 @@ export function useBiographerLive(
       turn.current = crypto.randomUUID();
       sequence.current = 0;
       const socket = new WebSocket(session.liveUrl);
-      let lastVideoAt: number | undefined;
       resources.current.socket = socket;
       socket.onopen = () =>
         socket.send(
@@ -478,6 +418,8 @@ export function useBiographerLive(
               socket.send(
                 JSON.stringify({ type: 'audio', data: toBase64(data), turnId: turn.current }),
               );
+              archiveStartedAt.current ??= new Date().toISOString();
+              dirtyAudio.current = true;
               archive.current.push(data);
               setSaving('saving');
               if (archive.current.reduce((total, item) => total + item.byteLength, 0) >= 32000)
@@ -489,14 +431,12 @@ export function useBiographerLive(
           }
         }
         if (event.type === 'media') {
-          if (process.env.NODE_ENV === 'development' && event.mimeType?.startsWith('video/')) {
-            const now = performance.now();
-            const gapMs = lastVideoAt === undefined ? 0 : Math.round(now - lastVideoAt);
-            lastVideoAt = now;
-            if (gapMs > 750) liveDiagnostic('video-delivery-gap', { gapMs });
+          try {
+            play(event);
+          } catch {
+            setError(true);
+            pause();
           }
-          setState('speaking');
-          play(event);
         }
         if (event.type === 'interrupted') {
           liveDiagnostic('interrupted');
@@ -504,12 +444,13 @@ export function useBiographerLive(
           setState('listening');
         }
         if (
-          ((event.type === 'transcript' && event.role === 'user' && event.final) ||
+          (event.type === 'capture_boundary' ||
+            (event.type === 'transcript' && event.role === 'user' && event.final) ||
             event.type === 'turn_complete') &&
           event.turnId === turn.current
         ) {
           flush();
-          turn.current = crypto.randomUUID();
+          turn.current = event.nextTurnId ?? crypto.randomUUID();
           sequence.current = 0;
         }
         if (event.type === 'reconnecting') setState('reconnecting');
@@ -542,45 +483,6 @@ export function useBiographerLive(
     }
   }, [authorId, basePath, capture, flush, guest, pause, play, projectId, stopPlayback]);
 
-  const startLocalRecording = useCallback(async () => {
-    if (failedSegments.current.length) {
-      setError(true);
-      setSaving('attention');
-      return;
-    }
-    pause();
-    const startingEpoch = epoch.current;
-    setError(false);
-    try {
-      if (!authorId || document.visibilityState !== 'visible') throw new Error('Not ready');
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
-      if (epoch.current !== startingEpoch) {
-        stream.getTracks().forEach((track) => track.stop());
-        return;
-      }
-      resources.current.stream = stream;
-      const context = new AudioContext();
-      resources.current.context = context;
-      await context.resume();
-      if (epoch.current !== startingEpoch) return;
-      resources.current.sessionId = crypto.randomUUID();
-      turn.current = crypto.randomUUID();
-      sequence.current = 0;
-      await context.audioWorklet.addModule('/audio/biographer-capture.js');
-      if (epoch.current !== startingEpoch) return;
-      capture(context, stream, (data) => {
-        archive.current.push(data);
-        setSaving('local');
-        if (archive.current.reduce((total, item) => total + item.byteLength, 0) >= 32000) flush();
-      });
-      setState('recording');
-    } catch {
-      if (epoch.current !== startingEpoch) return;
-      setError(true);
-      pause();
-    }
-  }, [authorId, capture, flush, pause]);
-
   useEffect(() => {
     const onHidden = () => {
       if (document.visibilityState === 'hidden') {
@@ -608,5 +510,5 @@ export function useBiographerLive(
     };
   }, [pause, saving, sync]);
   useEffect(() => () => pause(), [pause]);
-  return { state, saving, error, videoUrl, start, startLocalRecording, pause, sync };
+  return { state, saving, error, start, pause, sync, reset };
 }

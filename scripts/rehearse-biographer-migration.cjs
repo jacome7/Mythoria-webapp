@@ -16,7 +16,7 @@ async function main() {
   const baseline = JSON.parse(readFileSync('drizzle/meta/0049_snapshot.json', 'utf8'));
   const target = JSON.parse(readFileSync('drizzle/meta/0050_snapshot.json', 'utf8'));
   const journal = JSON.parse(readFileSync('drizzle/meta/_journal.json', 'utf8')).entries;
-  const entry = journal.at(-1);
+  const entry = journal.find(({tag}) => tag === '0050_biographer_complete');
   assert.equal(entry.tag, '0050_biographer_complete');
   assert.equal(target.prevId, baseline.id);
   const sql = readFileSync(`drizzle/${entry.tag}.sql`, 'utf8');
@@ -47,7 +47,7 @@ async function main() {
     .update(readFileSync('drizzle/0049_openai_ads_conversions.sql', 'utf8'))
     .digest('hex');
   const plan = buildPlan(
-    journal,
+    journal.filter(({idx}) => idx <= entry.idx),
     readFileSync('drizzle/0049_openai_ads_conversions.sql', 'utf8'),
     sql,
   );

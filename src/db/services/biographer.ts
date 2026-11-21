@@ -1,6 +1,9 @@
-import { and, asc, desc, eq, sql } from 'drizzle-orm';
+import { and, asc, desc, eq, isNull, sql } from 'drizzle-orm';
 import { randomUUID, randomBytes, createHash } from 'node:crypto';
 import { db } from '@/db';
+import { storyWhispererInterviews } from '@/db/schema/story-whisperer';
+import { lockVoiceAccount } from './whisperer-voice';
+import { authorVoiceAccounts } from '@/db/schema/whisperer-voice';
 import {
   biographerProjects as projects,
   biographerParticipants as participants,
@@ -67,10 +70,12 @@ export async function detail(authorId: string, projectId: string) {
 }
 export async function listProjects(authorId: string) {
   return db
-    .select()
+    .select({ project: projects })
     .from(projects)
-    .where(eq(projects.authorId, authorId))
-    .orderBy(desc(projects.updatedAt));
+    .leftJoin(storyWhispererInterviews, eq(storyWhispererInterviews.projectId, projects.id))
+    .where(and(eq(projects.authorId, authorId), isNull(storyWhispererInterviews.projectId)))
+    .orderBy(desc(projects.updatedAt))
+    .then((rows) => rows.map(({ project }) => project));
 }
 export async function createProject(authorId: string, name: string, input: unknown) {
   const { consent: _consent, ...values } = projectInput.parse(input);
@@ -118,6 +123,12 @@ export async function saveTurn(authorId: string, projectId: string, input: unkno
   const { participant } = await detail(authorId, projectId);
   return db.transaction(async (tx) => {
     await tx.execute(sql`select pg_advisory_xact_lock(hashtext(${projectId}))`);
+    const [project] = await tx
+      .select({ status: projects.status })
+      .from(projects)
+      .where(and(eq(projects.id, projectId), eq(projects.authorId, authorId)));
+    if (!project || project.status === 'deleting')
+      throw new BiographerError('Project not found', 404);
     const [existing] = await tx.select().from(turns).where(eq(turns.id, value.id));
     if (existing) {
       if (
@@ -152,13 +163,19 @@ export async function editTurn(
 ) {
   await ownedProject(authorId, projectId);
   const value = turnPatch.parse(input);
-  return db.transaction(async (tx) => {
+  const result = await db.transaction(async (tx) => {
     await tx.execute(sql`select pg_advisory_xact_lock(hashtext(${projectId}))`);
+    const [project] = await tx
+      .select({ status: projects.status })
+      .from(projects)
+      .where(and(eq(projects.id, projectId), eq(projects.authorId, authorId)));
+    if (!project || project.status === 'deleting')
+      throw new BiographerError('Project not found', 404);
     const [turn] = await tx
       .update(turns)
       .set({
         ...value,
-        ...(value.text !== undefined ? { final: true } : {}),
+        ...(value.text !== undefined ? { final: true, interrupted: false } : {}),
         revision: sql`${turns.revision}+1`,
         updatedAt: new Date(),
       })
@@ -176,6 +193,11 @@ export async function editTurn(
       .where(eq(projects.id, projectId));
     return { turn };
   });
+  if (result.turn.final && result.turn.text.trim()) {
+    const { clearTranscribedAudio } = await import('@/lib/biographer/audio-retention');
+    await clearTranscribedAudio(projectId, turnId);
+  }
+  return result;
 }
 export async function issueSession(
   authorId: string,
@@ -194,7 +216,11 @@ export async function issueSession(
       .where(and(eq(projects.id, projectId), eq(projects.authorId, authorId)));
     if (!project || project.status === 'deleting')
       throw new BiographerError('Project not found', 404);
-    if (!project.liveEnabled) throw new BiographerError('Live interviews paused', 423);
+    const account = await lockVoiceAccount(tx, project.authorId);
+    if (account.liveSeconds >= account.allowanceSeconds)
+      throw new BiographerError('Live allowance reached', 429);
+    if (!account.liveEnabled || !project.liveEnabled)
+      throw new BiographerError('Live interviews paused', 423);
     const [participant] = await tx
       .select()
       .from(participants)
@@ -224,7 +250,7 @@ export async function issueSession(
       sessionId: session.id,
       ticket,
       liveUrl,
-      remainingSeconds: Math.max(0, project.allowanceSeconds - project.liveSeconds),
+      remainingSeconds: Math.max(0, account.allowanceSeconds - account.liveSeconds),
     };
   });
 }
@@ -244,20 +270,23 @@ export async function admitSession(ticket: string, projectId: string, sessionId:
       );
     if (
       !project ||
+      project.status === 'deleting' ||
       !project.liveEnabled ||
       !session ||
       session.consumedAt ||
       session.ticketExpiresAt.getTime() < Date.now()
     )
       throw new BiographerError('Invalid live admission', 401);
-    const remaining = project.allowanceSeconds - project.liveSeconds;
+    const account = await lockVoiceAccount(tx, project.authorId);
+    if (!account.liveEnabled) throw new BiographerError('Live interviews paused', 423);
+    const remaining = account.allowanceSeconds - account.liveSeconds;
     if (remaining < 1) throw new BiographerError('Live allowance reached', 429);
     const reserve = Math.min(60, remaining);
     const now = new Date();
     await tx
-      .update(projects)
-      .set({ liveSeconds: project.liveSeconds + reserve })
-      .where(eq(projects.id, projectId));
+      .update(authorVoiceAccounts)
+      .set({ liveSeconds: account.liveSeconds + reserve })
+      .where(eq(authorVoiceAccounts.authorId, project.authorId));
     await tx
       .update(sessions)
       .set({
@@ -308,7 +337,12 @@ export async function admitSession(ticket: string, projectId: string, sessionId:
       .from(assets)
       .where(and(eq(assets.projectId, projectId), eq(assets.included, true)))
       .limit(20);
+    const [whisperer] = await tx
+      .select({ context: storyWhispererInterviews.context })
+      .from(storyWhispererInterviews)
+      .where(eq(storyWhispererInterviews.projectId, projectId));
     return {
+      ...(whisperer ? { mode: 'story-whisperer' as const } : {}),
       participantId: session.participantId,
       authorId: project.authorId,
       locale: project.locale,
@@ -316,6 +350,12 @@ export async function admitSession(ticket: string, projectId: string, sessionId:
       remainingSeconds: remaining,
       leaseId: session.leaseId,
       context: {
+        ...(whisperer?.context
+          ? {
+              storyBrief: whisperer.context.brief,
+              characterNames: whisperer.context.characterNames,
+            }
+          : {}),
         projectTitle: project.title,
         subject: project.subject,
         purpose: project.purpose,
@@ -336,31 +376,35 @@ export async function leaseSession(sessionId: string, leaseId: string, release =
     if (!initial) throw new BiographerError('Session not found', 404);
     await tx.execute(sql`select pg_advisory_xact_lock(hashtext(${initial.projectId}))`);
     const [session] = await tx.select().from(sessions).where(eq(sessions.id, sessionId));
+    if (!session) throw new BiographerError('Session not found', 404);
     const [project] = await tx.select().from(projects).where(eq(projects.id, session.projectId));
+    if (!project) throw new BiographerError('Project not found', 404);
+    const account = await lockVoiceAccount(tx, project.authorId);
     if (session.endedAt)
       return {
         allowed: false,
-        remainingSeconds: Math.max(0, project.allowanceSeconds - project.liveSeconds),
+        remainingSeconds: Math.max(0, account.allowanceSeconds - account.liveSeconds),
       };
     if (!session.accountedAt || !session.leaseExpiresAt)
       throw new BiographerError('Session not admitted', 409);
     const elapsed = Math.min(
       session.reservedSeconds,
-      Math.ceil((Date.now() - session.accountedAt.getTime()) / 1000),
+      Math.max(0, Math.ceil((Date.now() - session.accountedAt.getTime()) / 1000)),
     );
-    const used = project.liveSeconds - session.reservedSeconds + elapsed;
-    const available = Math.max(0, project.allowanceSeconds - used);
+    const used = Math.max(0, account.liveSeconds - session.reservedSeconds + elapsed);
+    const available = Math.max(0, account.allowanceSeconds - used);
     const allowed =
       !release &&
       process.env.BIOGRAPHER_ENABLED === 'true' &&
+      account.liveEnabled &&
       project.liveEnabled &&
       session.leaseExpiresAt.getTime() > Date.now() &&
       available > 0;
     const reserve = allowed ? Math.min(60, available) : 0;
     await tx
-      .update(projects)
+      .update(authorVoiceAccounts)
       .set({ liveSeconds: used + reserve })
-      .where(eq(projects.id, project.id));
+      .where(eq(authorVoiceAccounts.authorId, project.authorId));
     await tx
       .update(sessions)
       .set({
@@ -382,7 +426,7 @@ export async function checkpoint(input: {
   final?: boolean;
   interrupted?: boolean;
 }) {
-  return db.transaction(async (tx) => {
+  const result = await db.transaction(async (tx) => {
     const [session] = await tx.select().from(sessions).where(eq(sessions.id, input.sessionId));
     if (!session?.consumedAt || session.endedAt)
       throw new BiographerError('Session not found', 404);
@@ -431,6 +475,8 @@ export async function checkpoint(input: {
         existing.role !== input.role)
     )
       throw new BiographerError('Response conflict', 409);
+    if (existing?.final && !existing.interrupted && existing.text.trim() && !input.final)
+      return { saved: true, final: true, projectId: session.projectId };
     if (existing?.revision) return { saved: true, corrected: true };
     await tx
       .insert(turns)
@@ -474,6 +520,21 @@ export async function checkpoint(input: {
         proposalRevision: null,
       })
       .where(eq(projects.id, session.projectId));
-    return { saved: true };
+    return { saved: true, projectId: session.projectId };
   });
+  if (
+    input.role === 'user' &&
+    input.final &&
+    !input.interrupted &&
+    input.text.trim() &&
+    result.projectId
+  ) {
+    const { clearTranscribedAudio } = await import('@/lib/biographer/audio-retention');
+    await clearTranscribedAudio(result.projectId, input.turnId);
+  }
+  return {
+    saved: true,
+    ...('duplicate' in result && result.duplicate ? { duplicate: true } : {}),
+    ...('corrected' in result && result.corrected ? { corrected: true } : {}),
+  };
 }

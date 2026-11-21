@@ -9,6 +9,7 @@ import {
 import { BiographerError, ownedProject } from '@/db/services/biographer';
 import { readSegment } from '@/lib/biographer/storage';
 import { sgwFetch } from '@/lib/sgw-client';
+import { clearTranscribedAudio, hasCompleteTranscript } from './audio-retention';
 import { z } from 'zod';
 
 export function validateRecoverySegments(
@@ -57,7 +58,7 @@ export async function recoverTranscription(
     .where(and(eq(turns.id, turnId), eq(turns.projectId, projectId), eq(turns.role, 'user')));
   if (!turn || (guest && turn.participantId !== guest.participantId))
     throw new BiographerError('Response not found', 404);
-  if (turn.text || turn.revision || turn.final)
+  if (hasCompleteTranscript(turn))
     throw new BiographerError('This response already has a transcript', 409);
   const saved = await db
     .select()
@@ -98,7 +99,7 @@ export async function recoverTranscription(
       'Unable to transcribe this recording. You can add text manually.',
       422,
     );
-  return db.transaction(async (tx) => {
+  const result = await db.transaction(async (tx) => {
     await tx.execute(sql`select pg_advisory_xact_lock(hashtext(${projectId}))`);
     const [currentProject] = await tx
       .select()
@@ -136,9 +137,8 @@ export async function recoverTranscription(
       !currentProject ||
       currentProject.status === 'deleting' ||
       !current ||
-      current.text ||
-      current.revision ||
-      current.final ||
+      hasCompleteTranscript(current) ||
+      current.revision !== turn.revision ||
       currentSegments.length !== saved.length ||
       currentSegments.some(
         (segment, index) =>
@@ -148,7 +148,14 @@ export async function recoverTranscription(
       throw new BiographerError('Recording changed while transcribing. Please retry.', 409);
     const [updated] = await tx
       .update(turns)
-      .set({ text, originalText: text, final: true, updatedAt: new Date() })
+      .set({
+        text,
+        originalText: text,
+        final: true,
+        interrupted: false,
+        revision: sql`${turns.revision} + 1`,
+        updatedAt: new Date(),
+      })
       .where(eq(turns.id, turnId))
       .returning();
     if (guest)
@@ -171,4 +178,6 @@ export async function recoverTranscription(
       .where(eq(projects.id, projectId));
     return { turn: updated };
   });
+  await clearTranscribedAudio(projectId, turnId);
+  return result;
 }

@@ -358,6 +358,13 @@
       "when": 1794923488014,
       "tag": "0050_biographer_complete",
       "breakpoints": true
+    },
+    {
+      "idx": 51,
+      "version": "7",
+      "when": 1795280503072,
+      "tag": "0051_story_whisperer",
+      "breakpoints": true
     }
   ]
 }

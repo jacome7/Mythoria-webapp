@@ -45,7 +45,7 @@ export async function body(request: Request) {
   return JSON.parse(Buffer.concat(chunks).toString('utf8'));
 }
 export function id(value: string) {
-  return z.uuid().parse(value);
+  return z.uuid().parse(value).toLowerCase();
 }
 export async function handle(action: () => Promise<unknown>) {
   try {

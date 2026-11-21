@@ -66,6 +66,8 @@
     "auth:mcp:token": "tsx scripts/get-mcp-oauth-token.ts",
     "check:env": "tsx ./scripts/check-env-parity.ts",
     "biographer:cleanup-orphans": "tsx scripts/biographer-orphan-cleanup.ts",
+    "story-whisperer:rehearse": "node --import tsx scripts/rehearse-story-whisperer.cjs",
+    "story-whisperer:local": "node scripts/biographer-local.mjs",
     "biographer:local": "node scripts/biographer-local.mjs"
   },
   "sideEffects": false,

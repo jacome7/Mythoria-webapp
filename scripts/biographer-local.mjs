@@ -21,7 +21,7 @@ const mode = process.argv[2] || 'status';
 const environments = new Map();
 const npmCli = process.env.npm_execpath;
 if (!['start', 'stop', 'status'].includes(mode) || process.argv.length > 3)
-  throw new Error('Usage: npm run biographer:local -- start|stop|status');
+  throw new Error('Usage: npm run story-whisperer:local -- start|stop|status');
 const services = [
   {
     name: 'webapp',
@@ -40,7 +40,7 @@ const services = [
     port: 8080,
   },
   {
-    name: 'avatar',
+    name: 'voice',
     cwd: workflow,
     entry: resolve(workflow, 'src/biographer-live.ts'),
     script: 'dev:biographer-live',
@@ -77,7 +77,7 @@ const listening = (port) =>
 
 if (mode === 'start') {
   if (!npmCli || !existsSync(npmCli))
-    throw new Error('Start through npm run biographer:local -- start');
+    throw new Error('Start through npm run story-whisperer:local -- start');
   // This launcher does not migrate, seed, call providers, publish workflows or run notifications.
   const webEnv = parse(readFileSync(resolve(webapp, '.env.local')));
   const workflowEnv = parse(readFileSync(resolve(workflow, '.env.local')));
@@ -96,7 +96,7 @@ if (mode === 'start') {
     webEnv.BIOGRAPHER_LIVE_URL !== 'ws://localhost:8082/live' ||
     workflowEnv.BIOGRAPHER_WEBAPP_URL !== 'http://localhost:3000'
   )
-    throw new Error('Local Biographer callback URLs are not configured');
+    throw new Error('Local Story Whisperer callback URLs are not configured');
   for (const service of services) {
     if (!existsSync(service.entry))
       throw new Error(`Install dependencies for ${service.name} first`);

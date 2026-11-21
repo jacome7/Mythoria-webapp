@@ -2,12 +2,10 @@ import { OAuth2Client } from 'google-auth-library';
 import { z } from 'zod';
 import { eq, desc, sql } from 'drizzle-orm';
 import { db } from '@/db';
-import {
-  biographerProjects,
-  biographerAdminActions,
-  biographerParticipants,
-} from '@/db/schema/biographer';
+import { biographerProjects, biographerParticipants } from '@/db/schema/biographer';
 import { BiographerError } from '@/db/services/biographer';
+import { authorVoiceAccounts, authorVoiceActions } from '@/db/schema/whisperer-voice';
+import { lockVoiceAccount } from '@/db/services/whisperer-voice';
 const oidc = new OAuth2Client();
 export async function verifyAdmin(request: Request) {
   const audience = process.env.BIOGRAPHER_INTERNAL_AUDIENCE;
@@ -56,100 +54,99 @@ export const commandSchema = z.discriminatedUnion('operation', [
     actor: z.object({ email: z.email() }),
   }),
 ]);
-function dto(p: typeof biographerProjects.$inferSelect) {
+function dto(
+  p: typeof biographerProjects.$inferSelect,
+  account: typeof authorVoiceAccounts.$inferSelect | null,
+) {
   return {
     projectId: p.id,
+    authorId: p.authorId,
     title: p.title,
     locale: p.locale,
     status: p.status,
-    liveSecondsUsed: p.liveSeconds,
-    liveSecondsLimit: p.allowanceSeconds,
-    liveEnabled: p.liveEnabled,
+    liveSecondsUsed: account?.liveSeconds ?? 0,
+    liveSecondsLimit: account?.allowanceSeconds ?? 10800,
+    liveEnabled: account?.liveEnabled ?? true,
     updatedAt: p.updatedAt,
   };
 }
 export async function adminCommand(value: unknown, caller: string) {
   const c = commandSchema.parse(value);
-  if (c.operation === 'listProjects')
-    return (
-      await db
-        .select()
-        .from(biographerProjects)
-        .orderBy(desc(biographerProjects.updatedAt))
-        .limit(c.input.limit)
-    ).map(dto);
+  const query = db
+    .select({ project: biographerProjects, account: authorVoiceAccounts })
+    .from(biographerProjects)
+    .leftJoin(authorVoiceAccounts, eq(authorVoiceAccounts.authorId, biographerProjects.authorId));
+  if (c.operation === 'listProjects') {
+    const rows = await query.orderBy(desc(biographerProjects.updatedAt)).limit(c.input.limit);
+    return rows.map(({ project, account }) => dto(project, account));
+  }
   if (c.operation === 'getProject') {
-    const [p] = await db
-      .select()
-      .from(biographerProjects)
-      .where(eq(biographerProjects.id, c.input.projectId));
-    if (!p) throw new BiographerError('Project not found', 404);
+    const [row] = await query.where(eq(biographerProjects.id, c.input.projectId));
+    if (!row) throw new BiographerError('Project not found', 404);
     const people = await db
       .select({ status: biographerParticipants.status })
       .from(biographerParticipants)
-      .where(eq(biographerParticipants.projectId, p.id));
+      .where(eq(biographerParticipants.projectId, row.project.id));
     return {
-      ...dto(p),
+      ...dto(row.project, row.account),
       participantCount: people.length,
-      startedCount: people.filter((v) => ['started', 'finished'].includes(v.status)).length,
-      finishedCount: people.filter((v) => v.status === 'finished').length,
+      startedCount: people.filter((p) => ['started', 'finished'].includes(p.status)).length,
+      finishedCount: people.filter((p) => p.status === 'finished').length,
     };
   }
   return db.transaction(async (tx) => {
-    await tx.execute(sql`select pg_advisory_xact_lock(hashtext(${c.input.projectId}))`);
+    await tx.execute(sql`select pg_advisory_xact_lock(hashtext(${c.input.requestId}))`);
     const [previous] = await tx
       .select()
-      .from(biographerAdminActions)
-      .where(eq(biographerAdminActions.requestId, c.input.requestId));
+      .from(authorVoiceActions)
+      .where(eq(authorVoiceActions.requestId, c.input.requestId));
     if (
       previous &&
       (previous.projectId !== c.input.projectId ||
         previous.operation !== c.operation ||
         previous.actor !== c.actor.email ||
-        previous.reason !== c.input.reason ||
+        previous.caller !== caller ||
         previous.payload !== JSON.stringify(c.input))
     )
       throw new BiographerError('Command conflict', 409);
-    const audit = await tx
-      .insert(biographerAdminActions)
-      .values({
-        requestId: c.input.requestId,
-        projectId: c.input.projectId,
-        actor: c.actor.email,
-        caller,
-        operation: c.operation,
-        reason: c.input.reason,
-        payload: JSON.stringify(c.input),
-      })
-      .onConflictDoNothing()
-      .returning();
-    if (audit.length) {
-      await tx
-        .update(biographerProjects)
-        .set(
-          c.operation === 'extendAllowance'
-            ? {
-                allowanceSeconds: sql`${biographerProjects.allowanceSeconds}+${c.input.additionalSeconds}`,
-                updatedAt: new Date(),
-              }
-            : { liveEnabled: c.input.enabled, updatedAt: new Date() },
+    if (previous) {
+      const [row] = await tx
+        .select({ project: biographerProjects, account: authorVoiceAccounts })
+        .from(biographerProjects)
+        .leftJoin(
+          authorVoiceAccounts,
+          eq(authorVoiceAccounts.authorId, biographerProjects.authorId),
         )
         .where(eq(biographerProjects.id, c.input.projectId));
+      return row ? dto(row.project, row.account) : { applied: true, authorId: previous.authorId };
     }
-    const [p] = await tx
+    const [project] = await tx
       .select()
       .from(biographerProjects)
       .where(eq(biographerProjects.id, c.input.projectId));
-    if (!p) throw new BiographerError('Project not found', 404);
-    const people = await db
-      .select({ status: biographerParticipants.status })
-      .from(biographerParticipants)
-      .where(eq(biographerParticipants.projectId, p.id));
-    return {
-      ...dto(p),
-      participantCount: people.length,
-      startedCount: people.filter((v) => ['started', 'finished'].includes(v.status)).length,
-      finishedCount: people.filter((v) => v.status === 'finished').length,
-    };
+    if (!project) throw new BiographerError('Project not found', 404);
+    await lockVoiceAccount(tx, project.authorId);
+    const [updated] = await tx
+      .update(authorVoiceAccounts)
+      .set(
+        c.operation === 'extendAllowance'
+          ? {
+              allowanceSeconds: sql`${authorVoiceAccounts.allowanceSeconds} + ${c.input.additionalSeconds}`,
+            }
+          : { liveEnabled: c.input.enabled },
+      )
+      .where(eq(authorVoiceAccounts.authorId, project.authorId))
+      .returning();
+    await tx.insert(authorVoiceActions).values({
+      requestId: c.input.requestId,
+      projectId: project.id,
+      authorId: project.authorId,
+      actor: c.actor.email,
+      caller,
+      operation: c.operation,
+      reason: c.input.reason,
+      payload: JSON.stringify(c.input),
+    });
+    return dto(project, updated);
   });
 }

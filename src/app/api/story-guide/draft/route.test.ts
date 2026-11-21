@@ -2,6 +2,8 @@
 import { NextRequest } from 'next/server';
 import { POST } from './route';
 import { storyService, StoryDraftOwnershipError } from '@/db/services';
+import { ensureWhispererDraftReady } from '@/lib/story-whisperer/server';
+import { BiographerError } from '@/db/services/biographer';
 import { getCurrentAuthor } from '@/lib/auth';
 import { linkReferralFromRequest } from '@/lib/referrals/http';
 
@@ -9,6 +11,7 @@ jest.mock('@/db/services', () => ({
   storyService: { createStory: jest.fn() },
   StoryDraftOwnershipError: class extends Error {},
 }));
+jest.mock('@/lib/story-whisperer/server', () => ({ ensureWhispererDraftReady: jest.fn() }));
 jest.mock('@/lib/auth', () => ({ getCurrentAuthor: jest.fn() }));
 jest.mock('@/lib/referrals/http', () => ({ linkReferralFromRequest: jest.fn() }));
 const mockDb = { marker: 'db' };
@@ -32,14 +35,25 @@ jest.mock('@/lib/openai-ads/context', () => ({
 
 const draftId = 'e23a1f19-cce9-4b55-a9b7-9696a137fa97';
 const body = { draftId, title: 'Draft', plotDescription: 'A story', storyLanguage: 'en-US' };
+const projectId = '7d2b51b6-1b52-46c9-a29b-4c0c24cfd82f';
 const request = (value: unknown = body) =>
   new NextRequest('https://mythoria.pt/api/story-guide/draft', {
     method: 'POST',
+    headers: { 'x-story-whisperer-project': projectId },
     body: JSON.stringify(value),
   });
 type Story = Awaited<ReturnType<typeof storyService.createStory>>;
 
 describe('guided story draft API', () => {
+  it('requires a ready owner interview before opening a Whisperer draft', async () => {
+    jest
+      .mocked(ensureWhispererDraftReady)
+      .mockRejectedValueOnce(new BiographerError('Incomplete interview', 409));
+    expect((await POST(request({ ...body, storyWhisperer: true }))).status).toBe(409);
+    expect(ensureWhispererDraftReady).toHaveBeenCalledWith('author-1', draftId, projectId);
+    expect(storyService.createStory).not.toHaveBeenCalled();
+  });
+
   beforeEach(() => {
     jest.clearAllMocks();
     jest

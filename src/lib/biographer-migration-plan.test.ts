@@ -12,7 +12,13 @@ const journal = JSON.parse(readFileSync('drizzle/meta/_journal.json', 'utf8')) a
 };
 const head = readFileSync('drizzle/0049_openai_ads_conversions.sql', 'utf8');
 const migration = readFileSync('drizzle/0050_biographer_complete.sql', 'utf8');
-const plan = buildPlan(journal.entries, head, migration);
+// This one-off recovery plan is pinned to the repository at 0050.
+const reviewedJournal = journal.entries.filter((entry) => entry.idx <= 50);
+const plan = buildPlan(reviewedJournal, head, migration);
+
+test('the obsolete one-off migration runner refuses a newer repository head', () => {
+  expect(() => buildPlan(journal.entries, head, migration)).toThrow();
+});
 const ledger = [{ hash: HEAD_HASH, created_at: HEAD_TIME }];
 const keys = ['authors.author_id', 'stories.story_id'];
 
@@ -26,10 +32,10 @@ test('reviewed plan creates foundation before foreign keys and indexes', () => {
 });
 
 test('rejects a collision, modified SQL, unexpected head and partial schema', () => {
-  const entries = journal.entries.map((entry) => ({ ...entry }));
+  const entries = reviewedJournal.map((entry) => ({ ...entry }));
   entries[49].tag = '0049_biographer_phase_one';
   expect(() => buildPlan(entries, head, migration)).toThrow();
-  expect(() => buildPlan(journal.entries, head, `${migration}\n`)).toThrow();
+  expect(() => buildPlan(reviewedJournal, head, `${migration}\n`)).toThrow();
   expect(() =>
     assertPreconditions([{ hash: 'wrong', created_at: HEAD_TIME }], [], false, keys, plan),
   ).toThrow();

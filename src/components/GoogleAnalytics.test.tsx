@@ -38,9 +38,8 @@ describe('GoogleAnalytics bootstrap', () => {
     const source = container.querySelector('#gtag-init')?.textContent || '';
     new Function(source)();
     expect(window.location.hash).toBe('');
-    expect(state.__mythoriaBiographerFragment).toBe(token);
+    expect(state.__mythoriaBiographerFragment).toBeUndefined();
     expect(state.gtag).not.toHaveBeenCalled();
-    delete state.__mythoriaBiographerFragment;
     state.gtag = previous;
     window.history.replaceState(null, '', '/');
   });
@@ -55,7 +54,7 @@ describe('GoogleAnalytics bootstrap', () => {
     expect(source.indexOf('window.history.replaceState')).toBeLessThan(
       source.indexOf("window.gtag('config'"),
     );
-    expect(source).toContain('window.__mythoriaBiographerFragment');
+    expect(source).not.toContain('window.__mythoriaBiographerFragment');
 
     expect(source.indexOf("window.gtag('consent', 'default'")).toBeLessThan(
       source.indexOf('window.gtag(\'config\', "G-TEST123"'),

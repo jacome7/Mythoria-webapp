@@ -1,14 +1,43 @@
 import { act, renderHook, waitFor } from '@testing-library/react';
 import { useBiographerLive } from './useBiographerLive';
-import { pendingSegments, removePending, savePending } from '@/utils/biographer/pending';
+import {
+  clearPending,
+  pendingSegments,
+  removePending,
+  savePending,
+} from '@/utils/biographer/pending';
 
 jest.mock('@/utils/biographer/pending', () => ({
+  clearPending: jest.fn(),
   pendingSegments: jest.fn(),
   removePending: jest.fn(),
   savePending: jest.fn(),
 }));
 const pending = pendingSegments as jest.Mock;
 const removed = removePending as jest.Mock;
+
+class TestLiveSocket {
+  static OPEN = 1;
+  static current: TestLiveSocket;
+  readyState = TestLiveSocket.OPEN;
+  onmessage?: (event: { data: string }) => void;
+  send = jest.fn();
+  close = jest.fn();
+
+  constructor(_url: string) {
+    TestLiveSocket.current = this;
+  }
+
+  ready() {
+    this.onmessage?.({ data: JSON.stringify({ type: 'ready' }) });
+  }
+}
+
+const liveSession = {
+  ok: true,
+  json: async () => ({ sessionId: 'session', ticket: 'ticket', liveUrl: 'wss://example.test' }),
+};
+
 const segment = {
   id: 'segment-1',
   authorId: 'author',
@@ -17,11 +46,13 @@ const segment = {
   turnId: 'turn',
   sequence: 2,
   durationMs: 10,
+  capturedAt: new Date().toISOString(),
   data: new Uint8Array([1, 2]).buffer,
 };
 
 describe('live archival recovery', () => {
   const originalWorklet = globalThis.AudioWorkletNode;
+  const originalSocket = globalThis.WebSocket;
   beforeEach(() => {
     jest.clearAllMocks();
     Object.defineProperty(globalThis.crypto, 'subtle', {
@@ -31,10 +62,18 @@ describe('live archival recovery', () => {
     pending.mockResolvedValue([segment]);
   });
   afterEach(() => {
+    Object.defineProperty(globalThis, 'WebSocket', { configurable: true, value: originalSocket });
     Object.defineProperty(globalThis, 'AudioWorkletNode', {
       configurable: true,
       value: originalWorklet,
     });
+  });
+  it('keeps text-only work available when the microphone recovery database is unavailable', async () => {
+    pending.mockRejectedValue(new Error('IndexedDB unavailable'));
+    const { result } = renderHook(() => useBiographerLive('project', 'author', jest.fn()));
+    await act(async () => result.current.sync());
+    expect(result.current.saving).toBe('saved');
+    expect(result.current.error).toBe(false);
   });
   it('retains local audio when the server acknowledgement does not identify the saved bytes', async () => {
     global.fetch = jest.fn().mockResolvedValue({
@@ -72,88 +111,37 @@ describe('live archival recovery', () => {
     expect(new Headers(request.headers).get('x-biographer-project')).toBe('project');
     expect(new Headers(request.headers).get('x-biographer-participant')).toBe('author');
   });
-  it('stops the microphone when avatar video playback is unsupported', async () => {
+  it('plays queued voice samples and stops them immediately on interruption', async () => {
     pending.mockResolvedValue([]);
     const stop = jest.fn();
-    const stream = { getTracks: () => [{ stop }] };
+    const microphoneStop = jest.fn();
+    const getUserMedia = jest.fn().mockResolvedValue({
+      getTracks: () => [{ stop: microphoneStop }],
+    });
     Object.defineProperty(navigator, 'mediaDevices', {
       configurable: true,
-      value: { getUserMedia: jest.fn().mockResolvedValue(stream) },
-    });
-    Object.defineProperty(globalThis.crypto, 'randomUUID', {
-      configurable: true,
-      value: () => 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa',
-    });
-    class MockAudioContext {
-      state = 'running';
-      sampleRate = 48000;
-      audioWorklet = { addModule: jest.fn().mockResolvedValue(undefined) };
-      resume = jest.fn().mockResolvedValue(undefined);
-      close = jest.fn().mockResolvedValue(undefined);
-    }
-    class MockSocket {
-      static OPEN = 1;
-      readyState = 1;
-      onopen?: () => void;
-      onmessage?: (event: { data: string }) => void;
-      onerror?: () => void;
-      onclose?: () => void;
-      send = jest.fn();
-      close = jest.fn();
-      constructor(_url: string) {
-        socket = this;
-      }
-    }
-    let socket: MockSocket;
-    const oldSocket = globalThis.WebSocket;
-    const oldContext = globalThis.AudioContext;
-    Object.defineProperty(globalThis, 'AudioContext', {
-      configurable: true,
-      value: MockAudioContext,
-    });
-    Object.defineProperty(globalThis, 'WebSocket', { configurable: true, value: MockSocket });
-    Object.defineProperty(globalThis, 'MediaSource', { configurable: true, value: undefined });
-    global.fetch = jest.fn().mockResolvedValue({
-      ok: true,
-      json: async () => ({
-        sessionId: 'session',
-        ticket: 'ticket',
-        liveUrl: 'wss://example.test',
-      }),
-    });
-    const { result, unmount } = renderHook(() => useBiographerLive('project', 'author', jest.fn()));
-    await act(async () => {
-      await result.current.start();
-    });
-    act(() =>
-      socket.onmessage?.({
-        data: JSON.stringify({ type: 'media', mimeType: 'video/mp4', data: 'AA==' }),
-      }),
-    );
-    expect(result.current.state).toBe('paused');
-    expect(result.current.error).toBe(true);
-    expect(stop).toHaveBeenCalled();
-    unmount();
-    Object.defineProperty(globalThis, 'WebSocket', { configurable: true, value: oldSocket });
-    Object.defineProperty(globalThis, 'AudioContext', { configurable: true, value: oldContext });
-  });
-  it('adds codecs for bare mp4 video without pausing', async () => {
-    pending.mockResolvedValue([]);
-    const stop = jest.fn();
-    Object.defineProperty(navigator, 'mediaDevices', {
-      configurable: true,
-      value: { getUserMedia: jest.fn().mockResolvedValue({ getTracks: () => [{ stop }] }) },
+      value: { getUserMedia },
     });
     Object.defineProperty(document, 'visibilityState', { configurable: true, value: 'visible' });
     Object.defineProperty(globalThis.crypto, 'randomUUID', {
       configurable: true,
       value: () => 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa',
     });
+    const samples = new Float32Array(1);
+    const createBuffer = jest.fn(() => ({
+      duration: 1 / 24000,
+      getChannelData: () => samples,
+    }));
+    const start = jest.fn();
     class Context {
       state = 'running';
+      currentTime = 10;
+      destination = {};
       audioWorklet = { addModule: jest.fn().mockResolvedValue(undefined) };
       resume = jest.fn().mockResolvedValue(undefined);
       close = jest.fn().mockResolvedValue(undefined);
+      createBuffer = createBuffer;
+      createBufferSource = jest.fn(() => ({ start, stop, connect: jest.fn() }));
     }
     class Socket {
       static OPEN = 1;
@@ -166,25 +154,10 @@ describe('live archival recovery', () => {
       }
     }
     let socket: Socket;
-    const videoType = 'video/mp4; codecs="avc1.42C01F, mp4a.40.2"';
-    const supported = jest.fn((type: string) => type === videoType);
-    const append = jest.fn();
-    const addSourceBuffer = jest.fn(() => ({ addEventListener: jest.fn(), appendBuffer: append }));
-    class Media extends EventTarget {
-      static isTypeSupported = supported;
-      addSourceBuffer = addSourceBuffer;
-    }
     const oldSocket = globalThis.WebSocket;
     const oldContext = globalThis.AudioContext;
-    const oldMedia = globalThis.MediaSource;
-    const oldCreate = URL.createObjectURL;
-    const oldRevoke = URL.revokeObjectURL;
     Object.defineProperty(globalThis, 'AudioContext', { configurable: true, value: Context });
     Object.defineProperty(globalThis, 'WebSocket', { configurable: true, value: Socket });
-    Object.defineProperty(globalThis, 'MediaSource', { configurable: true, value: Media });
-    const createUrl = jest.fn().mockReturnValue('blob:test');
-    URL.createObjectURL = createUrl;
-    URL.revokeObjectURL = jest.fn();
     global.fetch = jest.fn().mockResolvedValue({
       ok: true,
       json: async () => ({ sessionId: 'session', ticket: 'ticket', liveUrl: 'wss://example.test' }),
@@ -193,23 +166,30 @@ describe('live archival recovery', () => {
     await act(async () => {
       await result.current.start();
     });
-    act(() =>
-      socket.onmessage?.({
-        data: JSON.stringify({ type: 'media', mimeType: 'video/mp4', data: 'AA==' }),
-      }),
-    );
-    expect(supported).toHaveBeenCalledWith(videoType);
-    act(() => createUrl.mock.calls[0][0].dispatchEvent(new Event('sourceopen')));
-    expect(addSourceBuffer).toHaveBeenCalledWith(videoType);
-    expect(append).toHaveBeenCalledWith(new Uint8Array([0]));
+    expect(getUserMedia).toHaveBeenCalledWith(expect.objectContaining({ video: false }));
+    const data = JSON.stringify({ type: 'media', mimeType: 'audio/pcm;rate=24000', data: 'AIA=' });
+    act(() => {
+      socket.onmessage?.({ data });
+      socket.onmessage?.({ data });
+    });
+    expect(createBuffer).toHaveBeenCalledWith(1, 1, 24000);
+    expect(samples[0]).toBe(-1);
+    expect(start.mock.calls).toEqual([[10], [10 + 1 / 24000]]);
     expect(result.current.state).toBe('speaking');
-    expect(stop).not.toHaveBeenCalled();
+    act(() => socket.onmessage?.({ data: JSON.stringify({ type: 'interrupted' }) }));
+    expect(stop).toHaveBeenCalledTimes(2);
+    expect(result.current.state).toBe('listening');
+    expect(microphoneStop).not.toHaveBeenCalled();
     unmount();
     Object.defineProperty(globalThis, 'WebSocket', { configurable: true, value: oldSocket });
     Object.defineProperty(globalThis, 'AudioContext', { configurable: true, value: oldContext });
-    Object.defineProperty(globalThis, 'MediaSource', { configurable: true, value: oldMedia });
-    URL.createObjectURL = oldCreate;
-    URL.revokeObjectURL = oldRevoke;
+  });
+  it('clears the current author and project recovery queue on explicit reset', async () => {
+    pending.mockResolvedValue([]);
+    const { result } = renderHook(() => useBiographerLive('project', 'author', jest.fn()));
+    await act(async () => result.current.reset());
+    expect(clearPending).toHaveBeenCalledWith('author', 'project');
+    expect(result.current.saving).toBe('saved');
   });
   it('starts audio sequence numbers at zero for each completed live answer', async () => {
     pending.mockResolvedValue([]);
@@ -292,7 +272,7 @@ describe('live archival recovery', () => {
     Object.defineProperty(globalThis, 'WebSocket', { configurable: true, value: oldSocket });
     Object.defineProperty(globalThis, 'AudioContext', { configurable: true, value: oldContext });
   });
-  it('journals an offline recording before attempting upload and stops capture on pause', async () => {
+  it('journals captured audio after the connection drops and stops the microphone on pause', async () => {
     pending.mockResolvedValue([]);
     (savePending as jest.Mock).mockResolvedValue(undefined);
     const stop = jest.fn();
@@ -300,7 +280,6 @@ describe('live archival recovery', () => {
       configurable: true,
       value: { getUserMedia: jest.fn().mockResolvedValue({ getTracks: () => [{ stop }] }) },
     });
-    Object.defineProperty(navigator, 'onLine', { configurable: true, value: false });
     Object.defineProperty(document, 'visibilityState', { configurable: true, value: 'visible' });
     Object.defineProperty(globalThis.crypto, 'randomUUID', {
       configurable: true,
@@ -327,12 +306,18 @@ describe('live archival recovery', () => {
       value: jest.fn(() => processor),
     });
     Object.defineProperty(globalThis, 'AudioContext', { configurable: true, value: Context });
-    global.fetch = jest.fn().mockRejectedValue(new Error('offline'));
+    Object.defineProperty(globalThis, 'WebSocket', { configurable: true, value: TestLiveSocket });
+    global.fetch = jest
+      .fn()
+      .mockResolvedValueOnce(liveSession)
+      .mockRejectedValue(new Error('offline'));
     const { result, unmount } = renderHook(() => useBiographerLive('project', 'author', jest.fn()));
     await act(async () => {
-      await result.current.startLocalRecording();
+      await result.current.start();
     });
-    expect(result.current.state).toBe('recording');
+    act(() => TestLiveSocket.current.ready());
+    expect(result.current.state).toBe('listening');
+    Object.defineProperty(navigator, 'onLine', { configurable: true, value: false });
     act(() => processor.port.onmessage({ data: new ArrayBuffer(32000) }));
     await waitFor(() =>
       expect(savePending).toHaveBeenCalledWith(
@@ -384,10 +369,13 @@ describe('live archival recovery', () => {
       value: jest.fn(() => processor),
     });
     Object.defineProperty(globalThis, 'AudioContext', { configurable: true, value: Context });
+    Object.defineProperty(globalThis, 'WebSocket', { configurable: true, value: TestLiveSocket });
+    global.fetch = jest.fn().mockResolvedValueOnce(liveSession);
     const { result, unmount } = renderHook(() => useBiographerLive('project', 'author', jest.fn()));
     await act(async () => {
-      await result.current.startLocalRecording();
+      await result.current.start();
     });
+    act(() => TestLiveSocket.current.ready());
     act(() => processor.port.onmessage({ data: new ArrayBuffer(32000) }));
     await waitFor(() => expect(result.current.saving).toBe('attention'));
     await act(async () => {

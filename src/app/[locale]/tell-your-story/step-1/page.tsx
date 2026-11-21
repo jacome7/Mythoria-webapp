@@ -1,7 +1,5 @@
 'use client';
 
-import BiographerEntry from '@/components/biographer/BiographerEntry';
-
 import Link from 'next/link';
 import { useAuth } from '@clerk/nextjs';
 import { useState, useEffect, useCallback, useRef } from 'react';
@@ -222,7 +220,6 @@ export default function Step1Page() {
                     </div>
                   )}
 
-                  <BiographerEntry />
                   <div className="grid grid-cols-1 gap-6">
                     {/* Author Name Field */}
                     <div className="form-control">

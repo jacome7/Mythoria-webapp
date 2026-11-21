@@ -11,6 +11,25 @@ import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { createPortal } from 'react-dom';
 import { useTranslations, useLocale } from 'next-intl';
+import StoryWhisperer from '@/components/story-whisperer/StoryWhisperer';
+import {
+  jsonRequest,
+  readInterview,
+  WhispererDraftDeletedError,
+  whispererPath,
+  type WhispererContext,
+  type WhispererDraft,
+  type WhispererInterview,
+} from '@/components/story-whisperer/api';
+import {
+  forgetWhispererDraft,
+  lastWhispererDraft,
+  recoveredWhispererDraftKey,
+  rememberWhispererDraft,
+  whispererDraftKey,
+} from '@/lib/story-whisperer/draft-pointer';
+import { saveAnswerDraft } from '@/utils/biographer/drafts';
+import { clearPending } from '@/utils/biographer/pending';
 import Step2Preview, { ConfirmDialog } from './Step2Preview';
 import { usePreviousWizardPath } from '@/components/WizardNavigation';
 import { useRouter } from '@/i18n/routing';
@@ -112,15 +131,18 @@ function StoryModeCard({
 function Step2Content({
   templatesEnabled = false,
   templates = [],
+  whispererEnabled = false,
 }: {
   templatesEnabled?: boolean;
   templates?: StoryTemplate[];
+  whispererEnabled?: boolean;
 }) {
   const { isSignedIn, userId } = useAuth();
   const hasTrackedStepView = useRef(false);
   const router = useRouter();
   const tStoryStepsStep2 = useTranslations('StorySteps.step2');
   const tStoryStepsCommon = useTranslations('StorySteps.common');
+  const tWhisperer = useTranslations('StoryWhisperer');
   const tTemplates = useTranslations('StoryTemplates');
   const searchParams = useSearchParams();
   const intentContext = useIntentContext();
@@ -145,6 +167,15 @@ function Step2Content({
   const [confirmRebuild, setConfirmRebuild] = useState(false);
   const [confirmReset, setConfirmReset] = useState(false);
   const [showExtraDetails, setShowExtraDetails] = useState(false);
+  const [whispererOpen, setWhispererOpen] = useState(false);
+  const [whispererDraftId, setWhispererDraftId] = useState<string>();
+  const [resumableWhispererDraft, setResumableWhispererDraft] = useState<string | null>(null);
+  const [onlyInterviewToResume, setOnlyInterviewToResume] = useState(false);
+  const [whispererRestoring, setWhispererRestoring] = useState(false);
+  const [interview, setInterview] = useState<WhispererInterview | null>(null);
+  const [recoveredWhispererInputs, setRecoveredWhispererInputs] =
+    useState<Partial<WhispererContext>>();
+  const pendingWhispererRebuild = useRef<WhispererDraft | undefined>(undefined);
   const startTime = useRef(0);
   useEffect(() => {
     startTime.current = Date.now();
@@ -189,7 +220,8 @@ function Step2Content({
   const { pollJob } = useJobPolling();
 
   useEffect(() => {
-    if (!preview || !templateState.ready || entryChecked.current) return;
+    if (!preview || !templateState.ready || entryChecked.current || (whispererEnabled && !userId))
+      return;
     entryChecked.current = true;
     const hasSavedContent = !!(
       journey?.templateId ||
@@ -202,8 +234,17 @@ function Step2Content({
       selectedCharacterIds.length ||
       (userId && readStep2Submission(userId, true))
     );
+    const activeInterview =
+      whispererEnabled && userId
+        ? (sessionStorage.getItem(whispererDraftKey(userId)) ??
+          (!hasSavedContent ? lastWhispererDraft(userId) : null))
+        : null;
+    setResumableWhispererDraft(activeInterview);
+    setOnlyInterviewToResume(!!activeInterview && !hasSavedContent);
     const returningFromLaterStep = /\/tell-your-story\/step-[3-5]$/.test(previousWizardPath ?? '');
-    setEntryScreen(hasSavedContent && !returningFromLaterStep ? 'resume' : 'edit');
+    setEntryScreen(
+      (hasSavedContent || activeInterview) && !returningFromLaterStep ? 'resume' : 'edit',
+    );
   }, [
     preview,
     templateState.ready,
@@ -214,6 +255,7 @@ function Step2Content({
     selectedCharacterIds.length,
     userId,
     previousWizardPath,
+    whispererEnabled,
   ]);
 
   useEffect(() => {
@@ -276,6 +318,47 @@ function Step2Content({
     uploadedAudio,
     entryScreen,
   ]);
+
+  const openWhisperer = async (resumeDraftId?: string) => {
+    if (!userId || whispererRestoring) return;
+    setWhispererRestoring(true);
+    setSubmissionError(null);
+    try {
+      const key = whispererDraftKey(userId);
+      const scopedDraftId =
+        readStep2Submission(userId, true)?.storyId ?? sessionStorage.getItem(key);
+      const existing = scopedDraftId ?? resumeDraftId;
+      let draftId = existing ?? crypto.randomUUID();
+      let savedInterview: WhispererInterview | null = null;
+      if (existing) {
+        try {
+          savedInterview = await readInterview(existing);
+        } catch (error) {
+          if (!(error instanceof WhispererDraftDeletedError)) throw error;
+          forgetWhispererDraft(userId, existing, true);
+          if (readStep2Submission(userId, true)?.storyId === existing)
+            sessionStorage.removeItem('experimentalStep2Submission');
+          setResumableWhispererDraft(null);
+          setOnlyInterviewToResume(false);
+          draftId = crypto.randomUUID();
+        }
+      }
+      const recoveredKey = recoveredWhispererDraftKey(userId);
+      if (!scopedDraftId && resumeDraftId && savedInterview)
+        sessionStorage.setItem(recoveredKey, draftId);
+      setRecoveredWhispererInputs(
+        sessionStorage.getItem(recoveredKey) === draftId ? savedInterview?.savedInputs : undefined,
+      );
+      if (savedInterview) rememberWhispererDraft(userId, draftId);
+      setWhispererDraftId(draftId);
+      setInterview(savedInterview);
+      setWhispererOpen(true);
+    } catch {
+      setSubmissionError(tWhisperer('error'));
+    } finally {
+      setWhispererRestoring(false);
+    }
+  };
 
   const questionReferences = preview ? confirmedCharacterReferences(journey) : [];
   const hasMedia =
@@ -449,7 +532,24 @@ function Step2Content({
     setRestartError(null);
     try {
       const saved = readStep2Submission(userId, true);
-      if (saved && !saved.completed && (saved.jobId || saved.structurePayload)) {
+      const interviewId =
+        sessionStorage.getItem(whispererDraftKey(userId)) ?? resumableWhispererDraft;
+      let oldInterview: WhispererInterview | null = null;
+      let deletedInterview = false;
+      if (whispererEnabled && interviewId) {
+        try {
+          oldInterview = await readInterview(interviewId);
+        } catch (error) {
+          if (!(error instanceof WhispererDraftDeletedError)) throw error;
+          deletedInterview = true;
+        }
+      }
+      if (
+        saved &&
+        !(deletedInterview && interviewId === saved.storyId) &&
+        !saved.completed &&
+        (saved.jobId || saved.structurePayload)
+      ) {
         // Read status only. A lost POST response must be recovered through the existing
         // idempotent continuation flow before its request identity can be discarded.
         if (!saved.jobId) throw new Error('pending');
@@ -458,6 +558,26 @@ function Step2Content({
         const { job } = await response.json();
         if (job?.status !== 'completed' && job?.status !== 'failed') throw new Error('pending');
       }
+      if (interviewId) {
+        if (oldInterview) {
+          const response = await fetch(
+            `${whispererPath(interviewId)}?projectId=${oldInterview.projectId}`,
+            { method: 'DELETE' },
+          );
+          if (!response.ok) throw new Error('Interview reset failed');
+          await Promise.all([
+            clearPending(userId, oldInterview.projectId),
+            clearPending(userId, oldInterview.projectId, 'dictation'),
+            saveAnswerDraft(userId, oldInterview.projectId, null),
+          ]).catch(() => undefined);
+        }
+      }
+      if (interviewId) forgetWhispererDraft(userId, interviewId, true);
+      setResumableWhispererDraft(null);
+      setOnlyInterviewToResume(false);
+      setWhispererDraftId(undefined);
+      setInterview(null);
+      setRecoveredWhispererInputs(undefined);
       entryApplied.current = true;
       setMediaEpoch((value) => value + 1);
       resetInputs();
@@ -491,47 +611,74 @@ function Step2Content({
       setCheckingPreviousJob(false);
     }
   };
-  const handleNextStep = async (confirmed = false) => {
+  const pendingOutline = userId && whispererEnabled ? readStep2Submission(userId, true) : null;
+  const replayOutline = !!(pendingOutline?.structurePayload || pendingOutline?.jobId);
+  const canRecoverOutline = !!(
+    pendingOutline?.whisperer &&
+    !pendingOutline.completed &&
+    (replayOutline || pendingOutline.whispererRetryOf)
+  );
+
+  const handleNextStep = async (confirmed = false, whisperer?: WhispererDraft, replay = false) => {
     if (submitting.current) return;
-    if (preview && (mediaBusy || mediaError)) {
-      setWaitingForMedia(true);
+    if (!replay && preview && (mediaBusy || mediaError)) {
+      if (whisperer) setSubmissionError(tWhisperer('reviewInputs'));
+      else setWaitingForMedia(true);
       return;
     }
-    if (!canContinue) return;
+    if (!replay && (whisperer ? !fitsBrief(storyText) : !canContinue)) return;
     submitting.current = true;
     setSubmissionError(null);
     try {
       saveToSession();
-      const brief = compileStoryBrief(journey, storyText);
-      const imageObjectPaths = uploadedImages
-        .filter((img) => img.status === 'done' && img.objectPath)
-        .map((img) => img.objectPath!);
+      const recoveredInputs = whisperer ? recoveredWhispererInputs : undefined;
+      const brief = compileStoryBrief(journey, storyText) || recoveredInputs?.brief || '';
+      const characterIds = [
+        ...new Set([...selectedCharacterIds, ...(recoveredInputs?.characterIds ?? [])]),
+      ];
+      const imageObjectPaths = [
+        ...new Set([
+          ...uploadedImages.flatMap((image) =>
+            image.status === 'done' && image.objectPath ? [image.objectPath] : [],
+          ),
+          ...(recoveredInputs?.imageObjectPaths ?? []),
+        ]),
+      ];
       for (const reference of questionReferences) {
         if (!imageObjectPaths.includes(reference.imageObjectPath))
           imageObjectPaths.push(reference.imageObjectPath);
       }
-      const audioObjectPath =
-        uploadedAudio?.status === 'done' ? uploadedAudio.objectPath : undefined;
-      const fingerprint = await storyInputFingerprint({
-        brief,
-        imageIds: uploadedImages.filter((img) => img.status === 'done').map((img) => img.id),
-        audio: originalAudioPath(audioObjectPath),
-        characters: [...selectedCharacterIds].sort(),
-        locale,
-        preferences: journey?.preferences,
-        ...(questionReferences.length
-          ? {
-              characterReferences: journey?.answers
-                .filter((answer) => answer.photo)
-                .map((answer) => ({
-                  questionId: answer.questionId,
-                  imageId: answer.photo!.id,
-                  sourceCharacterIndex: answer.photo!.sourceCharacterIndex,
-                })),
-            }
-          : {}),
-      });
+      let audioObjectPath =
+        (uploadedAudio?.status === 'done' ? uploadedAudio.objectPath : undefined) ??
+        recoveredInputs?.audioObjectPath;
       let saved = userId ? readStep2Submission(userId, templatesEnabled) : null;
+      if (replay && (!saved?.whisperer || (!saved.structurePayload && !saved.jobId))) return;
+      const fingerprint =
+        replay && saved
+          ? saved.fingerprint
+          : await storyInputFingerprint({
+              brief,
+              ...(whisperer ? { whisperer } : {}),
+              imageIds: uploadedImages.filter((img) => img.status === 'done').map((img) => img.id),
+              audio: originalAudioPath(audioObjectPath),
+              characters: [...characterIds].sort(),
+              ...(recoveredInputs?.imageObjectPaths?.length
+                ? { recoveredPhotos: recoveredInputs.imageObjectPaths }
+                : {}),
+              locale,
+              preferences: journey?.preferences,
+              ...(questionReferences.length
+                ? {
+                    characterReferences: journey?.answers
+                      .filter((answer) => answer.photo)
+                      .map((answer) => ({
+                        questionId: answer.questionId,
+                        imageId: answer.photo!.id,
+                        sourceCharacterIndex: answer.photo!.sourceCharacterIndex,
+                      })),
+                  }
+                : {}),
+            });
       // Finish or observe the previous request before submitting changed input. A lost
       // POST response is retried with the exact saved payload and durable request ID.
       if (
@@ -562,6 +709,7 @@ function Step2Content({
         saveStep2Submission(saved, templatesEnabled);
       }
       if (saved?.completed && saved.fingerprint !== fingerprint && !confirmed) {
+        pendingWhispererRebuild.current = whisperer;
         setConfirmRebuild(true);
         return;
       }
@@ -576,23 +724,38 @@ function Step2Content({
 
       // Persist the id before the request: retrying a lost response cannot create another draft.
       if (!saved && templatesEnabled && userId) {
-        saved = { owner: userId, storyId: crypto.randomUUID(), fingerprint, completed: false };
+        saved = {
+          owner: userId,
+          storyId:
+            whisperer?.draftId ??
+            (whispererEnabled ? sessionStorage.getItem(whispererDraftKey(userId)) : null) ??
+            crypto.randomUUID(),
+          fingerprint,
+          completed: false,
+          whisperer,
+        };
         saveStep2Submission(saved, templatesEnabled);
       }
+      if (whisperer && saved?.storyId !== whisperer.draftId)
+        throw new Error('Interview draft mismatch');
       let storyId = saved?.storyId;
       const resumingStructure =
         saved?.fingerprint === fingerprint && !!(saved.jobId || saved.structurePayload);
       if (templatesEnabled && saved && !resumingStructure) {
-        const response = await fetch('/api/story-guide/draft', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            draftId: saved.storyId,
-            title: templates.find((item) => item.id === journey?.templateId)?.title ?? 'My Story',
-            plotDescription: brief,
-            storyLanguage: locale,
-          }),
-        });
+        const response = await fetch(
+          '/api/story-guide/draft',
+          jsonRequest(
+            'POST',
+            {
+              draftId: saved.storyId,
+              title: templates.find((item) => item.id === journey?.templateId)?.title ?? 'My Story',
+              plotDescription: brief,
+              storyLanguage: locale,
+              ...(whisperer ? { storyWhisperer: true } : {}),
+            },
+            whisperer?.projectId,
+          ),
+        );
         if (!response.ok) throw new Error(tTemplates('structureError'));
         trackStoryCreationStarted(saved.storyId, await readAdEventId(response));
       } else if (!storyId) {
@@ -627,6 +790,8 @@ function Step2Content({
               jobId: undefined,
               structureRequestId: undefined,
               structurePayload: undefined,
+              whispererRetryOf: undefined,
+              whisperer,
             };
       saveStep2Submission(submission, templatesEnabled);
       if (preview && !resumingStructure) {
@@ -634,7 +799,7 @@ function Step2Content({
         if (!response.ok) throw new Error(tTemplates('structureError'));
         const result = await response.json();
         for (const character of result.characters ?? []) {
-          if (character.characterId && !selectedCharacterIds.includes(character.characterId)) {
+          if (character.characterId && !characterIds.includes(character.characterId)) {
             const removed = await fetch(
               `/api/stories/${storyId}/characters/${character.characterId}`,
               { method: 'DELETE' },
@@ -643,7 +808,7 @@ function Step2Content({
           }
         }
       }
-      for (const characterId of resumingStructure ? [] : selectedCharacterIds) {
+      for (const characterId of resumingStructure ? [] : characterIds) {
         const linked = await fetch(`/api/stories/${storyId}/characters`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -651,27 +816,73 @@ function Step2Content({
         });
         if (!linked.ok) throw new Error(tTemplates('structureError'));
       }
-      if (brief.trim() || imageObjectPaths.length || audioObjectPath) {
+      if (whisperer || brief.trim() || imageObjectPaths.length || audioObjectPath) {
+        if (whisperer && resumingStructure && submission.structurePayload) {
+          const payload = JSON.parse(submission.structurePayload) as {
+            imageObjectPaths?: string[];
+            audioObjectPath?: string;
+          };
+          imageObjectPaths.splice(0, imageObjectPaths.length, ...(payload.imageObjectPaths ?? []));
+          audioObjectPath = payload.audioObjectPath;
+        }
         if (!submission.jobId) {
           if (!submission.structurePayload) {
-            const structureRequestId = templatesEnabled ? crypto.randomUUID() : undefined;
+            let structureRequestId = templatesEnabled ? crypto.randomUUID() : undefined;
+            let whispererDescription: string | undefined;
+            if (whisperer) {
+              const handoff = await fetch(
+                `${whispererPath(storyId)}/handoff`,
+                jsonRequest(
+                  'POST',
+                  {
+                    revision: whisperer.revision,
+                    ...(submission.whispererRetryOf
+                      ? { retryOf: submission.whispererRetryOf }
+                      : {}),
+                    brief,
+                    imageObjectPaths,
+                    audioObjectPath,
+                    characterIds: characterIds.length ? characterIds : undefined,
+                    storyPreferences: journey?.preferences,
+                    factuality: journey?.mode === 'memory' ? 'memory' : undefined,
+                    ...(questionReferences.length
+                      ? { characterReferences: questionReferences }
+                      : {}),
+                  },
+                  whisperer.projectId,
+                ),
+              );
+              if (!handoff.ok) throw new Error('Interview handoff failed');
+              const result = (await handoff.json()) as {
+                draftId: string;
+                structureRequestId: string;
+                userDescription: string;
+                imageObjectPaths: string[];
+              };
+              if (result.draftId !== storyId) throw new Error('Interview draft mismatch');
+              structureRequestId = result.structureRequestId;
+              whispererDescription = result.userDescription;
+              imageObjectPaths.splice(0, imageObjectPaths.length, ...result.imageObjectPaths);
+            }
             submission = {
               ...submission,
               structureRequestId,
               structurePayload: JSON.stringify({
                 storyId,
                 userDescription:
+                  whispererDescription ||
                   brief ||
                   (imageObjectPaths.length
                     ? 'Analyze the images to create a story'
                     : 'Analyze the audio to create a story'),
                 imageObjectPaths,
                 audioObjectPath,
-                characterIds: selectedCharacterIds.length ? selectedCharacterIds : undefined,
+                characterIds: characterIds.length ? characterIds : undefined,
                 locale,
                 storyPreferences: journey?.preferences,
                 factuality: journey?.mode === 'memory' ? 'memory' : undefined,
                 structureRequestId,
+                ...(whisperer ? { storyWhisperer: true } : {}),
                 ...(questionReferences.length ? { characterReferences: questionReferences } : {}),
               }),
             };
@@ -706,6 +917,7 @@ function Step2Content({
                 jobId: undefined,
                 structureRequestId: undefined,
                 structurePayload: undefined,
+                whispererRetryOf: whisperer ? submission.structureRequestId : undefined,
               },
               templatesEnabled,
             );
@@ -743,7 +955,12 @@ function Step2Content({
         template_id: journey?.templateId ?? undefined,
         question_depth: journey?.answers.length ?? 0,
         time_to_continue_ms: Date.now() - startTime.current,
-        processed_with_genai: !!(brief.trim() || imageObjectPaths.length || audioObjectPath),
+        processed_with_genai: !!(
+          whisperer ||
+          brief.trim() ||
+          imageObjectPaths.length ||
+          audioObjectPath
+        ),
       });
       router.push('/tell-your-story/step-3');
     } catch {
@@ -758,6 +975,26 @@ function Step2Content({
   useEffect(() => {
     continueAfterMedia.current = () => void handleNextStep();
   });
+
+  const whispererContext: WhispererContext = {
+    brief: compileStoryBrief(journey, storyText),
+    imageObjectPaths: [
+      ...new Set([
+        ...uploadedImages.flatMap((image) =>
+          image.status === 'done' && image.objectPath ? [image.objectPath] : [],
+        ),
+        ...questionReferences.map((reference) => reference.imageObjectPath),
+      ]),
+    ],
+    audioObjectPath: uploadedAudio?.status === 'done' ? uploadedAudio.objectPath : undefined,
+    characterIds: selectedCharacterIds,
+  };
+  const hasExistingWhispererInput = !!(
+    whispererContext.brief.trim() ||
+    whispererContext.imageObjectPaths.length ||
+    whispererContext.audioObjectPath ||
+    whispererContext.characterIds.length
+  );
 
   // Re-enter with the latest committed media and text, never the click-time snapshot.
   useEffect(() => {
@@ -981,13 +1218,25 @@ function Step2Content({
                       </p>
                     </div>
                     <div className="flex flex-wrap gap-3">
-                      <button
-                        type="button"
-                        className="btn btn-primary"
-                        onClick={() => setEntryScreen('edit')}
-                      >
-                        {tStoryStepsStep2('resume.continue')}
-                      </button>
+                      {whispererEnabled && resumableWhispererDraft && (
+                        <button
+                          type="button"
+                          className="btn btn-primary"
+                          disabled={whispererRestoring}
+                          onClick={() => void openWhisperer(resumableWhispererDraft)}
+                        >
+                          {tWhisperer('resume')}
+                        </button>
+                      )}
+                      {!onlyInterviewToResume && (
+                        <button
+                          type="button"
+                          className="btn btn-primary"
+                          onClick={() => setEntryScreen('edit')}
+                        >
+                          {tStoryStepsStep2('resume.continue')}
+                        </button>
+                      )}
                       <button
                         type="button"
                         className="btn btn-outline"
@@ -1074,6 +1323,33 @@ function Step2Content({
                     onContinue={() => void handleNextStep()}
                     onPrevious={saveToSession}
                     canContinue={!!journey && canRequestContinue && !isCreatingStory}
+                    whispererEntry={
+                      whispererEnabled && !catalogOpen ? (
+                        <button
+                          type="button"
+                          className={`${styles.previewRow} mb-4`}
+                          disabled={whispererRestoring || isCreatingStory || !templateState.ready}
+                          onClick={() => void openWhisperer()}
+                        >
+                          <Image
+                            src="/Papercut_icons/open-book-with-stars.webp"
+                            alt=""
+                            width={72}
+                            height={72}
+                          />
+                          <span>
+                            <strong>{tWhisperer('title')}</strong>
+                            <span>{tWhisperer('subtitle')}</span>
+                          </span>
+                          <Image
+                            src="/Papercut_icons/select_button.webp"
+                            alt=""
+                            width={40}
+                            height={40}
+                          />
+                        </button>
+                      ) : undefined
+                    }
                   />
                 )}
 
@@ -1100,6 +1376,18 @@ function Step2Content({
                   />
                 )}
 
+                {canRecoverOutline && (
+                  <button
+                    type="button"
+                    className="btn btn-outline"
+                    disabled={isCreatingStory}
+                    onClick={() =>
+                      void handleNextStep(false, pendingOutline?.whisperer, replayOutline)
+                    }
+                  >
+                    {tWhisperer('retryOutline')}
+                  </button>
+                )}
                 {submissionError && (
                   <p role="alert" className="alert alert-error">
                     {submissionError}
@@ -1116,7 +1404,7 @@ function Step2Content({
                       <button
                         type="button"
                         className="btn btn-primary"
-                        onClick={() => void handleNextStep(true)}
+                        onClick={() => void handleNextStep(true, pendingWhispererRebuild.current)}
                       >
                         {tTemplates('confirmRestructure')}
                       </button>
@@ -1180,6 +1468,45 @@ function Step2Content({
           </div>
         </div>
 
+        {whispererOpen && whispererDraftId && userId && (
+          <StoryWhisperer
+            draftId={whispererDraftId}
+            owner={userId}
+            interview={interview}
+            onInterview={(next) => {
+              if (!next) {
+                setRecoveredWhispererInputs(undefined);
+                setResumableWhispererDraft(null);
+                setOnlyInterviewToResume(false);
+                setEntryScreen('edit');
+              }
+              setInterview(next);
+            }}
+            onClose={() => setWhispererOpen(false)}
+            onOtherInputs={() => {
+              setWhispererOpen(false);
+              setEntryScreen('edit');
+            }}
+            onContinue={(draft) => {
+              setWhispererOpen(false);
+              void handleNextStep(false, draft);
+            }}
+            availablePhotos={Math.max(
+              0,
+              3 -
+                new Set([
+                  ...whispererContext.imageObjectPaths,
+                  ...(recoveredWhispererInputs?.imageObjectPaths ?? []),
+                ]).size,
+            )}
+            inputContext={
+              hasExistingWhispererInput && !mediaBusy && !mediaError && fitsBrief(storyText)
+                ? whispererContext
+                : undefined
+            }
+            inputsBlocked={mediaBusy || mediaError || !fitsBrief(storyText)}
+          />
+        )}
         {/* Text Modal - Improved with better text area */}
         {activeModal === 'text' &&
           createPortal(
@@ -1394,6 +1721,7 @@ function Step2Content({
 export default function Step2Client(props: {
   templatesEnabled?: boolean;
   templates?: StoryTemplate[];
+  whispererEnabled?: boolean;
 }) {
   return <Step2Content {...props} />;
 }
