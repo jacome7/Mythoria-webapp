@@ -28,6 +28,13 @@
         "choice3": "J’aimerais raconter une fête de famille",
         "choice4": "J’aimerais imaginer une fête pleine de surprises"
       },
+      "kids": {
+        "question": "Qui aimerais-tu voir au cœur de ton histoire pour enfants ?",
+        "choice1": "Je veux raconter l’histoire d’un enfant que je connais",
+        "choice2": "Je veux inventer un petit héros courageux",
+        "choice3": "Je veux qu’un animal soit le personnage principal",
+        "choice4": "Je veux transformer un moment du quotidien en aventure"
+      },
       "kids_bedtime": {
         "question": "Quelle histoire aimerais-tu raconter à l’heure du coucher ?",
         "choice1": "J’aimerais un conte du soir pour mon enfant",

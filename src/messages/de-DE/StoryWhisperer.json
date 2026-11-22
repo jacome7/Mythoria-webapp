@@ -28,6 +28,13 @@
         "choice3": "Ich möchte von einem Familienfest erzählen",
         "choice4": "Ich möchte mir ein Fest voller Überraschungen ausdenken"
       },
+      "kids": {
+        "question": "Wer soll in deiner Kindergeschichte die Hauptrolle spielen?",
+        "choice1": "Ich möchte von einem Kind erzählen, das ich kenne",
+        "choice2": "Ich möchte eine mutige kleine Hauptfigur erfinden",
+        "choice3": "Ein Tier soll die Hauptrolle spielen",
+        "choice4": "Ich möchte aus einem Alltagsmoment ein Abenteuer machen"
+      },
       "kids_bedtime": {
         "question": "Was für eine Gute-Nacht-Geschichte möchtest du erzählen?",
         "choice1": "Ich möchte eine Geschichte für mein Kind",

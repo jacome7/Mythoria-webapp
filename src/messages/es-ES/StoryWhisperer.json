@@ -28,6 +28,13 @@
         "choice3": "Quiero contar una fiesta familiar",
         "choice4": "Quiero imaginar una fiesta inesperada"
       },
+      "kids": {
+        "question": "¿Quién te gustaría que protagonizara la historia infantil?",
+        "choice1": "Quiero contar una historia sobre alguien pequeño a quien conozco",
+        "choice2": "Quiero inventar un pequeño héroe valiente",
+        "choice3": "Quiero que el protagonista sea un animal",
+        "choice4": "Quiero convertir un momento cotidiano en una aventura"
+      },
       "kids_bedtime": {
         "question": "¿Qué clase de cuento te gustaría contar antes de dormir?",
         "choice1": "Quiero un cuento para dormir personalizado",

@@ -28,6 +28,13 @@
         "choice3": "I want to write about a family party",
         "choice4": "I want to imagine a party with a twist"
       },
+      "kids": {
+        "question": "Who would you like to be at the center of your children’s story?",
+        "choice1": "I want to tell a story about a child I know",
+        "choice2": "I want to invent a brave little hero",
+        "choice3": "I want an animal to be the main character",
+        "choice4": "I want to turn an everyday moment into an adventure"
+      },
       "kids_bedtime": {
         "question": "What kind of bedtime story would you like to tell?",
         "choice1": "I want my child to star in a cozy story",
