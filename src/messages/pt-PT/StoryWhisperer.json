@@ -112,6 +112,13 @@
         "choice3": "Quero contar como alguém me deu espaço",
         "choice4": "Quero partilhar o que entusiasma a personagem"
       },
+      "christmas": {
+        "question": "Que história de Natal gostarias de contar?",
+        "choice1": "Quero recordar uma tradição de Natal",
+        "choice2": "Quero contar a história de um presente inesperado",
+        "choice3": "Quero reunir a família",
+        "choice4": "Quero inventar uma aventura de Natal"
+      },
       "holidays_festivals": {
         "question": "Que festa ou tradição queres trazer à vida?",
         "choice1": "Quero contar a história de uma tradição nossa",

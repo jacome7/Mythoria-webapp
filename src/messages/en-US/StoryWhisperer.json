@@ -112,6 +112,13 @@
         "choice3": "I want to tell how someone made room for me",
         "choice4": "I want to share an interest my character loves"
       },
+      "christmas": {
+        "question": "What Christmas story would you like to tell?",
+        "choice1": "I want to remember a Christmas tradition",
+        "choice2": "I want to tell the story of an unexpected gift",
+        "choice3": "I want to bring the family together",
+        "choice4": "I want to invent a Christmas adventure"
+      },
       "holidays_festivals": {
         "question": "Which holiday or festival would you like to bring to life?",
         "choice1": "I want to tell the story of our tradition",

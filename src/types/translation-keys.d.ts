@@ -1,5 +1,5 @@
 // AUTO-GENERATED FILE. Run: npm run i18n:keys
-// Total keys: 3244
+// Total keys: 3249
 export type TranslationKey =
   | 'AIImageEditor.buttons.applyPhoto'
   | 'AIImageEditor.cancelButton'
@@ -2394,6 +2394,11 @@ export type TranslationKey =
   | 'StoryWhisperer.openings.amusement_parks.choice3'
   | 'StoryWhisperer.openings.amusement_parks.choice4'
   | 'StoryWhisperer.openings.amusement_parks.question'
+  | 'StoryWhisperer.openings.christmas.choice1'
+  | 'StoryWhisperer.openings.christmas.choice2'
+  | 'StoryWhisperer.openings.christmas.choice3'
+  | 'StoryWhisperer.openings.christmas.choice4'
+  | 'StoryWhisperer.openings.christmas.question'
   | 'StoryWhisperer.openings.family_travels.choice1'
   | 'StoryWhisperer.openings.family_travels.choice2'
   | 'StoryWhisperer.openings.family_travels.choice3'

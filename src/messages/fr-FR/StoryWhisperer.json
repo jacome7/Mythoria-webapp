@@ -112,6 +112,13 @@
         "choice3": "J’aimerais raconter comment on m’a fait une place",
         "choice4": "J’aimerais partager ce qui passionne mon personnage"
       },
+      "christmas": {
+        "question": "Quelle histoire de Noël aimerais-tu raconter ?",
+        "choice1": "Je veux me souvenir d’une tradition de Noël",
+        "choice2": "Je veux raconter l’histoire d’un cadeau inattendu",
+        "choice3": "Je veux réunir la famille",
+        "choice4": "Je veux inventer une aventure de Noël"
+      },
       "holidays_festivals": {
         "question": "Quelle fête ou quel festival aimerais-tu faire vivre dans ton histoire ?",
         "choice1": "J’aimerais raconter une tradition de chez nous",

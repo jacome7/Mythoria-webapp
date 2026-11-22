@@ -112,6 +112,13 @@
         "choice3": "Ich möchte erzählen, wie mir jemand Raum gegeben hat",
         "choice4": "Ich möchte zeigen, wofür sich meine Figur begeistert"
       },
+      "christmas": {
+        "question": "Welche Weihnachtsgeschichte möchtest du erzählen?",
+        "choice1": "Ich möchte mich an eine Weihnachtstradition erinnern",
+        "choice2": "Ich möchte von einem unerwarteten Geschenk erzählen",
+        "choice3": "Ich möchte die Familie zusammenbringen",
+        "choice4": "Ich möchte ein Weihnachtsabenteuer erfinden"
+      },
       "holidays_festivals": {
         "question": "Welches Fest möchtest du in deiner Geschichte zum Leben erwecken?",
         "choice1": "Ich möchte die Geschichte unseres Brauchs erzählen",
