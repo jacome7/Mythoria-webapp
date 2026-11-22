@@ -1,9 +1,10 @@
 'use client';
 
 import Image from 'next/image';
-import { AnimatePresence, motion, useInView, useReducedMotion } from 'motion/react';
+import { AnimatePresence, motion, useInView } from 'motion/react';
 import { useEffect, useRef, useState } from 'react';
 import type { ResolvedAsset } from './heroManifest';
+import { usePrefersReducedMotion } from './usePrefersReducedMotion';
 
 /** Slide-in from the right, in seconds. */
 const ENTER_S = 0.6;
@@ -73,7 +74,7 @@ export default function PersonCarousel({
   alt: string;
   holdMs?: number;
 }) {
-  const reduced = useReducedMotion();
+  const reduced = usePrefersReducedMotion();
   const ref = useRef<HTMLDivElement>(null);
   const inView = useInView(ref, { amount: 0.25 });
   const pageVisible = usePageVisible();

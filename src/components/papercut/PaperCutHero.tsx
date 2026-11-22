@@ -5,7 +5,6 @@ import { useScroll, useTransform } from 'motion/react';
 import { useAuth } from '@clerk/nextjs';
 import { useLocale, useTranslations } from 'next-intl';
 import { useIntentContext } from '@/hooks/useIntentContext';
-import { useIntentOverride } from '@/hooks/useIntentOverride';
 import ArtDirectedImage from './ArtDirectedImage';
 import FeatureCard from './FeatureCard';
 import PaperCutLayer from './PaperCutLayer';
@@ -14,8 +13,6 @@ import PersonCarousel from './PersonCarousel';
 import { resolveAsset, resolvePersons, type HeroStyleId } from './heroManifest';
 import { resolveComposition } from './registry';
 import { buildHeroCtaHref } from './cta';
-import type { IntentContext } from '@/types/intent-context';
-import type { StoryIntent } from '@/constants/intents';
 import type {
   DecorSlot,
   DecorTuning,
@@ -136,7 +133,7 @@ function buildDecorLayer(style: HeroStyleId, slot: DecorSlot, tuning?: DecorTuni
 
 /**
  * The paper-cut storytelling hero. Picks a style composition from the
- * visitor's intent (defaults to kids_fantasy), then renders one shared
+ * visitor's intent (defaults to Kids Fantasy), then renders one shared
  * skeleton:
  *   1. sky band — cloud/sky decor pairs + sparkles behind the headline,
  *      subtitle and CTA (all copy from the style's translation namespace)
@@ -147,27 +144,12 @@ function buildDecorLayer(style: HeroStyleId, slot: DecorSlot, tuning?: DecorTuni
  * Rendered full-bleed (outside the page container). All internal z-indices are
  * < 50 so the sticky frosted header always stays on top.
  */
-interface PaperCutHeroProps {
-  initialIntentOverride?: StoryIntent | null;
-  initialIntentContext?: IntentContext | null;
-}
-
-export default function PaperCutHero({
-  initialIntentOverride = null,
-  initialIntentContext = null,
-}: PaperCutHeroProps) {
+export default function PaperCutHero() {
   const t = useTranslations('HomePage');
   const locale = useLocale();
   const { isSignedIn } = useAuth();
   const intentContext = useIntentContext();
-  const intentOverride = useIntentOverride();
-  // Precedence: ?intent= query param > intent cookie > default composition.
-  const composition: HeroComposition = resolveComposition(
-    intentOverride ??
-      initialIntentOverride ??
-      intentContext?.intent ??
-      initialIntentContext?.intent,
-  );
+  const composition: HeroComposition = resolveComposition(intentContext?.intent);
   const style = composition.id;
   const ns = composition.textNamespace;
   const ctaHref = buildHeroCtaHref({
@@ -236,11 +218,11 @@ export default function PaperCutHero({
   return (
     <section className={heroClassName}>
       {/* Sky band + headline / CTA */}
-      <div className="relative overflow-hidden px-4 pt-10 pb-1 sm:pt-12 sm:pb-4 lg:pt-8">
+      <div className="pc-hero-sky relative overflow-hidden px-4 pt-10 pb-1 sm:pt-12 sm:pb-4 lg:pt-8">
         {decorLayers.map((layer) => (
           <PaperCutLayer key={layer.id} layer={layer} alt="" scrollYProgress={scrollYProgress} />
         ))}
-        <div className="relative z-30 mx-auto max-w-[23rem] pt-28 text-center sm:max-w-[28rem] sm:pt-32 md:max-w-2xl lg:pt-16">
+        <div className="pc-hero-copy relative z-30 mx-auto max-w-[23rem] pt-28 text-center sm:max-w-[28rem] sm:pt-32 md:max-w-2xl lg:pt-16">
           <h1 className="font-display text-[2.65rem] leading-[1.02] font-bold text-[color:var(--pc-navy)] sm:text-5xl md:text-6xl">
             {tr('headline')}
           </h1>
@@ -278,7 +260,7 @@ export default function PaperCutHero({
         <div className="pc-layer pc-anchor-bottom pc-center pc-shadow-front" style={personStyle}>
           <PersonCarousel
             persons={persons}
-            alt={tr('alt.person')}
+            alt={composition.personAltKey ? t(composition.personAltKey) : tr('alt.person')}
             holdMs={composition.personHoldMs}
           />
         </div>

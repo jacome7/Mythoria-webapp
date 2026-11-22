@@ -657,3 +657,25 @@
     display: none;
   }
 }
+
+:global([data-website-theme='christmas']) .scope {
+  --pc-app-paper: #fff7e9;
+  --pc-app-paper-deep: #f1e4ce;
+  --pc-app-card-top: #fffaf1;
+  --pc-app-card-bottom: #f4e5cc;
+  --pc-app-blue-top: #edf4f4;
+  --pc-app-blue-bottom: #cbdfe1;
+}
+
+:global([data-website-theme='christmas']) .scope::before,
+:global([data-website-theme='christmas']) .scope::after {
+  clip-path: none;
+  border-radius: 0;
+  box-shadow: none;
+  background: url('/homepage/christmas/sparkle_a.webp') center / contain no-repeat;
+}
+
+:global([data-website-theme='christmas']) .scope::after {
+  background-image: url('/homepage/christmas/sky_right.webp');
+  opacity: 0.25;
+}

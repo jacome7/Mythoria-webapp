@@ -12,14 +12,9 @@ import HomepageCta from '@/components/HomepageCta';
 import ScrollFadeIn from '@/components/ScrollFadeIn';
 import PaperCutHero from '@/components/papercut/PaperCutHero';
 import HomepageBookGallery from '@/components/HomepageBookGallery';
-import type { IntentContext } from '@/types/intent-context';
-import type { StoryIntent } from '@/constants/intents';
 
 interface HomePageClientProps {
   storyTemplatesEnabled?: boolean;
-  initialHeroIntentOverride?: StoryIntent | null;
-  initialIntentContext?: IntentContext | null;
-  intentOverrideActive?: boolean;
   homepageGuides?: Array<{
     href: string;
     title: string;
@@ -28,9 +23,6 @@ interface HomePageClientProps {
 }
 
 export default function HomePageClient({
-  initialHeroIntentOverride = null,
-  initialIntentContext = null,
-  intentOverrideActive = false,
   homepageGuides = [],
   storyTemplatesEnabled = false,
 }: HomePageClientProps) {
@@ -39,15 +31,8 @@ export default function HomePageClient({
 
   return (
     <div className="homepage-paper-bg min-h-screen text-base-content">
-      <PaperCutHero
-        initialIntentOverride={initialHeroIntentOverride}
-        initialIntentContext={initialIntentContext}
-      />
-      <HomepageBookGallery
-        storyTemplatesEnabled={storyTemplatesEnabled}
-        initialIntentContext={initialIntentContext}
-        intentOverrideActive={intentOverrideActive}
-      />
+      <PaperCutHero />
+      <HomepageBookGallery storyTemplatesEnabled={storyTemplatesEnabled} />
       <div className="container mx-auto px-4 py-4">
         {/* Audience Sections */}
         <ScrollFadeIn threshold={0.1} rootMargin="0px 0px -20px 0px">

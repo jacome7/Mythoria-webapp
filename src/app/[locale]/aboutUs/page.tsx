@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
+import ThemedArtwork from '@/components/ThemedArtwork';
 import { useTranslations } from 'next-intl';
 import { Link } from '@/i18n/routing';
 import ScrollFadeIn from '@/components/ScrollFadeIn';
@@ -29,7 +30,7 @@ export default function AboutUsPage() {
         {/* Hero Section */}
         <ScrollFadeIn>
           <header className={`${styles.hero} my-4`}>
-            <Image
+            <ThemedArtwork
               src={homepageAsset('sparkle_a.webp')}
               alt=""
               width={128}
@@ -37,7 +38,7 @@ export default function AboutUsPage() {
               className={styles.heroStarLeft}
               aria-hidden="true"
             />
-            <Image
+            <ThemedArtwork
               src={homepageAsset('sparkle_b.webp')}
               alt=""
               width={128}
@@ -45,7 +46,7 @@ export default function AboutUsPage() {
               className={styles.heroStarRight}
               aria-hidden="true"
             />
-            <Image
+            <ThemedArtwork
               src={homepageAsset('cloud_small.webp')}
               alt=""
               width={200}
@@ -422,7 +423,7 @@ export default function AboutUsPage() {
         <ScrollFadeIn delay={200}>
           <section className="my-16 text-center">
             <div className={styles.closingCard}>
-              <Image
+              <ThemedArtwork
                 src={homepageAsset('sparkle_c.webp')}
                 alt=""
                 width={128}

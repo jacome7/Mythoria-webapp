@@ -498,3 +498,18 @@
     height: 3rem;
   }
 }
+
+:global([data-website-theme='christmas']) .section {
+  --gallery-paper: #fff7e9;
+  --gallery-paper-deep: #f2e6d2;
+}
+:global([data-website-theme='christmas']) .section::before,
+:global([data-website-theme='christmas']) .section::after {
+  background: url('/homepage/christmas/sparkle_c.webp') center / contain no-repeat;
+  clip-path: none;
+  box-shadow: none;
+  border-radius: 0;
+}
+:global([data-website-theme='christmas']) .section::after {
+  background-image: url('/homepage/christmas/cta_decor_right.webp');
+}

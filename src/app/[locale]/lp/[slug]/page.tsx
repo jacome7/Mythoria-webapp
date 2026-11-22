@@ -5,11 +5,13 @@ import LandingPageTemplate from '@/components/landing-pages/LandingPageTemplate'
 import {
   getLandingPage,
   getLandingPageBySlug,
+  getLandingPageIntentContext,
   getLandingPageStaticParams,
   getLandingPageTranslations,
 } from '@/content/landing-pages';
 import { routing } from '@/i18n/routing';
 import { buildAbsoluteUrl, buildLocalizedPath, buildLocalizedUrl } from '@/lib/seo';
+import { LandingPageIntentEntry } from '@/hooks/useHomepageTheme';
 
 interface LandingPageRouteProps {
   params: Promise<{
@@ -96,5 +98,14 @@ export default async function LandingPageRoute({ params }: LandingPageRouteProps
     notFound();
   }
 
-  return <LandingPageTemplate page={page} />;
+  return (
+    <>
+      <LandingPageIntentEntry
+        locale={locale}
+        slug={slug}
+        landingContext={getLandingPageIntentContext(locale, slug)}
+      />
+      <LandingPageTemplate page={page} />
+    </>
+  );
 }

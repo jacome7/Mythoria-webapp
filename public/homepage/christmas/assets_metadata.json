@@ -1,0 +1,568 @@
+{
+  "schemaVersion": 2,
+  "styleId": "christmas",
+  "heroSlots": {
+    "required": [
+      "cloud_left",
+      "cloud_right",
+      "sky_left",
+      "sky_right",
+      "sparkles",
+      "background",
+      "foreground",
+      "person1",
+      "icon1",
+      "icon2",
+      "icon3"
+    ]
+  },
+  "assets": [
+    {
+      "file": "sky_left.webp",
+      "slot": "sky_left",
+      "dimensions": {
+        "w": 300,
+        "h": 465
+      },
+      "status": "final"
+    },
+    {
+      "file": "sky_right.webp",
+      "slot": "sky_right",
+      "dimensions": {
+        "w": 381,
+        "h": 418
+      },
+      "status": "final"
+    },
+    {
+      "file": "cloud_left.webp",
+      "slot": "cloud_left",
+      "dimensions": {
+        "w": 460,
+        "h": 350
+      },
+      "status": "final"
+    },
+    {
+      "file": "cloud_right.webp",
+      "slot": "cloud_right",
+      "dimensions": {
+        "w": 489,
+        "h": 317
+      },
+      "status": "final"
+    },
+    {
+      "file": "sparkles.webp",
+      "slot": "sparkles",
+      "dimensions": {
+        "w": 328,
+        "h": 318
+      },
+      "status": "final"
+    },
+    {
+      "file": "background_laptop.webp",
+      "slot": "background",
+      "device": "laptop",
+      "dimensions": {
+        "w": 3840,
+        "h": 2160
+      },
+      "status": "final"
+    },
+    {
+      "file": "background_mobile.webp",
+      "slot": "background",
+      "device": "mobile",
+      "dimensions": {
+        "w": 3840,
+        "h": 2160
+      },
+      "status": "final"
+    },
+    {
+      "file": "foreground_laptop.webp",
+      "slot": "foreground",
+      "device": "laptop",
+      "dimensions": {
+        "w": 1920,
+        "h": 1072
+      },
+      "status": "final"
+    },
+    {
+      "file": "foreground_mobile.webp",
+      "slot": "foreground",
+      "device": "mobile",
+      "dimensions": {
+        "w": 1080,
+        "h": 1072
+      },
+      "status": "final"
+    },
+    {
+      "file": "person1_en-US.webp",
+      "slot": "person1",
+      "locale": "en-US",
+      "dimensions": {
+        "w": 665,
+        "h": 1024
+      },
+      "status": "final"
+    },
+    {
+      "file": "person1_es-ES.webp",
+      "slot": "person1",
+      "locale": "es-ES",
+      "dimensions": {
+        "w": 572,
+        "h": 1024
+      },
+      "status": "final"
+    },
+    {
+      "file": "person1_fr-FR.webp",
+      "slot": "person1",
+      "locale": "fr-FR",
+      "dimensions": {
+        "w": 572,
+        "h": 1024
+      },
+      "status": "final"
+    },
+    {
+      "file": "person1_pt-PT.webp",
+      "slot": "person1",
+      "locale": "pt-PT",
+      "dimensions": {
+        "w": 461,
+        "h": 717
+      },
+      "status": "final"
+    },
+    {
+      "file": "person2_en-US.webp",
+      "slot": "person2",
+      "locale": "en-US",
+      "dimensions": {
+        "w": 572,
+        "h": 1024
+      },
+      "status": "final"
+    },
+    {
+      "file": "person2_es-ES.webp",
+      "slot": "person2",
+      "locale": "es-ES",
+      "dimensions": {
+        "w": 572,
+        "h": 1024
+      },
+      "status": "final"
+    },
+    {
+      "file": "person2_fr-FR.webp",
+      "slot": "person2",
+      "locale": "fr-FR",
+      "dimensions": {
+        "w": 572,
+        "h": 1024
+      },
+      "status": "final"
+    },
+    {
+      "file": "person2_pt-PT.webp",
+      "slot": "person2",
+      "locale": "pt-PT",
+      "dimensions": {
+        "w": 572,
+        "h": 1024
+      },
+      "status": "final"
+    },
+    {
+      "file": "person3_pt-PT.webp",
+      "slot": "person3",
+      "locale": "pt-PT",
+      "dimensions": {
+        "w": 540,
+        "h": 717
+      },
+      "status": "final"
+    },
+    {
+      "file": "person3_en-US.webp",
+      "slot": "person3",
+      "locale": "en-US",
+      "dimensions": {
+        "w": 539,
+        "h": 717
+      },
+      "status": "final"
+    },
+    {
+      "file": "person3_es-ES.webp",
+      "slot": "person3",
+      "locale": "es-ES",
+      "dimensions": {
+        "w": 539,
+        "h": 717
+      },
+      "status": "final"
+    },
+    {
+      "file": "person4_en-US.webp",
+      "slot": "person4",
+      "locale": "en-US",
+      "dimensions": {
+        "w": 607,
+        "h": 750
+      },
+      "status": "final"
+    },
+    {
+      "file": "person4_es-ES.webp",
+      "slot": "person4",
+      "locale": "es-ES",
+      "dimensions": {
+        "w": 606,
+        "h": 750
+      },
+      "status": "final"
+    },
+    {
+      "file": "person4_fr-FR.webp",
+      "slot": "person4",
+      "locale": "fr-FR",
+      "dimensions": {
+        "w": 606,
+        "h": 750
+      },
+      "status": "final"
+    },
+    {
+      "file": "person4_pt-PT.webp",
+      "slot": "person4",
+      "locale": "pt-PT",
+      "dimensions": {
+        "w": 606,
+        "h": 750
+      },
+      "status": "final"
+    },
+    {
+      "file": "icon1.webp",
+      "slot": "icon1",
+      "dimensions": {
+        "w": 160,
+        "h": 135
+      },
+      "status": "final"
+    },
+    {
+      "file": "icon2.webp",
+      "slot": "icon2",
+      "dimensions": {
+        "w": 160,
+        "h": 136
+      },
+      "status": "final"
+    },
+    {
+      "file": "icon3.webp",
+      "slot": "icon3",
+      "dimensions": {
+        "w": 160,
+        "h": 119
+      },
+      "status": "final"
+    },
+    {
+      "file": "button.webp",
+      "slot": "header_button",
+      "dimensions": {
+        "w": 512,
+        "h": 136
+      },
+      "status": "final"
+    },
+    {
+      "file": "footer.webp",
+      "slot": "footer_bg",
+      "dimensions": {
+        "w": 1920,
+        "h": 373
+      },
+      "status": "final"
+    },
+    {
+      "file": "sparkle_a.webp",
+      "slot": "sparkle_a",
+      "dimensions": {
+        "w": 128,
+        "h": 134
+      },
+      "status": "final"
+    },
+    {
+      "file": "sparkle_b.webp",
+      "slot": "sparkle_b",
+      "dimensions": {
+        "w": 128,
+        "h": 136
+      },
+      "status": "final"
+    },
+    {
+      "file": "sparkle_c.webp",
+      "slot": "sparkle_c",
+      "dimensions": {
+        "w": 128,
+        "h": 127
+      },
+      "status": "final"
+    },
+    {
+      "file": "sparkle_round.webp",
+      "slot": "sparkle_round",
+      "dimensions": {
+        "w": 90,
+        "h": 92
+      },
+      "status": "final"
+    },
+    {
+      "file": "cloud_small.webp",
+      "slot": "cloud_small",
+      "dimensions": {
+        "w": 200,
+        "h": 135
+      },
+      "status": "final"
+    },
+    {
+      "file": "cta_decor_left.webp",
+      "slot": "cta_decor_left",
+      "dimensions": {
+        "w": 256,
+        "h": 275
+      },
+      "status": "final"
+    },
+    {
+      "file": "cta_decor_right.webp",
+      "slot": "cta_decor_right",
+      "dimensions": {
+        "w": 256,
+        "h": 316
+      },
+      "status": "final"
+    },
+    {
+      "file": "number_of_stories_icon.webp",
+      "slot": "stories_counter_icon",
+      "dimensions": {
+        "w": 128,
+        "h": 163
+      },
+      "status": "final"
+    },
+    {
+      "file": "howitworks_step1_icon.webp",
+      "slot": "howitworks_step1",
+      "dimensions": {
+        "w": 234,
+        "h": 268
+      },
+      "status": "final"
+    },
+    {
+      "file": "howitworks_step2_icon.webp",
+      "slot": "howitworks_step2",
+      "dimensions": {
+        "w": 292,
+        "h": 243
+      },
+      "status": "final"
+    },
+    {
+      "file": "howitworks_step3_icon.webp",
+      "slot": "howitworks_step3",
+      "dimensions": {
+        "w": 237,
+        "h": 252
+      },
+      "status": "final"
+    },
+    {
+      "file": "howitworks_step4_icon.webp",
+      "slot": "howitworks_step4",
+      "dimensions": {
+        "w": 293,
+        "h": 286
+      },
+      "status": "final"
+    },
+    {
+      "file": "howitworks_step5_icon.webp",
+      "slot": "howitworks_step5",
+      "dimensions": {
+        "w": 267,
+        "h": 235
+      },
+      "status": "final"
+    },
+    {
+      "file": "howitworks_step6_icon.webp",
+      "slot": "howitworks_step6",
+      "dimensions": {
+        "w": 207,
+        "h": 242
+      },
+      "status": "final"
+    },
+    {
+      "file": "highlights_your_own_story_icon.webp",
+      "slot": "highlights_your_own_story",
+      "dimensions": {
+        "w": 160,
+        "h": 201
+      },
+      "status": "final"
+    },
+    {
+      "file": "highlights_from_idea_to_book_icon.webp",
+      "slot": "highlights_from_idea_to_book",
+      "dimensions": {
+        "w": 160,
+        "h": 207
+      },
+      "status": "final"
+    },
+    {
+      "file": "highlights_full_story_editing_icon.webp",
+      "slot": "highlights_full_story_editing",
+      "dimensions": {
+        "w": 160,
+        "h": 206
+      },
+      "status": "final"
+    },
+    {
+      "file": "highlights_gentle_credit_system_icon.webp",
+      "slot": "highlights_gentle_credit_system",
+      "dimensions": {
+        "w": 160,
+        "h": 168
+      },
+      "status": "final"
+    },
+    {
+      "file": "highlights_inspiration_on_tap_icon.webp",
+      "slot": "highlights_inspiration_on_tap",
+      "dimensions": {
+        "w": 140,
+        "h": 238
+      },
+      "status": "final"
+    },
+    {
+      "file": "highlights_made_for_every_audience_icon.webp",
+      "slot": "highlights_made_for_every_audience",
+      "dimensions": {
+        "w": 160,
+        "h": 148
+      },
+      "status": "final"
+    },
+    {
+      "file": "highlights_multiple_art_styles_icon.webp",
+      "slot": "highlights_multiple_art_styles",
+      "dimensions": {
+        "w": 160,
+        "h": 200
+      },
+      "status": "final"
+    },
+    {
+      "file": "highlights_private_by_default_icon.webp",
+      "slot": "highlights_private_by_default",
+      "dimensions": {
+        "w": 160,
+        "h": 226
+      },
+      "status": "final"
+    },
+    {
+      "file": "highlights_add_your_own_photos_icon.webp",
+      "slot": "highlights_add_your_own_photos",
+      "dimensions": {
+        "w": 278,
+        "h": 290
+      },
+      "status": "final"
+    },
+    {
+      "file": "person1_de-DE.webp",
+      "slot": "person1",
+      "locale": "de-DE",
+      "dimensions": {
+        "w": 665,
+        "h": 1024
+      },
+      "status": "final"
+    },
+    {
+      "file": "person2_de-DE.webp",
+      "slot": "person2",
+      "locale": "de-DE",
+      "dimensions": {
+        "w": 572,
+        "h": 1024
+      },
+      "status": "final"
+    },
+    {
+      "file": "person3_de-DE.webp",
+      "slot": "person3",
+      "locale": "de-DE",
+      "dimensions": {
+        "w": 539,
+        "h": 717
+      },
+      "status": "final"
+    },
+    {
+      "file": "person3_fr-FR.webp",
+      "slot": "person3",
+      "locale": "fr-FR",
+      "dimensions": {
+        "w": 539,
+        "h": 717
+      },
+      "status": "final"
+    },
+    {
+      "file": "person4_de-DE.webp",
+      "slot": "person4",
+      "locale": "de-DE",
+      "dimensions": {
+        "w": 607,
+        "h": 750
+      },
+      "status": "final"
+    },
+    {
+      "file": "footer_mobile.webp",
+      "slot": "footer_bg",
+      "device": "mobile",
+      "dimensions": {
+        "w": 780,
+        "h": 520
+      },
+      "status": "final"
+    }
+  ]
+}

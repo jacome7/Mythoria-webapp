@@ -49,7 +49,7 @@ export const workshopsChildrenLandingPage: LandingPageContent = {
       alt: '',
     },
     professionalPanel: {
-      src: `${iconBase}/fa-heart-business-family-papercut.png`,
+      src: `${iconBase}/fa-heart-business-family-papercut.webp`,
       alt: '',
     },
     formats: [
@@ -357,7 +357,7 @@ export const workshopsChildrenLandingPage: LandingPageContent = {
         {
           title: 'Boa para partilha familiar',
           body: 'A história pode incluir pais, avós, irmãos, amigos ou animais de estimação.',
-          iconSrc: `${iconBase}/fa-heart-business-family-papercut.png`,
+          iconSrc: `${iconBase}/fa-heart-business-family-papercut.webp`,
           iconAlt: 'Ícone papercut de coração familiar',
         },
         {

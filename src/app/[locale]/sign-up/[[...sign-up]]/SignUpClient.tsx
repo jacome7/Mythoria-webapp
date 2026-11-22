@@ -3,6 +3,7 @@
 import { SignUp } from '@clerk/nextjs';
 import { useSearchParams } from 'next/navigation';
 import Image from 'next/image';
+import ThemedArtwork from '@/components/ThemedArtwork';
 import { useCallback, useMemo, useRef } from 'react';
 import type { LeadSessionData } from '@/types/lead';
 import { formatPhoneNumberForClerk } from '@/utils/phone-number';
@@ -41,7 +42,7 @@ function withoutLeadingEmoji(text: string) {
 function FeatureRow({ icon, text }: { icon: string; text: string }) {
   return (
     <p className="flex items-center justify-center gap-2">
-      <Image
+      <ThemedArtwork
         src={icon}
         alt=""
         width={24}

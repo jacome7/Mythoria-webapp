@@ -1,16 +1,10 @@
 'use client';
 
 import Image from 'next/image';
-import {
-  motion,
-  useMotionValue,
-  useReducedMotion,
-  useSpring,
-  useTransform,
-  type MotionValue,
-} from 'motion/react';
+import { motion, useMotionValue, useSpring, useTransform, type MotionValue } from 'motion/react';
 import type { CSSProperties, ReactNode } from 'react';
 import type { PaperCutLayerConfig, StyleVars } from './types';
+import { usePrefersReducedMotion } from './usePrefersReducedMotion';
 
 /**
  * Approximate `sizes` for the optimizer. The stage spans ~100vw, so a layer's
@@ -51,13 +45,12 @@ interface PaperCutLayerProps {
  * uses transform + opacity only (compositor-thread → 60fps).
  *
  * Accessibility: under `prefers-reduced-motion` both wrappers are skipped (the
- * CSS idle loop is also disabled in globals.css), so the scene renders fully
- * static. The `priority` image (LCP) never gets the enter fade so it paints
- * immediately.
+ * CSS neutralizes them before hydration), so the scene renders fully static.
+ * The `priority` image (LCP) never gets the enter fade so it paints immediately.
  */
 export default function PaperCutLayer({ layer, alt, scrollYProgress }: PaperCutLayerProps) {
   const { base, md, lg } = layer;
-  const prefersReduced = useReducedMotion();
+  const prefersReduced = usePrefersReducedMotion();
   const allowMotion = !prefersReduced;
 
   // --- Scroll-linked parallax MotionValues -----------------------------------
@@ -128,6 +121,7 @@ export default function PaperCutLayer({ layer, alt, scrollYProgress }: PaperCutL
     const e = layer.enter;
     content = (
       <motion.div
+        className="pc-motion-layer"
         initial={{
           opacity: e.fromOpacity ?? 0,
           x: e.fromX ?? 0,
@@ -162,7 +156,11 @@ export default function PaperCutLayer({ layer, alt, scrollYProgress }: PaperCutL
       else parallaxStyle.y = shift;
     }
     if (p.fadeOut) parallaxStyle.opacity = scrollFade;
-    content = <motion.div style={parallaxStyle}>{content}</motion.div>;
+    content = (
+      <motion.div className="pc-motion-layer" style={parallaxStyle}>
+        {content}
+      </motion.div>
+    );
   }
 
   return (

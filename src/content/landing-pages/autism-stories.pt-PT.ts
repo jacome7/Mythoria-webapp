@@ -48,7 +48,7 @@ export const autismStoriesLandingPage: LandingPageContent = {
       alt: '',
     },
     professionalPanel: {
-      src: `${iconBase}/fa-heart-business-family-papercut.png`,
+      src: `${iconBase}/fa-heart-business-family-papercut.webp`,
       alt: '',
     },
     safetyNote: {

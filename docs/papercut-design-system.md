@@ -21,9 +21,9 @@ typography, layering rules, animation, and **how to author a new composition**.
 - **One skeleton, many styles.** The hero renderer owns a single canonical
   layout; a "composition" is a style variant that fills the same named slots
   with its own artwork, palette and copy. The style shown adapts to the
-  visitor's intent (see the [intent feature](./features/homepage.md)) —
-  `kids_fantasy` is the default; `sports_teams`, `romance`, and
-  `grandparents` are live variants.
+  visitor's intent. `kids_fantasy` is the default. Valid intents use their own
+  hero composition when one exists, including the explicit `christmas` intent.
+  [Intent-based personalization](./features/homepage.md)
 - **A real person holding a real book, always.** The center of every style is a
   photographic person (or couple/animal) holding a physical Mythoria book — the
   "human feeling" anchor and the product shot. Everything around them is paper.
@@ -248,7 +248,7 @@ Keyframes live in `globals.css` alongside the existing `fade-in`.
    placement nudges), optional `person` band geometry, `ctaPath`.
 
 5. **Register it** in `src/components/papercut/registry.ts` — map the relevant
-   intent(s) (and/or `default`) to the new composition. One line.
+   intent to the new composition.
 
 6. **Add copy** keys under `intents.<id>.hero` in `src/messages/en-US/HomePage.json`
    (`headline`, `subtitle`, `subtitleEmphasized`, `cta`, `alt.person`,
@@ -273,6 +273,6 @@ The renderer (`PaperCutHero` / `PaperCutLayer` / `PersonCarousel` /
 - Font: `src/app/layout.tsx` (Fraunces → `--font-display`)
 - Assets: `public/homepage/<styleId>/` (slot-named; `assets_metadata.json` + `MISSING_ASSETS.md` in each folder)
 - Asset validation: `scripts/check-homepage-assets.ts` (`npm run homepage:assets`)
-- Section asset helper: `src/constants/homepageAssets.ts` (`HOMEPAGE_ASSET_BASE`, `homepageAsset()` — sections below the hero, always kids_fantasy chrome)
-- Intent override: `src/hooks/useIntentOverride.ts` (`?intent=` query param, reads `window.location.search` in `useEffect`)
+- Section asset helper: `src/constants/homepageAssets.ts` (shared paper-cut artwork for both site themes)
+- Theme and intent context: `src/hooks/useHomepageTheme.tsx` (sitewide palette and homepage query/cookie precedence)
 - Mount point: `src/app/[locale]/page.tsx`

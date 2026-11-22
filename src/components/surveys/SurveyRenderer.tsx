@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import type { FormEvent } from 'react';
 import Image from 'next/image';
+import ThemedArtwork from '@/components/ThemedArtwork';
 import { useLocale, useTranslations } from 'next-intl';
 import { ArrowLeft, ArrowRight, Clock3, Gift, Send } from 'lucide-react';
 import {
@@ -559,7 +560,7 @@ export default function SurveyRenderer({
     return (
       <div className="mx-auto w-full max-w-2xl px-4 py-8">
         <div className="rounded-box border border-base-300 bg-base-100 px-6 py-8 text-center shadow-sm sm:px-12 sm:py-10">
-          <Image
+          <ThemedArtwork
             src="/Papercut_icons/open-book-with-stars.webp"
             alt=""
             width={512}

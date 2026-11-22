@@ -1,6 +1,7 @@
 'use client';
 
 import Image from 'next/image';
+import ThemedArtwork from '@/components/ThemedArtwork';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useLocale, useTranslations } from 'next-intl';
@@ -51,7 +52,7 @@ const Footer = () => {
 
   return (
     <footer className={styles.footer}>
-      <Image
+      <ThemedArtwork
         src={homepageAsset('footer.webp')}
         alt=""
         width={1920}

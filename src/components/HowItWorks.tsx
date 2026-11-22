@@ -1,6 +1,6 @@
 'use client';
 
-import Image from 'next/image';
+import ThemedArtwork from '@/components/ThemedArtwork';
 import type { CSSProperties } from 'react';
 import { useTranslations } from 'next-intl';
 import ScrollFadeIn from './ScrollFadeIn';
@@ -149,7 +149,7 @@ export default function HowItWorks() {
                 >
                   <article className={styles.stepCard} style={style}>
                     <div className={styles.iconStage} aria-hidden="true">
-                      <Image
+                      <ThemedArtwork
                         src={step.icon}
                         alt=""
                         width={step.width}

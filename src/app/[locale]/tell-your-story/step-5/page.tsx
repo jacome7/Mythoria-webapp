@@ -4,7 +4,7 @@ import { Show, RedirectToSignIn, useAuth } from '@clerk/nextjs';
 import { useState, useEffect, Suspense, useRef } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { useLocale, useTranslations } from 'next-intl';
-import Image from 'next/image';
+import ThemedArtwork from '@/components/ThemedArtwork';
 import StepNavigation from '@/components/StepNavigation';
 import ProgressIndicator from '@/components/ProgressIndicator';
 import StoryGenerationProgress from '@/components/StoryGenerationProgress';
@@ -276,7 +276,7 @@ function Step5Page() {
                             </strong>
                           </p>
 
-                          <Image
+                          <ThemedArtwork
                             src="/Papercut_icons/open-book-with-stars.webp"
                             alt=""
                             width={512}

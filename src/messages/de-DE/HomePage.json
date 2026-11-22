@@ -2,6 +2,13 @@
   "HomePage": {
     "title": "Willkommen",
     "intents": {
+      "christmas": {
+        "hero": {
+          "alt": {
+            "person": "Eine lächelnde Person hält ihr personalisiertes Mythoria-Buch"
+          }
+        }
+      },
       "kids_fantasy": {
         "hero": {
           "headline": "Jede Geschichte beginnt mit dir",

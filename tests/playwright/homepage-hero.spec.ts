@@ -11,12 +11,12 @@ function collectHydrationErrors(page: Page): string[] {
 
   page.on('console', (message) => {
     const text = message.text();
-    if (message.type() === 'error' && text.includes('Hydration failed')) {
+    if (message.type() === 'error' && /hydrat/i.test(text)) {
       hydrationErrors.push(text);
     }
   });
   page.on('pageerror', (error) => {
-    if (error.message.includes('Hydration failed')) {
+    if (/hydrat/i.test(error.message)) {
       hydrationErrors.push(error.message);
     }
   });
@@ -25,17 +25,24 @@ function collectHydrationErrors(page: Page): string[] {
 }
 
 test.describe('Homepage hero — default composition', () => {
-  test('renders kids_fantasy headline without ?intent param', async ({ page }) => {
+  test('renders the generic headline with Kids art and no campaign intent', async ({ page }) => {
     await page.goto('/en-US', { waitUntil: 'domcontentloaded' });
 
-    // The kids_fantasy headline key resolves to text containing "story"
     const hero = page.locator('section.papercut-hero');
     await expect(hero).toBeVisible();
-
-    const h1 = hero.locator('h1');
-    await expect(h1).toBeVisible();
-    // Default composition headline should not contain sports-specific copy
-    await expect(h1).not.toContainText('team', { ignoreCase: true });
+    await expect(hero.locator('h1')).toHaveText('Every story starts with you');
+    await expect(page.locator('html')).toHaveAttribute('data-website-theme', 'kids');
+    await expect(hero.locator('.pc-person-slide img').first()).toHaveAttribute(
+      'src',
+      /kids_fantasy/,
+    );
+    await expect(hero.getByRole('link', { name: 'Write your own story' })).toHaveAttribute(
+      'href',
+      /primaryIntent(?:%3D|=)kids_adventures/,
+    );
+    expect((await page.context().cookies()).some((c) => c.name === 'mythoria_intent_context')).toBe(
+      false,
+    );
   });
 
   test('no /homepage/ asset returns 404 on default homepage', async ({ page }) => {
@@ -48,6 +55,53 @@ test.describe('Homepage hero — default composition', () => {
     await page.goto('/en-US', { waitUntil: 'networkidle' });
     expect(failed, `404s on homepage assets:\n${failed.join('\n')}`).toHaveLength(0);
   });
+});
+
+test('Christmas campaign persists on Get Inspired without exposing the public story archive', async ({
+  page,
+}) => {
+  await page.goto('/pt-PT?intent=christmas', { waitUntil: 'domcontentloaded' });
+  await expect(page.locator('html')).toHaveAttribute('data-website-theme', 'christmas');
+  await expect(page.locator('.pc-person-slide img').first()).toHaveAttribute('src', /christmas/);
+
+  await page.locator('header a[href="/pt-PT/get-inspired"]:visible').first().click();
+  await expect(page).toHaveURL(/\/pt-PT\/get-inspired$/);
+  await page.reload({ waitUntil: 'domcontentloaded' });
+  await expect(page.locator('html')).toHaveAttribute('data-website-theme', 'christmas');
+  await expect(page.getByRole('heading', { name: 'Histórias em Destaque' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Mais histórias públicas' })).toHaveCount(0);
+});
+
+test.describe('Homepage hero — mobile motion preferences', () => {
+  test.use({ viewport: { width: 360, height: 800 } });
+
+  for (const reducedMotion of ['reduce', 'no-preference'] as const) {
+    test(`hydrates at 360px with reduced motion set to ${reducedMotion}`, async ({ page }) => {
+      const hydrationErrors = collectHydrationErrors(page);
+      await page.emulateMedia({ reducedMotion });
+      await page.goto('/en-US', { waitUntil: 'networkidle' });
+
+      const hero = page.locator('.papercut-hero');
+      const carousel = hero.locator('.pc-person-viewport');
+      await carousel.scrollIntoViewIfNeeded();
+      const currentSlide = carousel.locator('.pc-person-slide img').first();
+      await expect(currentSlide).toBeVisible();
+      const firstSlide = await currentSlide.getAttribute('src');
+      expect(firstSlide).toBeTruthy();
+
+      if (reducedMotion === 'reduce') {
+        await expect(hero.locator('.pc-motion-layer')).toHaveCount(0);
+        await expect(carousel.locator('.pc-person-preload')).toHaveCount(0);
+        await expect(currentSlide).toHaveAttribute('src', firstSlide!);
+      } else {
+        await expect(hero.locator('.pc-motion-layer').first()).toBeAttached();
+        await expect(carousel.locator('.pc-person-preload')).toBeAttached();
+        await expect(currentSlide).not.toHaveAttribute('src', firstSlide!, { timeout: 10_000 });
+      }
+
+      expect(hydrationErrors).toEqual([]);
+    });
+  }
 });
 
 test.describe('Homepage hero — sports_teams via ?intent= query param', () => {
@@ -76,8 +130,7 @@ test.describe('Homepage hero — sports_teams via ?intent= query param', () => {
     await page.goto('/en-US?intent=bogus_unknown_intent', { waitUntil: 'domcontentloaded' });
     const hero = page.locator('section.papercut-hero');
     await expect(hero).toBeVisible();
-    // Should not crash; h1 must exist
-    await expect(hero.locator('h1')).toBeVisible();
+    await expect(page.locator('html')).toHaveAttribute('data-website-theme', 'kids');
   });
 });
 
@@ -113,8 +166,7 @@ test.describe('Homepage hero — sports_teams via /i/ cookie flow', () => {
     await page.goto('/en-US', { waitUntil: 'domcontentloaded' });
     const h1 = page.locator('section.papercut-hero h1');
     await expect(h1).toBeVisible();
-    // Default composition should not say "team"
-    await expect(h1).not.toContainText('team', { ignoreCase: true });
+    await expect(page.locator('html')).toHaveAttribute('data-website-theme', 'kids');
   });
 });
 
@@ -159,6 +211,34 @@ test.describe('Homepage hero — grandparents intent', () => {
 });
 
 test.describe('Homepage hero — landing page intent handoff', () => {
+  test('updates theme and hero across client navigations within the localized root', async ({
+    page,
+  }) => {
+    const hydrationErrors = collectHydrationErrors(page);
+    await page.goto('/pt-PT?intent=christmas', { waitUntil: 'networkidle' });
+    await expect(page.locator('html')).toHaveAttribute('data-website-theme', 'christmas');
+
+    const documentRequests: string[] = [];
+    page.on('request', (request) => {
+      if (request.resourceType() === 'document')
+        documentRequests.push(new URL(request.url()).pathname);
+    });
+
+    const landingPage = '/pt-PT/lp/livro-personalizado-para-casais';
+    await page.locator(`a[href="${landingPage}"]:visible`).first().click();
+    await expect(page).toHaveURL(new RegExp(`${landingPage}$`));
+    await expect(page.locator('html')).toHaveAttribute('data-website-theme', 'kids');
+
+    await page.locator('header a[href="/pt-PT"]:visible').last().click();
+    await expect(page).toHaveURL(/\/pt-PT$/);
+    await expect(page.locator('html')).toHaveAttribute('data-website-theme', 'kids');
+    await expect(page.locator('section.papercut-hero h1')).toHaveText(
+      'A vossa história, eternizada.',
+    );
+    expect(documentRequests).toEqual([]);
+    expect(hydrationErrors).toEqual([]);
+  });
+
   test('grandparents landing page sets homepage intent cookie', async ({ page }) => {
     const hydrationErrors = collectHydrationErrors(page);
 

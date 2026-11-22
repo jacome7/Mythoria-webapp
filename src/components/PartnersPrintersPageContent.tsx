@@ -4,6 +4,7 @@ import { FerrisWheel, Loader2, Mail, MapPin, Phone, Printer, Store } from 'lucid
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import Image from 'next/image';
+import ThemedArtwork from '@/components/ThemedArtwork';
 import { useLocale, useTranslations } from 'next-intl';
 import styles from './PartnersPage.module.css';
 
@@ -225,7 +226,7 @@ const PartnersDirectorySection = () => {
   return (
     <section className={styles.directorySection}>
       <div className={styles.sectionHeader}>
-        <Image
+        <ThemedArtwork
           className={`${styles.decorImage} ${styles.sectionStar}`}
           src="/Papercut_icons/sparkle_c.webp"
           alt=""

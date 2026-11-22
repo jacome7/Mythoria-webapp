@@ -3,7 +3,7 @@ import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { notFound, permanentRedirect } from 'next/navigation';
 import { ArrowLeft, Calendar, Clock } from 'lucide-react';
 import Link from 'next/link';
-import Image from 'next/image';
+import BlogImage from '@/components/BlogImage';
 import { MDXRemote } from 'next-mdx-remote/rsc';
 import remarkGfm from 'remark-gfm';
 import rehypeSlug from 'rehype-slug';
@@ -217,13 +217,12 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
 
           {heroImageUrl && (
             <div className="mb-8">
-              <Image
+              <BlogImage
                 src={heroImageUrl}
                 alt={post.title}
                 width={800}
                 height={600}
                 className="w-full h-80 md:h-[28rem] object-cover rounded-lg shadow-lg"
-                unoptimized={heroImageUrl.startsWith('http')}
                 priority
               />
             </div>

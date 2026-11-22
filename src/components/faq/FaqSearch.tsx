@@ -72,7 +72,7 @@ export default function FaqSearch({
       <div className="flex flex-wrap gap-2">
         <button
           onClick={() => onSectionChange(null)}
-          className={`btn btn-sm ${!selectedSection ? 'btn-primary' : 'btn-outline'}`}
+          className={`btn btn-sm h-auto min-h-8 max-w-full py-1 whitespace-normal ${!selectedSection ? 'btn-primary' : 'btn-outline'}`}
         >
           {allSectionsLabel}
         </button>
@@ -80,7 +80,7 @@ export default function FaqSearch({
           <button
             key={section.sectionKey}
             onClick={() => onSectionChange(section.sectionKey)}
-            className={`btn btn-sm ${selectedSection === section.sectionKey ? 'btn-primary' : 'btn-outline'}`}
+            className={`btn btn-sm h-auto min-h-8 max-w-full py-1 whitespace-normal ${selectedSection === section.sectionKey ? 'btn-primary' : 'btn-outline'}`}
           >
             {section.icon && <span className="mr-1">{section.icon}</span>}
             {section.defaultLabel}

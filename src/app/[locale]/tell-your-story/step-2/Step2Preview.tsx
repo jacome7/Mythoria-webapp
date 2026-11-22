@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 import Image from 'next/image';
+import ThemedArtwork from '@/components/ThemedArtwork';
 import { useTranslations } from 'next-intl';
 import WizardActionBar from '@/components/WizardActionBar';
 import { Link } from '@/i18n/routing';
@@ -204,7 +205,7 @@ export default function Step2Preview(p: Props) {
             onClick={p.onCatalog}
             disabled={p.disabled}
           >
-            <Image src="/Papercut_icons/openBook.webp" alt="" width={72} height={72} />
+            <ThemedArtwork src="/Papercut_icons/openBook.webp" alt="" width={72} height={72} />
             <span>
               <strong>{t('ownIdea.templateTitle')}</strong>
               <span>{t('ownIdea.templateBody')}</span>
