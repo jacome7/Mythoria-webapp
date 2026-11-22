@@ -47,7 +47,7 @@ const originalFetch = global.fetch;
 function mockFetch(completeBody: Record<string, unknown>) {
   global.fetch = jest.fn(async (url: string) => {
     if (url === '/api/my-credits') return { ok: true, json: async () => ({ currentBalance: 10 }) };
-    if (url === '/api/pricing/services') {
+    if (url === '/api/pricing/services?storyId=story-1') {
       return {
         ok: true,
         json: async () => ({

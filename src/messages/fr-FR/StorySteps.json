@@ -38,7 +38,6 @@
         "outlineTitle": "Besoin d’un point de départ ?",
         "outlineDownload": "Télécharger le plan de l’histoire",
         "outlineHelp": "Un guide modifiable pour les personnages, les lieux et les événements clés. Remplacez les questions par vos notes avant l’importation.",
-
         "title": "J’ai déjà un document",
         "button": "Importer un document",
         "formats": "TXT, DOCX ou PDF · 5 Mo maximum",
@@ -448,6 +447,11 @@
             "name": "Le Gardien du Folklore",
             "description": "Voix intemporelle, façon fable, qui parle en symboles, présages et morales douces.",
             "sample": "Et il advint, par un dimanche après-midi, que le Frère Aîné Rodrigo emmena le Petit, John, au petit champ près du grand océan du nord. Le vent se tenait comme témoin, et la mer parlait dans sa langue infinie. Rodrigo plaça le ballon sur l'herbe, et il dit : \"Premièrement : sois stable. Deuxièmement : regarde devant. Troisièmement : ne crains pas l'erreur.\" John obéit du mieux qu'il put, pourtant le ballon le fuyait, car l'habileté ne vient pas à ceux qui se pressent. Le cœur de John s'alourdit, et il voulut arrêter. Mais Rodrigo ne le gronda pas ; il ramena le ballon à ses pieds, encore et encore, comme la marée revient au rivage. Enfin, John apprit à garder le ballon près de lui, et le vent s'adoucit, comme satisfait.\n\nAinsi le conte enseigne : la force s'enseigne avec patience, et la patience s'apprend par l'amour."
+          },
+          "contextual-storyteller": {
+            "name": "Le Conteur du Contexte",
+            "description": "Un récit chaleureux, ancré dans vos souvenirs et des lieux documentés, avec très peu d’invention.",
+            "sample": "Vos souvenirs guident le récit. Le contexte vérifié éclaire les lieux et leur époque."
           }
         }
       },

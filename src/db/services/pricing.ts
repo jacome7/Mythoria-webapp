@@ -1,5 +1,11 @@
 import { db } from '@/db';
-import { pricing, type Pricing, type NewPricing } from '@/db/schema';
+import {
+  pricing,
+  biographerBookVersions,
+  stories,
+  type Pricing,
+  type NewPricing,
+} from '@/db/schema';
 import { eq, and, inArray, desc } from 'drizzle-orm';
 
 // -----------------------------------------------------------------------------
@@ -7,6 +13,25 @@ import { eq, and, inArray, desc } from 'drizzle-orm';
 // -----------------------------------------------------------------------------
 
 export class PricingService {
+  async getStoryProductProfile(storyId: string): Promise<'standard' | 'biographer'> {
+    if (process.env.BIOGRAPHER_ENABLED !== 'true') {
+      const [story] = await db
+        .select({ additionalRequests: stories.additionalRequests })
+        .from(stories)
+        .where(eq(stories.storyId, storyId))
+        .limit(1);
+      return story?.additionalRequests?.includes('[MYTHORIA_BIOGRAPHER_V1]')
+        ? 'biographer'
+        : 'standard';
+    }
+    const [project] = await db
+      .select({ id: biographerBookVersions.storyId })
+      .from(biographerBookVersions)
+      .where(eq(biographerBookVersions.storyId, storyId))
+      .limit(1);
+    return project ? 'biographer' : 'standard';
+  }
+
   /**
    * Get all pricing entries (including inactive ones - for admin)
    */
@@ -105,21 +130,37 @@ export class PricingService {
   /**
    * Calculate total credits for selected features
    */
-  async calculateCreditsForFeatures(features: {
-    ebook?: boolean;
-    printed?: boolean;
-    audiobook?: boolean;
-  }): Promise<{ total: number; breakdown: Array<{ serviceCode: string; credits: number }> }> {
+  async calculateCreditsForFeatures(
+    features: {
+      ebook?: boolean;
+      printed?: boolean;
+      audiobook?: boolean;
+    },
+    profile: 'standard' | 'biographer' = 'standard',
+  ): Promise<{ total: number; breakdown: Array<{ serviceCode: string; credits: number }> }> {
     const serviceCodes = [];
-    if (features.ebook) serviceCodes.push('eBookGeneration');
-    if (features.printed) serviceCodes.push('printOrder');
-    if (features.audiobook) serviceCodes.push('audioBookGeneration');
+    if (features.ebook)
+      serviceCodes.push(profile === 'biographer' ? 'biographerBookGeneration' : 'eBookGeneration');
+    if (features.printed)
+      serviceCodes.push(profile === 'biographer' ? 'biographerPrintOrder' : 'printOrder');
+    if (features.audiobook)
+      serviceCodes.push(
+        profile === 'biographer' ? 'biographerAudioBookGeneration' : 'audioBookGeneration',
+      );
 
     if (serviceCodes.length === 0) {
       return { total: 0, breakdown: [] };
     }
 
     const pricingEntries = await this.getPricingByServiceCodes(serviceCodes);
+    if (
+      profile === 'biographer' &&
+      serviceCodes.some(
+        (code) => !pricingEntries.some((entry) => entry.serviceCode === code && entry.credits > 0),
+      )
+    ) {
+      throw new Error('Biographer pricing is not configured for every selected product');
+    }
     const breakdown = pricingEntries.map((entry) => ({
       serviceCode: entry.serviceCode,
       credits: entry.credits,

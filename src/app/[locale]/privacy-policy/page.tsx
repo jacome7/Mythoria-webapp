@@ -118,6 +118,11 @@ export default async function PrivacyPolicyPage({ params }: PrivacyPolicyPagePro
                 </table>
               </div>
               <p className="mt-4 text-sm text-gray-600">{tPrivacyPolicy('section3.note')}</p>
+              <div className="mt-6 space-y-3">
+                <h3 className="text-lg font-medium">{tPrivacyPolicy('storyWhisperer.title')}</h3>
+                <p>{tPrivacyPolicy('storyWhisperer.savedContent')}</p>
+                <p>{tPrivacyPolicy('storyWhisperer.recoveryAudio')}</p>
+              </div>
             </section>
             <section className="mb-8">
               <h2 className="text-2xl font-semibold mb-4 text-primary">

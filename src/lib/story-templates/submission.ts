@@ -9,6 +9,10 @@ const schema = z.object({
   jobId: z.string().optional(),
   structureRequestId: z.string().uuid().optional(),
   structurePayload: z.string().max(60_000).optional(),
+  whisperer: z
+    .object({ draftId: z.uuid(), projectId: z.uuid(), revision: z.number().int().nonnegative() })
+    .optional(),
+  whispererRetryOf: z.uuid().optional(),
   workflow: z.enum(['standard', 'experimental']).optional(),
 });
 export type Step2Submission = z.infer<typeof schema>;

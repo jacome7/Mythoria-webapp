@@ -374,7 +374,7 @@
   height: 1px;
   background: #a0a0a0;
 }
-.previewRow.templateEntry {
+.previewRow.highlightedEntry {
   background: #e4eff2;
   border: 0;
   border-radius: 0.8rem;

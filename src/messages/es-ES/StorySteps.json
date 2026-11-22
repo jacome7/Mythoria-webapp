@@ -38,7 +38,6 @@
         "outlineTitle": "¿Necesita un punto de partida?",
         "outlineDownload": "Descargar esquema de la historia",
         "outlineHelp": "Una guía editable de personajes, escenarios y acontecimientos principales. Sustituya las preguntas por sus notas antes de importar.",
-
         "title": "Ya tengo un documento",
         "button": "Importar documento",
         "formats": "TXT, DOCX o PDF · hasta 5 MB",
@@ -448,6 +447,11 @@
             "name": "El Guardián del Folclore",
             "description": "Voz intemporal, de fábula, que habla con símbolos, presagios y moralejas suaves.",
             "sample": "Y así sucedió, en una tarde de domingo, que el Hermano Mayor Rodrigo llevó al Pequeño, John, al pequeño campo cerca del gran océano del norte. El viento se alzó como testigo, y el mar habló en su lengua infinita. Rodrigo colocó el balón en la hierba y dijo: \"Primero: sé firme. Segundo: mira adelante. Tercero: no temas al error\". John obedeció lo mejor que pudo, pero el balón huyó de él, pues la destreza no llega a quien tiene prisa. El corazón de John se volvió pesado y quiso parar. Pero Rodrigo no le riñó; devolvió el balón a sus pies, una y otra vez, como la marea regresa a la orilla. Por fin, John aprendió a mantener el balón cerca, y el viento amainó, como si estuviera complacido.\n\nAsí enseña la leyenda: la fuerza se enseña con paciencia, y la paciencia se aprende a través del amor."
+          },
+          "contextual-storyteller": {
+            "name": "El Narrador del Contexto",
+            "description": "Una voz cercana, fiel a los recuerdos y a los lugares investigados, con una invención mínima.",
+            "sample": "Tus recuerdos guían la historia. El contexto verificado da vida a los lugares y a su época."
           }
         }
       },

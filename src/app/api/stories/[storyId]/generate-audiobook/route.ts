@@ -13,6 +13,7 @@ export async function POST(
   request: NextRequest,
   { params }: { params: Promise<{ storyId: string }> },
 ) {
+  const { storyId } = await params;
   try {
     const author = await getCurrentAuthor();
 
@@ -20,7 +21,6 @@ export async function POST(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { storyId } = await params;
     const body = await request.json();
     const { voice: requestedVoice, includeBackgroundMusic = true, analyticsContext } = body;
 
@@ -54,7 +54,11 @@ export async function POST(
       : getRecommendedVoice(ttsProvider, story.targetAudience);
 
     // Get audiobook pricing
-    const audiobookPricing = await pricingService.getPricingByServiceCode('audioBookGeneration');
+    const audiobookPricing = await pricingService.getPricingByServiceCode(
+      (await pricingService.getStoryProductProfile(storyId)) === 'biographer'
+        ? 'biographerAudioBookGeneration'
+        : 'audioBookGeneration',
+    );
     if (!audiobookPricing) {
       return NextResponse.json({ error: 'Audiobook pricing not configured' }, { status: 500 });
     }
@@ -140,7 +144,11 @@ export async function POST(
     );
   } catch (error) {
     if (error instanceof InsufficientProductCreditsError) {
-      const pricing = await pricingService.getPricingByServiceCode('audioBookGeneration');
+      const pricing = await pricingService.getPricingByServiceCode(
+        (await pricingService.getStoryProductProfile(storyId)) === 'biographer'
+          ? 'biographerAudioBookGeneration'
+          : 'audioBookGeneration',
+      );
       const required = pricing?.credits ?? 0;
       return NextResponse.json(
         {

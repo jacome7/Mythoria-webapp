@@ -1,10 +1,13 @@
 /** @jest-environment node */
 import { NextRequest } from 'next/server';
 import { POST } from './route';
+import { verifyWhispererStructure } from '@/lib/story-whisperer/server';
+import { BiographerError } from '@/db/services/biographer';
 import { getCurrentAuthor } from '@/lib/auth';
 import { storyService } from '@/db/services';
 import { sgwFetch } from '@/lib/sgw-client';
 
+jest.mock('@/lib/story-whisperer/server', () => ({ verifyWhispererStructure: jest.fn() }));
 jest.mock('@/lib/auth', () => ({ getCurrentAuthor: jest.fn() }));
 jest.mock('@/db/services', () => ({
   storyService: { getStoryById: jest.fn(), updateStory: jest.fn() },
@@ -41,6 +44,26 @@ const draft = {
 } as Story;
 
 describe('story structure API template extension', () => {
+  it('checks the handoff and the exact owner photo paths before connecting to SGW', async () => {
+    const structureRequestId = 'cbe92c23-926d-4ec9-afc4-560f8f7e01ad';
+    const imageObjectPaths = [`${storyId}/inputs/whisperer-photo.jpg`];
+    jest
+      .mocked(verifyWhispererStructure)
+      .mockRejectedValueOnce(new BiographerError('Invalid handoff', 404));
+    expect(
+      (await POST(request({ ...body, storyWhisperer: true, structureRequestId, imageObjectPaths })))
+        .status,
+    ).toBe(404);
+    expect(verifyWhispererStructure).toHaveBeenCalledWith(
+      'trusted-author',
+      storyId,
+      structureRequestId,
+      body.userDescription,
+      imageObjectPaths,
+    );
+    expect(sgwFetch).not.toHaveBeenCalled();
+  });
+
   beforeEach(() => {
     jest.clearAllMocks();
     jest

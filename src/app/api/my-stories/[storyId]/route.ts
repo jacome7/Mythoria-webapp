@@ -1,4 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { BiographerError } from '@/db/services/biographer';
+import { deleteStoryWithWhispererCleanup } from '@/lib/story-whisperer/server';
 import { getCurrentAuthor } from '@/lib/auth';
 import { writingPersonaStorySchema } from '@/lib/writing-persona-validation';
 import { PublicStoryValidationError, storyService } from '@/db/services';
@@ -219,16 +221,11 @@ export async function DELETE(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const story = await storyService.getStoryById(storyId);
-
-    if (!story || story.authorId !== author.authorId) {
-      return NextResponse.json({ error: 'Story not found' }, { status: 404 });
-    }
-
-    await storyService.deleteStory(storyId);
-
+    await deleteStoryWithWhispererCleanup(author.authorId, storyId);
     return NextResponse.json({ success: true });
   } catch (error) {
+    if (error instanceof BiographerError)
+      return NextResponse.json({ error: error.message }, { status: error.status });
     console.error('Error deleting story:', error);
     return NextResponse.json({ error: 'Failed to delete story' }, { status: 500 });
   }

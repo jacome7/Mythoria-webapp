@@ -14,6 +14,7 @@ jest.mock('@/db', () => ({
 
 jest.mock('@/db/services/pricing', () => ({
   pricingService: {
+    getStoryProductProfile: jest.fn().mockResolvedValue('standard'),
     calculateCreditsForFeatures: (...args: unknown[]) => calculateCreditsMock(...args),
   },
 }));
@@ -110,6 +111,7 @@ describe('startStoryGeneration', () => {
     });
     expect(tx.insert).not.toHaveBeenCalled();
     expect(tx.update).not.toHaveBeenCalled();
+    expect(calculateCreditsMock).not.toHaveBeenCalled();
   });
 
   it('rejects insufficient balance before any debit or enqueue', async () => {

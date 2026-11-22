@@ -1,6 +1,8 @@
 import { STORY_BRIEF_MAX_LENGTH } from '@/lib/story-templates/story-input-limit';
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
+import { BiographerError } from '@/db/services/biographer';
+import { verifyWhispererStructure } from '@/lib/story-whisperer/server';
 import { getCurrentAuthor } from '@/lib/auth';
 import { storyService } from '@/db/services';
 import { sgwFetch } from '@/lib/sgw-client';
@@ -8,6 +10,7 @@ import { storyPreferencesSchema, characterReferenceSchema } from '@/lib/story-te
 
 const inputSchema = z.object({
   storyId: z.string().uuid(),
+  storyWhisperer: z.literal(true).optional(),
   userDescription: z.string().max(STORY_BRIEF_MAX_LENGTH).nullish(),
   imageObjectPaths: z.array(z.string().min(1).max(1024)).max(3).nullish(),
   audioObjectPath: z.string().min(1).max(1024).nullish(),
@@ -49,6 +52,7 @@ export async function POST(request: NextRequest) {
       imageObjectPaths,
       audioObjectPath,
       storyId,
+      storyWhisperer,
       characterIds,
       locale,
       storyPreferences,
@@ -91,6 +95,16 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    if (storyWhisperer) {
+      await verifyWhispererStructure(
+        currentAuthor.authorId,
+        storyId,
+        structureRequestId,
+        userDescription,
+        imageObjectPaths ?? [],
+      );
+    }
+
     const payload: Record<string, unknown> = {
       storyId,
       userDescription,
@@ -101,6 +115,7 @@ export async function POST(request: NextRequest) {
       storyPreferences,
       structureRequestId,
       factuality,
+      storyWhisperer,
       ...(characterReferences ? { characterReferences } : {}),
     };
     // Strip null/undefined fields to avoid schema errors downstream
@@ -141,7 +156,9 @@ export async function POST(request: NextRequest) {
 
     // { success, jobId, estimatedDuration }
     return NextResponse.json(data as Record<string, unknown>);
-  } catch {
+  } catch (error) {
+    if (error instanceof BiographerError)
+      return NextResponse.json({ error: error.message }, { status: error.status });
     return NextResponse.json(
       {
         error: 'Failed to start story structuring',

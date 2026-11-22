@@ -35,6 +35,68 @@ export interface EnvVarDescriptor {
 
 export const envManifest: EnvVarDescriptor[] = [
   {
+    name: 'BIOGRAPHER_COLLABORATION_ENABLED',
+    required: false,
+    scopes: ['runtime', 'dev', 'prod'],
+    default: 'false',
+    note: 'Enables accountless contributor invitation and interview routes after Phase 2 migration and pilot.',
+  },
+  {
+    name: 'BIOGRAPHER_PUBLIC_URL',
+    required: false,
+    scopes: ['runtime', 'dev', 'prod'],
+    note: 'Trusted HTTPS origin used to construct personal invitation and resume links.',
+  },
+  {
+    name: 'BIOGRAPHER_ENABLED',
+    required: false,
+    scopes: ['runtime', 'dev', 'prod'],
+    secret: false,
+    note: 'Defaults off; enables owner Biographer APIs after isolated migration and pilot.',
+  },
+  {
+    name: 'BIOGRAPHER_LIVE_URL',
+    required: false,
+    scopes: ['runtime', 'dev', 'prod'],
+    secret: false,
+    note: 'Dedicated gateway wss URL.',
+  },
+  {
+    name: 'BIOGRAPHER_INTERNAL_API_KEY',
+    required: false,
+    scopes: ['runtime', 'dev', 'prod'],
+    secret: true,
+    note: 'Shared WebApp/gateway callback credential, server only.',
+  },
+  {
+    name: 'BIOGRAPHER_ALLOWED_ORIGINS',
+    required: false,
+    scopes: ['runtime', 'dev', 'prod'],
+    secret: false,
+    note: 'Comma-separated exact browser origins for live admission.',
+  },
+  {
+    name: 'BIOGRAPHER_STORAGE_BUCKET',
+    required: false,
+    scopes: ['runtime', 'dev', 'prod'],
+    secret: false,
+    note: 'Private GCS bucket with public access prevention enabled.',
+  },
+  {
+    name: 'BIOGRAPHER_INTERNAL_AUDIENCE',
+    required: false,
+    scopes: ['runtime', 'dev', 'prod'],
+    secret: false,
+    note: 'OIDC audience for Admin Biographer commands.',
+  },
+  {
+    name: 'BIOGRAPHER_ADMIN_SERVICE_ACCOUNTS',
+    required: false,
+    scopes: ['runtime', 'dev', 'prod'],
+    secret: false,
+    note: 'Comma-separated allowed Admin service account emails.',
+  },
+  {
     name: 'REFERRAL_PROGRAM_ENABLED',
     required: false,
     scopes: ['runtime', 'dev', 'prod'],

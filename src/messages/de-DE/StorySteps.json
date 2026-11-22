@@ -38,7 +38,6 @@
         "outlineTitle": "Brauchen Sie einen Ausgangspunkt?",
         "outlineDownload": "Geschichtenvorlage herunterladen",
         "outlineHelp": "Eine bearbeitbare Vorlage für Figuren, Schauplätze und wichtige Ereignisse. Ersetzen Sie die Fragen vor dem Import durch Ihre Notizen.",
-
         "title": "Ich habe bereits ein Dokument",
         "button": "Dokument importieren",
         "formats": "TXT, DOCX oder PDF · bis 5 MB",
@@ -448,6 +447,11 @@
             "name": "Der Folklore-Hüter",
             "description": "Zeitlose, fabelhafte Stimme, die in Symbolen, Omen und leisen Moralen spricht.",
             "sample": "Und so begab es sich an einem Sonntagnachmittag, dass der Ältere Bruder Rodrigo den Kleinen, John, auf das kleine Feld nahe dem großen Ozean des Nordens brachte. Der Wind stand als Zeuge, und das Meer sprach in seiner endlosen Zunge. Rodrigo legte den Ball auf das Gras, und er sprach: \"Erstens: Sei standhaft. Zweitens: Schau voraus. Drittens: Fürchte den Fehler nicht.\" John gehorchte so gut er konnte, doch der Ball floh vor ihm, denn Können kommt nicht zu denen, die eilen. Johns Herz wurde schwer, und er wünschte aufzuhören. Aber Rodrigo schalt ihn nicht; er brachte den Ball zu seinen Füßen zurück, immer und immer wieder, wie die Gezeit zum Ufer zurückkehrt. Endlich lernte John, den Ball nah zu halten, und der Wind wurde sanfter, als wäre er zufrieden.\n\nSo lehrt die Geschichte: Stärke wird mit Geduld gelehrt, und Geduld wird durch Liebe gelernt."
+          },
+          "contextual-storyteller": {
+            "name": "Der Erzähler mit Kontext",
+            "description": "Warm erzählte Erinnerungen mit recherchiertem Ortswissen und möglichst wenig Erfundenem.",
+            "sample": "Deine Erinnerungen führen durch die Geschichte. Geprüftes Hintergrundwissen macht Orte und ihre Zeit lebendig."
           }
         }
       },

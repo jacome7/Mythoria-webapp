@@ -38,6 +38,7 @@ type Props = {
   onCancelOwn: () => void;
   onContinue: () => void;
   onPrevious: () => void;
+  whispererEntry?: ReactNode;
 };
 export default function Step2Preview(p: Props) {
   const t = useTranslations('StorySteps.step2.guided');
@@ -164,6 +165,7 @@ export default function Step2Preview(p: Props) {
         />
       ) : templateMode ? (
         <>
+          {p.whispererEntry}
           <div className={styles.templateLayout}>
             <StoryTemplatePicker
               key={p.journey?.sessionId}
@@ -192,9 +194,14 @@ export default function Step2Preview(p: Props) {
           <p>{t('ownIdea.body')}</p>
           {inputFields}
           <p className={styles.previewDivider}>{t('ownIdea.divider')}</p>
+          {p.whispererEntry}
           <button
             type="button"
-            className={`${styles.previewRow} ${styles.templateEntry}`}
+            className={
+              p.whispererEntry
+                ? styles.previewRow
+                : `${styles.previewRow} ${styles.highlightedEntry}`
+            }
             onClick={p.onCatalog}
             disabled={p.disabled}
           >

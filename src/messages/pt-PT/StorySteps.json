@@ -38,7 +38,6 @@
         "outlineTitle": "Precisa de um ponto de partida?",
         "outlineDownload": "Descarregar guião da história",
         "outlineHelp": "Um guia editável para personagens, cenários e acontecimentos principais. Substitua as perguntas pelas suas notas antes de importar.",
-
         "title": "Já tenho um documento",
         "button": "Importar documento",
         "formats": "TXT, DOCX ou PDF · até 5 MB",
@@ -276,8 +275,8 @@
         "continue": "Continuar a minha história",
         "startNew": "Começar uma nova história",
         "confirmTitle": "Começar uma nova história?",
-        "confirmBody": "O modelo, as respostas, o texto, as imagens, o áudio e a seleção de personagens desta criação serão removidos, incluindo os detalhes dos passos seguintes.",
-        "confirmNote": "O autor e a dedicatória serão mantidos. As histórias e as personagens guardadas na sua conta também serão mantidas.",
+        "confirmBody": "O conteúdo deste rascunho será apagado.",
+        "confirmNote": "O autor, a dedicatória, as outras histórias e as personagens guardadas na sua conta mantêm-se.",
         "checking": "A verificar…",
         "confirm": "Apagar e começar",
         "pendingJobError": "Existe um pedido de preparação por resolver. Escolha «Continuar a minha história» e retome a preparação antes de começar uma nova história."
@@ -448,6 +447,11 @@
             "name": "O Guardião do Folclore",
             "description": "Voz intemporal, de fábula, que fala com símbolos, presságios e lições suaves.",
             "sample": "E assim aconteceu, numa tarde de domingo, que o Irmão Mais Velho Rodrigo levou o Pequeno, João, ao pequeno campo perto do grande oceano do norte. O vento ergueu-se como testemunha, e o mar falou na sua língua infinita. O Rodrigo colocou a bola na relva e disse: \"Primeiro: sê firme. Segundo: olha em frente. Terceiro: não temas o erro.\" O João obedeceu o melhor que pôde, mas a bola fugiu dele, pois a perícia não chega a quem tem pressa. O coração do João ficou pesado e ele quis parar. Mas o Rodrigo não o repreendeu; devolveu a bola aos seus pés, uma e outra vez, como a maré regressa à costa. Por fim, o João aprendeu a manter a bola perto, e o vento amainou, como se estivesse satisfeito.\n\nAssim ensina a lenda: a força ensina-se com paciência, e a paciência aprende-se através do amor."
+          },
+          "contextual-storyteller": {
+            "name": "O Contador de Histórias com Contexto",
+            "description": "Uma voz calorosa, fiel às memórias e aos lugares pesquisados, com o mínimo de invenção.",
+            "sample": "As tuas memórias guiam a história. O contexto verificado dá vida aos lugares e à sua época."
           }
         }
       },

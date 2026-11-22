@@ -103,7 +103,11 @@ export async function POST(
       );
     }
 
-    const pricing = await pricingService.getPricingByServiceCode(SELF_PRINTING_SERVICE_CODE);
+    const pricing = await pricingService.getPricingByServiceCode(
+      (await pricingService.getStoryProductProfile(storyId)) === 'biographer'
+        ? 'biographerPrintOrder'
+        : SELF_PRINTING_SERVICE_CODE,
+    );
     if (!pricing) {
       return NextResponse.json(
         { success: false, error: 'Self-print pricing not configured.' },
@@ -202,7 +206,11 @@ export async function POST(
     });
   } catch (error) {
     if (error instanceof InsufficientProductCreditsError) {
-      const pricing = await pricingService.getPricingByServiceCode(SELF_PRINTING_SERVICE_CODE);
+      const pricing = await pricingService.getPricingByServiceCode(
+        (await pricingService.getStoryProductProfile(storyId)) === 'biographer'
+          ? 'biographerPrintOrder'
+          : SELF_PRINTING_SERVICE_CODE,
+      );
       const required = pricing?.credits ?? 0;
       return NextResponse.json(
         {

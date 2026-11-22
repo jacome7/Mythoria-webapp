@@ -12,6 +12,7 @@ import { getGoogleAnalyticsContext, trackStoryCreation } from '@/lib/analytics';
 import { ensureConsentChoice } from '@/lib/consent';
 import { conversions } from '@/lib/openai-ads/events';
 import { trackOpenAiAdsEvent } from '@/lib/openai-ads/pixel';
+import { forgetWhispererDraft } from '@/lib/story-whisperer/draft-pointer';
 import { getStep1Data } from '@/lib/story-session';
 import { fetchStoryData } from '@/lib/story';
 import { useStorySessionGuard } from '@/hooks/useStorySessionGuard';
@@ -40,7 +41,7 @@ export default function Step5PageWrapper() {
 }
 
 function Step5Page() {
-  const { isSignedIn } = useAuth();
+  const { isSignedIn, userId } = useAuth();
   const searchParams = useSearchParams();
   const editStoryId = searchParams?.get('edit');
   const locale = useLocale();
@@ -82,13 +83,17 @@ function Step5Page() {
 
   const fetchEbookPricing = async () => {
     try {
-      const response = await fetch('/api/pricing/services');
+      const response = await fetch(
+        `/api/pricing/services?storyId=${encodeURIComponent(currentStoryId || '')}`,
+      );
       if (!response.ok) {
         throw new Error('Failed to fetch pricing data');
       }
       const data = await response.json();
       const ebook = data.services.find(
-        (service: ServiceResponse) => service.serviceCode === 'eBookGeneration',
+        (service: ServiceResponse) =>
+          service.serviceCode ===
+          (data.productProfile === 'biographer' ? 'biographerBookGeneration' : 'eBookGeneration'),
       );
       if (ebook) {
         setEbookPricing(ebook);
@@ -204,6 +209,8 @@ function Step5Page() {
         const runId = typeof result.runId === 'string' ? result.runId : '';
         trackOpenAiAdsEvent({ ...conversions.storyLead(runId), eventId: result.adEventId });
       }
+
+      if (userId) forgetWhispererDraft(userId, currentStoryId, true);
 
       // Show the progress component instead of navigating to next step
       setStoryGenerationStarted(true);

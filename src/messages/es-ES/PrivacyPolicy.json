@@ -62,6 +62,11 @@
       },
       "note": "Te pedimos que no incluyas datos de categorías especiales (salud, biométricos, opiniones políticas, etc.). Si introduces datos personales de terceros, confirmas que tienes base legal para hacerlo (art. 14 RGPD)."
     },
+    "storyWhisperer": {
+      "title": "Guía de escritura",
+      "savedContent": "Cuando usas la Guía de escritura, guardamos la transcripción de la conversación y las fotos que añades para que puedas retomar la entrevista y usar ese material para crear tu historia. Gemini, de Google, procesa el texto y el audio en directo para que funcione la conversación.",
+      "recoveryAudio": "Podemos guardar temporalmente la grabación original de tu voz para que puedas recuperar una respuesta que quedó sin terminar. La grabación se puede recuperar durante un máximo de siete días desde que se grabó."
+    },
     "section4": {
       "title": "4. Por qué tratamos tus datos y bases legales",
       "table": {

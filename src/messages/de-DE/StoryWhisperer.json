@@ -1,0 +1,200 @@
+{
+  "StoryWhisperer": {
+    "introQuestions": "Ich stelle Ihnen ein paar Fragen, um Ihrer Geschichte Form zu geben.",
+    "introProgress": "Oben sehen Sie Ihren Fortschritt. Sobald genügend Details zusammengekommen sind, können Sie mit „Weiter“ einen Entwurf erstellen.",
+    "introInputs": "Sie können jederzeit <photo>Fotos anhängen</photo>, <dictate>Ihre Antwort diktieren</dictate> oder <live>live sprechen</live>.",
+    "title": "Geschichtenflüsterer",
+    "subtitle": "Jede große Geschichte beginnt mit einem Gespräch.",
+    "opening": "Von wem soll deine Geschichte handeln?",
+    "openings": {
+      "neutral": {
+        "question": "Wovon möchtest du erzählen?",
+        "choice1": "Ich möchte über einen lieben Menschen schreiben",
+        "choice2": "Ich erinnere mich an einen überraschenden Tag",
+        "choice3": "Ich habe eine Figur im Kopf",
+        "choice4": "Ich möchte mir einen neuen Ort ausdenken"
+      },
+      "romance": {
+        "question": "Wo soll deine Liebesgeschichte beginnen?",
+        "choice1": "Ich möchte von unserem Kennenlernen erzählen",
+        "choice2": "Ich möchte mich ans erste Date erinnern",
+        "choice3": "Ich möchte einen besonderen Moment festhalten",
+        "choice4": "Ich möchte mir eine Liebesgeschichte ausdenken"
+      },
+      "milestones_celebrations": {
+        "question": "Was möchtest du in deiner Geschichte feiern?",
+        "choice1": "Ich möchte eine Geburtstagsüberraschung planen",
+        "choice2": "Ich möchte an einen großen Erfolg erinnern",
+        "choice3": "Ich möchte von einem Familienfest erzählen",
+        "choice4": "Ich möchte mir ein Fest voller Überraschungen ausdenken"
+      },
+      "kids": {
+        "question": "Wer soll in deiner Kindergeschichte die Hauptrolle spielen?",
+        "choice1": "Ich möchte von einem Kind erzählen, das ich kenne",
+        "choice2": "Ich möchte eine mutige kleine Hauptfigur erfinden",
+        "choice3": "Ein Tier soll die Hauptrolle spielen",
+        "choice4": "Ich möchte aus einem Alltagsmoment ein Abenteuer machen"
+      },
+      "kids_bedtime": {
+        "question": "Was für eine Gute-Nacht-Geschichte möchtest du erzählen?",
+        "choice1": "Ich möchte eine Geschichte für mein Kind",
+        "choice2": "Ich möchte einem müden Tier folgen",
+        "choice3": "Ich möchte eine Geschichte über die Sterne",
+        "choice4": "Ich möchte ein kleines Gute-Nacht-Abenteuer"
+      },
+      "kids_adventures": {
+        "question": "Welches Abenteuer möchtest du beginnen?",
+        "choice1": "Ich möchte einen Geheimgang entdecken",
+        "choice2": "Ich möchte einer rätselhaften Karte folgen",
+        "choice3": "Ich möchte ein magisches Wesen retten",
+        "choice4": "Ich möchte aus einem Tag eine Expedition machen"
+      },
+      "kids_transitions": {
+        "question": "Um welche Veränderung soll es in deiner Geschichte gehen?",
+        "choice1": "Ich möchte vom Start an einer neuen Schule erzählen",
+        "choice2": "Ich möchte von einem neuen Geschwisterchen erzählen",
+        "choice3": "Ich möchte über einen Umzug schreiben",
+        "choice4": "Ich möchte eine Geschichte übers Mutigsein erzählen"
+      },
+      "learning_and_discovery": {
+        "question": "Was möchtest du in deiner Geschichte entdecken?",
+        "choice1": "Ich möchte eine alte Frage beantworten",
+        "choice2": "Ich möchte ein Rätsel der Natur erkunden",
+        "choice3": "Ich möchte etwas beim Bauen lernen",
+        "choice4": "Ich möchte einen fernen Ort erkunden"
+      },
+      "pet_stories": {
+        "question": "Welche Geschichte über ein Tier möchtest du erzählen?",
+        "choice1": "Ich möchte erzählen, wie mein Haustier zu uns kam",
+        "choice2": "Ich möchte von seiner lustigsten Macke erzählen",
+        "choice3": "Ich möchte die Welt durch seine Augen sehen",
+        "choice4": "Ich möchte mir ein Tier auf geheimer Mission ausdenken"
+      },
+      "remembrance": {
+        "question": "Welche Erinnerung möchtest du in einer Geschichte bewahren?",
+        "choice1": "Ich möchte mich an einen gemeinsamen Tag erinnern",
+        "choice2": "Ich möchte eine Tradition lebendig halten",
+        "choice3": "Ich möchte über ein Erinnerungsstück schreiben",
+        "choice4": "Ich möchte meine Gefühle in Worte fassen"
+      },
+      "grandparents": {
+        "question": "Welche Geschichte über deine Großeltern möchtest du erzählen?",
+        "choice1": "Ich möchte eine Geschichte meiner Großeltern festhalten",
+        "choice2": "Ich möchte mich an unsere gemeinsame Zeit erinnern",
+        "choice3": "Ich möchte mehr über ihre Jugend erfahren",
+        "choice4": "Ich möchte erzählen, was sie mir beigebracht haben"
+      },
+      "school_projects": {
+        "question": "Was möchtest du in deinem Schulprojekt erzählen?",
+        "choice1": "Ich möchte ein Thema mit einer Geschichte erklären",
+        "choice2": "Ich möchte von einem Experiment im Unterricht erzählen",
+        "choice3": "Ich möchte mir einen Tag in der Vergangenheit vorstellen",
+        "choice4": "Ich möchte zeigen, wie wir ein Problem gelöst haben"
+      },
+      "sports_teams": {
+        "question": "Von welchem Moment in der Geschichte einer Mannschaft möchtest du erzählen?",
+        "choice1": "Ich möchte von einem unvergesslichen Spiel erzählen",
+        "choice2": "Ich möchte vom Einstieg ins Team erzählen",
+        "choice3": "Ich möchte zeigen, wie sich ein Team zurückkämpft",
+        "choice4": "Ich möchte mir ein Team ausdenken, das alle überrascht"
+      },
+      "family_travels": {
+        "question": "Wo soll die Geschichte deiner Familienreise beginnen?",
+        "choice1": "Ich möchte vom schönsten Urlaubstag erzählen",
+        "choice2": "Ich möchte schreiben, wie sich unsere Pläne änderten",
+        "choice3": "Ich möchte einen Ort beschreiben, den wir entdeckt haben",
+        "choice4": "Ich möchte mir eine Reise voller Überraschungen ausdenken"
+      },
+      "amusement_parks": {
+        "question": "Was würde aus einem Tag im Freizeitpark eine Geschichte machen?",
+        "choice1": "Ich möchte von meinem mutigsten Fahrgeschäft erzählen",
+        "choice2": "Ich möchte vom schönsten Tag im Park erzählen",
+        "choice3": "Ich möchte mir ein unmögliches Fahrgeschäft ausdenken",
+        "choice4": "Ich möchte nach Parkschluss ein Geheimnis lüften"
+      },
+      "neurodiversity": {
+        "question": "Welche Erfahrung möchtest du in deiner Geschichte teilen?",
+        "choice1": "Ich möchte eine Figur mit einem Blick fürs Detail",
+        "choice2": "Ich möchte zeigen, wie sich viel Trubel anfühlt",
+        "choice3": "Ich möchte erzählen, wie mir jemand Raum gegeben hat",
+        "choice4": "Ich möchte zeigen, wofür sich meine Figur begeistert"
+      },
+      "christmas": {
+        "question": "Welche Weihnachtsgeschichte möchtest du erzählen?",
+        "choice1": "Ich möchte mich an eine Weihnachtstradition erinnern",
+        "choice2": "Ich möchte von einem unerwarteten Geschenk erzählen",
+        "choice3": "Ich möchte die Familie zusammenbringen",
+        "choice4": "Ich möchte ein Weihnachtsabenteuer erfinden"
+      },
+      "holidays_festivals": {
+        "question": "Welches Fest möchtest du in deiner Geschichte zum Leben erwecken?",
+        "choice1": "Ich möchte die Geschichte unseres Brauchs erzählen",
+        "choice2": "Ich möchte mich an mein erstes Festival erinnern",
+        "choice3": "Ich möchte über ein Fest fern der Heimat schreiben",
+        "choice4": "Ich möchte mir ein Fest für eine erfundene Stadt ausdenken"
+      }
+    },
+    "close": "Gespräch schließen",
+    "resume": "Mit dem Geschichtenflüsterer fortfahren",
+    "progress": "Fortschritt der Geschichte",
+    "missing": "Fehlt noch",
+    "characters": "Figuren",
+    "setting": "Schauplatz",
+    "plot": "Handlung",
+    "conversation": "Gespräch",
+    "you": "Du",
+    "photos": "Fotos in diesem Gespräch",
+    "photo": "Foto",
+    "caption": "Bildunterschrift",
+    "attach": "Foto hinzufügen",
+    "removePhoto": "Foto entfernen",
+    "suggestions": "Antwortvorschläge",
+    "reply": "Schreib eine Antwort …",
+    "send": "Senden",
+    "sendShortcut": "Enter zum Senden. Umschalt + Enter für eine neue Zeile.",
+    "sendFailed": "Deine Antwort konnte nicht gesendet werden.",
+    "assistantResponding": "Der Geschichtenflüsterer bereitet eine Antwort vor.",
+    "working": "Einen Moment …",
+    "error": "Etwas ist schiefgelaufen. Du kannst es noch einmal versuchen.",
+    "retry": "Erneut versuchen",
+    "reset": "Neu anfangen",
+    "resetConfirm": "Neu anfangen? Dieses Gespräch und seine Anhänge werden aus deinem Entwurf entfernt.",
+    "resetYes": "Ja",
+    "resetNo": "Nein",
+    "resetClarify": "Antworten Sie mit „Ja“ oder „Nein“ oder wählen Sie eine der Schaltflächen.",
+    "cancel": "Abbrechen",
+    "continue": "Weiter",
+    "reviewInputs": "Prüfe die anderen Beiträge zu deiner Geschichte oder entferne ein Foto, bevor du fortfährst.",
+    "dictate": "Diktieren",
+    "stopDictation": "Diktat beenden",
+    "recoverDictation": "Diktat wiederherstellen",
+    "discardDictation": "Diktat verwerfen",
+    "liveVoice": "Sprachgespräch",
+    "liveVoiceShort": "Live",
+    "pauseVoiceShort": "Pause",
+    "pauseVoice": "Sprachgespräch pausieren",
+    "connecting": "Verbindung wird aufgebaut …",
+    "listening": "Hört zu …",
+    "speaking": "Spricht …",
+    "reconnecting": "Verbindet erneut …",
+    "recording": "Aufnahme läuft …",
+    "useExisting": "Die Details aus meinem Entwurf verwenden",
+    "developing": "In Arbeit",
+    "ready": "Bereit",
+    "switchToText": "Schriftlich fortfahren",
+    "writeReply": "Antwort schreiben",
+    "saveReply": "Antwort speichern",
+    "unfinished": "Diese Sprachantwort ist noch offen. Stelle die Aufnahme wieder her, schreibe die Antwort oder verwirf sie.",
+    "discardVoiceConfirm": "Die Sprachaufnahme verwerfen, die noch nicht synchronisiert wurde?",
+    "retryOutline": "Meinen Entwurf weiter ausarbeiten",
+    "readyNotice": "Sie können jetzt mit dem Entwurf beginnen oder Ihre Geschichte weitererzählen.",
+    "advanceUnavailable": "Sie können noch nicht fortfahren. Prüfen Sie den Fortschritt und etwaige ungespeicherte Antworten.",
+    "saveStatus": {
+      "local": "Auf diesem Gerät",
+      "saving": "Wird gespeichert …",
+      "saved": "Gespeichert",
+      "attention": "Beim Speichern der Aufnahme ist ein Problem aufgetreten"
+    },
+    "draftSaveFailed": "Diese Antwort konnte auf diesem Gerät nicht gespeichert werden."
+  }
+}
