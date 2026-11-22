@@ -29,7 +29,7 @@
         "choice4": "Quero imaginar uma festa inesperada"
       },
       "kids": {
-        "question": "Quem gostarias que fosse a personagem principal da história infantil?",
+        "question": "Quem queres que protagonize a história infantil?",
         "choice1": "Quero contar uma história sobre uma criança que conheço",
         "choice2": "Quero inventar uma pequena personagem corajosa",
         "choice3": "Quero que o protagonista seja um animal",
@@ -120,7 +120,7 @@
         "choice4": "Quero partilhar o que entusiasma a personagem"
       },
       "christmas": {
-        "question": "Que história de Natal gostarias de contar?",
+        "question": "Que história de Natal queres contar?",
         "choice1": "Quero recordar uma tradição de Natal",
         "choice2": "Quero contar a história de um presente inesperado",
         "choice3": "Quero reunir a família",
