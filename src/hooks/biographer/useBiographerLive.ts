@@ -15,6 +15,20 @@ function liveDiagnostic(event: string, details?: Record<string, number | string 
   if (process.env.NODE_ENV === 'development') console.info('[Biographer live]', event, details);
 }
 
+const finalTranscriptTimeoutMs = 20_000;
+
+// Keep this floor aligned with the gateway's test for a possibly audible live input.
+function hasAudiblePcm(data: ArrayBuffer) {
+  if (!data.byteLength || data.byteLength % 2) return true;
+  const pcm = new DataView(data);
+  let squares = 0;
+  for (let offset = 0; offset < pcm.byteLength; offset += 2) {
+    const sample = pcm.getInt16(offset, true);
+    squares += sample * sample;
+  }
+  return squares >= (pcm.byteLength / 2) * 64 ** 2;
+}
+
 export type LiveState = 'paused' | 'connecting' | 'listening' | 'speaking' | 'reconnecting';
 export type SaveState = 'saved' | 'saving' | 'local' | 'attention';
 export interface LiveEvent {
@@ -22,6 +36,8 @@ export interface LiveEvent {
   role?: 'user' | 'assistant';
   turnId?: string;
   nextTurnId?: string;
+  callId?: string;
+  requestId?: string;
   text?: string;
   final?: boolean;
   mimeType?: string;
@@ -35,6 +51,7 @@ export function useBiographerLive(
   authorId: string,
   onEvent: (event: LiveEvent) => void,
   guest = false,
+  skipSilentArchive = false,
 ) {
   const basePath = guest ? '/api/biographer/contribution' : `/api/biographer/projects/${projectId}`;
   const [state, setState] = useState<LiveState>('paused');
@@ -51,10 +68,12 @@ export function useBiographerLive(
     sessionId?: string;
   }>({});
   const archive = useRef<ArrayBuffer[]>([]);
+  const archiveStartedForTurn = useRef(false);
+  const archivePreroll = useRef<ArrayBuffer[]>([]);
   const turn = useRef('');
   const sequence = useRef(0);
   const queue = useRef(Promise.resolve());
-  const uploading = useRef(false);
+  const uploadInFlight = useRef<Promise<'timed-out' | undefined> | undefined>(undefined);
   const dirtyAudio = useRef(false);
   const queuedWrites = useRef(0);
   const failedSegments = useRef<PendingSegment[]>([]);
@@ -66,17 +85,41 @@ export function useBiographerLive(
   }>({ next: 0, sources: [] });
   const archiveStartedAt = useRef<string | undefined>(undefined);
   const uploadRequest = useRef<AbortController | undefined>(undefined);
+  const uploadingTurn = useRef<string | undefined>(undefined);
+  const cancelledTurns = useRef(new Set<string>());
   const resetInProgress = useRef(false);
+  const advanceCalls = useRef(new Set<string>());
+  const captureFrozen = useRef(false);
+  const outlinePreparation = useRef<
+    | {
+        id: string;
+        complete: (prepared: boolean) => void;
+      }
+    | undefined
+  >(undefined);
 
-  const sync = useCallback(async () => {
-    if (uploading.current || resetInProgress.current || !authorId) return;
-    uploading.current = true;
+  const uploadPending = useCallback(async () => {
     const controller = new AbortController();
     uploadRequest.current = controller;
+    let timedOut = false;
+    let deadline: ReturnType<typeof setTimeout> | undefined;
     try {
       const upload = async (segment: PendingSegment) => {
         if (controller.signal.aborted) return;
+        if (cancelledTurns.current.has(segment.turnId)) {
+          await removePending(segment.id);
+          return;
+        }
+        uploadingTurn.current = segment.turnId;
+        // Each segment can make progress independently, even in a large recovery queue.
+        clearTimeout(deadline);
+        deadline = setTimeout(() => {
+          if (controller.signal.aborted) return;
+          timedOut = true;
+          controller.abort();
+        }, 30_000);
         const digest = await crypto.subtle.digest('SHA-256', segment.data);
+        if (controller.signal.aborted || cancelledTurns.current.has(segment.turnId)) return;
         const sha256 = [...new Uint8Array(digest)]
           .map((byte) => byte.toString(16).padStart(2, '0'))
           .join('');
@@ -157,34 +200,47 @@ export function useBiographerLive(
         await removePending(segment.id);
       };
       const pending = await pendingSegments(authorId, projectId);
-      if (pending.length) {
+      if (pending.some((segment) => !cancelledTurns.current.has(segment.turnId))) {
         dirtyAudio.current = true;
-        setSaving('saving');
+        setSaving((status) => (status === 'saved' ? 'saving' : status));
       }
       for (const segment of pending) await upload(segment);
       while (failedSegments.current.length && !controller.signal.aborted) {
         const segment = failedSegments.current[0];
-        await savePending(segment);
-        failedSegments.current.shift();
+        if (!cancelledTurns.current.has(segment.turnId)) await savePending(segment);
+        failedSegments.current = failedSegments.current.filter(({ id }) => id !== segment.id);
         await upload(segment);
       }
-      if (controller.signal.aborted) return;
+      controller.signal.throwIfAborted();
       const remaining = await pendingSegments(authorId, projectId);
+      controller.signal.throwIfAborted();
       dirtyAudio.current = Boolean(
-        remaining.length ||
+        remaining.some((segment) => !cancelledTurns.current.has(segment.turnId)) ||
         queuedWrites.current ||
         archive.current.length ||
         failedSegments.current.length,
       );
       setSaving(dirtyAudio.current ? 'saving' : 'saved');
     } catch {
-      if (!controller.signal.aborted && dirtyAudio.current)
+      if (timedOut) liveDiagnostic('audio-sync-timeout');
+      if ((timedOut || !controller.signal.aborted) && dirtyAudio.current)
         setSaving(navigator.onLine ? 'attention' : 'local');
     } finally {
-      uploading.current = false;
+      clearTimeout(deadline);
+      uploadingTurn.current = undefined;
       uploadRequest.current = undefined;
     }
+    return timedOut ? ('timed-out' as const) : undefined;
   }, [authorId, projectId, basePath, guest]);
+
+  const sync = useCallback(() => {
+    if (uploadInFlight.current) return uploadInFlight.current;
+    if (resetInProgress.current || !authorId) return Promise.resolve();
+    uploadInFlight.current = uploadPending().finally(() => {
+      uploadInFlight.current = undefined;
+    });
+    return uploadInFlight.current;
+  }, [authorId, uploadPending]);
 
   const flush = useCallback(() => {
     const buffers = archive.current.splice(0);
@@ -208,12 +264,13 @@ export function useBiographerLive(
     queuedWrites.current += 1;
     queue.current = queue.current
       .then(async () => {
-        await savePending(segment);
+        if (!cancelledTurns.current.has(segment.turnId)) await savePending(segment);
         queuedWrites.current -= 1;
-        await sync();
+        void sync();
       })
       .catch(() => {
         queuedWrites.current = Math.max(0, queuedWrites.current - 1);
+        if (cancelledTurns.current.has(segment.turnId)) return;
         failedSegments.current.push(segment);
         const tail = archive.current.splice(0);
         if (tail.length) {
@@ -256,21 +313,132 @@ export function useBiographerLive(
     playback.current.next = 0;
   }, []);
 
-  const pause = useCallback(() => {
-    epoch.current += 1;
-    if (!resetInProgress.current) flush();
-    const current = resources.current;
-    current.processor?.disconnect();
-    current.source?.disconnect();
-    current.stream?.getTracks().forEach((track) => track.stop());
-    if (current.context) void current.context.close();
-    if (current.socket?.readyState === WebSocket.OPEN)
-      current.socket.send(JSON.stringify({ type: 'pause' }));
-    current.socket?.close();
-    resources.current = {};
-    stopPlayback();
-    setState('paused');
-  }, [flush, stopPlayback]);
+  const pause = useCallback(
+    (discard = false) => {
+      epoch.current += 1;
+      advanceCalls.current.clear();
+      outlinePreparation.current?.complete(false);
+      captureFrozen.current = false;
+      archiveStartedForTurn.current = false;
+      archivePreroll.current = [];
+      if (!discard && !resetInProgress.current) flush();
+      const current = resources.current;
+      resources.current = {};
+      current.processor?.disconnect();
+      current.source?.disconnect();
+      current.stream?.getTracks().forEach((track) => track.stop());
+      if (current.context) void current.context.close();
+      if (current.socket?.readyState === WebSocket.OPEN)
+        current.socket.send(JSON.stringify({ type: discard ? 'cancel' : 'pause' }));
+      current.socket?.close();
+      stopPlayback();
+      setState('paused');
+    },
+    [flush, stopPlayback],
+  );
+
+  const discardSession = useCallback(
+    async (sessionId: string, turnId?: string) => {
+      const response = await fetch(`${basePath}/sessions/${sessionId}`, {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ turnId }),
+        keepalive: true,
+        signal: AbortSignal.timeout(15_000),
+      });
+      if (!response.ok) throw new Error('Unable to discard unfinished voice');
+    },
+    [basePath],
+  );
+
+  const cancel = useCallback(() => {
+    const { sessionId } = resources.current;
+    const turnId = sessionId ? turn.current : undefined;
+    if (turnId) {
+      cancelledTurns.current.add(turnId);
+      if (uploadingTurn.current === turnId) uploadRequest.current?.abort();
+      failedSegments.current = failedSegments.current.filter(
+        (segment) => segment.turnId !== turnId,
+      );
+      void queue.current
+        .then(async () => {
+          const pending = await pendingSegments(authorId, projectId);
+          await Promise.all(
+            pending
+              .filter((segment) => segment.turnId === turnId)
+              .map(({ id }) => removePending(id)),
+          );
+        })
+        .catch(() => liveDiagnostic('cancelled-audio-local-cleanup-failed'))
+        .then(() => {
+          void sync();
+        });
+    }
+    archive.current = [];
+    archiveStartedAt.current = undefined;
+    pause(true);
+    dirtyAudio.current = Boolean(failedSegments.current.length);
+    setSaving(dirtyAudio.current ? 'attention' : 'saved');
+    setError(false);
+
+    const cleanup = sessionId ? discardSession(sessionId, turnId || undefined) : Promise.resolve();
+    return { turnId, cleanup };
+  }, [authorId, discardSession, pause, projectId, sync]);
+
+  const stop = useCallback(async () => {
+    const activeUpload = uploadInFlight.current;
+    pause();
+    await queue.current;
+    if ((await (activeUpload ?? uploadInFlight.current)) !== 'timed-out') await sync();
+  }, [pause, sync]);
+
+  const prepareOutline = useCallback(async () => {
+    const socket = resources.current.socket;
+    if (socket?.readyState !== WebSocket.OPEN || !resources.current.processor) return false;
+    captureFrozen.current = true;
+    flush();
+    const id = crypto.randomUUID();
+    const startedAt = performance.now();
+    const prepared = await new Promise<boolean>((resolve) => {
+      const timer = setTimeout(() => {
+        liveDiagnostic('outline-preparation-timeout', {
+          timeoutMs: finalTranscriptTimeoutMs,
+          elapsedMs: Math.round(performance.now() - startedAt),
+        });
+        complete(false);
+      }, finalTranscriptTimeoutMs);
+      function complete(ok: boolean) {
+        clearTimeout(timer);
+        outlinePreparation.current = undefined;
+        resolve(ok);
+      }
+      outlinePreparation.current = { id, complete };
+      socket.send(JSON.stringify({ type: 'prepare_outline', requestId: id }));
+    });
+    if (!prepared) return false;
+    liveDiagnostic('outline-preparation-confirmed', {
+      elapsedMs: Math.round(performance.now() - startedAt),
+    });
+    await queue.current;
+    if ((await uploadInFlight.current) === 'timed-out') return false;
+    await sync();
+    return socket === resources.current.socket && !dirtyAudio.current;
+  }, [flush, sync]);
+
+  const finishOutline = useCallback((callId: string, accepted: boolean) => {
+    const socket = resources.current.socket;
+    if (socket?.readyState !== WebSocket.OPEN || !advanceCalls.current.delete(callId)) return false;
+    socket.send(JSON.stringify({ type: 'advance_to_outline_result', callId, accepted }));
+    return true;
+  }, []);
+
+  const resumeCapture = useCallback(() => {
+    if (!captureFrozen.current) return;
+    captureFrozen.current = false;
+    const socket = resources.current.socket;
+    if (socket?.readyState === WebSocket.OPEN)
+      socket.send(JSON.stringify({ type: 'resume_outline' }));
+  }, []);
 
   const reset = useCallback(async () => {
     resetInProgress.current = true;
@@ -278,6 +446,7 @@ export function useBiographerLive(
     pause();
     try {
       await queue.current;
+      await uploadInFlight.current;
       failedSegments.current = [];
       archive.current = [];
       archiveStartedAt.current = undefined;
@@ -381,10 +550,16 @@ export function useBiographerLive(
         liveUrl: string;
       };
       if (epoch.current !== startingEpoch) {
-        void fetch(`${basePath}/sessions/${session.sessionId}`, {
-          method: 'PATCH',
-          headers: guest ? guestIntentHeaders({ projectId, participantId: authorId }) : {},
-        });
+        if (skipSilentArchive) {
+          void discardSession(session.sessionId).catch(() =>
+            liveDiagnostic('cancelled-session-cleanup-failed'),
+          );
+        } else {
+          void fetch(`${basePath}/sessions/${session.sessionId}`, {
+            method: 'PATCH',
+            headers: guest ? guestIntentHeaders({ projectId, participantId: authorId }) : {},
+          }).catch(() => undefined);
+        }
         return;
       }
       resources.current.sessionId = session.sessionId;
@@ -409,15 +584,50 @@ export function useBiographerLive(
         } catch {
           return;
         }
+        if (
+          skipSilentArchive &&
+          event.type === 'speech_detected' &&
+          event.turnId === turn.current &&
+          !archiveStartedForTurn.current
+        ) {
+          archiveStartedForTurn.current = true;
+          const preroll = archivePreroll.current.splice(0);
+          if (preroll.length) {
+            archive.current.push(...preroll);
+            archiveStartedAt.current ??= new Date().toISOString();
+            dirtyAudio.current = true;
+            setSaving('saving');
+          }
+        }
+        if (event.type === 'outline_prepared') {
+          const preparation = outlinePreparation.current;
+          if (preparation && preparation.id === event.requestId) preparation.complete(true);
+        }
+        if (event.type === 'advance_to_outline' && event.callId) {
+          if (advanceCalls.current.has(event.callId)) return;
+          advanceCalls.current.add(event.callId);
+        }
+        if (event.type === 'advance_to_outline_cancelled' && event.callId)
+          advanceCalls.current.delete(event.callId);
         if (event.type === 'ready') {
           if (!resources.current.stream || socket !== resources.current.socket) return;
           setState('listening');
           try {
             capture(context, stream, (data) => {
-              if (socket.readyState !== WebSocket.OPEN) return;
+              if (captureFrozen.current || socket.readyState !== WebSocket.OPEN) return;
               socket.send(
                 JSON.stringify({ type: 'audio', data: toBase64(data), turnId: turn.current }),
               );
+              if (skipSilentArchive && !archiveStartedForTurn.current) {
+                if (!hasAudiblePcm(data)) {
+                  // Retain a short lead-in for the start of the next recoverable answer.
+                  archivePreroll.current.push(data);
+                  if (archivePreroll.current.length > 5) archivePreroll.current.shift();
+                  return;
+                }
+                archiveStartedForTurn.current = true;
+                archive.current.push(...archivePreroll.current.splice(0));
+              }
               archiveStartedAt.current ??= new Date().toISOString();
               dirtyAudio.current = true;
               archive.current.push(data);
@@ -452,6 +662,8 @@ export function useBiographerLive(
           flush();
           turn.current = event.nextTurnId ?? crypto.randomUUID();
           sequence.current = 0;
+          archiveStartedForTurn.current = false;
+          archivePreroll.current = [];
         }
         if (event.type === 'reconnecting') setState('reconnecting');
         if (event.type === 'error') {
@@ -481,7 +693,19 @@ export function useBiographerLive(
       setError(true);
       pause();
     }
-  }, [authorId, basePath, capture, flush, guest, pause, play, projectId, stopPlayback]);
+  }, [
+    authorId,
+    basePath,
+    capture,
+    discardSession,
+    flush,
+    guest,
+    pause,
+    play,
+    projectId,
+    skipSilentArchive,
+    stopPlayback,
+  ]);
 
   useEffect(() => {
     const onHidden = () => {
@@ -490,14 +714,8 @@ export function useBiographerLive(
         pause();
       }
     };
-    const leave = (event: BeforeUnloadEvent) => {
-      if (saving !== 'saved') {
-        event.preventDefault();
-      }
-    };
     document.addEventListener('visibilitychange', onHidden);
     window.addEventListener('online', sync);
-    window.addEventListener('beforeunload', leave);
     void sync();
     const retry = window.setInterval(() => {
       void sync();
@@ -506,9 +724,27 @@ export function useBiographerLive(
       window.clearInterval(retry);
       document.removeEventListener('visibilitychange', onHidden);
       window.removeEventListener('online', sync);
-      window.removeEventListener('beforeunload', leave);
     };
-  }, [pause, saving, sync]);
+  }, [pause, sync]);
+  useEffect(() => {
+    if (saving === 'saved') return;
+    const leave = (event: BeforeUnloadEvent) => event.preventDefault();
+    window.addEventListener('beforeunload', leave);
+    return () => window.removeEventListener('beforeunload', leave);
+  }, [saving]);
   useEffect(() => () => pause(), [pause]);
-  return { state, saving, error, start, pause, sync, reset };
+  return {
+    state,
+    saving,
+    error,
+    start,
+    pause,
+    stop,
+    cancel,
+    sync,
+    reset,
+    prepareOutline,
+    finishOutline,
+    resumeCapture,
+  };
 }

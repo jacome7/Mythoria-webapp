@@ -1,19 +1,132 @@
 {
   "StoryWhisperer": {
-    "title": "Sussurrador de Histórias",
+    "introQuestions": "Vou fazer-te algumas perguntas para dar forma à tua história.",
+    "introProgress": "Acompanha o progresso no topo. Quando já tivermos informação suficiente, podes carregar em «Continuar» para criar o esboço.",
+    "introInputs": "A qualquer momento, podes <photo>anexar fotografias</photo>, <dictate>ditar a resposta</dictate> ou <live>conversar em direto</live>.",
+    "title": "Guia de escrita",
     "subtitle": "Todas as grandes histórias começam com uma conversa.",
-    "welcome": "Conta-me o que tens em mente. Vamos descobrir as personagens, o mundo em que vivem e o que acontece a seguir.",
-    "consent": "Concordo em guardar a transcrição desta conversa e as fotografias que adicionar. O áudio pode ser guardado até 7 dias para que eu possa recuperar uma resposta incompleta.",
-    "opening": "Sobre quem gostarias de escrever a tua história?",
+    "opening": "Sobre quem queres contar uma história?",
+    "openings": {
+      "neutral": {
+        "question": "Sobre o que queres contar uma história?",
+        "choice1": "Quero escrever sobre alguém especial",
+        "choice2": "Lembro-me de um dia surpreendente",
+        "choice3": "Tenho uma personagem em mente",
+        "choice4": "Quero imaginar um lugar novo"
+      },
+      "romance": {
+        "question": "Onde queres que comece a história de amor?",
+        "choice1": "Quero contar como nos conhecemos",
+        "choice2": "Quero recordar o primeiro encontro",
+        "choice3": "Quero contar um momento marcante",
+        "choice4": "Quero inventar um romance"
+      },
+      "milestones_celebrations": {
+        "question": "O que queres celebrar nesta história?",
+        "choice1": "Quero preparar uma surpresa de aniversário",
+        "choice2": "Quero recordar uma grande conquista",
+        "choice3": "Quero contar uma festa em família",
+        "choice4": "Quero imaginar uma festa inesperada"
+      },
+      "kids_bedtime": {
+        "question": "Que história queres contar à hora de dormir?",
+        "choice1": "Quero um conto de embalar personalizado",
+        "choice2": "Quero seguir um animal sonolento",
+        "choice3": "Quero contar uma história sobre as estrelas",
+        "choice4": "Quero uma aventura à hora de dormir"
+      },
+      "kids_adventures": {
+        "question": "Que aventura queres começar?",
+        "choice1": "Quero descobrir uma passagem secreta",
+        "choice2": "Quero seguir um mapa misterioso",
+        "choice3": "Quero salvar uma criatura mágica",
+        "choice4": "Quero transformar uma tarde numa expedição"
+      },
+      "kids_transitions": {
+        "question": "Que mudança queres explorar nesta história?",
+        "choice1": "Quero contar o primeiro dia numa escola nova",
+        "choice2": "Quero contar a chegada de um irmão",
+        "choice3": "Quero escrever sobre uma mudança de casa",
+        "choice4": "Quero uma história sobre ganhar coragem"
+      },
+      "learning_and_discovery": {
+        "question": "O que queres explorar ou descobrir?",
+        "choice1": "Quero responder a uma velha pergunta",
+        "choice2": "Quero explorar um mistério da natureza",
+        "choice3": "Quero aprender a construir algo",
+        "choice4": "Quero explorar um lugar distante"
+      },
+      "pet_stories": {
+        "question": "Que história queres contar sobre um animal?",
+        "choice1": "Quero contar como o meu animal veio para casa",
+        "choice2": "Quero contar a sua mania mais engraçada",
+        "choice3": "Quero ver o mundo pelos olhos do meu animal",
+        "choice4": "Quero imaginar um animal em missão secreta"
+      },
+      "remembrance": {
+        "question": "Que memória queres guardar numa história?",
+        "choice1": "Quero recordar um dia que passámos juntos",
+        "choice2": "Quero manter viva uma tradição",
+        "choice3": "Quero escrever sobre um objeto especial",
+        "choice4": "Quero pôr em palavras o que sinto"
+      },
+      "grandparents": {
+        "question": "Que história queres contar sobre um avô ou uma avó?",
+        "choice1": "Quero guardar uma história dos meus avós",
+        "choice2": "Quero recordar o que fazíamos juntos",
+        "choice3": "Quero conhecer a juventude dos meus avós",
+        "choice4": "Quero partilhar o que aprendi com os meus avós"
+      },
+      "school_projects": {
+        "question": "O que queres partilhar neste trabalho de escola?",
+        "choice1": "Quero explicar um tema com uma história",
+        "choice2": "Quero contar uma experiência da aula",
+        "choice3": "Quero imaginar um dia noutra época",
+        "choice4": "Quero mostrar como o meu grupo resolveu um problema"
+      },
+      "sports_teams": {
+        "question": "Que momento da equipa queres contar?",
+        "choice1": "Quero recordar um jogo inesquecível",
+        "choice2": "Quero contar como entrei na equipa",
+        "choice3": "Quero mostrar como a equipa deu a volta",
+        "choice4": "Quero inventar uma equipa que surpreende"
+      },
+      "family_travels": {
+        "question": "Por onde queres começar a história da viagem em família?",
+        "choice1": "Quero recordar o melhor dia da viagem",
+        "choice2": "Quero contar quando mudámos de planos",
+        "choice3": "Quero contar o que descobrimos juntos",
+        "choice4": "Quero inventar uma viagem cheia de surpresas"
+      },
+      "amusement_parks": {
+        "question": "O que queres contar sobre um dia no parque de diversões?",
+        "choice1": "Quero recordar a atração que ousei experimentar",
+        "choice2": "Quero contar o nosso melhor dia no parque",
+        "choice3": "Quero inventar uma atração impossível",
+        "choice4": "Quero descobrir um segredo depois do fecho"
+      },
+      "neurodiversity": {
+        "question": "Que experiência queres partilhar nesta história?",
+        "choice1": "Quero uma personagem que nota pequenos detalhes",
+        "choice2": "Quero mostrar como se sente num lugar agitado",
+        "choice3": "Quero contar como alguém me deu espaço",
+        "choice4": "Quero partilhar o que entusiasma a personagem"
+      },
+      "holidays_festivals": {
+        "question": "Que festa ou tradição queres trazer à vida?",
+        "choice1": "Quero contar a história de uma tradição nossa",
+        "choice2": "Quero recordar o meu primeiro festival",
+        "choice3": "Quero escrever sobre uma festa longe de casa",
+        "choice4": "Quero inventar um festival para uma terra fictícia"
+      }
+    },
     "close": "Fechar conversa",
-    "start": "Começar a conversa",
-    "resume": "Continuar com o Sussurrador de Histórias",
+    "resume": "Continuar com o Guia de escrita",
     "progress": "Progresso da história",
     "missing": "Ainda em falta",
     "characters": "Personagens",
     "setting": "Cenário",
     "plot": "Enredo",
-    "checkProgress": "Verificar progresso",
     "conversation": "Conversa",
     "you": "Tu",
     "photos": "Fotografias nesta conversa",
@@ -24,20 +137,27 @@
     "suggestions": "Respostas sugeridas",
     "reply": "Escreve uma resposta…",
     "send": "Enviar",
+    "sendShortcut": "Enter para enviar. Shift + Enter para mudar de linha.",
+    "sendFailed": "Não foi possível enviar a tua resposta.",
+    "assistantResponding": "O guia de escrita está a preparar uma resposta.",
     "working": "Um momento…",
     "error": "Ocorreu um erro. Podes tentar novamente.",
     "retry": "Tentar novamente",
     "reset": "Recomeçar",
-    "resetConfirm": "Queres recomeçar? A conversa e os seus anexos serão removidos do teu rascunho.",
+    "resetConfirm": "Queres recomeçar a conversa? As mensagens e os anexos serão apagados do rascunho.",
+    "resetYes": "Sim",
+    "resetNo": "Não",
+    "resetClarify": "Responde «Sim» ou «Não», ou escolhe um dos botões.",
     "cancel": "Cancelar",
-    "otherInputs": "Outras formas de contar",
-    "continue": "Criar o meu esboço",
+    "continue": "Continuar",
     "reviewInputs": "Revê os outros elementos da história ou remove uma fotografia antes de avançar.",
     "dictate": "Ditar",
     "stopDictation": "Parar de ditar",
     "recoverDictation": "Recuperar ditado",
     "discardDictation": "Apagar ditado",
     "liveVoice": "Conversa por voz",
+    "liveVoiceShort": "Em direto",
+    "pauseVoiceShort": "Pausar",
     "pauseVoice": "Pausar conversa por voz",
     "connecting": "A estabelecer ligação…",
     "listening": "A ouvir…",
@@ -47,13 +167,14 @@
     "useExisting": "Usar os elementos que já estão no meu rascunho",
     "developing": "Em desenvolvimento",
     "ready": "Pronto",
-    "editReply": "Editar resposta",
+    "switchToText": "Continuar por escrito",
+    "writeReply": "Escrever resposta",
     "saveReply": "Guardar resposta",
     "unfinished": "Esta resposta de voz está incompleta. Recupera a gravação, escreve a resposta ou apaga-a.",
     "discardVoiceConfirm": "Queres apagar a gravação de voz que ainda não foi sincronizada?",
     "retryOutline": "Retomar a criação do meu esboço",
-    "resumePrompt": "Tens uma conversa guardada para esta história. Queres continuar ou recomeçar?",
-    "resumeChat": "Continuar a conversa",
+    "readyNotice": "Já podes avançar para o esboço. Se quiseres, podes continuar a contar a tua história.",
+    "advanceUnavailable": "Ainda não foi possível avançar. Vê o progresso e confirma se tens respostas por guardar.",
     "saveStatus": {
       "local": "Neste dispositivo",
       "saving": "A guardar…",

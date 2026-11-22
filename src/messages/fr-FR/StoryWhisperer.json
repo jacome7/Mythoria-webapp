@@ -1,19 +1,132 @@
 {
   "StoryWhisperer": {
+    "introQuestions": "Je vais vous poser quelques questions pour donner forme à votre histoire.",
+    "introProgress": "Suivez votre progression en haut de l’écran. Dès que vous aurez donné assez de détails, vous pourrez cliquer sur « Continuer » pour créer le plan.",
+    "introInputs": "À tout moment, vous pouvez <photo>joindre des photos</photo>, <dictate>dicter votre réponse</dictate> ou <live>parler en direct</live>.",
     "title": "Murmureur d’histoires",
     "subtitle": "Toute grande histoire commence par une conversation.",
-    "welcome": "Raconte-moi ce que tu as en tête. Ensemble, nous découvrirons les personnages, leur univers et ce qui leur arrive.",
-    "consent": "J’accepte d’enregistrer la transcription de cette conversation et les photos que j’ajoute. L’audio peut être conservé jusqu’à 7 jours pour me permettre de récupérer une réponse incomplète.",
     "opening": "De qui aimerais-tu parler dans ton histoire ?",
+    "openings": {
+      "neutral": {
+        "question": "Sur quoi aimerais-tu raconter une histoire ?",
+        "choice1": "J’aimerais écrire sur quelqu’un qui compte",
+        "choice2": "Je me souviens d’une journée étonnante",
+        "choice3": "J’ai un personnage en tête",
+        "choice4": "J’aimerais imaginer un lieu nouveau"
+      },
+      "romance": {
+        "question": "Où devrait commencer ton histoire d’amour ?",
+        "choice1": "J’aimerais raconter notre rencontre",
+        "choice2": "J’aimerais me rappeler notre premier rendez-vous",
+        "choice3": "J’aimerais raconter un moment marquant",
+        "choice4": "J’aimerais inventer une histoire d’amour"
+      },
+      "milestones_celebrations": {
+        "question": "Qu’aimerais-tu fêter dans ton histoire ?",
+        "choice1": "J’aimerais préparer une surprise d’anniversaire",
+        "choice2": "J’aimerais célébrer une grande réussite",
+        "choice3": "J’aimerais raconter une fête de famille",
+        "choice4": "J’aimerais imaginer une fête pleine de surprises"
+      },
+      "kids_bedtime": {
+        "question": "Quelle histoire aimerais-tu raconter à l’heure du coucher ?",
+        "choice1": "J’aimerais un conte du soir pour mon enfant",
+        "choice2": "J’aimerais suivre un animal qui a sommeil",
+        "choice3": "J’aimerais raconter une histoire sur les étoiles",
+        "choice4": "J’aimerais une aventure à l’heure du coucher"
+      },
+      "kids_adventures": {
+        "question": "Quelle aventure aimerais-tu commencer ?",
+        "choice1": "J’aimerais découvrir un passage secret",
+        "choice2": "J’aimerais suivre une carte mystérieuse",
+        "choice3": "J’aimerais sauver une créature magique",
+        "choice4": "J’aimerais transformer une journée en expédition"
+      },
+      "kids_transitions": {
+        "question": "Quel changement aimerais-tu explorer dans ton histoire ?",
+        "choice1": "J’aimerais raconter une rentrée dans une autre école",
+        "choice2": "J’aimerais raconter l’arrivée d’un frère ou d’une sœur",
+        "choice3": "J’aimerais écrire sur un déménagement",
+        "choice4": "J’aimerais raconter comment on trouve du courage"
+      },
+      "learning_and_discovery": {
+        "question": "Qu’aimerais-tu faire découvrir ?",
+        "choice1": "J’aimerais répondre à une vieille question",
+        "choice2": "J’aimerais explorer un mystère de la nature",
+        "choice3": "J’aimerais apprendre en fabriquant quelque chose",
+        "choice4": "J’aimerais explorer un endroit lointain"
+      },
+      "pet_stories": {
+        "question": "Quelle histoire aimerais-tu raconter sur un animal ?",
+        "choice1": "J’aimerais raconter l’arrivée de mon animal",
+        "choice2": "J’aimerais raconter sa manie la plus drôle",
+        "choice3": "J’aimerais voir le monde à travers ses yeux",
+        "choice4": "J’aimerais imaginer un animal en mission secrète"
+      },
+      "remembrance": {
+        "question": "Quel souvenir aimerais-tu conserver dans une histoire ?",
+        "choice1": "J’aimerais me rappeler une journée passée ensemble",
+        "choice2": "J’aimerais faire vivre une tradition",
+        "choice3": "J’aimerais écrire sur un objet qui compte",
+        "choice4": "J’aimerais mettre mes sentiments en mots"
+      },
+      "grandparents": {
+        "question": "Quelle histoire aimerais-tu raconter sur un de tes grands-parents ?",
+        "choice1": "J’aimerais garder une histoire de mes grands-parents",
+        "choice2": "J’aimerais me rappeler ce qu’on faisait ensemble",
+        "choice3": "J’aimerais découvrir leur jeunesse",
+        "choice4": "J’aimerais partager ce qu’ils m’ont appris"
+      },
+      "school_projects": {
+        "question": "Qu’aimerais-tu partager dans ton projet scolaire ?",
+        "choice1": "J’aimerais expliquer un sujet par une histoire",
+        "choice2": "J’aimerais raconter une expérience en classe",
+        "choice3": "J’aimerais imaginer une journée à une autre époque",
+        "choice4": "J’aimerais montrer comment on a résolu un problème"
+      },
+      "sports_teams": {
+        "question": "Quel moment aimerais-tu raconter dans l’histoire d’une équipe ?",
+        "choice1": "J’aimerais raconter un match inoubliable",
+        "choice2": "J’aimerais raconter mon arrivée dans l’équipe",
+        "choice3": "J’aimerais montrer comment l’équipe a rebondi",
+        "choice4": "J’aimerais inventer une équipe qui crée la surprise"
+      },
+      "family_travels": {
+        "question": "Où aimerais-tu commencer ton récit de voyage en famille ?",
+        "choice1": "J’aimerais raconter le meilleur jour des vacances",
+        "choice2": "J’aimerais raconter un changement de programme",
+        "choice3": "J’aimerais décrire un lieu qu’on a découvert ensemble",
+        "choice4": "J’aimerais inventer un voyage plein de surprises"
+      },
+      "amusement_parks": {
+        "question": "Qu’est-ce qui ferait d’une journée au parc d’attractions une histoire ?",
+        "choice1": "J’aimerais raconter mon premier grand frisson",
+        "choice2": "J’aimerais raconter notre plus belle journée au parc",
+        "choice3": "J’aimerais inventer un manège impossible",
+        "choice4": "J’aimerais découvrir un secret à la fermeture"
+      },
+      "neurodiversity": {
+        "question": "Quelle expérience aimerais-tu partager dans ton histoire ?",
+        "choice1": "J’aimerais un personnage qui remarque les détails",
+        "choice2": "J’aimerais montrer son ressenti dans un lieu animé",
+        "choice3": "J’aimerais raconter comment on m’a fait une place",
+        "choice4": "J’aimerais partager ce qui passionne mon personnage"
+      },
+      "holidays_festivals": {
+        "question": "Quelle fête ou quel festival aimerais-tu faire vivre dans ton histoire ?",
+        "choice1": "J’aimerais raconter une tradition de chez nous",
+        "choice2": "J’aimerais me rappeler mon premier festival",
+        "choice3": "J’aimerais raconter une fête loin de chez moi",
+        "choice4": "J’aimerais inventer un festival pour une ville fictive"
+      }
+    },
     "close": "Fermer la conversation",
-    "start": "Commencer à discuter",
     "resume": "Continuer avec le Murmureur d’histoires",
     "progress": "Avancée de l’histoire",
     "missing": "À définir",
     "characters": "Personnages",
     "setting": "Cadre",
     "plot": "Intrigue",
-    "checkProgress": "Vérifier l’avancée",
     "conversation": "Conversation",
     "you": "Toi",
     "photos": "Photos de cette conversation",
@@ -24,20 +137,27 @@
     "suggestions": "Réponses suggérées",
     "reply": "Écris une réponse…",
     "send": "Envoyer",
+    "sendShortcut": "Entrée pour envoyer. Maj + Entrée pour aller à la ligne.",
+    "sendFailed": "Impossible d’envoyer ta réponse.",
+    "assistantResponding": "Le Murmureur d’histoires prépare une réponse.",
     "working": "Un instant…",
     "error": "Un problème est survenu. Tu peux réessayer.",
     "retry": "Réessayer",
     "reset": "Recommencer",
     "resetConfirm": "Recommencer ? Cette conversation et ses pièces jointes seront retirées de ton brouillon.",
+    "resetYes": "Oui",
+    "resetNo": "Non",
+    "resetClarify": "Répondez « Oui » ou « Non », ou choisissez l’un des boutons.",
     "cancel": "Annuler",
-    "otherInputs": "Autres façons de raconter",
-    "continue": "Créer mon plan",
+    "continue": "Continuer",
     "reviewInputs": "Vérifie les autres éléments de ton histoire ou retire une photo avant de continuer.",
     "dictate": "Dicter",
     "stopDictation": "Arrêter la dictée",
     "recoverDictation": "Récupérer la dictée",
     "discardDictation": "Supprimer la dictée",
     "liveVoice": "Conversation vocale",
+    "liveVoiceShort": "En direct",
+    "pauseVoiceShort": "Pause",
     "pauseVoice": "Mettre la conversation vocale en pause",
     "connecting": "Connexion…",
     "listening": "À l’écoute…",
@@ -47,13 +167,14 @@
     "useExisting": "Utiliser les éléments déjà dans mon brouillon",
     "developing": "En cours",
     "ready": "Prêt",
-    "editReply": "Modifier la réponse",
+    "switchToText": "Continuer par écrit",
+    "writeReply": "Écrire une réponse",
     "saveReply": "Enregistrer la réponse",
     "unfinished": "Cette réponse vocale est incomplète. Récupère l’enregistrement, écris ta réponse ou supprime-la.",
     "discardVoiceConfirm": "Supprimer l’enregistrement vocal en attente de synchronisation ?",
     "retryOutline": "Reprendre la création de mon plan",
-    "resumePrompt": "Tu as une conversation enregistrée pour cette histoire. Souhaites-tu continuer ou recommencer ?",
-    "resumeChat": "Reprendre la conversation",
+    "readyNotice": "Vous pouvez passer au plan ou continuer à raconter votre histoire.",
+    "advanceUnavailable": "Impossible de continuer pour le moment. Vérifiez votre progression et les réponses en attente d’enregistrement.",
     "saveStatus": {
       "local": "Sur cet appareil",
       "saving": "Enregistrement…",

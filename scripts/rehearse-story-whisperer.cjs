@@ -56,6 +56,9 @@ async function main() {
     };
     const objects = new Map();
     let storageFailurePrefix;
+    let storageFailure;
+    let disappearDuringDelete;
+    let pauseStorageDelete;
     const bucket = {
       file: (path) => ({
         save: async (bytes) => {
@@ -67,9 +70,22 @@ async function main() {
           objects.delete(path);
         },
       }),
-      deleteFiles: async ({ prefix }) => {
-        if (storageFailurePrefix === prefix) throw new Error('Isolated storage failure');
-        for (const path of objects.keys()) if (path.startsWith(prefix)) objects.delete(path);
+      deleteFiles: async ({ prefix, force }) => {
+        await pauseStorageDelete?.(prefix);
+        if (storageFailurePrefix === prefix)
+          throw storageFailure ?? new Error('Isolated storage failure');
+        const errors = [];
+        for (const path of [...objects.keys()].filter((key) => key.startsWith(prefix))) {
+          if (path === disappearDuringDelete) {
+            objects.delete(path);
+            disappearDuringDelete = undefined;
+            const error = Object.assign(new Error('Object disappeared'), { code: 404 });
+            if (!force) throw error;
+            errors.push(error);
+          }
+          objects.delete(path);
+        }
+        if (errors.length) throw errors;
       },
     };
     const storagePath = require.resolve('@google-cloud/storage');
@@ -88,17 +104,45 @@ async function main() {
     };
     process.env.BIOGRAPHER_STORAGE_BUCKET = 'isolated-recovery';
     let assessmentCalls = 0;
+    let failNextQuestion = false;
     const sgwPath = require.resolve('../src/lib/sgw-client.ts');
     require.cache[sgwPath] = {
       id: sgwPath,
       filename: sgwPath,
       loaded: true,
       exports: {
-        sgwFetch: async (path) => {
+        sgwFetch: async (path, options) => {
           assert.equal(path, '/api/biographer/whisperer');
           assessmentCalls++;
+          if (failNextQuestion) {
+            failNextQuestion = false;
+            return new Response(null, { status: 503 });
+          }
+          const input = JSON.parse(options.body);
+          if (input.locale === 'pt-PT') {
+            assert.equal(input.context.primaryIntent, 'romance');
+            assert.equal(input.context.opening.choices.length, 4);
+            const answers = input.turns.filter((line) => line.role === 'user');
+            const ready = answers.some((line) => line.text.includes('bilhete'));
+            return Response.json({
+              question:
+                answers.length === 1
+                  ? 'Como gostaria de chamar à sua mulher na história?'
+                  : 'Em que escola conheceu a Inês?',
+              readiness: {
+                rubricVersion: 3,
+                areas: {
+                  characters: ready ? 'ready' : 'developing',
+                  setting: ready ? 'ready' : 'developing',
+                  plot: ready ? 'ready' : 'missing',
+                },
+                hint: ready ? '' : 'Conte um episódio na escola.',
+              },
+            });
+          }
           return Response.json({
             readiness: {
+              rubricVersion: 3,
               areas: { characters: 'ready', setting: 'ready', plot: 'ready' },
               hint: '',
             },
@@ -113,6 +157,7 @@ async function main() {
       admitSession,
       leaseSession,
       checkpoint,
+      cancelWhispererSession,
     } = require('../src/db/services/biographer.ts');
     const { adminCommand } = require('../src/lib/biographer/admin.ts');
     process.env.BIOGRAPHER_LIVE_URL = 'ws://localhost:8082/live';
@@ -239,6 +284,7 @@ async function main() {
       sendWhispererTurn,
       handoffWhisperer,
       verifyWhispererStructure,
+      refreshWhispererReadiness,
       getWhisperer,
       deleteStoryWithWhispererCleanup,
     } = require('../src/lib/story-whisperer/server.ts');
@@ -250,9 +296,16 @@ async function main() {
     ).rows[0].story_id;
     const opened = await startWhisperer(authorId, 'Rehearsal', textDraft, {
       locale: 'en-US',
-      consent: true,
     });
     const textProject = opened.interview.projectId;
+    assert.equal(
+      (
+        await pg.query('SELECT consent_at FROM biographer_participants WHERE project_id = $1', [
+          textProject,
+        ])
+      ).rows[0].consent_at,
+      null,
+    );
     const handoff = (revision) =>
       handoffWhisperer(authorId, textDraft, textProject, {
         revision,
@@ -270,10 +323,141 @@ async function main() {
     const resumed = await getWhisperer(authorId, textDraft);
     assert.equal(resumed.interview.turns.length, 2);
     assert.equal(resumed.interview.readiness.ready, true);
-    const accepted = await handoff(result.revision);
+
+    // Reopen the same saved revision with a previously accepted rubric result.
+    await pg.query('UPDATE story_whisperer_interviews SET readiness = $1 WHERE project_id = $2', [
+      JSON.stringify({
+        ...resumed.interview.readiness,
+        rubricVersion: 2,
+        firstReadyTurnId: randomUUID(),
+      }),
+      textProject,
+    ]);
+    const stale = (await getWhisperer(authorId, textDraft)).interview;
+    assert.equal(stale.revision, result.revision);
+    assert.equal(stale.readinessNeedsRefresh, true);
+    assert.equal(stale.readiness.ready, false);
+    assert.equal(stale.readiness.firstReadyTurnId, undefined);
+    assert.deepEqual(stale.turns, resumed.interview.turns);
+    await assert.rejects(handoff(stale.revision), (err) => err.status === 409);
+    const refreshed = await refreshWhispererReadiness(authorId, textDraft, textProject);
+    assert.equal(refreshed.revision, result.revision);
+    assert.deepEqual(refreshed.readiness, resumed.interview.readiness);
+    assert.equal(assessmentCalls, 2);
+    const accepted = await handoff(refreshed.revision);
     assert.deepEqual(await handoff(result.revision), accepted);
     assert.ok(accepted.userDescription.includes(answer.text));
     assert.ok(!accepted.userDescription.includes('What did Clara sing?'));
+    assert.deepEqual(result.interview, resumed.interview);
+
+    // Real application services and embedded PostgreSQL across the text/voice
+    // boundary. Model replies and final voice transcripts are synthetic.
+    const inesAuthor = (
+      await pg.query(
+        "INSERT INTO authors(clerk_user_id, display_name, email) VALUES ('ines-test','Test','ines@example.invalid') RETURNING author_id",
+      )
+    ).rows[0].author_id;
+    const inesDraft = (
+      await pg.query(
+        "INSERT INTO stories(author_id,title) VALUES ($1,'Synthetic school encounter') RETURNING story_id",
+        [inesAuthor],
+      )
+    ).rows[0].story_id;
+    const ines = (
+      await startWhisperer(inesAuthor, 'Teste', inesDraft, {
+        locale: 'pt-PT',
+        primaryIntent: 'romance',
+      })
+    ).interview;
+    const sendText = (text) =>
+      sendWhispererTurn(inesAuthor, inesDraft, ines.projectId, { id: randomUUID(), text });
+    const relationship = await sendText(ines.opening.choices[0]);
+    assert.equal(relationship.readiness.areas.characters, 'developing');
+    const typed = await sendText('Chama-se Inês. Conhecemo-nos na escola.');
+    assert.equal(typed.readiness.ready, false);
+    assert.equal(typed.interview.turns.at(-1).text, 'Em que escola conheceu a Inês?');
+    const resumedInes = (
+      await startWhisperer(inesAuthor, 'Teste', inesDraft, {
+        locale: 'pt-PT',
+        primaryIntent: 'sports_teams',
+      })
+    ).interview;
+    assert.deepEqual(resumedInes, typed.interview);
+    const voiceTicket = await issueSession(inesAuthor, ines.projectId);
+    const admission = await admitSession(voiceTicket.ticket, ines.projectId, voiceTicket.sessionId);
+    assert.deepEqual(admission.context.opening, ines.opening);
+    assert.equal(admission.context.primaryIntent, 'romance');
+    assert.deepEqual(
+      admission.history.map(({ role, text }) => ({ role, text })),
+      typed.interview.turns.map(({ role, text }) => ({ role, text })),
+    );
+    const conversation = [
+      ['user', 'Na Escola Secundária de Camões, em Lisboa.'],
+      ['assistant', 'Em que ano se conheceram?'],
+      ['user', 'Talvez em 1998.'],
+      ['assistant', 'O que fez a Inês naquele dia?'],
+      ['user', 'Emprestou-me O Principezinho, com um bilhete lá dentro.'],
+      ['assistant', 'Era um bilhete de comboio para Paris?'],
+    ];
+    for (const [role, text] of conversation) {
+      await checkpoint({
+        sessionId: voiceTicket.sessionId,
+        eventId: randomUUID(),
+        turnId: randomUUID(),
+        role,
+        text,
+        final: true,
+      });
+    }
+    const reloaded = (await getWhisperer(inesAuthor, inesDraft)).interview;
+    assert.equal(reloaded.readinessNeedsRefresh, true);
+    const progress = await refreshWhispererReadiness(inesAuthor, inesDraft, ines.projectId);
+    assert.equal(progress.readiness.ready, true);
+    const outlineInput = await handoffWhisperer(inesAuthor, inesDraft, ines.projectId, {
+      revision: progress.revision,
+      brief: '',
+      imageObjectPaths: [],
+    });
+    await verifyWhispererStructure(
+      inesAuthor,
+      inesDraft,
+      outlineInput.structureRequestId,
+      outlineInput.userDescription,
+      [],
+    );
+    const notes = outlineInput.userDescription.split('\n\n').map((line) => JSON.parse(line));
+    assert.ok(
+      notes.some(
+        (note) =>
+          note.interviewerQuestion === 'Em que escola conheceu a Inês?' &&
+          note.authorReply.includes('Camões, em Lisboa'),
+      ),
+    );
+    assert.ok(
+      notes.some(
+        (note) =>
+          note.interviewerQuestion === 'Em que ano se conheceram?' &&
+          note.authorReply === 'Talvez em 1998.',
+      ),
+    );
+    assert.ok(notes.some((note) => note.authorReply.includes('O Principezinho, com um bilhete')));
+    assert.ok(!outlineInput.userDescription.includes('Paris'));
+
+    const multiTabDraft = randomUUID();
+    const multiTabProject = (
+      await startWhisperer(inesAuthor, 'Teste', multiTabDraft, { locale: 'en-US' })
+    ).interview.projectId;
+    const submit = (answer) =>
+      sendWhispererTurn(inesAuthor, multiTabDraft, multiTabProject, answer);
+    const older = { id: randomUUID(), text: 'First answer from another tab.' };
+    failNextQuestion = true;
+    await assert.rejects(submit(older), (error) => error.status === 503);
+    const newer = await submit({ id: randomUUID(), text: 'Second answer.' });
+    const beforeReplay = assessmentCalls;
+    const lateReplay = await submit(older);
+    assert.equal(assessmentCalls, beforeReplay);
+    assert.equal(lateReplay.question, null);
+    assert.deepEqual(lateReplay.interview, newer.interview);
     await verifyWhispererStructure(
       authorId,
       textDraft,
@@ -296,12 +480,125 @@ async function main() {
       consent: true,
     });
     assert.notEqual(replacement.interview.projectId, textProject);
+    assert.ok(
+      (
+        await pg.query('SELECT consent_at FROM biographer_participants WHERE project_id = $1', [
+          replacement.interview.projectId,
+        ])
+      ).rows[0].consent_at,
+    );
     await assert.rejects(
       sendWhispererTurn(authorId, textDraft, textProject, answer),
       (err) => err.status === 409 || err.status === 404,
     );
     assert.equal((await getWhisperer(authorId, textDraft)).interview.turns.length, 0);
-    await resetWhisperer(authorId, draftId, first);
+    const resetSource = `biographer/${first}/owner/photos/reference`;
+    const resetAudio = `biographer/${first}/owner/audio/recovery`;
+    const resetRequest = randomUUID();
+    const emptyRequest = randomUUID();
+    const reservedRequest = randomUUID();
+    const resetPrefix = `${draftId}/inputs/whisperer-${resetRequest}-`;
+    const resetCopy = `${resetPrefix}copy.jpg`;
+    const reservedCopy = `${draftId}/inputs/whisperer-${reservedRequest}-copy.jpg`;
+    const ordinaryInput = `${draftId}/inputs/ordinary-input.jpg`;
+    const neighboringProject = `biographer/${second}/owner/photos/reference`;
+    for (const [requestId, paths, reserved] of [
+      [resetRequest, [resetCopy], false],
+      [emptyRequest, [`${draftId}/inputs/whisperer-${emptyRequest}-missing.jpg`], false],
+      [reservedRequest, [reservedCopy], true],
+    ]) {
+      await pg.query(
+        `INSERT INTO story_whisperer_handoffs
+         (request_id,draft_id,project_id,revision,user_description,image_object_paths,dispatch_reserved)
+         VALUES ($1,$2,$3,0,'Isolated snapshot',$4,$5)`,
+        [requestId, draftId, first, JSON.stringify(paths), reserved],
+      );
+    }
+    for (const key of [
+      resetSource,
+      resetAudio,
+      resetCopy,
+      reservedCopy,
+      ordinaryInput,
+      neighboringProject,
+    ])
+      objects.set(key, Buffer.from('Isolated reset media'));
+
+    storageFailurePrefix = resetPrefix;
+    storageFailure = Object.assign(new Error('Isolated list failure'), { code: 404 });
+    await assert.rejects(resetWhisperer(authorId, draftId, first), /Isolated list failure/);
+    storageFailure = [
+      Object.assign(new Error('Object disappeared'), { code: 404 }),
+      Object.assign(new Error('Object delete unavailable'), { code: 503 }),
+    ];
+    await assert.rejects(resetWhisperer(authorId, draftId, first), (err) => err === storageFailure);
+    const pendingReset = await pg.query(
+      `SELECT p.status,p.live_enabled,s.ended_at,s.reserved_seconds
+       FROM biographer_projects p JOIN biographer_sessions s ON s.project_id=p.id
+       WHERE p.id=$1 AND s.id=$2`,
+      [first, firstTicket.sessionId],
+    );
+    assert.equal(pendingReset.rows[0].status, 'deleting');
+    assert.equal(pendingReset.rows[0].live_enabled, false);
+    assert.ok(pendingReset.rows[0].ended_at);
+    assert.equal(pendingReset.rows[0].reserved_seconds, 0);
+    assert.equal(objects.has(resetCopy), true);
+    assert.deepEqual(await getWhisperer(authorId, draftId), { interview: null });
+    await assert.rejects(issueSession(authorId, first));
+    assert.equal(
+      (
+        await pg.query(
+          'SELECT count(*)::int AS n FROM story_whisperer_handoffs WHERE project_id=$1',
+          [first],
+        )
+      ).rows[0].n,
+      3,
+    );
+
+    storageFailurePrefix = undefined;
+    storageFailure = undefined;
+    disappearDuringDelete = resetCopy;
+    const storageStarted = Promise.withResolvers();
+    const releaseStorage = Promise.withResolvers();
+    pauseStorageDelete = (prefix) => {
+      if (prefix !== resetPrefix) return;
+      storageStarted.resolve();
+      return releaseStorage.promise;
+    };
+    let resetConfirmed = false;
+    const retryReset = resetWhisperer(authorId, draftId, first).then((result) => {
+      resetConfirmed = true;
+      return result;
+    });
+    try {
+      await Promise.race([storageStarted.promise, retryReset]);
+      assert.equal(resetConfirmed, false);
+      assert.equal(objects.has(resetCopy), true);
+      assert.deepEqual(
+        (await pg.query('SELECT status FROM biographer_projects WHERE id=$1', [first])).rows,
+        [{ status: 'deleting' }],
+      );
+    } finally {
+      releaseStorage.resolve();
+      pauseStorageDelete = undefined;
+    }
+    assert.deepEqual(await retryReset, { interview: null });
+    assert.equal(disappearDuringDelete, undefined);
+    for (const key of [resetSource, resetAudio, resetCopy]) assert.equal(objects.has(key), false);
+    for (const key of [reservedCopy, ordinaryInput, neighboringProject])
+      assert.equal(objects.has(key), true);
+    const resetRows = await pg.query(
+      `SELECT (SELECT count(*)::int FROM biographer_projects WHERE id=$1) AS projects,
+              (SELECT count(*)::int FROM biographer_turns WHERE project_id=$1) AS turns,
+              (SELECT count(*)::int FROM biographer_sessions WHERE project_id=$1) AS sessions,
+              (SELECT count(*)::int FROM story_whisperer_handoffs WHERE request_id IN ($2,$3)) AS unreserved,
+              (SELECT count(*)::int FROM story_whisperer_handoffs WHERE request_id=$4 AND project_id IS NULL) AS reserved`,
+      [first, resetRequest, emptyRequest, reservedRequest],
+    );
+    assert.deepEqual(resetRows.rows, [
+      { projects: 0, turns: 0, sessions: 0, unreserved: 0, reserved: 1 },
+    ]);
+    assert.deepEqual(await resetWhisperer(authorId, draftId, first), { interview: null });
     await assert.rejects(
       checkpoint({
         sessionId: firstTicket.sessionId,
@@ -415,7 +712,7 @@ async function main() {
       { stories: 0, projects: 0, turns: 0, handoffs: 0, tombstones: 1 },
     ]);
     await assert.rejects(
-      startWhisperer(authorId, 'Rehearsal', textDraft, { locale: 'en-US', consent: true }),
+      startWhisperer(authorId, 'Rehearsal', textDraft, { locale: 'en-US' }),
       (err) => err.status === 410,
     );
     assert.equal(
@@ -423,8 +720,62 @@ async function main() {
         .rows[0].n,
       1,
     );
+    const priorRecovery = segment();
+    await saveSegment(inesAuthor, ines.projectId, priorRecovery);
+    // Make the previous recording unambiguously older than the new lease.
+    await pg.query("UPDATE biographer_turns SET created_at=now()-interval '1 minute' WHERE id=$1", [
+      priorRecovery.turnId,
+    ]);
+    const cancelTicket = await issueSession(inesAuthor, ines.projectId);
+    const cancelLease = await admitSession(
+      cancelTicket.ticket,
+      ines.projectId,
+      cancelTicket.sessionId,
+    );
+    const unfinished = segment();
+    const assistantTurn = randomUUID();
+    const queuedFinal = segment();
+    await saveSegment(inesAuthor, ines.projectId, unfinished);
+    await saveSegment(inesAuthor, ines.projectId, queuedFinal);
+    const saveVoice = (turnId, role, text, final) =>
+      checkpoint({
+        sessionId: cancelTicket.sessionId,
+        eventId: randomUUID(),
+        turnId,
+        role,
+        text,
+        final,
+      });
+    await saveVoice(unfinished.turnId, 'user', 'unfinished fragment', false);
+    await saveVoice(assistantTurn, 'assistant', 'unfinished question', false);
+    const discard = (turnId) =>
+      cancelWhispererSession(inesAuthor, ines.projectId, cancelTicket.sessionId, turnId);
+    await discard(priorRecovery.turnId);
+    await discard(unfinished.turnId);
+    await discard(queuedFinal.turnId);
+    await saveVoice(unfinished.turnId, 'user', 'late partial fragment', false);
+    await saveVoice(queuedFinal.turnId, 'user', 'A completed turn already in the queue.', true);
+    await leaseSession(cancelTicket.sessionId, cancelLease.leaseId, true, [
+      unfinished.turnId,
+      assistantTurn,
+    ]);
+    await assert.rejects(
+      saveSegment(inesAuthor, ines.projectId, unfinished),
+      (err) => err.status === 410,
+    );
+    assert.deepEqual((await readSegment(inesAuthor, ines.projectId, priorRecovery.id)).bytes, pcm);
+    const afterCancel = (await getWhisperer(inesAuthor, inesDraft)).interview;
+    assert(!afterCancel.turns.some(({ id }) => [unfinished.turnId, assistantTurn].includes(id)));
+    assert(afterCancel.turns.some(({ id, final }) => id === queuedFinal.turnId && final));
+    assert(afterCancel.turns.some(({ text }) => text === conversation[0][1]));
+    const unadmitted = await issueSession(inesAuthor, ines.projectId);
+    await cancelWhispererSession(inesAuthor, ines.projectId, unadmitted.sessionId);
+    await assert.rejects(
+      admitSession(unadmitted.ticket, ines.projectId, unadmitted.sessionId),
+      (err) => err.status === 401,
+    );
     console.log(
-      'Passed: migration SQL and rollback, wizard draft survival, audio expiry and transcript purge, stale checkpoints, admission replay, shared allowance, audited extension and pause, and scoped permanent deletion with retry.',
+      'Passed: migration SQL and rollback, wizard draft survival, voice cancellation and recovery, audio retention, stale checkpoints, admission replay, shared allowance, audited controls, scoped reset and deletion.',
     );
   } finally {
     await pg.close();

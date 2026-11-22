@@ -1,6 +1,7 @@
-import { and, asc, desc, eq, isNull, sql } from 'drizzle-orm';
+import { and, asc, desc, eq, getTableColumns, isNull, sql } from 'drizzle-orm';
 import { randomUUID, randomBytes, createHash } from 'node:crypto';
 import { db } from '@/db';
+import { modelHistory, modelOpening, questionOptions } from '@/lib/story-whisperer/seed';
 import { storyWhispererInterviews } from '@/db/schema/story-whisperer';
 import { lockVoiceAccount } from './whisperer-voice';
 import { authorVoiceAccounts } from '@/db/schema/whisperer-voice';
@@ -14,11 +15,13 @@ import {
   biographerAssets as assets,
   biographerInvitations as invitations,
 } from '@/db/schema/biographer';
+import { discardedTurnEventId, liveTurnDiscardingSession } from '@/lib/biographer/discarded-audio';
 import { projectInput, projectPatch, turnInput, turnPatch } from '@/lib/biographer/validation';
 export class BiographerError extends Error {
   constructor(
     message: string,
     public status = 400,
+    public code?: string,
   ) {
     super(message);
   }
@@ -120,41 +123,52 @@ export async function updateProject(authorId: string, id: string, input: unknown
 }
 export async function saveTurn(authorId: string, projectId: string, input: unknown) {
   const value = turnInput.parse(input);
-  const { participant } = await detail(authorId, projectId);
-  return db.transaction(async (tx) => {
-    await tx.execute(sql`select pg_advisory_xact_lock(hashtext(${projectId}))`);
-    const [project] = await tx
-      .select({ status: projects.status })
-      .from(projects)
-      .where(and(eq(projects.id, projectId), eq(projects.authorId, authorId)));
-    if (!project || project.status === 'deleting')
-      throw new BiographerError('Project not found', 404);
-    const [existing] = await tx.select().from(turns).where(eq(turns.id, value.id));
-    if (existing) {
-      if (
-        existing.projectId !== projectId ||
-        existing.participantId !== participant.id ||
-        existing.originalText !== value.text
-      )
-        throw new BiographerError('Response conflict', 409);
-      return existing;
-    }
-    const [turn] = await tx
-      .insert(turns)
-      .values({ ...value, projectId, participantId: participant.id, originalText: value.text })
-      .returning();
-    await tx
-      .update(projects)
-      .set({
-        revision: sql`${projects.revision}+1`,
-        updatedAt: new Date(),
-        proposal: null,
-        proposalRevision: null,
-      })
-      .where(eq(projects.id, projectId));
-    return turn;
-  });
+  return db.transaction((tx) => saveOwnerTurn(tx, authorId, projectId, value));
 }
+
+export async function saveOwnerTurn(
+  tx: Parameters<Parameters<typeof db.transaction>[0]>[0],
+  authorId: string,
+  projectId: string,
+  value: ReturnType<typeof turnInput.parse>,
+) {
+  await tx.execute(sql`select pg_advisory_xact_lock(hashtext(${projectId}))`);
+  const [owner] = await tx
+    .select({ status: projects.status, participantId: participants.id })
+    .from(projects)
+    .innerJoin(
+      participants,
+      and(eq(participants.projectId, projects.id), eq(participants.role, 'owner')),
+    )
+    .where(and(eq(projects.id, projectId), eq(projects.authorId, authorId)));
+  if (!owner || owner.status === 'deleting') throw new BiographerError('Project not found', 404);
+  const [existing] = await tx.select().from(turns).where(eq(turns.id, value.id));
+  if (existing) {
+    if (
+      existing.projectId !== projectId ||
+      existing.participantId !== owner.participantId ||
+      existing.role !== 'user' ||
+      existing.originalText !== value.text
+    )
+      throw new BiographerError('Response conflict', 409);
+    return existing;
+  }
+  const [turn] = await tx
+    .insert(turns)
+    .values({ ...value, projectId, participantId: owner.participantId, originalText: value.text })
+    .returning();
+  await tx
+    .update(projects)
+    .set({
+      revision: sql`${projects.revision}+1`,
+      updatedAt: new Date(),
+      proposal: null,
+      proposalRevision: null,
+    })
+    .where(eq(projects.id, projectId));
+  return turn;
+}
+
 export async function editTurn(
   authorId: string,
   projectId: string,
@@ -274,6 +288,7 @@ export async function admitSession(ticket: string, projectId: string, sessionId:
       !project.liveEnabled ||
       !session ||
       session.consumedAt ||
+      session.endedAt ||
       session.ticketExpiresAt.getTime() < Date.now()
     )
       throw new BiographerError('Invalid live admission', 401);
@@ -302,28 +317,46 @@ export async function admitSession(ticket: string, projectId: string, sessionId:
       .where(eq(participants.id, session.participantId));
     if (!speaker || speaker.status === 'closed')
       throw new BiographerError('Contributions closed', 423);
+    const [whisperer] = await tx
+      .select({
+        context: storyWhispererInterviews.context,
+        latestQuestion: storyWhispererInterviews.latestQuestion,
+      })
+      .from(storyWhispererInterviews)
+      .where(eq(storyWhispererInterviews.projectId, projectId));
     const allHistory = await tx
       .select({
         id: turns.id,
         role: turns.role,
         text: turns.text,
+        included: turns.included,
+        final: turns.final,
+        interrupted: turns.interrupted,
+        originalText: turns.originalText,
         participantId: turns.participantId,
         contributorName: participants.name,
       })
       .from(turns)
       .innerJoin(participants, eq(participants.id, turns.participantId))
-      .where(and(eq(turns.projectId, projectId), eq(turns.included, true)))
-      .orderBy(asc(turns.createdAt));
-    const history = allHistory
-      .filter((turn) => turn.participantId === speaker.id)
+      .where(and(eq(turns.projectId, projectId), whisperer ? undefined : eq(turns.included, true)))
+      .orderBy(asc(turns.createdAt), asc(turns.id));
+    const speakerHistory = allHistory.filter((turn) => turn.participantId === speaker.id);
+    const history = (whisperer ? modelHistory(speakerHistory) : speakerHistory)
       .slice(-80)
-      .map(({ role, text }) => ({ role, text: text.slice(0, 4000) }));
+      .map((turn) => ({
+        role: turn.role,
+        text: turn.text.slice(0, 4000),
+        ...questionOptions(turn, whisperer?.latestQuestion),
+      }));
     const sharedMemories =
       speaker.role === 'contributor'
         ? allHistory
             .filter(
               (turn) =>
-                turn.participantId !== speaker.id && turn.role === 'user' && turn.text.trim(),
+                turn.included &&
+                turn.participantId !== speaker.id &&
+                turn.role === 'user' &&
+                turn.text.trim(),
             )
             .slice(-30)
             .map((turn) => ({
@@ -337,10 +370,6 @@ export async function admitSession(ticket: string, projectId: string, sessionId:
       .from(assets)
       .where(and(eq(assets.projectId, projectId), eq(assets.included, true)))
       .limit(20);
-    const [whisperer] = await tx
-      .select({ context: storyWhispererInterviews.context })
-      .from(storyWhispererInterviews)
-      .where(eq(storyWhispererInterviews.projectId, projectId));
     return {
       ...(whisperer ? { mode: 'story-whisperer' as const } : {}),
       participantId: session.participantId,
@@ -352,6 +381,8 @@ export async function admitSession(ticket: string, projectId: string, sessionId:
       context: {
         ...(whisperer?.context
           ? {
+              primaryIntent: whisperer.context.primaryIntent,
+              opening: modelOpening(whisperer.context.opening, speakerHistory[0]),
               storyBrief: whisperer.context.brief,
               characterNames: whisperer.context.characterNames,
             }
@@ -367,8 +398,88 @@ export async function admitSession(ticket: string, projectId: string, sessionId:
     };
   });
 }
-export async function leaseSession(sessionId: string, leaseId: string, release = false) {
-  return db.transaction(async (tx) => {
+type Transaction = Parameters<Parameters<typeof db.transaction>[0]>[0];
+
+async function discardLiveTurns(
+  tx: Transaction,
+  session: typeof sessions.$inferSelect,
+  turnIds: string[],
+  userOnly = false,
+) {
+  const [whisperer] = await tx
+    .select({ authorId: storyWhispererInterviews.authorId })
+    .from(storyWhispererInterviews)
+    .where(eq(storyWhispererInterviews.projectId, session.projectId));
+  if (!whisperer) throw new BiographerError('Interview not found', 404);
+  const cleanup: string[] = [];
+  for (const turnId of new Set(turnIds)) {
+    const [turn] = await tx.select().from(turns).where(eq(turns.id, turnId));
+    if (
+      turn &&
+      (turn.projectId !== session.projectId ||
+        turn.participantId !== session.participantId ||
+        (userOnly &&
+          (turn.role !== 'user' || !session.consumedAt || turn.createdAt < session.consumedAt)) ||
+        (turn.final && !turn.interrupted && turn.text.trim()))
+    ) {
+      continue;
+    }
+    await tx
+      .insert(events)
+      .values({ eventId: discardedTurnEventId(session.projectId, turnId), sessionId: session.id })
+      .onConflictDoNothing();
+    // Keep the revision stable for assessments based on the completed transcript.
+    if (turn) await tx.delete(turns).where(eq(turns.id, turnId));
+    cleanup.push(turnId);
+  }
+  return cleanup;
+}
+
+async function clearDiscardedAudio(projectId: string, turnIds: string[]) {
+  if (!turnIds.length) return;
+  const { clearDiscardedLiveAudio } = await import('@/lib/biographer/audio-retention');
+  await Promise.all(turnIds.map((turnId) => clearDiscardedLiveAudio(projectId, turnId)));
+}
+
+export async function cancelWhispererSession(
+  authorId: string,
+  projectId: string,
+  sessionId: string,
+  turnId?: string,
+) {
+  const cleanup = await db.transaction(async (tx) => {
+    await tx.execute(sql`select pg_advisory_xact_lock(hashtext(${projectId}))`);
+    const [session] = await tx
+      .select(getTableColumns(sessions))
+      .from(sessions)
+      .innerJoin(
+        storyWhispererInterviews,
+        eq(storyWhispererInterviews.projectId, sessions.projectId),
+      )
+      .where(
+        and(
+          eq(sessions.id, sessionId),
+          eq(sessions.projectId, projectId),
+          eq(storyWhispererInterviews.authorId, authorId),
+        ),
+      );
+    if (!session) throw new BiographerError('Session not found', 404);
+    if (!session.consumedAt && !session.endedAt)
+      await tx.update(sessions).set({ endedAt: new Date() }).where(eq(sessions.id, sessionId));
+    // Once admitted, the gateway drains earlier completed checkpoints before releasing the lease.
+    return turnId ? discardLiveTurns(tx, session, [turnId], true) : [];
+  });
+  await clearDiscardedAudio(projectId, cleanup);
+  return { cancelled: true };
+}
+
+export async function leaseSession(
+  sessionId: string,
+  leaseId: string,
+  release = false,
+  discardTurnIds?: string[],
+) {
+  const result = await db.transaction(async (tx) => {
     const [initial] = await tx
       .select()
       .from(sessions)
@@ -379,11 +490,14 @@ export async function leaseSession(sessionId: string, leaseId: string, release =
     if (!session) throw new BiographerError('Session not found', 404);
     const [project] = await tx.select().from(projects).where(eq(projects.id, session.projectId));
     if (!project) throw new BiographerError('Project not found', 404);
+    const cleanup = discardTurnIds ? await discardLiveTurns(tx, session, discardTurnIds) : [];
     const account = await lockVoiceAccount(tx, project.authorId);
     if (session.endedAt)
       return {
         allowed: false,
         remainingSeconds: Math.max(0, account.allowanceSeconds - account.liveSeconds),
+        projectId: project.id,
+        cleanup,
       };
     if (!session.accountedAt || !session.leaseExpiresAt)
       throw new BiographerError('Session not admitted', 409);
@@ -414,8 +528,10 @@ export async function leaseSession(sessionId: string, leaseId: string, release =
         endedAt: allowed ? null : new Date(),
       })
       .where(eq(sessions.id, sessionId));
-    return { allowed, remainingSeconds: available };
+    return { allowed, remainingSeconds: available, projectId: project.id, cleanup };
   });
+  await clearDiscardedAudio(result.projectId, result.cleanup);
+  return { allowed: result.allowed, remainingSeconds: result.remainingSeconds };
 }
 export async function checkpoint(input: {
   sessionId: string;
@@ -432,7 +548,10 @@ export async function checkpoint(input: {
       throw new BiographerError('Session not found', 404);
     await tx.execute(sql`select pg_advisory_xact_lock(hashtext(${session.projectId}))`);
     const [currentSession] = await tx
-      .select()
+      .select({
+        ...getTableColumns(sessions),
+        discardingSessionId: liveTurnDiscardingSession(session.projectId, input.turnId),
+      })
       .from(sessions)
       .where(eq(sessions.id, input.sessionId));
     const [participant] = await tx
@@ -461,6 +580,18 @@ export async function checkpoint(input: {
       if (!invitation || !participant.consentAt)
         throw new BiographerError('Session not found', 404);
     }
+    // A browser cancellation can arrive before the gateway's already-queued
+    // final checkpoint. Accept it only from the session that owns the marker.
+    // The gateway releases the session after draining that ordered queue.
+    if (
+      currentSession.discardingSessionId &&
+      (currentSession.discardingSessionId !== session.id ||
+        !input.final ||
+        input.interrupted ||
+        !input.text.trim())
+    )
+      return { saved: true };
+
     const inserted = await tx
       .insert(events)
       .values({ eventId: input.eventId, sessionId: session.id })

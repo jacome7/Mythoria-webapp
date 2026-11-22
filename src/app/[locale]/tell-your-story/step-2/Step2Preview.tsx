@@ -196,7 +196,11 @@ export default function Step2Preview(p: Props) {
           {p.whispererEntry}
           <button
             type="button"
-            className={`${styles.previewRow} ${styles.templateEntry}`}
+            className={
+              p.whispererEntry
+                ? styles.previewRow
+                : `${styles.previewRow} ${styles.highlightedEntry}`
+            }
             onClick={p.onCatalog}
             disabled={p.disabled}
           >

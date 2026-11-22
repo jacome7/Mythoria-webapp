@@ -5,8 +5,14 @@ export const POST = (r: Request) =>
   handle(async () => {
     internal(r);
     const p = z
-      .object({ sessionId: z.uuid(), leaseId: z.uuid(), action: z.enum(['heartbeat', 'release']) })
+      .object({
+        sessionId: z.uuid(),
+        leaseId: z.uuid(),
+        action: z.enum(['heartbeat', 'release', 'discard']),
+        turnIds: z.array(z.uuid()).max(4).optional(),
+      })
       .strict()
+      .refine((value) => (value.action === 'discard') === Boolean(value.turnIds))
       .parse(await body(r));
-    return leaseSession(p.sessionId, p.leaseId, p.action === 'release');
+    return leaseSession(p.sessionId, p.leaseId, p.action !== 'heartbeat', p.turnIds);
   });

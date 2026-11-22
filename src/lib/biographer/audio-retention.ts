@@ -6,8 +6,12 @@ import { storyWhispererInterviews } from '@/db/schema/story-whisperer';
 import { db } from '@/db';
 import { biographerSegments as segments, biographerTurns as turns } from '@/db/schema/biographer';
 
+import { isDiscardedLiveTurn } from './discarded-audio';
+
 export const audioRetentionMs = 7 * 24 * 60 * 60 * 1000;
+const discarded = isDiscardedLiveTurn(segments.projectId, segments.turnId);
 const removable = or(
+  discarded,
   sql`${segments.createdAt} <= now() - interval '7 days'`,
   and(eq(turns.final, true), eq(turns.interrupted, false), sql`length(trim(${turns.text})) > 0`),
 );
@@ -39,27 +43,46 @@ async function purgeRecoveryAudio(projectId: string, turnId: string) {
       .where(and(eq(segments.projectId, projectId), eq(segments.turnId, turnId), removable))
       .orderBy(segments.createdAt, segments.id)
       .limit(20);
-    if (!files.length) return { removed: 0, failed: 0, more: false };
-    const name = process.env.BIOGRAPHER_STORAGE_BUCKET;
-    if (!name) throw new Error('Private recovery storage unavailable');
-    const storage = new Storage({ timeout: 5000, retryOptions: { autoRetry: false } }).bucket(name);
-    const results = await Promise.allSettled(
-      files.map((file) => storage.file(file.path).delete({ ignoreNotFound: true })),
-    );
-    const deleted = files.filter((_, index) => results[index].status === 'fulfilled');
-    if (deleted.length)
-      await tx.delete(segments).where(
-        inArray(
-          segments.id,
-          deleted.map(({ id }) => id),
-        ),
-      );
-    return {
-      removed: deleted.length,
-      failed: files.length - deleted.length,
-      more: files.length === 20,
-    };
+    return removeAudioFiles(files, tx);
   });
+}
+
+async function removeAudioFiles(
+  files: { id: string; path: string }[],
+  executor: Pick<typeof db, 'delete'>,
+) {
+  if (!files.length) return { removed: 0, failed: 0, more: false };
+  const name = process.env.BIOGRAPHER_STORAGE_BUCKET;
+  if (!name) throw new Error('Private recovery storage unavailable');
+  const storage = new Storage({ timeout: 5000, retryOptions: { autoRetry: false } }).bucket(name);
+  const results = await Promise.allSettled(
+    files.map((file) => storage.file(file.path).delete({ ignoreNotFound: true })),
+  );
+  const deleted = files.filter((_, index) => results[index].status === 'fulfilled');
+  if (deleted.length)
+    await executor.delete(segments).where(
+      inArray(
+        segments.id,
+        deleted.map(({ id }) => id),
+      ),
+    );
+  return {
+    removed: deleted.length,
+    failed: files.length - deleted.length,
+    more: files.length === 20,
+  };
+}
+
+async function purgeDiscardedAudio(projectId: string, turnId: string) {
+  // The marker blocks new uploads and checkpoints, so cloud deletion does not
+  // need to hold the project lock used by chat and Structure.
+  const files = await db
+    .select({ id: segments.id, path: segments.objectPath })
+    .from(segments)
+    .where(and(eq(segments.projectId, projectId), eq(segments.turnId, turnId), discarded))
+    .orderBy(segments.createdAt, segments.id)
+    .limit(20);
+  return removeAudioFiles(files, db);
 }
 
 const retentionLogger = createLogger({
@@ -69,10 +92,18 @@ const retentionLogger = createLogger({
 });
 
 // Keep audio cleanup outside the transcript acknowledgement. The sweep retries failures.
-export async function clearTranscribedAudio(projectId: string, turnId: string) {
+export function clearTranscribedAudio(projectId: string, turnId: string) {
+  return scheduleAudioCleanup(() => purgeRecoveryAudio(projectId, turnId));
+}
+
+export function clearDiscardedLiveAudio(projectId: string, turnId: string) {
+  return scheduleAudioCleanup(() => purgeDiscardedAudio(projectId, turnId));
+}
+
+async function scheduleAudioCleanup(purge: () => Promise<{ failed: number }>) {
   const cleanup = async () => {
     try {
-      if (!(await purgeRecoveryAudio(projectId, turnId)).failed) return;
+      if (!(await purge()).failed) return;
     } catch {
       // The audio metadata stays available for the sweep.
     }

@@ -62,6 +62,11 @@
       },
       "note": "Bitte geben Sie keine besonderen Kategorien personenbezogener Daten (Gesundheit, biometrische Daten, politische Ansichten usw.) an. Wenn Sie personenbezogene Daten Dritter eingeben, bestätigen Sie, dass Sie hierfür eine rechtmäßige Grundlage besitzen (Art. 14 DSGVO)."
     },
+    "storyWhisperer": {
+      "title": "Story Whisperer",
+      "savedContent": "Wenn du Story Whisperer nutzt, speichern wir das Transkript deines Gesprächs und die Fotos, die du hinzufügst. So kannst du das Interview fortsetzen und das Material für deine Geschichte verwenden. Googles Gemini verarbeitet Text und Live-Audio, um das Gespräch zu ermöglichen.",
+      "recoveryAudio": "Wir können deine ursprüngliche Sprachaufnahme vorübergehend speichern, damit du eine angefangene Antwort wiederherstellen kannst. Die Aufnahme steht ab dem Zeitpunkt der Aufzeichnung bis zu sieben Tage lang zur Wiederherstellung bereit."
+    },
     "section4": {
       "title": "4. Warum wir Ihre Daten verarbeiten & Rechtsgrundlagen",
       "table": {

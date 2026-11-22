@@ -1,10 +1,13 @@
 import { Storage } from '@google-cloud/storage';
 import { BiographerError } from '@/db/services/biographer';
 
+let storage: Storage | undefined;
+
 export function privateWhispererBucket() {
   const name = process.env.BIOGRAPHER_STORAGE_BUCKET;
   if (!name) throw new BiographerError('Private media storage unavailable', 503);
-  return new Storage().bucket(name);
+  storage ??= new Storage({ projectId: process.env.GOOGLE_CLOUD_PROJECT_ID });
+  return storage.bucket(name);
 }
 
 export function whispererDraftMediaPrefix(draftId: string) {

@@ -275,8 +275,8 @@
         "continue": "Continuar a minha história",
         "startNew": "Começar uma nova história",
         "confirmTitle": "Começar uma nova história?",
-        "confirmBody": "O modelo, as respostas, o texto, as imagens, o áudio e a seleção de personagens desta criação serão removidos, incluindo os detalhes dos passos seguintes.",
-        "confirmNote": "O autor e a dedicatória serão mantidos. As histórias e as personagens guardadas na sua conta também serão mantidas.",
+        "confirmBody": "O conteúdo deste rascunho será apagado.",
+        "confirmNote": "O autor, a dedicatória, as outras histórias e as personagens guardadas na sua conta mantêm-se.",
         "checking": "A verificar…",
         "confirm": "Apagar e começar",
         "pendingJobError": "Existe um pedido de preparação por resolver. Escolha «Continuar a minha história» e retome a preparação antes de começar uma nova história."

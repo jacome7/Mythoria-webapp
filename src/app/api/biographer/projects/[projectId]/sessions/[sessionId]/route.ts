@@ -1,8 +1,9 @@
-import { handle, owner, id } from '@/lib/biographer/http';
-import { detail, leaseSession } from '@/db/services/biographer';
+import { body, handle, owner, id } from '@/lib/biographer/http';
+import { cancelWhispererSession, detail, leaseSession } from '@/db/services/biographer';
 import { db } from '@/db';
 import { biographerSessions } from '@/db/schema/biographer';
 import { and, eq } from 'drizzle-orm';
+import { z } from 'zod';
 export const PATCH = (
   _: Request,
   c: { params: Promise<{ projectId: string; sessionId: string }> },
@@ -22,4 +23,18 @@ export const PATCH = (
       );
     if (!s) return { allowed: false };
     return leaseSession(s.id, s.leaseId, true);
+  });
+
+export const DELETE = (
+  request: Request,
+  context: { params: Promise<{ projectId: string; sessionId: string }> },
+) =>
+  handle(async () => {
+    const author = await owner();
+    const { projectId, sessionId } = await context.params;
+    const { turnId } = z
+      .object({ turnId: z.uuid().optional() })
+      .strict()
+      .parse(await body(request));
+    return cancelWhispererSession(author.authorId, id(projectId), id(sessionId), turnId);
   });

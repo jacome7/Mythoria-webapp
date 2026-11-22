@@ -94,6 +94,95 @@ describe('live archival recovery', () => {
     await waitFor(() => expect(removed).toHaveBeenCalledWith(segment.id));
     await waitFor(() => expect(result.current.saving).toBe('saved'));
   });
+  it('waits for the current upload and checks for newly saved audio before finishing stop', async () => {
+    const tail = { ...segment, id: 'tail', sequence: 3 };
+    let acknowledgeFirst!: (response: Response) => void;
+    const response = (entry: typeof segment) =>
+      new Response(
+        JSON.stringify({ saved: true, id: entry.id, sequence: entry.sequence, sha256: 'ab' }),
+      );
+    pending
+      .mockResolvedValueOnce([segment])
+      .mockResolvedValueOnce([tail])
+      .mockResolvedValueOnce([tail])
+      .mockResolvedValue([]);
+    global.fetch = jest
+      .fn()
+      .mockImplementationOnce(
+        () => new Promise<Response>((resolve) => (acknowledgeFirst = resolve)),
+      )
+      .mockResolvedValueOnce(response(tail));
+    const { result } = renderHook(() => useBiographerLive('project', 'author', jest.fn()));
+    await waitFor(() => expect(global.fetch).toHaveBeenCalledTimes(1));
+    const finished = jest.fn();
+    await act(async () => {
+      const stopping = result.current.stop().then(finished);
+      await Promise.resolve();
+      expect(finished).not.toHaveBeenCalled();
+      acknowledgeFirst(response(segment));
+      await stopping;
+    });
+    expect(removed.mock.calls).toEqual([[segment.id], [tail.id]]);
+    expect(result.current.saving).toBe('saved');
+    expect(finished).toHaveBeenCalledTimes(1);
+  });
+  it('gives each queued segment its own upload deadline', async () => {
+    const timeout = jest.spyOn(globalThis, 'setTimeout');
+    const cancelTimeout = jest.spyOn(globalThis, 'clearTimeout');
+    try {
+      const tail = { ...segment, id: 'tail', sequence: 3 };
+      pending.mockResolvedValueOnce([segment, tail]).mockResolvedValue([]);
+      global.fetch = jest.fn(async (_url, init?: RequestInit) => {
+        const { id, sequence } = JSON.parse(String(init?.body));
+        return new Response(JSON.stringify({ saved: true, id, sequence, sha256: 'ab' }));
+      });
+      const { result, unmount } = renderHook(() =>
+        useBiographerLive('project', 'author', jest.fn()),
+      );
+      await act(async () => result.current.sync());
+      expect(removed.mock.calls).toEqual([[segment.id], [tail.id]]);
+      expect(result.current.saving).toBe('saved');
+      const deadlines = timeout.mock.calls.flatMap(([, delay], index) =>
+        delay === 30_000 ? [timeout.mock.results[index].value] : [],
+      );
+      expect(deadlines).toHaveLength(2);
+      expect(cancelTimeout).toHaveBeenCalledWith(deadlines[0]);
+      expect(cancelTimeout).toHaveBeenCalledWith(deadlines[1]);
+      unmount();
+    } finally {
+      timeout.mockRestore();
+      cancelTimeout.mockRestore();
+    }
+  });
+  it('finishes stopping when the active upload times out and retains its audio locally', async () => {
+    jest.useFakeTimers();
+    try {
+      const uploadStarted = jest.fn();
+      global.fetch = jest.fn((_url, init?: RequestInit) => {
+        const signal = init?.signal;
+        uploadStarted();
+        return new Promise<Response>((_, reject) => {
+          signal?.addEventListener('abort', () => reject(signal.reason), { once: true });
+        });
+      });
+      const { result, unmount } = renderHook(() =>
+        useBiographerLive('project', 'author', jest.fn()),
+      );
+      await waitFor(() => expect(uploadStarted).toHaveBeenCalledTimes(1));
+      const finished = jest.fn();
+      await act(async () => {
+        const stopping = result.current.stop().then(finished);
+        await jest.advanceTimersByTimeAsync(30_000);
+        await stopping;
+      });
+      expect(finished).toHaveBeenCalledTimes(1);
+      expect(removed).not.toHaveBeenCalled();
+      expect(result.current.saving).toBe('attention');
+      unmount();
+    } finally {
+      jest.useRealTimers();
+    }
+  });
   it('never removes an archived segment if the guest cookie belongs to a different participant', async () => {
     global.fetch = jest.fn().mockResolvedValue(
       new Response(
@@ -272,7 +361,7 @@ describe('live archival recovery', () => {
     Object.defineProperty(globalThis, 'WebSocket', { configurable: true, value: oldSocket });
     Object.defineProperty(globalThis, 'AudioContext', { configurable: true, value: oldContext });
   });
-  it('journals captured audio after the connection drops and stops the microphone on pause', async () => {
+  it('saves live speech with a lead-in, freezes capture during outline preparation, and handles cancelled calls', async () => {
     pending.mockResolvedValue([]);
     (savePending as jest.Mock).mockResolvedValue(undefined);
     const stop = jest.fn();
@@ -281,17 +370,12 @@ describe('live archival recovery', () => {
       value: { getUserMedia: jest.fn().mockResolvedValue({ getTracks: () => [{ stop }] }) },
     });
     Object.defineProperty(document, 'visibilityState', { configurable: true, value: 'visible' });
-    Object.defineProperty(globalThis.crypto, 'randomUUID', {
-      configurable: true,
-      value: () => 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa',
-    });
     const processor = {
       connect: jest.fn(),
       disconnect: jest.fn(),
       port: { onmessage: (_event: { data: ArrayBuffer }) => {} },
     };
     class Context {
-      sampleRate = 16000;
       destination = {};
       resume = jest.fn().mockResolvedValue(undefined);
       close = jest.fn().mockResolvedValue(undefined);
@@ -307,33 +391,197 @@ describe('live archival recovery', () => {
     });
     Object.defineProperty(globalThis, 'AudioContext', { configurable: true, value: Context });
     Object.defineProperty(globalThis, 'WebSocket', { configurable: true, value: TestLiveSocket });
-    global.fetch = jest
-      .fn()
-      .mockResolvedValueOnce(liveSession)
-      .mockRejectedValue(new Error('offline'));
-    const { result, unmount } = renderHook(() => useBiographerLive('project', 'author', jest.fn()));
-    await act(async () => {
-      await result.current.start();
-    });
-    act(() => TestLiveSocket.current.ready());
-    expect(result.current.state).toBe('listening');
-    Object.defineProperty(navigator, 'onLine', { configurable: true, value: false });
-    act(() => processor.port.onmessage({ data: new ArrayBuffer(32000) }));
-    await waitFor(() =>
-      expect(savePending).toHaveBeenCalledWith(
-        expect.objectContaining({ authorId: 'author', projectId: 'project', durationMs: 1000 }),
-      ),
+    global.fetch = jest.fn().mockResolvedValue(liveSession);
+    const onEvent = jest.fn();
+    const { result, unmount } = renderHook(() =>
+      useBiographerLive('project', 'author', onEvent, false, true),
     );
-    act(() => result.current.pause());
-    expect(stop).toHaveBeenCalled();
-    expect(result.current.state).toBe('paused');
-    unmount();
-    Object.defineProperty(globalThis, 'AudioContext', {
-      configurable: true,
-      value: originalContext,
-    });
-    Object.defineProperty(navigator, 'onLine', { configurable: true, value: true });
+    try {
+      await act(async () => result.current.start());
+      const socket = TestLiveSocket.current;
+      const emit = (event: object) => socket.onmessage?.({ data: JSON.stringify(event) });
+      act(() => {
+        socket.ready();
+        for (let offset = 0; offset < 25; offset++)
+          processor.port.onmessage({ data: new ArrayBuffer(1280) });
+      });
+      expect(savePending).not.toHaveBeenCalled();
+      const audio = new ArrayBuffer(1280);
+      new Int16Array(audio).fill(64);
+      act(() => {
+        processor.port.onmessage({ data: audio });
+        emit({ type: 'advance_to_outline', callId: 'call', turnId: 'final-answer' });
+      });
+      expect(onEvent).toHaveBeenCalledWith(
+        expect.objectContaining({ type: 'advance_to_outline', callId: 'call' }),
+      );
+
+      jest.useFakeTimers();
+      const consoleInfo = jest.spyOn(console, 'info').mockImplementation(() => undefined);
+      const environment = jest.replaceProperty(process.env, 'NODE_ENV', 'development');
+      try {
+        await act(async () => {
+          const prepared = jest.fn();
+          const preparation = result.current.prepareOutline().then(prepared);
+          const outbound = JSON.parse(socket.send.mock.calls.at(-1)?.[0]);
+          expect(outbound).toMatchObject({
+            type: 'prepare_outline',
+            requestId: expect.any(String),
+          });
+          processor.port.onmessage({ data: new ArrayBuffer(64) });
+          expect(socket.send).toHaveBeenCalledTimes(27);
+          emit({ type: 'outline_prepared', requestId: 'unrelated' });
+          jest.advanceTimersByTime(9_200);
+          await Promise.resolve();
+          expect(prepared).not.toHaveBeenCalled();
+          emit({ type: 'outline_prepared', requestId: outbound.requestId });
+          await preparation;
+          expect(prepared).toHaveBeenCalledWith(true);
+          expect(consoleInfo).toHaveBeenCalledWith(
+            '[Biographer live]',
+            'outline-preparation-confirmed',
+            { elapsedMs: 9_200 },
+          );
+        });
+
+        await act(async () => {
+          result.current.resumeCapture();
+          const preparation = result.current.prepareOutline();
+          jest.advanceTimersByTime(20_000);
+          await expect(preparation).resolves.toBe(false);
+          expect(consoleInfo).toHaveBeenCalledWith(
+            '[Biographer live]',
+            'outline-preparation-timeout',
+            { timeoutMs: 20_000, elapsedMs: 20_000 },
+          );
+        });
+      } finally {
+        environment.restore();
+        consoleInfo.mockRestore();
+        jest.useRealTimers();
+      }
+      expect(savePending).toHaveBeenCalledWith(expect.objectContaining({ durationMs: 240 }));
+      expect(stop).not.toHaveBeenCalled();
+
+      act(() => {
+        emit({ type: 'advance_to_outline_cancelled', callId: 'call' });
+        expect(result.current.finishOutline('call', true)).toBe(false);
+        result.current.resumeCapture();
+        processor.port.onmessage({ data: new ArrayBuffer(64) });
+      });
+      expect(JSON.parse(socket.send.mock.calls.at(-2)?.[0])).toEqual({ type: 'resume_outline' });
+      expect(JSON.parse(socket.send.mock.calls.at(-1)?.[0])).toMatchObject({ type: 'audio' });
+    } finally {
+      unmount();
+      Object.defineProperty(globalThis, 'AudioContext', {
+        configurable: true,
+        value: originalContext,
+      });
+    }
   });
+  it.each(['disconnect', 'cancel'] as const)(
+    'stops the microphone after %s and retains audio only for recovery',
+    async (action) => {
+      pending.mockResolvedValue([]);
+      (savePending as jest.Mock).mockResolvedValue(undefined);
+      const stop = jest.fn();
+      Object.defineProperty(navigator, 'mediaDevices', {
+        configurable: true,
+        value: { getUserMedia: jest.fn().mockResolvedValue({ getTracks: () => [{ stop }] }) },
+      });
+      Object.defineProperty(document, 'visibilityState', { configurable: true, value: 'visible' });
+      Object.defineProperty(globalThis.crypto, 'randomUUID', {
+        configurable: true,
+        value: () => 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa',
+      });
+      const processor = {
+        connect: jest.fn(),
+        disconnect: jest.fn(),
+        port: { onmessage: (_event: { data: ArrayBuffer }) => {} },
+      };
+      class Context {
+        sampleRate = 16000;
+        destination = {};
+        resume = jest.fn().mockResolvedValue(undefined);
+        close = jest.fn().mockResolvedValue(undefined);
+        createMediaStreamSource() {
+          return { connect: jest.fn(), disconnect: jest.fn() };
+        }
+        audioWorklet = { addModule: jest.fn().mockResolvedValue(undefined) };
+      }
+      const originalContext = globalThis.AudioContext;
+      Object.defineProperty(globalThis, 'AudioWorkletNode', {
+        configurable: true,
+        value: jest.fn(() => processor),
+      });
+      Object.defineProperty(globalThis, 'AudioContext', { configurable: true, value: Context });
+      Object.defineProperty(globalThis, 'WebSocket', { configurable: true, value: TestLiveSocket });
+      let finishCancellation!: () => void;
+      const cancellation = new Promise<Response>((resolve) => {
+        finishCancellation = () => resolve(new Response(null, { status: 204 }));
+      });
+      global.fetch = jest.fn(async (url, init) => {
+        if (init?.method === 'DELETE') return cancellation;
+        if (String(url).endsWith('/sessions')) return liveSession;
+        throw new Error('offline');
+      }) as jest.Mock;
+      const { result, unmount } = renderHook(() =>
+        useBiographerLive('project', 'author', jest.fn()),
+      );
+      await act(async () => {
+        await result.current.start();
+      });
+      act(() => TestLiveSocket.current.ready());
+      expect(result.current.state).toBe('listening');
+      Object.defineProperty(navigator, 'onLine', { configurable: true, value: false });
+      act(() => processor.port.onmessage({ data: new ArrayBuffer(32000) }));
+      await waitFor(() =>
+        expect(savePending).toHaveBeenCalledWith(
+          expect.objectContaining({ authorId: 'author', projectId: 'project', durationMs: 1000 }),
+        ),
+      );
+      const stored = (savePending as jest.Mock).mock.calls[0][0];
+      pending.mockResolvedValue([stored]);
+      if (action === 'cancel') {
+        const socket = TestLiveSocket.current;
+        let cleanup!: Promise<void>;
+        act(() => {
+          ({ cleanup } = result.current.cancel());
+          processor.port.onmessage({ data: new ArrayBuffer(32000) });
+        });
+        expect(stop).toHaveBeenCalledTimes(1);
+        expect(result.current.state).toBe('paused');
+        expect(socket.close).toHaveBeenCalledTimes(1);
+        expect(JSON.parse(socket.send.mock.calls.at(-1)?.[0])).toEqual({ type: 'cancel' });
+        expect(global.fetch).toHaveBeenCalledWith(
+          '/api/biographer/projects/project/sessions/session',
+          expect.objectContaining({
+            method: 'DELETE',
+            keepalive: true,
+            body: JSON.stringify({ turnId: stored.turnId }),
+          }),
+        );
+        await waitFor(() => expect(removed).toHaveBeenCalledWith(stored.id));
+        expect(savePending).toHaveBeenCalledTimes(1);
+        await act(async () => {
+          finishCancellation();
+          await cleanup;
+        });
+        expect(result.current.saving).toBe('saved');
+      } else {
+        act(() => result.current.pause());
+        expect(stop).toHaveBeenCalledTimes(1);
+        expect(result.current.state).toBe('paused');
+        expect(removed).not.toHaveBeenCalled();
+      }
+      unmount();
+      Object.defineProperty(globalThis, 'AudioContext', {
+        configurable: true,
+        value: originalContext,
+      });
+      Object.defineProperty(navigator, 'onLine', { configurable: true, value: true });
+    },
+  );
   it('retains unsaved audio and never reports saved when local storage is full', async () => {
     pending.mockResolvedValue([]);
     (savePending as jest.Mock).mockRejectedValue(new Error('quota exceeded'));

@@ -62,6 +62,11 @@
       },
       "note": "We ask you not to include special-category data (health, biometrics, political views, etc.). If you enter third-party personal data, you confirm you have a lawful basis to do so (Art. 14 GDPR)."
     },
+    "storyWhisperer": {
+      "title": "Story Whisperer",
+      "savedContent": "When you use Story Whisperer, we save your conversation transcript and any photos you add so you can resume the interview and use the material to create your story. Google’s Gemini processes text and live audio to run the conversation.",
+      "recoveryAudio": "We may keep your original voice recording temporarily so you can recover an unfinished reply. The recording is available for recovery for up to seven days from the time it was recorded."
+    },
     "section4": {
       "title": "4. Why we process your data & legal bases",
       "table": {

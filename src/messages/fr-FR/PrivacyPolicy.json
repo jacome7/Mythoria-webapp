@@ -62,6 +62,11 @@
       },
       "note": "Nous vous demandons de ne pas inclure des données de catégorie spéciale (santé, biométrie, opinions politiques, etc.). Si vous entrez des données personnelles tierces, vous confirmez que vous avez une base légale pour le faire (Art. 14 RGPD)."
     },
+    "storyWhisperer": {
+      "title": "Story Whisperer",
+      "savedContent": "Lorsque vous utilisez Story Whisperer, nous enregistrons la transcription de la conversation et les photos que vous ajoutez pour vous permettre de reprendre l’entretien et d’utiliser ces éléments pour créer votre histoire. Gemini, le service de Google, traite le texte et l’audio en direct pour permettre la conversation.",
+      "recoveryAudio": "Nous pouvons conserver temporairement l’enregistrement original de votre voix pour vous permettre de récupérer une réponse inachevée. Vous pouvez récupérer cet enregistrement pendant sept jours au maximum à compter de sa capture."
+    },
     "section4": {
       "title": "4. Pourquoi nous traitons vos données et vos bases juridiques",
       "table": {

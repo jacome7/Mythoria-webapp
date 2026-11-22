@@ -52,7 +52,10 @@ export async function handle(action: () => Promise<unknown>) {
     return NextResponse.json(await action(), { headers: { 'Cache-Control': 'private, no-store' } });
   } catch (error) {
     if (error instanceof BiographerError)
-      return NextResponse.json({ error: error.message }, { status: error.status });
+      return NextResponse.json(
+        { error: error.message, code: error.code },
+        { status: error.status },
+      );
     if (error instanceof ZodError || error instanceof SyntaxError)
       return NextResponse.json({ error: 'Invalid request' }, { status: 400 });
     return NextResponse.json(

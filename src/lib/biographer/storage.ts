@@ -9,6 +9,7 @@ import {
   biographerTurns as turns,
 } from '@/db/schema/biographer';
 import { BiographerError, detail, ownedProject } from '@/db/services/biographer';
+import { isDiscardedLiveTurn } from './discarded-audio';
 import { audioRetentionMs, hasCompleteTranscript } from './audio-retention';
 import { segmentInput } from './validation';
 function bucket() {
@@ -58,10 +59,11 @@ export async function saveSegment(
     if (!participant || participant.status === 'closed')
       throw new BiographerError('Contributions closed', 423);
     const [whisperer] = await tx
-      .select({ id: storyWhispererInterviews.projectId })
+      .select({ discarded: isDiscardedLiveTurn(projectId, value.turnId) })
       .from(storyWhispererInterviews)
       .where(eq(storyWhispererInterviews.projectId, projectId));
     if (whisperer) {
+      if (whisperer.discarded) throw new BiographerError('Recording discarded', 410);
       if (!value.capturedAt) throw new BiographerError('Capture time required');
       if (capturedAt.getTime() <= Date.now() - audioRetentionMs)
         throw new BiographerError('Recording expired', 410);
@@ -188,10 +190,11 @@ export async function readSegment(authorId: string, projectId: string, id: strin
     .where(and(eq(segments.id, id), eq(segments.projectId, projectId)));
   if (!segment) throw new BiographerError('Audio not found', 404);
   const [whisperer] = await db
-    .select({ id: storyWhispererInterviews.projectId })
+    .select({ discarded: isDiscardedLiveTurn(projectId, segment.turnId) })
     .from(storyWhispererInterviews)
     .where(eq(storyWhispererInterviews.projectId, projectId));
   if (whisperer) {
+    if (whisperer.discarded) throw new BiographerError('Recording discarded', 410);
     if (segment.createdAt.getTime() <= Date.now() - audioRetentionMs)
       throw new BiographerError('Recording expired', 410);
     const [turn] = await db

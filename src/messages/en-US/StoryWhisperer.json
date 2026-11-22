@@ -1,19 +1,132 @@
 {
   "StoryWhisperer": {
+    "introQuestions": "I’ll ask you a few questions to help shape your story.",
+    "introProgress": "Track your progress at the top. Once we have enough detail, you can select “Continue” to create your outline.",
+    "introInputs": "At any time, you can <photo>attach photos</photo>, <dictate>dictate your reply</dictate>, or <live>talk live</live>.",
     "title": "Story Whisperer",
     "subtitle": "Every great story begins with a conversation.",
-    "welcome": "Tell me what you have in mind. We’ll find the characters, the world they live in, and what happens next.",
-    "consent": "I agree to save this conversation’s transcript and the photos I add. Voice audio may be kept for up to 7 days so I can recover an unfinished reply.",
     "opening": "Who would you like your story to be about?",
+    "openings": {
+      "neutral": {
+        "question": "What would you like to tell a story about?",
+        "choice1": "I want to write about someone I love",
+        "choice2": "I remember a surprising day",
+        "choice3": "I have a character in mind",
+        "choice4": "I want to imagine a new place"
+      },
+      "romance": {
+        "question": "Where should your love story begin?",
+        "choice1": "I want to tell how we met",
+        "choice2": "I want to remember our first date",
+        "choice3": "I want to share a moment that mattered",
+        "choice4": "I want to invent a love story"
+      },
+      "milestones_celebrations": {
+        "question": "What would you like to celebrate in your story?",
+        "choice1": "I want to make a birthday surprise",
+        "choice2": "I want to remember a big achievement",
+        "choice3": "I want to write about a family party",
+        "choice4": "I want to imagine a party with a twist"
+      },
+      "kids_bedtime": {
+        "question": "What kind of bedtime story would you like to tell?",
+        "choice1": "I want my child to star in a cozy story",
+        "choice2": "I want to follow a sleepy animal home",
+        "choice3": "I want a quiet story about the stars",
+        "choice4": "I want a tiny bedtime adventure"
+      },
+      "kids_adventures": {
+        "question": "What adventure would you like to start?",
+        "choice1": "I want a child to find a secret passage",
+        "choice2": "I want friends to follow a strange map",
+        "choice3": "I want a hero to rescue a magical creature",
+        "choice4": "I want a normal day to become an expedition"
+      },
+      "kids_transitions": {
+        "question": "What change would you like your story to explore?",
+        "choice1": "I want to write about starting a new school",
+        "choice2": "I want to tell how we welcomed a sibling",
+        "choice3": "I want a story about moving away",
+        "choice4": "I want a child to dare to try something new"
+      },
+      "learning_and_discovery": {
+        "question": "What would you like someone to discover?",
+        "choice1": "I want to answer a question I've always had",
+        "choice2": "I want to explore a mystery in nature",
+        "choice3": "I want a character to learn by building",
+        "choice4": "I want to explore a faraway place"
+      },
+      "pet_stories": {
+        "question": "What story would you like to tell about an animal?",
+        "choice1": "I want to tell how my pet came home",
+        "choice2": "I want to write about my pet's funniest habit",
+        "choice3": "I want to see through my pet's eyes",
+        "choice4": "I want an animal to go on a secret mission"
+      },
+      "remembrance": {
+        "question": "What memory would you like to keep in a story?",
+        "choice1": "I want to remember a day we shared",
+        "choice2": "I want to keep a tradition alive",
+        "choice3": "I want to write about a keepsake",
+        "choice4": "I want to put my feelings into words"
+      },
+      "grandparents": {
+        "question": "Which story about a grandparent would you like to tell?",
+        "choice1": "I want to save a story my grandparent told",
+        "choice2": "I want to remember what we did together",
+        "choice3": "I want to learn about my grandparent's youth",
+        "choice4": "I want to share something my grandparent taught me"
+      },
+      "school_projects": {
+        "question": "What would you like to share through your school project?",
+        "choice1": "I want to explain a topic with a story",
+        "choice2": "I want to share what we tried in class",
+        "choice3": "I want to imagine a day in the past",
+        "choice4": "I want to show how my group solved a problem"
+      },
+      "sports_teams": {
+        "question": "What moment would you like to tell from a team's story?",
+        "choice1": "I want to tell about a memorable game",
+        "choice2": "I want to remember joining my first team",
+        "choice3": "I want to show a team bouncing back",
+        "choice4": "I want to invent an underdog team"
+      },
+      "family_travels": {
+        "question": "Where would you like your family travel story to begin?",
+        "choice1": "I want to remember our best day on vacation",
+        "choice2": "I want to write about a change of plans",
+        "choice3": "I want to tell about a place we discovered",
+        "choice4": "I want to invent a surprise-filled road trip"
+      },
+      "amusement_parks": {
+        "question": "What would make your day at the amusement park a story?",
+        "choice1": "I want to remember a ride I dared to try",
+        "choice2": "I want to tell about our best day at the park",
+        "choice3": "I want to invent an impossible ride",
+        "choice4": "I want to uncover a secret after closing"
+      },
+      "neurodiversity": {
+        "question": "Whose experience would you like to share in your story?",
+        "choice1": "I want a character who spots hidden details",
+        "choice2": "I want to show what a busy place feels like",
+        "choice3": "I want to tell how someone made room for me",
+        "choice4": "I want to share an interest my character loves"
+      },
+      "holidays_festivals": {
+        "question": "Which holiday or festival would you like to bring to life?",
+        "choice1": "I want to tell the story of our tradition",
+        "choice2": "I want to remember my first festival",
+        "choice3": "I want to write about a holiday away from home",
+        "choice4": "I want to invent a festival for a fictional town"
+      }
+    },
     "close": "Close conversation",
-    "start": "Start chatting",
     "resume": "Continue with Story Whisperer",
     "progress": "Story progress",
     "missing": "Still needed",
     "characters": "Characters",
     "setting": "Setting",
     "plot": "Plot",
-    "checkProgress": "Check progress",
     "conversation": "Conversation",
     "you": "You",
     "photos": "Photos in this conversation",
@@ -24,20 +137,27 @@
     "suggestions": "Suggested replies",
     "reply": "Write a reply…",
     "send": "Send",
+    "sendShortcut": "Enter to send. Shift + Enter for a new line.",
+    "sendFailed": "Your reply couldn’t be sent.",
+    "assistantResponding": "Story Whisperer is preparing a reply.",
     "working": "One moment…",
     "error": "Something went wrong. You can try again.",
     "retry": "Retry",
     "reset": "Start over",
     "resetConfirm": "Start over? This will remove this conversation and its attachments from your draft.",
+    "resetYes": "Yes",
+    "resetNo": "No",
+    "resetClarify": "Reply “Yes” or “No”, or choose one of the buttons.",
     "cancel": "Cancel",
-    "otherInputs": "Other story inputs",
-    "continue": "Create my outline",
+    "continue": "Continue",
     "reviewInputs": "Review your other inputs or remove a photo before continuing.",
     "dictate": "Dictate",
     "stopDictation": "Stop dictation",
     "recoverDictation": "Recover dictation",
     "discardDictation": "Discard dictation",
     "liveVoice": "Live voice",
+    "liveVoiceShort": "Live",
+    "pauseVoiceShort": "Pause",
     "pauseVoice": "Pause voice",
     "connecting": "Connecting…",
     "listening": "Listening…",
@@ -47,13 +167,14 @@
     "useExisting": "Use the details already in my draft",
     "developing": "Developing",
     "ready": "Ready",
-    "editReply": "Edit reply",
+    "switchToText": "Switch to typing",
+    "writeReply": "Write reply",
     "saveReply": "Save reply",
     "unfinished": "This voice reply is unfinished. Recover the recording, write the reply, or discard it.",
     "discardVoiceConfirm": "Discard the voice audio that’s waiting to sync?",
     "retryOutline": "Resume creating my outline",
-    "resumePrompt": "You have a saved conversation for this story. Would you like to continue or start over?",
-    "resumeChat": "Continue chatting",
+    "readyNotice": "You can continue to your outline now, or keep telling your story.",
+    "advanceUnavailable": "We couldn’t continue yet. Check your progress and any replies waiting to be saved.",
     "saveStatus": {
       "local": "On this device",
       "saving": "Saving…",

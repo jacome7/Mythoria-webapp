@@ -180,18 +180,18 @@ function Step2Content({
   useEffect(() => {
     startTime.current = Date.now();
   }, []);
+  const currentIntent = searchParams.get('primaryIntent');
+  const primaryIntent = isValidIntent(currentIntent) ? currentIntent : intentContext?.intent;
   const templatesForIntent = useMemo(() => {
-    const currentIntent = searchParams.get('primaryIntent');
-    const intent = isValidIntent(currentIntent) ? currentIntent : intentContext?.intent;
     // With no intent, show three different types of starting point.
     const varied = ['drawing-adventure', 'little-love', 'pet-mission'];
     return [...templates].sort((a, b) =>
-      intent
-        ? Number(b.intents.includes(intent)) - Number(a.intents.includes(intent))
+      primaryIntent
+        ? Number(b.intents.includes(primaryIntent)) - Number(a.intents.includes(primaryIntent))
         : (varied.includes(a.id) ? varied.indexOf(a.id) : 10) -
           (varied.includes(b.id) ? varied.indexOf(b.id) : 10),
     );
-  }, [templates, searchParams, intentContext]);
+  }, [templates, primaryIntent]);
 
   // Modal states
   const [activeModal, setActiveModal] = useState<ContentType | null>(null);
@@ -1327,15 +1327,15 @@ function Step2Content({
                       whispererEnabled && !catalogOpen ? (
                         <button
                           type="button"
-                          className={`${styles.previewRow} mb-4`}
+                          className={`${styles.previewRow} ${styles.highlightedEntry} mb-4`}
                           disabled={whispererRestoring || isCreatingStory || !templateState.ready}
                           onClick={() => void openWhisperer()}
                         >
                           <Image
-                            src="/Papercut_icons/open-book-with-stars.webp"
+                            src="/Papercut_icons/story-whisperer-chat.webp"
                             alt=""
                             width={72}
-                            height={72}
+                            height={62}
                           />
                           <span>
                             <strong>{tWhisperer('title')}</strong>
@@ -1473,6 +1473,7 @@ function Step2Content({
             draftId={whispererDraftId}
             owner={userId}
             interview={interview}
+            primaryIntent={primaryIntent}
             onInterview={(next) => {
               if (!next) {
                 setRecoveredWhispererInputs(undefined);
@@ -1482,8 +1483,7 @@ function Step2Content({
               }
               setInterview(next);
             }}
-            onClose={() => setWhispererOpen(false)}
-            onOtherInputs={() => {
+            onClose={() => {
               setWhispererOpen(false);
               setEntryScreen('edit');
             }}

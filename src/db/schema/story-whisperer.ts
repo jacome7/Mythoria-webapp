@@ -10,7 +10,7 @@ import {
 } from 'drizzle-orm/pg-core';
 import type {
   WhispererContext,
-  WhispererChoicesMode,
+  WhispererSavedQuestion,
   WhispererReadiness,
 } from '@/lib/story-whisperer/types';
 import { authors } from './authors';
@@ -32,11 +32,7 @@ export const storyWhispererInterviews = pgTable(
     readiness: jsonb('readiness').$type<WhispererReadiness>(),
     readinessRevision: integer('readiness_revision'),
     context: jsonb('context').$type<WhispererContext>(),
-    latestQuestion: jsonb('latest_question').$type<{
-      id: string;
-      choices: string[];
-      choicesMode?: WhispererChoicesMode;
-    }>(),
+    latestQuestion: jsonb('latest_question').$type<WhispererSavedQuestion>(),
   },
   (table) => [primaryKey({ columns: [table.authorId, table.draftId] })],
 );
