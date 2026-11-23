@@ -25,20 +25,19 @@ function collectHydrationErrors(page: Page): string[] {
 }
 
 test.describe('Homepage hero — default composition', () => {
-  test('renders the generic headline with Kids art and no campaign intent', async ({ page }) => {
+  test('renders the generic headline with Christmas art and a Christmas story CTA without setting a campaign cookie', async ({
+    page,
+  }) => {
     await page.goto('/en-US', { waitUntil: 'domcontentloaded' });
 
     const hero = page.locator('section.papercut-hero');
     await expect(hero).toBeVisible();
     await expect(hero.locator('h1')).toHaveText('Every story starts with you');
-    await expect(page.locator('html')).toHaveAttribute('data-website-theme', 'kids');
-    await expect(hero.locator('.pc-person-slide img').first()).toHaveAttribute(
-      'src',
-      /kids_fantasy/,
-    );
+    await expect(page.locator('html')).toHaveAttribute('data-website-theme', 'christmas');
+    await expect(hero.locator('.pc-person-slide img').first()).toHaveAttribute('src', /christmas/);
     await expect(hero.getByRole('link', { name: 'Write your own story' })).toHaveAttribute(
       'href',
-      /primaryIntent(?:%3D|=)kids_adventures/,
+      /primaryIntent(?:%3D|=)christmas/,
     );
     expect((await page.context().cookies()).some((c) => c.name === 'mythoria_intent_context')).toBe(
       false,
@@ -130,7 +129,7 @@ test.describe('Homepage hero — sports_teams via ?intent= query param', () => {
     await page.goto('/en-US?intent=bogus_unknown_intent', { waitUntil: 'domcontentloaded' });
     const hero = page.locator('section.papercut-hero');
     await expect(hero).toBeVisible();
-    await expect(page.locator('html')).toHaveAttribute('data-website-theme', 'kids');
+    await expect(page.locator('html')).toHaveAttribute('data-website-theme', 'christmas');
   });
 });
 
@@ -166,7 +165,7 @@ test.describe('Homepage hero — sports_teams via /i/ cookie flow', () => {
     await page.goto('/en-US', { waitUntil: 'domcontentloaded' });
     const h1 = page.locator('section.papercut-hero h1');
     await expect(h1).toBeVisible();
-    await expect(page.locator('html')).toHaveAttribute('data-website-theme', 'kids');
+    await expect(page.locator('html')).toHaveAttribute('data-website-theme', 'christmas');
   });
 });
 

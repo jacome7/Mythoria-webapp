@@ -51,7 +51,7 @@ it('commits cached landing entry intent only when its route becomes current', as
   );
   setNavigation('/pt-PT');
   const { rerender } = render(page(entry()));
-  expect(screen.getByText('kids')).toBeInTheDocument();
+  expect(screen.getByText('christmas')).toBeInTheDocument();
   expect(document.cookie).not.toContain(INTENT_CONTEXT_COOKIE);
 
   setNavigation(`/pt-PT/lp/${slug}`);
@@ -68,8 +68,8 @@ it('commits cached landing entry intent only when its route becomes current', as
 it('tracks cookie and query context in a reused root layout across localized routes', () => {
   setNavigation('/pt-PT');
   const { rerender } = render(page());
-  expect(screen.getByText('kids')).toBeInTheDocument();
-  expect(document.documentElement).toHaveAttribute('data-website-theme', 'kids');
+  expect(screen.getByText('christmas')).toBeInTheDocument();
+  expect(document.documentElement).toHaveAttribute('data-website-theme', 'christmas');
 
   setIntentCookie('{"intent":"romance","recipient":"partner"}');
   setNavigation('/pt-PT/lp/livro-personalizado-para-casais');
@@ -93,5 +93,5 @@ it('tracks cookie and query context in a reused root layout across localized rou
   setIntentCookie('{"intent":"unknown"}');
   setNavigation('/offline');
   rerender(page());
-  expect(screen.getByText('kids')).toBeInTheDocument();
+  expect(screen.getByText('christmas')).toBeInTheDocument();
 });

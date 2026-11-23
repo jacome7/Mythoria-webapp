@@ -133,7 +133,7 @@ function buildDecorLayer(style: HeroStyleId, slot: DecorSlot, tuning?: DecorTuni
 
 /**
  * The paper-cut storytelling hero. Picks a style composition from the
- * visitor's intent (defaults to Kids Fantasy), then renders one shared
+ * visitor's intent (defaults to Christmas), then renders one shared
  * skeleton:
  *   1. sky band — cloud/sky decor pairs + sparkles behind the headline,
  *      subtitle and CTA (all copy from the style's translation namespace)

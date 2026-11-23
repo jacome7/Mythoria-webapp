@@ -21,8 +21,8 @@ typography, layering rules, animation, and **how to author a new composition**.
 - **One skeleton, many styles.** The hero renderer owns a single canonical
   layout; a "composition" is a style variant that fills the same named slots
   with its own artwork, palette and copy. The style shown adapts to the
-  visitor's intent. `kids_fantasy` is the default. Valid intents use their own
-  hero composition when one exists, including the explicit `christmas` intent.
+  visitor's intent. Without a valid intent, it shows `christmas`. Valid intents
+  use their own hero composition when one exists and `kids_fantasy` otherwise.
   [Intent-based personalization](./features/homepage.md)
 - **A real person holding a real book, always.** The center of every style is a
   photographic person (or couple/animal) holding a physical Mythoria book — the

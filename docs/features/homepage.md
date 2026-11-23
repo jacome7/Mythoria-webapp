@@ -45,9 +45,10 @@ These links record the intent and (optionally) the recipient in a cookie, then r
 | ----------------------------------------- | --------------------------- | ----------------- |
 | `christmas`                               | `christmas`                 | Christmas         |
 | `sports_teams`, `romance`, `grandparents` | Matching custom composition | Kids              |
-| Empty, invalid, or other valid intent     | `kids_fantasy`              | Kids              |
+| Empty or invalid intent                   | `christmas`                 | Christmas         |
+| Other valid intent                        | `kids_fantasy`              | Kids              |
 
-A valid `?intent=<value>` on a localized homepage or landing page takes precedence. A recognized landing page can provide its own intent. Both sources persist valid context in the 24-hour cookie. Other routes use the stored context. The root layout resolves the initial theme and marks the document with `data-website-theme`. The shared provider keeps the cookie, homepage hero, and sitewide theme in sync during client navigation. Visitors without a valid intent see Kids. The `/i/christmas` campaign link selects the Christmas theme and sets the hero CTA's story intent to `christmas`.
+A valid `?intent=<value>` on a localized homepage or landing page takes precedence. A recognized landing page can provide its own intent. Both sources persist valid context in the 24-hour cookie. Other routes use the stored context. The root layout resolves the initial theme and marks the document with `data-website-theme`. The shared provider keeps the cookie, homepage hero, and sitewide theme in sync during client navigation. Visitors without a valid intent see Christmas artwork and the hero CTA starts the wizard with `primaryIntent=christmas`. This default does not set a campaign cookie. The `/i/christmas` campaign link selects the Christmas theme and sets the hero CTA's story intent to `christmas`.
 
 The paper-cut illustrations in shared surfaces and homepage sections follow the sitewide theme. The homepage gallery uses the resolved campaign intent and recipient to prioritize sample books.
 

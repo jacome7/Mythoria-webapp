@@ -10,7 +10,8 @@ import { christmas } from './compositions/christmas';
 /**
  * Maps campaign intent to the homepage hero composition.
  *
- * Kids Fantasy is the default when there is no matching composition. To add a
+ * Christmas is the default without a valid intent. Use Kids Fantasy for valid
+ * intents that lack a custom composition. To add a
  * custom composition:
  *   1. drop slot-named assets + assets_metadata.json into `public/homepage/<id>/`
  *      (run `npm run homepage:assets` to validate)
@@ -27,5 +28,5 @@ const COMPOSITIONS: Partial<Record<StoryIntent, HeroComposition>> = {
 
 export function resolveComposition(rawIntent?: string | null): HeroComposition {
   const intent = getValidatedIntent(rawIntent);
-  return (intent ? COMPOSITIONS[intent] : undefined) ?? kidsFantasy;
+  return intent ? (COMPOSITIONS[intent] ?? kidsFantasy) : christmas;
 }
