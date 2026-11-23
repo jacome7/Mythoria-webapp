@@ -92,6 +92,28 @@ async function assertPublicStoryIndexability(
   if (!validation.valid) throw new PublicStoryValidationError(validation.missing);
 }
 
+function postgresError(error: unknown): { code?: string; constraint?: string; message?: string } {
+  if (typeof error !== 'object' || error === null) return {};
+  const failure = error as {
+    code?: string;
+    constraint?: string;
+    message?: string;
+    cause?: { code?: string; constraint?: string; message?: string };
+  };
+  return failure.cause?.code ? failure.cause : failure;
+}
+
+async function retryAuthorCreation<T>(create: () => Promise<T>): Promise<T> {
+  const retries = 2;
+  for (let retry = 0; ; retry += 1) {
+    try {
+      return await create();
+    } catch (error) {
+      if (retry === retries || postgresError(error).code !== '40P01') throw error;
+    }
+  }
+}
+
 // Author operations
 export const authorService = {
   async createAuthor(authorData: {
@@ -153,16 +175,6 @@ export const authorService = {
   async syncUserOnSignIn(clerkUser: ClerkUserForSync) {
     const currentTime = new Date();
 
-    // Debug logging to see what Clerk provides
-    console.log('[syncUserOnSignIn] Clerk user data:', {
-      userId: clerkUser.id,
-      hasPhoneNumbers: !!clerkUser.phoneNumbers,
-      phoneNumbersCount: clerkUser.phoneNumbers?.length || 0,
-      primaryPhoneNumberId: clerkUser.primaryPhoneNumberId,
-      phoneNumbers: clerkUser.phoneNumbers,
-      emailAddresses: clerkUser.emailAddresses?.map((e) => ({ id: e.id, email: e.emailAddress })),
-    });
-
     // Try to find existing user by clerkUserId first
     const existingAuthor = await this.getAuthorByClerkId(clerkUser.id);
 
@@ -174,7 +186,6 @@ export const authorService = {
         .where(eq(authors.clerkUserId, clerkUser.id))
         .returning();
 
-      console.log('Updated existing user login time:', updatedAuthor.clerkUserId);
       return updatedAuthor;
     } else {
       // User doesn't exist, try to create new user
@@ -186,13 +197,6 @@ export const authorService = {
       const primaryPhone = clerkUser.primaryPhoneNumberId
         ? clerkUser.phoneNumbers?.find((phone) => phone.id === clerkUser.primaryPhoneNumberId)
         : clerkUser.phoneNumbers?.[0]; // Fallback to first phone
-
-      console.log('[syncUserOnSignIn] Primary phone extraction:', {
-        primaryPhoneNumberId: clerkUser.primaryPhoneNumberId,
-        foundPrimaryPhone: !!primaryPhone,
-        phoneNumber: primaryPhone?.phoneNumber,
-        usedFallback: !clerkUser.primaryPhoneNumberId && !!primaryPhone,
-      });
 
       const email = primaryEmail?.emailAddress || clerkUser.emailAddresses?.[0]?.emailAddress || '';
       const detectedLocale = detectUserLocaleFromEmail(email);
@@ -206,111 +210,73 @@ export const authorService = {
         ...(primaryPhone?.phoneNumber && { mobilePhone: primaryPhone.phoneNumber }),
       };
 
-      console.log('[syncUserOnSignIn] Creating author with data:', {
-        clerkUserId: clerkUser.id,
-        email,
-        hasMobilePhone: !!newAuthorData.mobilePhone,
-        mobilePhone: newAuthorData.mobilePhone,
-      });
-
       try {
         const initialCredits = await pricingService.getInitialAuthorCredits();
-        const newAuthor = await db.transaction(async (tx) => {
-          const [created] = await tx.insert(authors).values(newAuthorData).returning();
-          await tx.insert(creditLedger).values({
-            authorId: created.authorId,
-            amount: initialCredits,
-            creditEventType: 'initialCredit',
-            idempotencyKey: `initial_credit:${clerkUser.id}`,
-          });
-          await tx.insert(authorCreditBalances).values({
-            authorId: created.authorId,
-            totalCredits: initialCredits,
-            lastUpdated: new Date(),
-          });
-          const occurredAt = clerkCreationTime(clerkUser.createdAt, currentTime);
-          if (canRecoverSignUp(occurredAt, currentTime)) {
-            await tx
-              .insert(analyticsOutbox)
-              .values({
-                ...signUpOutboxEntry(clerkUser.id, occurredAt),
-                authorId: created.authorId,
-              })
-              .onConflictDoNothing({ target: analyticsOutbox.dedupeKey });
-            await enqueueAdConversion(tx, {
-              conversion: conversions.registrationCompleted(clerkUser.id),
+        return await retryAuthorCreation(() =>
+          db.transaction(async (tx) => {
+            const [created] = await tx.insert(authors).values(newAuthorData).returning();
+            await tx.insert(creditLedger).values({
               authorId: created.authorId,
-              adContext: null,
-              occurredAt,
+              amount: initialCredits,
+              creditEventType: 'initialCredit',
+              idempotencyKey: `initial_credit:${clerkUser.id}`,
             });
-          }
-          return created;
-        });
-        console.log(
-          'Created new user on sign-in:',
-          newAuthor.clerkUserId,
-          `with ${initialCredits} initial credits`,
-          'mobilePhone:',
-          newAuthor.mobilePhone,
-        );
-        return newAuthor;
-      } catch (error: unknown) {
-        // Type guard for error object
-        const isDbError = (
-          err: unknown,
-        ): err is { cause?: { code?: string; constraint?: string }; message?: string } => {
-          return typeof err === 'object' && err !== null;
-        };
-
-        if (isDbError(error)) {
-          // Check if it's a duplicate email constraint violation
-          const isDuplicateEmail =
-            (error.cause?.code === '23505' && error.cause?.constraint === 'authors_email_unique') ||
-            error.message?.includes(
-              'duplicate key value violates unique constraint "authors_email_unique"',
-            );
-          if (isDuplicateEmail) {
-            console.log(
-              'Duplicate email detected in syncUserOnSignIn, updating existing user with new clerkUserId:',
-              clerkUser.id,
-            );
-
-            try {
-              // Update existing user with new clerkUserId (user signed in with different OAuth provider)
-              const [updatedAuthor] = await db
-                .update(authors)
-                .set({
-                  clerkUserId: clerkUser.id, // Update to new clerkId
-                  displayName: this.buildDisplayName(clerkUser),
-                  lastLoginAt: currentTime,
-                  preferredLocale: normalizeLocale(detectedLocale),
-                  ...(primaryPhone?.phoneNumber && { mobilePhone: primaryPhone.phoneNumber }),
+            await tx.insert(authorCreditBalances).values({
+              authorId: created.authorId,
+              totalCredits: initialCredits,
+              lastUpdated: new Date(),
+            });
+            const occurredAt = clerkCreationTime(clerkUser.createdAt, currentTime);
+            if (canRecoverSignUp(occurredAt, currentTime)) {
+              await tx
+                .insert(analyticsOutbox)
+                .values({
+                  ...signUpOutboxEntry(clerkUser.id, occurredAt),
+                  authorId: created.authorId,
                 })
-                .where(eq(authors.email, newAuthorData.email))
-                .returning();
-
-              console.log(
-                'User updated (clerkUserId changed) in syncUserOnSignIn for email:',
-                newAuthorData.email,
-              );
-              return updatedAuthor;
-            } catch (updateError) {
-              console.error(
-                'Error updating user after duplicate email in syncUserOnSignIn:',
-                updateError,
-              );
-              throw updateError;
+                .onConflictDoNothing({ target: analyticsOutbox.dedupeKey });
+              await enqueueAdConversion(tx, {
+                conversion: conversions.registrationCompleted(clerkUser.id),
+                authorId: created.authorId,
+                adContext: null,
+                occurredAt,
+              });
             }
-          } else {
-            // Re-throw other errors
-            console.error('Error creating user in syncUserOnSignIn:', error);
-            throw error;
-          }
-        } else {
-          // If error doesn't match expected structure, re-throw
-          console.error('Unexpected error creating user in syncUserOnSignIn:', error);
-          throw error;
+            return created;
+          }),
+        );
+      } catch (error: unknown) {
+        const { code, constraint, message } = postgresError(error);
+        if (code === '23505' && constraint === 'authors_clerk_user_id_unique') {
+          // Another signup transaction committed this account while we were creating it.
+          const [author] = await db
+            .update(authors)
+            .set({ lastLoginAt: currentTime })
+            .where(eq(authors.clerkUserId, clerkUser.id))
+            .returning();
+          if (author) return author;
         }
+
+        const isDuplicateEmail =
+          (code === '23505' && constraint === 'authors_email_unique') ||
+          message?.includes(
+            'duplicate key value violates unique constraint "authors_email_unique"',
+          );
+        if (!isDuplicateEmail) throw error;
+
+        // Update an existing user signing in through a different OAuth provider.
+        const [updatedAuthor] = await db
+          .update(authors)
+          .set({
+            clerkUserId: clerkUser.id,
+            displayName: newAuthorData.displayName,
+            lastLoginAt: currentTime,
+            preferredLocale: newAuthorData.preferredLocale,
+            ...(newAuthorData.mobilePhone && { mobilePhone: newAuthorData.mobilePhone }),
+          })
+          .where(eq(authors.email, newAuthorData.email))
+          .returning();
+        return updatedAuthor;
       }
     }
   },

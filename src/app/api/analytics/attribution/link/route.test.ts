@@ -92,6 +92,23 @@ describe('POST /api/analytics/attribution/link', () => {
 
   afterEach(() => jest.useRealTimers());
 
+  it('handles author lookup failures without logging database parameters', async () => {
+    getCurrentAuthorMock.mockRejectedValueOnce(new Error('Failed SQL with private@example.test'));
+    const log = jest.spyOn(console, 'error').mockImplementation(() => {});
+    try {
+      const response = await POST(
+        new NextRequest('http://localhost/api/analytics/attribution/link'),
+      );
+
+      expect(response.status).toBe(500);
+      await expect(response.json()).resolves.toEqual({ error: 'Attribution link failed' });
+      expect(log.mock.calls).toEqual([['[AnalyticsAttributionLink]', { outcome: 'link_failed' }]]);
+      expect(selectWhereMock).not.toHaveBeenCalled();
+    } finally {
+      log.mockRestore();
+    }
+  });
+
   it('links the current author without deleting the 24-hour attribution cookie', async () => {
     const request = new NextRequest('https://mythoria.pt/api/analytics/attribution/link', {
       method: 'POST',

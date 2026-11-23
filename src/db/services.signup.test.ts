@@ -79,6 +79,51 @@ describe('transactional signup producers', () => {
       }),
     );
   });
+  it('replays only the creation transaction after raw and wrapped deadlock errors', async () => {
+    jest.spyOn(authorService, 'getAuthorByClerkId').mockResolvedValue(undefined);
+    const deadlock = Object.assign(new Error('deadlock detected'), { code: '40P01' });
+    transactionMock
+      .mockRejectedValueOnce(new Error('Failed query', { cause: deadlock }))
+      .mockRejectedValueOnce(deadlock);
+
+    await expect(
+      authorService.syncUserOnSignIn({ id: 'clerk-1', createdAt: created.getTime() }),
+    ).resolves.toMatchObject({ authorId: 'author-1' });
+    expect(transactionMock).toHaveBeenCalledTimes(3);
+    expect(valuesMock).toHaveBeenCalledTimes(1);
+    expect(enqueueAdConversionMock).toHaveBeenCalledTimes(1);
+  });
+
+  it.each([
+    ['40P01', 3],
+    ['08006', 1],
+  ])('limits transaction attempts for SQLSTATE %s', async (code, attempts) => {
+    jest.spyOn(authorService, 'getAuthorByClerkId').mockResolvedValue(undefined);
+    const failure = Object.assign(new Error('database error'), { code });
+    for (let attempt = 0; attempt < attempts; attempt += 1) {
+      transactionMock.mockRejectedValueOnce(failure);
+    }
+
+    await expect(authorService.syncUserOnSignIn({ id: 'clerk-1' })).rejects.toBe(failure);
+    expect(transactionMock).toHaveBeenCalledTimes(attempts);
+    expect(valuesMock).not.toHaveBeenCalled();
+    expect(enqueueAdConversionMock).not.toHaveBeenCalled();
+  });
+
+  it('reuses the author committed by a concurrent signup after a deadlock', async () => {
+    jest.spyOn(authorService, 'getAuthorByClerkId').mockResolvedValue(undefined);
+    transactionMock.mockRejectedValueOnce({ code: '40P01' }).mockRejectedValueOnce({
+      cause: { code: '23505', constraint: 'authors_clerk_user_id_unique' },
+    });
+
+    await expect(
+      authorService.syncUserOnSignIn({ id: 'clerk-1', createdAt: created.getTime() }),
+    ).resolves.toMatchObject({ authorId: 'author-1' });
+    expect(transactionMock).toHaveBeenCalledTimes(2);
+    expect(valuesMock).not.toHaveBeenCalled();
+    expect(enqueueAdConversionMock).not.toHaveBeenCalled();
+  });
+
   it('webhook-first author creation records the same date and dedupe key', async () => {
     await authorService.createAuthor({
       clerkUserId: 'clerk-1',

@@ -15,13 +15,13 @@ import { storyShareEventParams } from '@/lib/analytics/story-share';
 export const runtime = 'nodejs';
 
 export async function POST(request: NextRequest) {
-  const author = await getCurrentAuthor();
-  if (!author) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-
-  const attributionId = request.cookies.get('mythoria_attribution')?.value;
-  if (!attributionId) return NextResponse.json({ linked: false });
-
   try {
+    const author = await getCurrentAuthor();
+    if (!author) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+
+    const attributionId = request.cookies.get('mythoria_attribution')?.value;
+    if (!attributionId) return NextResponse.json({ linked: false });
+
     const [attribution] = await db
       .select()
       .from(analyticsAttributions)
@@ -254,8 +254,8 @@ export async function POST(request: NextRequest) {
       linked: true,
       ...(repaired.signUpPending ? { signUpPending: true } : {}),
     });
-  } catch (error) {
-    console.error('Failed to link analytics attribution:', error);
+  } catch {
+    console.error('[AnalyticsAttributionLink]', { outcome: 'link_failed' });
     return NextResponse.json({ error: 'Attribution link failed' }, { status: 500 });
   }
 }
