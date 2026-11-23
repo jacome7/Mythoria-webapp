@@ -57,6 +57,8 @@
   "restructureDescription": "Reconstruire le plan à partir de ces détails ? Cela peut remplacer des détails modifiés dans les étapes suivantes.",
   "confirmRestructure": "Utiliser cette version",
   "structureError": "Impossible de terminer le plan. Tes informations sont enregistrées ; réessaie.",
+  "structureDeclined": "Le guide d’écriture n’a pas pu utiliser ce contenu pour créer un plan. Ton brouillon est enregistré. Modifie les détails de l’histoire ou les fichiers joints avant de continuer.",
+  "structureUnconfirmed": "Impossible de vérifier si le plan est prêt. Ton brouillon est enregistré. Réessaie pour consulter le même plan.",
   "continueWithoutGuide": "Continuer sans le guide",
   "templateUnavailable": "Cette idée n’est pas disponible. Choisis-en une autre ou utilise la tienne.",
   "previewReplacement": "Relire la version proposée",

@@ -570,7 +570,12 @@
         "failedToLoadCreditInformation": "No se pudo cargar la información de créditos. Inténtalo de nuevo.",
         "failedToLoadPricingInformation": "No se pudo cargar la información de precios. Inténtalo de nuevo.",
         "insufficientCreditsError": "No tienes suficientes créditos. Compra más para continuar.",
-        "failedToCompleteStory": "No se pudo completar la historia. Inténtalo de nuevo."
+        "failedToCompleteStory": "No se pudo completar la historia. Inténtalo de nuevo.",
+        "authorNameTooLong": "Usa un máximo de 255 caracteres para el nombre del autor.",
+        "authorNameInvalid": "Revisa el nombre del autor.",
+        "dedicationTooLong": "Usa un máximo de 2.000 caracteres para la dedicatoria.",
+        "dedicationInvalid": "Revisa la dedicatoria.",
+        "editStoryDetails": "Editar el nombre del autor o la dedicatoria"
       }
     }
   }

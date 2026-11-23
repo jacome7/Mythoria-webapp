@@ -25,7 +25,27 @@ export async function POST(request: NextRequest) {
     const author = await getCurrentAuthor();
     if (!author) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
-    const input = completeStorySchema.parse(await request.json());
+    const body = await request.json().catch(() => null);
+    const parsed = completeStorySchema.safeParse(body);
+    if (!parsed.success) {
+      const details = parsed.error.issues.flatMap((issue) => {
+        const [field, feature] = issue.path;
+        if (field === 'dedicationMessage' || field === 'customAuthor') {
+          return [{ field, code: issue.code === 'too_big' ? 'too_long' : 'invalid' }];
+        }
+        if (field === 'storyId' || field === 'idempotencyKey' || field === 'deliveryAddress') {
+          return [{ field, code: 'invalid' }];
+        }
+        if (field === 'features') {
+          const knownFeature =
+            feature === 'ebook' || feature === 'printed' || feature === 'audiobook';
+          return [{ field: knownFeature ? `features.${feature}` : field, code: 'invalid' }];
+        }
+        return [];
+      });
+      return NextResponse.json({ error: 'Invalid request data', details }, { status: 400 });
+    }
+    const input = parsed.data;
     const {
       context: analyticsContext,
       consent: analyticsConsent,
@@ -72,12 +92,6 @@ export async function POST(request: NextRequest) {
       { status: 202 },
     );
   } catch (error) {
-    if (error instanceof z.ZodError) {
-      return NextResponse.json(
-        { error: 'Invalid request data', details: error.issues },
-        { status: 400 },
-      );
-    }
     if (error instanceof Error && error.message === 'Story not found') {
       return NextResponse.json({ error: 'Story not found' }, { status: 404 });
     }

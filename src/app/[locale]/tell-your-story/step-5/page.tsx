@@ -3,6 +3,7 @@
 import { Show, RedirectToSignIn, useAuth } from '@clerk/nextjs';
 import { useState, useEffect, Suspense, useRef } from 'react';
 import { useSearchParams } from 'next/navigation';
+import Link from 'next/link';
 import { useLocale, useTranslations } from 'next-intl';
 import ThemedArtwork from '@/components/ThemedArtwork';
 import StepNavigation from '@/components/StepNavigation';
@@ -50,6 +51,7 @@ function Step5Page() {
   const [submitting, setSubmitting] = useState(false);
   const [storyGenerationStarted, setStoryGenerationStarted] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [editStoryDetails, setEditStoryDetails] = useState(false);
   const currentStoryId = useStorySessionGuard();
   const [storyData, setStoryData] = useState<StoryData | null>(null);
   const [userCredits, setUserCredits] = useState<number>(0);
@@ -167,6 +169,7 @@ function Step5Page() {
 
     setSubmitting(true);
     setError(null);
+    setEditStoryDetails(false);
 
     try {
       await ensureConsentChoice();
@@ -196,9 +199,36 @@ function Step5Page() {
       });
 
       if (!response.ok) {
-        const errorData = await response.json();
-        console.error('Failed to complete story:', errorData);
-        setError(tStoryStepsStep5('alerts.failedToCompleteStory'));
+        const errorData = await response.json().catch(() => null);
+        const details: unknown[] =
+          response.status === 400 && Array.isArray(errorData?.details) ? errorData.details : [];
+        const fieldMessages = details.flatMap((detail) => {
+          if (!detail || typeof detail !== 'object' || !('field' in detail) || !('code' in detail))
+            return [];
+          if (detail.field === 'customAuthor') {
+            return [
+              detail.code === 'too_long'
+                ? tStoryStepsStep5('alerts.authorNameTooLong')
+                : tStoryStepsStep5('alerts.authorNameInvalid'),
+            ];
+          }
+          if (detail.field === 'dedicationMessage') {
+            return [
+              detail.code === 'too_long'
+                ? tStoryStepsStep5('alerts.dedicationTooLong')
+                : tStoryStepsStep5('alerts.dedicationInvalid'),
+            ];
+          }
+          return [];
+        });
+        setEditStoryDetails(fieldMessages.length > 0);
+        setError(
+          fieldMessages.length
+            ? [...new Set(fieldMessages)].join(' ')
+            : response.status === 409
+              ? tStoryStepsStep5('alerts.insufficientCreditsError')
+              : tStoryStepsStep5('alerts.failedToCompleteStory'),
+        );
         return;
       }
 
@@ -258,8 +288,16 @@ function Step5Page() {
                     </h1>
 
                     {error && (
-                      <div className="alert alert-error mb-6">
+                      <div role="alert" className="alert alert-error mb-6">
                         <span>{error}</span>
+                        {editStoryDetails && (
+                          <Link
+                            className="link"
+                            href={`/${locale}/tell-your-story/step-1?returnTo=review`}
+                          >
+                            {tStoryStepsStep5('alerts.editStoryDetails')}
+                          </Link>
+                        )}
                       </div>
                     )}
 

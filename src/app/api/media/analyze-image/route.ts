@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getCurrentAuthor } from '@/lib/auth';
 import { sgwFetch } from '@/lib/sgw-client';
+import { wizardMediaLogger, wizardMediaRequestId } from '@/lib/wizard-media-logging';
 
 /**
  * POST /api/media/analyze-image
@@ -11,32 +12,50 @@ import { sgwFetch } from '@/lib/sgw-client';
  * Returns: { success, objectPath, metadata }
  */
 export async function POST(request: NextRequest) {
+  const requestId = wizardMediaRequestId(request.headers);
+  const operation = 'analysis';
+  const headers = { 'x-request-id': requestId };
+  let stage = 'identity';
+  const respond = (body: unknown, status: number) => {
+    if (status >= 400) {
+      wizardMediaLogger.warn('wizard_media_request_failed', {
+        requestId,
+        operation,
+        stage,
+        status,
+      });
+    }
+    return NextResponse.json(body, { status, headers });
+  };
   try {
     const author = await getCurrentAuthor();
-    if (!author) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    if (!author) return respond({ error: 'Unauthorized' }, 401);
 
-    const body = await request.json();
+    stage = 'validation';
+    const body = await request.json().catch(() => null);
     const { objectPath, locale } = body || {};
     if (!objectPath || typeof objectPath !== 'string') {
-      return NextResponse.json({ error: 'objectPath is required' }, { status: 400 });
+      return respond({ error: 'objectPath is required' }, 400);
     }
 
     // Inputs live under `{authorId}/inputs/...`; ensure the caller owns this path.
     if (!objectPath.startsWith(`${author.authorId}/`)) {
-      return NextResponse.json({ error: 'Access denied' }, { status: 403 });
+      return respond({ error: 'Access denied' }, 403);
     }
 
+    stage = 'workflow_request';
     const resp = await sgwFetch('/ai/media/analyze-image', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', ...headers },
       body: JSON.stringify({ objectPath, locale, authorId: author.authorId }),
     });
-    const data = await resp.json();
-    return NextResponse.json(data, { status: resp.status });
-  } catch (error) {
-    return NextResponse.json(
-      { error: error instanceof Error ? error.message : 'Internal error' },
-      { status: 500 },
-    );
+    if (!resp.ok) {
+      stage = 'workflow_response';
+      return respond({ error: 'Story media analysis failed' }, resp.status);
+    }
+    stage = 'workflow_response';
+    return respond(await resp.json(), resp.status);
+  } catch {
+    return respond({ error: 'Story media analysis failed' }, 500);
   }
 }

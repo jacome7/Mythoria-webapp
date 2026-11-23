@@ -57,6 +57,8 @@
   "restructureDescription": "Reconstruir o resumo com estes detalhes? Isto pode substituir detalhes que editou nos passos seguintes.",
   "confirmRestructure": "Usar esta versão",
   "structureError": "Não foi possível concluir o resumo. Os seus dados estão guardados; tente novamente.",
+  "structureDeclined": "O Guia de Histórias não conseguiu usar este material para criar um esboço. O rascunho está guardado. Altere os detalhes da história ou os ficheiros anexados antes de continuar.",
+  "structureUnconfirmed": "Não foi possível confirmar se o esboço está pronto. O rascunho está guardado. Tente novamente para consultar o mesmo esboço.",
   "continueWithoutGuide": "Continuar sem o guia",
   "templateUnavailable": "Esta ideia não está disponível. Escolha outra ou use a sua.",
   "previewReplacement": "Rever a versão proposta",

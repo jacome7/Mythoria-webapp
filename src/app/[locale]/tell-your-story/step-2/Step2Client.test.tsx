@@ -1709,14 +1709,19 @@ describe('Story Whisperer in Step 2', () => {
     }
   });
 
-  it.each(['success', 'lost response', 'terminal failure'])(
+  it.each(['success', 'lost response', 'terminal failure', 'unconfirmed poll', 'content decline'])(
     'uses the existing outline job before Step 3 (%s)',
     async (scenario) => {
       const loseResponse = scenario === 'lost response';
       const terminalFailure = scenario === 'terminal failure';
+      const unconfirmed = scenario === 'unconfirmed poll';
+      const declined = scenario === 'content decline';
       const secondRequestId = '53cf3b47-c9fe-437f-9670-3c467ead9bb9';
       if (terminalFailure)
         mockPoll.mockResolvedValueOnce({ status: 'failed', error: 'Workflow unavailable' });
+      if (unconfirmed) mockPoll.mockResolvedValueOnce({ status: 'unconfirmed' });
+      if (declined)
+        mockPoll.mockResolvedValueOnce({ status: 'failed', error: 'STORY_CONTENT_DECLINED' });
       let ready = false;
       let firstStructure = true;
       let boundDraftId: string | undefined;
@@ -1789,7 +1794,30 @@ describe('Story Whisperer in Step 2', () => {
       fireEvent.click(screen.getByRole('button', { name: 'send' }));
       await waitFor(() => expect(next).toBeEnabled());
       fireEvent.click(next);
-      if (loseResponse || terminalFailure) {
+      if (declined) {
+        expect(await screen.findByText('structureDeclined')).toBeInTheDocument();
+        expect(screen.queryByRole('button', { name: 'retryOutline' })).toBeNull();
+        expect(mockPush).not.toHaveBeenCalled();
+        fireEvent.click(await screen.findByRole('button', { name: 'title subtitle' }));
+        const reopened = await screen.findByRole('button', { name: 'continue' });
+        await waitFor(() => expect(reopened).toBeEnabled());
+        fireEvent.click(reopened);
+        expect(await screen.findByText('structureDeclined')).toBeInTheDocument();
+        await waitFor(() => expect(reopened).not.toBeInTheDocument());
+        expect(structureCalls()).toHaveLength(1);
+        expect(readStep2Submission(owner, true)).toMatchObject({
+          storyId: boundDraftId,
+          jobId: 'job-new',
+          outlineFailure: 'declined',
+          completed: false,
+        });
+        return;
+      }
+      if (unconfirmed) {
+        expect(await screen.findByText('structureUnconfirmed')).toBeInTheDocument();
+        expect(readStep2Submission(owner, true)).toMatchObject({ jobId: 'job-new' });
+      }
+      if (loseResponse || terminalFailure || unconfirmed) {
         const recover = await screen.findByRole('button', { name: 'retryOutline' });
         expect(mockPush).not.toHaveBeenCalled();
         fireEvent.click(recover);

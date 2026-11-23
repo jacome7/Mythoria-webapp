@@ -570,7 +570,12 @@
         "failedToLoadCreditInformation": "Échec du chargement des informations de crédits. Veuillez réessayer.",
         "failedToLoadPricingInformation": "Échec du chargement des informations de tarification. Veuillez réessayer.",
         "insufficientCreditsError": "Vous n’avez pas assez de crédits. Veuillez en acheter davantage pour continuer.",
-        "failedToCompleteStory": "Échec de la finalisation de l’histoire. Veuillez réessayer."
+        "failedToCompleteStory": "Échec de la finalisation de l’histoire. Veuillez réessayer.",
+        "authorNameTooLong": "Utilise au maximum 255 caractères pour le nom de l’auteur.",
+        "authorNameInvalid": "Vérifie le nom de l’auteur.",
+        "dedicationTooLong": "Utilise au maximum 2 000 caractères pour la dédicace.",
+        "dedicationInvalid": "Vérifie la dédicace.",
+        "editStoryDetails": "Modifier le nom de l’auteur ou la dédicace"
       }
     }
   }

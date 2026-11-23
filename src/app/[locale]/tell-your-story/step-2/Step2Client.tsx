@@ -611,11 +611,13 @@ function Step2Content({
       setCheckingPreviousJob(false);
     }
   };
-  const pendingOutline = userId && whispererEnabled ? readStep2Submission(userId, true) : null;
+  const pendingOutline = userId ? readStep2Submission(userId, templatesEnabled) : null;
   const replayOutline = !!(pendingOutline?.structurePayload || pendingOutline?.jobId);
   const canRecoverOutline = !!(
+    whispererEnabled &&
     pendingOutline?.whisperer &&
     !pendingOutline.completed &&
+    pendingOutline.outlineFailure !== 'declined' &&
     (replayOutline || pendingOutline.whispererRetryOf)
   );
 
@@ -679,11 +681,16 @@ function Step2Content({
                   }
                 : {}),
             });
+      if (saved?.outlineFailure === 'declined' && saved.fingerprint === fingerprint) {
+        setSubmissionError(tTemplates('structureDeclined'));
+        return;
+      }
       // Finish or observe the previous request before submitting changed input. A lost
       // POST response is retried with the exact saved payload and durable request ID.
       if (
         saved &&
         !saved.completed &&
+        !saved.outlineFailure &&
         saved.fingerprint !== fingerprint &&
         (saved.jobId || saved.structurePayload)
       ) {
@@ -702,13 +709,26 @@ function Step2Content({
           saveStep2Submission(saved, templatesEnabled);
         }
         const previous = await pollJob(saved.jobId!);
-        if (previous.status !== 'completed' && previous.error?.includes('Timed out'))
-          throw new Error(tTemplates('structureError'));
-        // Even a failed outline can have saved some details. Ask before replacing them.
-        saved = { ...saved, completed: true };
+        if (previous.status === 'unconfirmed') {
+          setSubmissionError(tTemplates('structureUnconfirmed'));
+          return;
+        }
+        // A failed job can have saved partial details, so ask before replacing them.
+        saved =
+          previous.status === 'completed'
+            ? { ...saved, completed: true }
+            : {
+                ...saved,
+                outlineFailure:
+                  previous.error === 'STORY_CONTENT_DECLINED' ? 'declined' : 'technical',
+              };
         saveStep2Submission(saved, templatesEnabled);
       }
-      if (saved?.completed && saved.fingerprint !== fingerprint && !confirmed) {
+      if (
+        (saved?.completed || saved?.outlineFailure) &&
+        saved.fingerprint !== fingerprint &&
+        !confirmed
+      ) {
         pendingWhispererRebuild.current = whisperer;
         setConfirmRebuild(true);
         return;
@@ -787,6 +807,7 @@ function Step2Content({
               ...saved,
               fingerprint,
               completed: false,
+              outlineFailure: undefined,
               jobId: undefined,
               structureRequestId: undefined,
               structurePayload: undefined,
@@ -866,6 +887,7 @@ function Step2Content({
             }
             submission = {
               ...submission,
+              outlineFailure: undefined,
               structureRequestId,
               structurePayload: JSON.stringify({
                 storyId,
@@ -908,27 +930,38 @@ function Step2Content({
             );
         }
         const outcome = await pollJob<{ story?: unknown; characters?: unknown }>(submission.jobId!);
-        if (outcome.status !== 'completed') {
-          // Keep a pending job id on a polling timeout so retries resume it, rather than launch duplicate work.
-          if (!outcome.error?.includes('Timed out'))
-            saveStep2Submission(
-              {
-                ...submission,
-                jobId: undefined,
-                structureRequestId: undefined,
-                structurePayload: undefined,
-                whispererRetryOf: whisperer ? submission.structureRequestId : undefined,
-              },
-              templatesEnabled,
-            );
-          throw new Error(tTemplates('structureError'));
+        if (outcome.status === 'unconfirmed') {
+          // The next attempt resumes this job while its durable outcome is unknown.
+          setSubmissionError(tTemplates('structureUnconfirmed'));
+          return;
+        }
+        if (outcome.status === 'failed') {
+          const declined = outcome.error === 'STORY_CONTENT_DECLINED';
+          saveStep2Submission(
+            declined
+              ? { ...submission, outlineFailure: 'declined' }
+              : {
+                  ...submission,
+                  outlineFailure: 'technical',
+                  jobId: undefined,
+                  structureRequestId: undefined,
+                  structurePayload: undefined,
+                  whispererRetryOf: whisperer ? submission.structureRequestId : undefined,
+                },
+            templatesEnabled,
+          );
+          setSubmissionError(tTemplates(declined ? 'structureDeclined' : 'structureError'));
+          return;
         }
         localStorage.setItem(
           'genaiResults',
           JSON.stringify({ ...outcome.result, processed: true }),
         );
       }
-      saveStep2Submission({ ...submission, completed: true }, templatesEnabled);
+      saveStep2Submission(
+        { ...submission, completed: true, outlineFailure: undefined },
+        templatesEnabled,
+      );
       if (imageObjectPaths.length || audioObjectPath)
         localStorage.setItem(
           'step2RelocatedInputs',
@@ -1388,9 +1421,9 @@ function Step2Content({
                     {tWhisperer('retryOutline')}
                   </button>
                 )}
-                {submissionError && (
+                {(submissionError || pendingOutline?.outlineFailure === 'declined') && (
                   <p role="alert" className="alert alert-error">
-                    {submissionError}
+                    {submissionError || tTemplates('structureDeclined')}
                   </p>
                 )}
                 {confirmRebuild && (

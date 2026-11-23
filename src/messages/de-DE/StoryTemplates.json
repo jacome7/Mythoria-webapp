@@ -57,6 +57,8 @@
   "restructureDescription": "Den Entwurf aus diesen Details neu erstellen? Dabei können Details ersetzt werden, die du in späteren Schritten bearbeitet hast.",
   "confirmRestructure": "Diese Version verwenden",
   "structureError": "Der Entwurf konnte nicht fertiggestellt werden. Deine Eingaben sind gespeichert; versuche es erneut.",
+  "structureDeclined": "Der Geschichtenguide konnte aus diesem Material keinen Entwurf erstellen. Dein Entwurf ist gespeichert. Ändere die Angaben zur Geschichte oder die Anhänge, bevor du fortfährst.",
+  "structureUnconfirmed": "Wir konnten nicht prüfen, ob der Entwurf fertig ist. Dein Entwurf ist gespeichert. Versuche es erneut, um denselben Entwurf abzurufen.",
   "continueWithoutGuide": "Ohne Anleitung fortfahren",
   "templateUnavailable": "Diese Idee ist nicht verfügbar. Wähle eine andere oder nutze deine eigene.",
   "previewReplacement": "Die vorgeschlagene Version prüfen",

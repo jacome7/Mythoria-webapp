@@ -6,6 +6,7 @@ const schema = z.object({
   storyId: z.string().uuid(),
   fingerprint: z.string(),
   completed: z.boolean(),
+  outlineFailure: z.enum(['declined', 'technical']).optional(),
   jobId: z.string().optional(),
   structureRequestId: z.string().uuid().optional(),
   structurePayload: z.string().max(60_000).optional(),

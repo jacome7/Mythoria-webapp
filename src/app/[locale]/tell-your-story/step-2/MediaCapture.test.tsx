@@ -127,7 +127,9 @@ it.each(['upload', 'analysis'])('retries a failed %s and runs image analysis', a
   }
   render(<Harness />);
   fireEvent.click(screen.getByRole('button', { name: /imageAnalysis.retry/ }));
-  await waitFor(() => expect(mockAnalyze).toHaveBeenCalledWith('test/photo.jpg', 'pt-PT'));
+  await waitFor(() =>
+    expect(mockAnalyze).toHaveBeenCalledWith('test/photo.jpg', 'pt-PT', expect.any(String)),
+  );
   expect(mockUpload).toHaveBeenCalledTimes(failure === 'upload' ? 1 : 0);
   await waitFor(() => expect(screen.getByText('imageAnalysis.statusReady')).toBeInTheDocument());
 });

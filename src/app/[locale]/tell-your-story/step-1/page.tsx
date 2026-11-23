@@ -9,7 +9,7 @@ import StepNavigation from '@/components/StepNavigation';
 import ClientAuthWrapper from '@/components/ClientAuthWrapper';
 import ProgressIndicator from '@/components/ProgressIndicator';
 import { trackStoryCreation } from '@/lib/analytics';
-import { setStep1Data, getStep1Data } from '@/lib/story-session';
+import { setStep1Data, getStep1Data, hasValidStorySession } from '@/lib/story-session';
 import { buildStoryAuthReturnSearch } from '@/lib/campaign-context';
 import { buildAuthEntryPath } from '@/lib/auth-return';
 
@@ -29,6 +29,7 @@ export default function Step1Page() {
   const locale = useLocale();
   const tStoryStepsStep1 = useTranslations('StorySteps.step1');
   const searchParams = useSearchParams();
+  const returnToReview = searchParams?.get('returnTo') === 'review';
   const hasTrackedStart = useRef(false);
   const [, setAuthorData] = useState<AuthorData | null>(null);
   const [loading, setLoading] = useState(true);
@@ -231,6 +232,7 @@ export default function Step1Page() {
                       <input
                         type="text"
                         value={customAuthor}
+                        maxLength={255}
                         onChange={(e) => {
                           setCustomAuthor(e.target.value);
                           checkForChanges(e.target.value, dedicationMessage);
@@ -258,6 +260,7 @@ export default function Step1Page() {
                       </label>
                       <textarea
                         value={dedicationMessage}
+                        maxLength={2000}
                         onChange={(e) => {
                           setDedicationMessage(e.target.value);
                           checkForChanges(customAuthor, e.target.value);
@@ -273,7 +276,11 @@ export default function Step1Page() {
               <StepNavigation
                 currentStep={1}
                 totalSteps={5}
-                nextHref={`/tell-your-story/step-2${safeQuery.size ? `?${safeQuery}` : ''}`}
+                nextHref={
+                  returnToReview && !loading && hasValidStorySession()
+                    ? '/tell-your-story/step-5'
+                    : `/tell-your-story/step-2${safeQuery.size ? `?${safeQuery}` : ''}`
+                }
                 prevHref={null}
                 onNext={handleNext}
                 nextDisabled={loading || !customAuthor}

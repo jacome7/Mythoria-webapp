@@ -85,7 +85,7 @@ export default function MediaCapture({
       ),
     );
     try {
-      const metadata = await analyzeImage(objectPath, locale);
+      const metadata = await analyzeImage(objectPath, locale, id);
       updateImage(id, { status: 'done', metadata });
     } catch (e) {
       updateImage(id, {
@@ -99,7 +99,7 @@ export default function MediaCapture({
 
   const processImage = async (id: string, file: File) => {
     try {
-      const { objectPath, publicUrl } = await uploadInput('image', file);
+      const { objectPath, publicUrl } = await uploadInput('image', file, id);
       if (!alive.current) return;
       updateImage(id, { objectPath, publicUrl });
       await runAnalysis(id, objectPath);

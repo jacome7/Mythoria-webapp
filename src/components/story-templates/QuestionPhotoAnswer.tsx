@@ -40,7 +40,7 @@ export default function QuestionPhotoAnswer({ value, onChange, unavailable, disa
     try {
       photo = { ...photo, attempts: (photo.attempts ?? 0) + 1 };
       update(photo);
-      const metadata = await analyzeImage(photo.objectPath!, locale);
+      const metadata = await analyzeImage(photo.objectPath!, locale, photo.id);
       if (!current()) return;
       const subjects = metadata.overallImageContent === 'photo' ? (metadata.characters ?? []) : [];
       update({
@@ -62,7 +62,7 @@ export default function QuestionPhotoAnswer({ value, onChange, unavailable, disa
     const photo: QuestionPhoto = { id: crypto.randomUUID(), status: 'uploading' };
     update(photo);
     try {
-      const result = await uploadInput('image', file);
+      const result = await uploadInput('image', file, photo.id);
       if (operation.current !== token || latest.current.value?.id !== photo.id) return;
       const next: QuestionPhoto = { ...photo, ...result, status: 'analyzing' };
       update(next);
