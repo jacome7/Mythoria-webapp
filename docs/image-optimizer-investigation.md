@@ -1,0 +1,9 @@
+# Public homepage image optimizer investigation
+
+The 23 November 2026 Cloud Run log sample contained 103 HTTP 400 responses from `/_next/image`. For 102 requests, the query keys were `url`, `amp;w` and `amp;q`. One request contained only `url`. The sample included local homepage, book cover and papercut assets. The log fields alone could not identify the initiating client.
+
+An isolated Chromium session loaded the public Portuguese homepage on desktop and mobile, scrolled through the page and reloaded with service workers allowed and then bypassed. Every completed image optimizer response was HTTP 200, and there were no broken image elements. Some pending requests were aborted while the page changed slides or reloaded. The worker initially needed time to install. A separate run waited for activation and then observed 111 HTTP 200 image optimizer responses served via the worker. A reload with CDP service worker bypass returned 125 HTTP 200 image optimizer responses. Neither reload showed broken image elements.
+
+The raw server-rendered HTML contained 503 distinct optimizer URLs with standard HTML escaping for query delimiters. Chromium parsed the document and exposed the expected `url`, `w` and `q` keys. A direct replay of a public asset URL copied straight from the HTML kept the literal `amp;w` and `amp;q` keys and reproduced HTTP 400 with the message that the width parameter was required. The same URL after HTML decoding returned HTTP 200 and an image. The failing pattern is consistent with a client extracting URLs from raw HTML without decoding it. No page or service worker request reproduced the malformed keys during the browser runs.
+
+Keep the existing optimizer and service worker behavior. If the malformed pattern recurs in an interactive browser, capture the network initiator and whether the request came from the service worker. Retain query key names and response status in diagnostics, and omit query values and user identifiers.
