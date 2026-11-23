@@ -1,11 +1,35 @@
 import { currentUser, auth } from '@clerk/nextjs/server';
+import { isClerkAPIResponseError } from '@clerk/nextjs/errors';
 import { db } from '@/db';
 import { authors } from '@/db/schema';
 import { eq } from 'drizzle-orm';
 import { authorService } from '@/db/services';
 
+async function readCurrentUser() {
+  try {
+    return await currentUser();
+  } catch (error) {
+    if (!isClerkAPIResponseError(error)) throw error;
+
+    const transient =
+      (error.status >= 500 && error.status <= 599) ||
+      (error.status == null &&
+        error.errors.some(
+          ({ code, message }) =>
+            code === 'unexpected_error' &&
+            /fetch failed|network request failed|timed?\s*out|timeout|socket hang up|ECONNRESET|ETIMEDOUT/i.test(
+              message,
+            ),
+        ));
+    if (!transient) throw error;
+
+    // Only repeat the Clerk identity read. Author synchronization and caller mutations run once.
+    return currentUser();
+  }
+}
+
 export async function getCurrentAuthor() {
-  const user = await currentUser();
+  const user = await readCurrentUser();
 
   if (!user) {
     return null;

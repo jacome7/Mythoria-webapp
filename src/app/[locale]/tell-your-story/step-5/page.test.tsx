@@ -44,7 +44,7 @@ jest.mock('@/hooks/useStorySessionGuard', () => ({ useStorySessionGuard: () => '
 
 const originalFetch = global.fetch;
 
-function mockFetch(completeBody: Record<string, unknown>) {
+function mockFetch(completeBody: Record<string, unknown>, status = 202) {
   global.fetch = jest.fn(async (url: string) => {
     if (url === '/api/my-credits') return { ok: true, json: async () => ({ currentBalance: 10 }) };
     if (url === '/api/pricing/services?storyId=story-1') {
@@ -55,7 +55,8 @@ function mockFetch(completeBody: Record<string, unknown>) {
         }),
       };
     }
-    if (url === '/api/stories/complete') return { ok: true, json: async () => completeBody };
+    if (url === '/api/stories/complete')
+      return { ok: status < 400, status, json: async () => completeBody };
     throw new Error(`Unexpected fetch ${url}`);
   }) as unknown as typeof fetch;
 }
@@ -94,5 +95,34 @@ it('does not send lead_created when the response has no adEventId', async () => 
   mockFetch({ runId: 'run-1', remainingCredits: 5 });
   await generate();
 
+  expect(mockTrackOpenAiAdsEvent).not.toHaveBeenCalled();
+});
+
+it('shows localized field messages and keeps the draft review available after validation', async () => {
+  mockFetch(
+    {
+      error: 'Invalid request data',
+      details: [
+        { field: 'customAuthor', code: 'too_long', input: 'private text' },
+        { field: 'dedicationMessage', code: 'invalid' },
+        { field: 'unexpected field', code: 'invalid' },
+      ],
+    },
+    400,
+  );
+  render(<Step5Page />);
+  const button = await screen.findByRole('button', { name: 'generate' });
+  await waitFor(() => expect(button).toBeEnabled());
+  fireEvent.click(button);
+  const alert = await screen.findByRole('alert');
+  expect(alert).toHaveTextContent('alerts.authorNameTooLong');
+  expect(alert).toHaveTextContent('alerts.dedicationInvalid');
+  expect(alert).not.toHaveTextContent('private text');
+  expect(alert).not.toHaveTextContent('unexpected field');
+  expect(screen.getByRole('link', { name: 'alerts.editStoryDetails' })).toHaveAttribute(
+    'href',
+    '/en-US/tell-your-story/step-1?returnTo=review',
+  );
+  expect(screen.queryByText('generation-progress')).not.toBeInTheDocument();
   expect(mockTrackOpenAiAdsEvent).not.toHaveBeenCalled();
 });

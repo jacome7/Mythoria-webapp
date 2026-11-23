@@ -57,6 +57,8 @@
   "restructureDescription": "¿Reconstruir el esquema con estos detalles? Esto puede sustituir detalles que hayas editado en los pasos siguientes.",
   "confirmRestructure": "Usar esta versión",
   "structureError": "No hemos podido terminar el esquema. Tus datos están guardados; inténtalo de nuevo.",
+  "structureDeclined": "El guía de historias no pudo usar este material para crear un esquema. Tu borrador está guardado. Cambia los detalles de la historia o los archivos adjuntos antes de continuar.",
+  "structureUnconfirmed": "No hemos podido confirmar si el esquema está listo. Tu borrador está guardado. Vuelve a intentarlo para consultar el mismo esquema.",
   "continueWithoutGuide": "Continuar sin la guía",
   "templateUnavailable": "Esta idea no está disponible. Elige otra o usa la tuya.",
   "previewReplacement": "Revisar la versión propuesta",

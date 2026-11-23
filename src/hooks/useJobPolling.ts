@@ -2,11 +2,10 @@
 
 import { useCallback } from 'react';
 
-export interface JobPollResult<T = unknown> {
-  status: 'completed' | 'failed';
-  result?: T;
-  error?: string;
-}
+export type JobPollResult<T = unknown> =
+  | { status: 'completed'; result: T }
+  | { status: 'failed'; error: string }
+  | { status: 'unconfirmed' };
 
 interface PollOptions {
   intervalMs?: number;
@@ -16,7 +15,7 @@ interface PollOptions {
 
 /**
  * Poll an async SGW job via GET /api/jobs/:jobId until it completes or fails.
- * Resolves (never rejects) with a terminal status so callers handle both paths.
+ * Resolves (never rejects) with the persisted outcome or an unconfirmed status after the polling deadline.
  */
 export function useJobPolling() {
   const pollJob = useCallback(
@@ -29,7 +28,7 @@ export function useJobPolling() {
         try {
           const resp = await fetch(`/api/jobs/${jobId}`);
           const data = await resp.json();
-          const job = data?.job;
+          const job = resp.ok ? data?.job : undefined;
           if (job) {
             if (typeof job.progress === 'number') opts?.onProgress?.(job.progress);
             if (job.status === 'completed') return { status: 'completed', result: job.result as T };
@@ -43,7 +42,7 @@ export function useJobPolling() {
         }
 
         if (Date.now() - start > timeoutMs) {
-          return { status: 'failed', error: 'Timed out waiting for the job to finish' };
+          return { status: 'unconfirmed' };
         }
         await new Promise((r) => setTimeout(r, intervalMs));
       }

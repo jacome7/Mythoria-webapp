@@ -1,5 +1,5 @@
 import React from 'react';
-import { act, render, screen, waitFor } from '@testing-library/react';
+import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import Step1Page from './page';
 
 let mockAuth = { isLoaded: false, isSignedIn: false, userId: null as string | null };
@@ -22,15 +22,23 @@ jest.mock('@/components/ClientAuthWrapper', () => ({
     signedOutFallback: React.ReactNode;
   }) => (mockAuth.isLoaded ? (mockAuth.isSignedIn ? children : signedOutFallback) : null),
 }));
-jest.mock('@/components/StepNavigation', () => ({ __esModule: true, default: () => null }));
+jest.mock('@/components/StepNavigation', () => ({
+  __esModule: true,
+  default: ({ nextHref, onNext }: { nextHref: string; onNext: () => Promise<boolean> }) => (
+    <button type="button" data-destination={nextHref} onClick={onNext}>
+      Next
+    </button>
+  ),
+}));
 jest.mock('@/components/ProgressIndicator', () => ({ __esModule: true, default: () => null }));
 jest.mock('@/lib/analytics', () => ({
-  trackStoryCreation: { started: jest.fn(), stepViewed: jest.fn() },
+  trackStoryCreation: { started: jest.fn(), stepViewed: jest.fn(), stepCompleted: jest.fn() },
 }));
 
 beforeEach(() => {
   mockAuth = { isLoaded: false, isSignedIn: false, userId: null };
   mockFetch.mockReset();
+  mockSearch.delete('returnTo');
   global.fetch = mockFetch;
   localStorage.clear();
 });
@@ -77,4 +85,27 @@ it('cancels a stale profile request on sign-out without reporting a fetch error'
   } finally {
     log.mockRestore();
   }
+});
+
+it('saves edited author details then returns to review for the current draft', async () => {
+  mockAuth = { isLoaded: true, isSignedIn: true, userId: 'signed-in-user' };
+  mockSearch.set('returnTo', 'review');
+  localStorage.setItem('currentStoryId', 'existing-draft');
+  localStorage.setItem(
+    'step1Data',
+    JSON.stringify({ customAuthor: 'Old Name', dedicationMessage: 'For Alice' }),
+  );
+  mockFetch.mockResolvedValue({ ok: true, json: async () => ({ displayName: 'Test Author' }) });
+  render(<Step1Page />);
+
+  const input = await screen.findByDisplayValue('Old Name');
+  fireEvent.change(input, { target: { value: 'New Name' } });
+  const next = screen.getByRole('button', { name: 'Next' });
+  expect(next).toHaveAttribute('data-destination', '/tell-your-story/step-5');
+  fireEvent.click(next);
+  expect(JSON.parse(localStorage.getItem('step1Data')!)).toEqual({
+    customAuthor: 'New Name',
+    dedicationMessage: 'For Alice',
+  });
+  expect(localStorage.getItem('currentStoryId')).toBe('existing-draft');
 });

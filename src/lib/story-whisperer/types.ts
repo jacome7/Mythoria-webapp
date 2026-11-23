@@ -12,6 +12,7 @@ export const readinessRevisionChanged = 'READINESS_REVISION_CHANGED';
 
 export type WhispererReadiness = {
   rubricVersion?: number;
+  evidenceKey?: string;
   firstReadyTurnId?: string;
   ready: boolean;
   missing: WhispererEssential[];

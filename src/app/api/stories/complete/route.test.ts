@@ -64,6 +64,28 @@ describe('POST /api/stories/complete', () => {
     expect(startStoryGenerationMock).not.toHaveBeenCalled();
   });
 
+  it('returns only allowlisted field names and codes for invalid completion inputs', async () => {
+    const response = await POST(
+      requestFor({
+        ...validBody,
+        features: { ebook: 'private-content', printed: false, audiobook: false },
+        customAuthor: 'x'.repeat(256),
+        dedicationMessage: { 'private-key': 'private-value' },
+      }),
+    );
+    expect(response.status).toBe(400);
+    await expect(response.json()).resolves.toEqual({
+      error: 'Invalid request data',
+      details: [
+        { field: 'features.ebook', code: 'invalid' },
+        { field: 'dedicationMessage', code: 'invalid' },
+        { field: 'customAuthor', code: 'too_long' },
+      ],
+    });
+    expect(resolveServerAnalyticsContextMock).not.toHaveBeenCalled();
+    expect(startStoryGenerationMock).not.toHaveBeenCalled();
+  });
+
   it('returns the durable queue result with 202', async () => {
     startStoryGenerationMock.mockResolvedValue({
       storyId: validBody.storyId,

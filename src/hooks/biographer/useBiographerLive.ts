@@ -40,6 +40,7 @@ export interface LiveEvent {
   requestId?: string;
   text?: string;
   final?: boolean;
+  interrupted?: boolean;
   mimeType?: string;
   data?: string;
   code?: string;

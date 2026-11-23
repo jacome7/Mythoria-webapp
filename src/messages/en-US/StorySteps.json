@@ -570,7 +570,12 @@
         "failedToLoadCreditInformation": "Failed to load credit information. Please try again.",
         "failedToLoadPricingInformation": "Failed to load pricing information. Please try again.",
         "insufficientCreditsError": "You have insufficient credits. Please purchase more credits to continue.",
-        "failedToCompleteStory": "Failed to complete story. Please try again."
+        "failedToCompleteStory": "Failed to complete story. Please try again.",
+        "authorNameTooLong": "Use 255 characters or fewer for the author name.",
+        "authorNameInvalid": "Check the author name.",
+        "dedicationTooLong": "Use 2,000 characters or fewer for the dedication.",
+        "dedicationInvalid": "Check the dedication.",
+        "editStoryDetails": "Edit author name or dedication"
       }
     }
   }

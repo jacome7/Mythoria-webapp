@@ -415,14 +415,14 @@ function Conversation({
       setInterim((lines) => ({ ...lines, [turnId]: { role: event.role ?? 'user', text } }));
       if (event.final) {
         void refresh().catch(() => setError(true));
+        if (event.role !== 'user' || event.interrupted) return;
         cancelLiveReadiness();
         const timer = setTimeout(async () => {
           await liveAssessment.current;
-          if (liveReadinessTimer.current !== timer) return;
+          if (!activeConversation.current || liveReadinessTimer.current !== timer) return;
           liveReadinessTimer.current = undefined;
           const signal = AbortSignal.timeout(15_000);
           liveAssessment.current = assessReadiness(draftId, projectId, signal)
-            .then((assessed) => assessed || assessReadiness(draftId, projectId, signal))
             .then((assessed) => (assessed ? refresh(signal) : undefined))
             .catch(() => undefined)
             .finally(() => {

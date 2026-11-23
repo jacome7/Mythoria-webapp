@@ -570,7 +570,12 @@
         "failedToLoadCreditInformation": "Falha ao carregar informação de créditos. Por favor, tente novamente.",
         "failedToLoadPricingInformation": "Falha ao carregar informação de preços. Por favor, tente novamente.",
         "insufficientCreditsError": "Tem créditos insuficientes. Compre mais créditos para continuar.",
-        "failedToCompleteStory": "Falha ao completar a história. Por favor, tente novamente."
+        "failedToCompleteStory": "Falha ao completar a história. Por favor, tente novamente.",
+        "authorNameTooLong": "Use até 255 caracteres no nome do autor.",
+        "authorNameInvalid": "Verifique o nome do autor.",
+        "dedicationTooLong": "Use até 2 000 caracteres na dedicatória.",
+        "dedicationInvalid": "Verifique a dedicatória.",
+        "editStoryDetails": "Editar nome do autor ou dedicatória"
       }
     }
   }

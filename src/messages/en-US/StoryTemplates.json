@@ -57,6 +57,8 @@
   "restructureDescription": "Rebuild the outline from these details? This can replace details you edited in later steps.",
   "confirmRestructure": "Use this version",
   "structureError": "We could not finish the outline. Your inputs are saved; try again.",
+  "structureDeclined": "The story guide couldn’t use this material for an outline. Your draft is saved. Change the story details or attached files before continuing.",
+  "structureUnconfirmed": "We couldn’t check whether the outline is ready. Your draft is saved. Try again to check the same outline.",
   "continueWithoutGuide": "Continue without the guide",
   "templateUnavailable": "This story idea is unavailable. Choose another or use your own.",
   "previewReplacement": "Review the proposed version",

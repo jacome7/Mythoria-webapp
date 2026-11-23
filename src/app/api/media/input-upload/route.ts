@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getCurrentAuthor } from '@/lib/auth';
 import { sgwFetch } from '@/lib/sgw-client';
+import { wizardMediaLogger, wizardMediaRequestId } from '@/lib/wizard-media-logging';
 
 /**
  * POST /api/media/input-upload
@@ -11,30 +12,51 @@ import { sgwFetch } from '@/lib/sgw-client';
  * Returns: { success, objectPath, publicUrl }
  */
 export async function POST(request: NextRequest) {
+  const requestId = wizardMediaRequestId(request.headers);
+  const operation = 'upload';
+  const headers = { 'x-request-id': requestId };
+  let stage = 'identity';
+  const respond = (body: unknown, status: number) => {
+    if (status >= 400) {
+      wizardMediaLogger.warn('wizard_media_request_failed', {
+        requestId,
+        operation,
+        stage,
+        status,
+      });
+    }
+    return NextResponse.json(body, { status, headers });
+  };
   try {
     const author = await getCurrentAuthor();
-    if (!author) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    if (!author) return respond({ error: 'Unauthorized' }, 401);
 
-    const body = await request.json();
+    stage = 'validation';
+    const body = await request.json().catch(() => null);
     const { kind, contentType, dataUrl } = body || {};
-    if (!kind || !contentType || !dataUrl) {
-      return NextResponse.json(
-        { error: 'kind, contentType and dataUrl are required' },
-        { status: 400 },
-      );
+    if (
+      (kind !== 'image' && kind !== 'audio') ||
+      typeof contentType !== 'string' ||
+      !contentType ||
+      typeof dataUrl !== 'string' ||
+      !dataUrl
+    ) {
+      return respond({ error: 'kind, contentType and dataUrl are required' }, 400);
     }
 
+    stage = 'workflow_request';
     const resp = await sgwFetch('/ai/media/upload', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', ...headers },
       body: JSON.stringify({ authorId: author.authorId, kind, contentType, dataUrl }),
     });
-    const data = await resp.json();
-    return NextResponse.json(data, { status: resp.status });
-  } catch (error) {
-    return NextResponse.json(
-      { error: error instanceof Error ? error.message : 'Internal error' },
-      { status: 500 },
-    );
+    if (!resp.ok) {
+      stage = 'workflow_response';
+      return respond({ error: 'Story media upload failed' }, resp.status);
+    }
+    stage = 'workflow_response';
+    return respond(await resp.json(), resp.status);
+  } catch {
+    return respond({ error: 'Story media upload failed' }, 500);
   }
 }

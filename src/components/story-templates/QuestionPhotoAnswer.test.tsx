@@ -63,8 +63,12 @@ test('automatically selects the only subject', async () => {
   selectFile();
   await waitFor(() => expect(latest?.status).toBe('done'));
   expect(latest?.sourceCharacterIndex).toBe(0);
-  expect(mockUpload).toHaveBeenCalledWith('image', expect.any(File));
-  expect(mockAnalyze).toHaveBeenCalledWith(uploaded.objectPath, 'pt-PT');
+  expect(mockUpload).toHaveBeenCalledWith('image', expect.any(File), expect.any(String));
+  expect(mockAnalyze).toHaveBeenCalledWith(
+    uploaded.objectPath,
+    'pt-PT',
+    mockUpload.mock.calls[0][2],
+  );
 });
 
 test('requires an explicit choice for multiple subjects', async () => {

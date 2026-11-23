@@ -17,12 +17,16 @@ export function useMediaUpload() {
     });
 
   /** Upload an input image/audio to GCS (author-scoped). Returns its object path. */
-  const uploadInput = async (kind: 'image' | 'audio', file: File): Promise<UploadResult> => {
+  const uploadInput = async (
+    kind: 'image' | 'audio',
+    file: File,
+    requestId = crypto.randomUUID(),
+  ): Promise<UploadResult> => {
     const contentType = file.type || (kind === 'image' ? 'image/jpeg' : 'audio/wav');
     const dataUrl = await fileToDataUrl(file);
     const resp = await fetch('/api/media/input-upload', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', 'x-request-id': requestId },
       body: JSON.stringify({ kind, contentType, dataUrl }),
     });
     const data = await resp.json();
@@ -36,10 +40,11 @@ export function useMediaUpload() {
   const analyzeImage = async (
     objectPath: string,
     locale?: string,
+    requestId = crypto.randomUUID(),
   ): Promise<ImageMetadataSummary> => {
     const resp = await fetch('/api/media/analyze-image', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', 'x-request-id': requestId },
       body: JSON.stringify({ objectPath, locale }),
     });
     const data = await resp.json();

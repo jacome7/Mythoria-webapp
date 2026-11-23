@@ -212,11 +212,59 @@ async function readInterview(tx: Transaction, authorId: string, draftId: string)
 
 type Interview = NonNullable<Awaited<ReturnType<typeof readInterview>>>;
 
-function hasCurrentReadiness({ binding, project }: Interview) {
-  return (
-    binding.readinessRevision === project.revision &&
-    binding.readiness?.rubricVersion === whispererRubricVersion
+// Assistant prompts can clarify earlier answers. The next prompt and any
+// unfinished answer after the last final author turn carry no new evidence.
+function readinessEvidence(data: Interview) {
+  const lastAnswer = data.savedTurns.findLastIndex(
+    ({ role, final, included, text }) => role === 'user' && final && included && text.trim(),
   );
+  const context = data.binding.context;
+  return {
+    turns: data.savedTurns.slice(0, lastAnswer + 1),
+    context: {
+      primaryIntent: context?.primaryIntent,
+      opening: context?.opening,
+      brief: context?.brief,
+      characterNames: context?.characterNames,
+      imageCount: context?.imageObjectPaths?.length,
+      hasAudio: Boolean(context?.audioObjectPath),
+    },
+    photos: data.savedPhotos
+      .filter(({ included }) => included)
+      .slice(-20)
+      .map(({ caption }) => ({ caption })),
+  };
+}
+
+function readinessEvidenceKey(data: Interview) {
+  const evidence = readinessEvidence(data);
+  const turns = evidence.turns.map((turn) => ({
+    ...turn,
+    ...questionOptions(turn, data.binding.latestQuestion),
+  }));
+  return whispererUuid('whisperer-readiness-evidence', [
+    data.project.id,
+    data.project.locale,
+    { ...evidence.context, opening: modelOpening(evidence.context.opening, turns[0]) },
+    evidence.photos,
+    modelHistory(turns).map(({ id, role, text, choices }) => ({ id, role, text, choices })),
+  ]);
+}
+
+function hasCurrentReadiness(data: Interview, evidenceKey?: string) {
+  const { binding, project } = data;
+  return (
+    binding.readiness?.rubricVersion === whispererRubricVersion &&
+    (binding.readiness.evidenceKey
+      ? binding.readiness.evidenceKey === (evidenceKey ?? readinessEvidenceKey(data))
+      : binding.readinessRevision === project.revision)
+  );
+}
+
+function exposedReadiness(readiness: WhispererReadiness | null) {
+  if (!readiness) return null;
+  const { evidenceKey: _evidenceKey, ...result } = readiness;
+  return result;
 }
 
 function publicInterview(data: Interview | null) {
@@ -225,7 +273,7 @@ function publicInterview(data: Interview | null) {
   const { brief, characterIds, imageObjectPaths, audioObjectPath } = binding.context ?? {};
   const readinessIsCurrent = hasCurrentReadiness(data);
   const hasEvidence = hasReadinessEvidence(data);
-  const previousReadiness = binding.readiness;
+  const previousReadiness = exposedReadiness(binding.readiness);
   const readiness =
     previousReadiness && previousReadiness.rubricVersion === whispererRubricVersion
       ? readinessIsCurrent
@@ -618,8 +666,8 @@ async function fitEvidence(data: Interview, entries: EvidenceEntry[]) {
   return joinEvidence(current);
 }
 
-async function assessmentTurns(data: Interview) {
-  const source = data.savedTurns.map((turn) => ({
+async function assessmentTurns(data: Interview, savedTurns = data.savedTurns) {
+  const source = savedTurns.map((turn) => ({
     ...turn,
     ...questionOptions(turn, data.binding.latestQuestion),
   }));
@@ -650,27 +698,27 @@ async function assessmentTurns(data: Interview) {
 }
 
 async function assess(data: Interview, requestQuestion: boolean) {
-  const output = sgwResult.safeParse(
-    await whispererRequest('/api/biographer/whisperer', {
-      authorId: data.project.authorId,
-      projectId: data.project.id,
-      locale: data.project.locale,
-      turns: await assessmentTurns(data),
-      context: {
-        primaryIntent: data.binding.context?.primaryIntent,
-        opening: modelOpening(data.binding.context?.opening, data.savedTurns[0]),
-        brief: data.binding.context?.brief,
-        characterNames: data.binding.context?.characterNames,
-        imageCount: data.binding.context?.imageObjectPaths?.length,
-        hasAudio: Boolean(data.binding.context?.audioObjectPath),
-      },
-      photos: data.savedPhotos
-        .filter(({ included }) => included)
-        .slice(-20)
-        .map(({ caption }) => ({ caption })),
-      requestQuestion,
-    }),
-  );
+  const evidence = readinessEvidence(data);
+  const source = requestQuestion ? data.savedTurns : evidence.turns;
+  const started = performance.now();
+  const modelTurns = await assessmentTurns(data, source);
+  const payload = {
+    authorId: data.project.authorId,
+    projectId: data.project.id,
+    locale: data.project.locale,
+    turns: modelTurns,
+    context: { ...evidence.context, opening: modelOpening(evidence.context.opening, source[0]) },
+    photos: evidence.photos,
+    requestQuestion,
+  };
+  const output = sgwResult.safeParse(await whispererRequest('/api/biographer/whisperer', payload));
+  whispererLogger.info('Story Whisperer assessment timings', {
+    requestQuestion,
+    elapsedMs: Math.round(performance.now() - started),
+    turnCount: modelTurns.length,
+    payloadBytes: Buffer.byteLength(JSON.stringify(payload)),
+    valid: output.success,
+  });
   if (!output.success) throw new BiographerError('Invalid Story Whisperer response', 502);
   const missing = essentials.filter((key) => output.data.readiness.areas[key] !== 'ready');
   return {
@@ -683,33 +731,59 @@ async function assess(data: Interview, requestQuestion: boolean) {
   };
 }
 
+type ReadinessResult = { readiness: WhispererReadiness; revision: number };
+// Requests on this instance share the model call. The commit rechecks the
+// saved evidence under the project lock even when requests hit different instances.
+const runningAssessments = new Map<string, Promise<ReadinessResult>>();
+
 export async function refreshWhispererReadiness(
   authorId: string,
   draftId: string,
   expectedProjectId: string,
 ) {
   const snapshot = await getInterview(authorId, draftId, expectedProjectId);
-  if (snapshot.binding.readiness && hasCurrentReadiness(snapshot))
-    return { readiness: snapshot.binding.readiness, revision: snapshot.project.revision };
+  const evidenceKey = readinessEvidenceKey(snapshot);
+  const saved = exposedReadiness(snapshot.binding.readiness);
+  if (saved && hasCurrentReadiness(snapshot, evidenceKey))
+    return { readiness: saved, revision: snapshot.project.revision };
 
-  const { readiness: assessed } = hasReadinessEvidence(snapshot)
-    ? await assess(snapshot, false)
-    : { readiness: emptyReadiness };
-  return withBinding(authorId, draftId, async (tx) => {
-    const current = requireInterview(await readInterview(tx, authorId, draftId));
-    if (current.project.id !== snapshot.project.id)
-      throw new BiographerError('Interview changed. Please reload.', 409);
-    if (current.project.revision !== snapshot.project.revision)
-      throw new BiographerError('Interview changed. Please retry.', 409, readinessRevisionChanged);
-    if (current.binding.readiness && hasCurrentReadiness(current))
-      return { readiness: current.binding.readiness, revision: current.project.revision };
-    const readiness = withFirstReadyTurn(current, assessed);
-    await tx
-      .update(interviews)
-      .set({ readiness, readinessRevision: current.project.revision })
-      .where(eq(interviews.projectId, current.project.id));
-    return { readiness, revision: current.project.revision };
-  });
+  const running = runningAssessments.get(evidenceKey);
+  if (running) return running;
+
+  const assessment = (async () => {
+    const { readiness: assessed } = hasReadinessEvidence(snapshot)
+      ? await assess(snapshot, false)
+      : { readiness: emptyReadiness };
+    return withBinding(authorId, draftId, async (tx) => {
+      const current = requireInterview(await readInterview(tx, authorId, draftId));
+      if (current.project.id !== snapshot.project.id)
+        throw new BiographerError('Interview changed. Please reload.', 409);
+      if (readinessEvidenceKey(current) !== evidenceKey)
+        throw new BiographerError(
+          'Interview changed. Please retry.',
+          409,
+          readinessRevisionChanged,
+        );
+      const currentSaved = exposedReadiness(current.binding.readiness);
+      if (currentSaved && hasCurrentReadiness(current, evidenceKey))
+        return { readiness: currentSaved, revision: current.project.revision };
+      const readiness = withFirstReadyTurn(current, assessed);
+      await tx
+        .update(interviews)
+        .set({
+          readiness: { ...readiness, evidenceKey },
+          readinessRevision: current.project.revision,
+        })
+        .where(eq(interviews.projectId, current.project.id));
+      return { readiness, revision: current.project.revision };
+    });
+  })();
+  runningAssessments.set(evidenceKey, assessment);
+  try {
+    return await assessment;
+  } finally {
+    runningAssessments.delete(evidenceKey);
+  }
 }
 
 export async function sendWhispererTurn(
@@ -780,7 +854,10 @@ export async function sendWhispererTurn(
       })
       .returning();
     const update = {
-      readiness: withFirstReadyTurn(current, result.readiness),
+      readiness: {
+        ...withFirstReadyTurn(current, result.readiness),
+        evidenceKey: readinessEvidenceKey(current),
+      },
       readinessRevision: current.project.revision,
       latestQuestion: saveQuestionOptions(
         {
@@ -985,12 +1062,15 @@ async function verifyWhispererRetry(draftId: string, requestId: string) {
       job: z.object({
         id: z.literal(requestId),
         status: z.string(),
+        error: z.string().nullish(),
         metadata: z.object({ storyId: z.literal(draftId) }),
       }),
     })
     .safeParse(await response.json());
   if (!status.success || status.data.job.status !== 'failed')
     throw new BiographerError('The previous story job has not failed', 409);
+  if (status.data.job.error === 'STORY_CONTENT_DECLINED')
+    throw new BiographerError('Edit the story material before generating again', 409);
 }
 
 export async function handoffWhisperer(

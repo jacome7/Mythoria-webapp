@@ -570,7 +570,12 @@
         "failedToLoadCreditInformation": "Credit-Informationen konnten nicht geladen werden. Bitte versuch es erneut.",
         "failedToLoadPricingInformation": "Preis-Informationen konnten nicht geladen werden. Bitte versuch es erneut.",
         "insufficientCreditsError": "Du hast nicht genügend Credits. Bitte kauf weitere Credits, um fortzufahren.",
-        "failedToCompleteStory": "Geschichte konnte nicht abgeschlossen werden. Bitte versuch es erneut."
+        "failedToCompleteStory": "Geschichte konnte nicht abgeschlossen werden. Bitte versuch es erneut.",
+        "authorNameTooLong": "Verwende höchstens 255 Zeichen für den Namen des Autors.",
+        "authorNameInvalid": "Überprüfe den Namen des Autors.",
+        "dedicationTooLong": "Verwende höchstens 2.000 Zeichen für die Widmung.",
+        "dedicationInvalid": "Überprüfe die Widmung.",
+        "editStoryDetails": "Autorennamen oder Widmung bearbeiten"
       }
     }
   }
