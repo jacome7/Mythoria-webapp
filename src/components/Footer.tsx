@@ -43,15 +43,19 @@ const Footer = () => {
   const currentYear = new Date().getFullYear();
   const tCommonFooter = useTranslations('Footer');
   const locale = useLocale();
-  const pathname = usePathname();
+  const pathname = usePathname() ?? '';
 
   // Keep the creation steps focused while retaining the footer on the entry page.
-  if (/^\/(?:[^/]+\/)?tell-your-story\/step-[1-5]\/?$/.test(pathname ?? '')) {
+  if (/^\/(?:[^/]+\/)?tell-your-story\/step-[1-5]\/?$/.test(pathname)) {
     return null;
   }
 
+  const isStoryReader = /^\/(?:[^/]+\/)?(?:stories\/read|p)\/[^/]+(?:\/chapter\/[^/]+)?\/?$/.test(
+    pathname,
+  );
+
   return (
-    <footer className={styles.footer}>
+    <footer className={isStoryReader ? `${styles.footer} hidden md:block` : styles.footer}>
       <ThemedArtwork
         src={homepageAsset('footer.webp')}
         alt=""

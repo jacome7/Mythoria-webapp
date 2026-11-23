@@ -60,16 +60,8 @@ RUN npm install -g npm@latest && \
 # Copy the source code
 COPY . .
 
-# Build the application with standalone output for better Cloud Run performance
-# Ensure PWA service worker is generated and ends up under public/
-RUN npm run build \
-      && if [ -f public/sw.js ]; then echo "Found sw.js in public"; \
-          elif [ -f .next/static/sw.js ]; then echo "Copying sw.js from .next/static" && cp .next/static/sw.js public/sw.js; \
-          elif [ -f .next/sw.js ]; then echo "Copying sw.js from .next root" && cp .next/sw.js public/sw.js; \
-          elif [ -f .next/standalone/public/sw.js ]; then echo "Copying sw.js from standalone/public" && cp .next/standalone/public/sw.js public/sw.js; \
-          else echo "PWA service worker missing after build - writing minimal no-op sw.js" \
-                 && mkdir -p public \
-                 && echo "self.addEventListener('install',()=>self.skipWaiting());self.addEventListener('activate',()=>self.clients.claim());" > public/sw.js; fi
+# The standalone production build must include the real offline service worker.
+RUN npm run build && test -s public/sw.js
 
 # Production stage - use same Node.js version as builder
 FROM node:${NODE_VERSION}-alpine AS runner

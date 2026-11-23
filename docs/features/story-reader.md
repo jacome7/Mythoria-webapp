@@ -84,6 +84,7 @@ Readers can reset all settings back to defaults. These preferences are saved loc
 
 ### Story styling & layout
 
+- The site footer is hidden below the `md` breakpoint (768px) on private and public story covers and chapters.
 - The story layout adapts to the **target audience** (e.g., children vs. adult reading styles).
 - The reading toolbar’s sliders scale the template typography and spacing without breaking the layout.
 - Cover and chapter illustrations are shown only when images exist; missing images are safely omitted.

@@ -46,9 +46,9 @@ const getShareMetadata = async (token: string) => {
 export async function generateMetadata({
   params,
 }: {
-  params: { locale: string; token: string };
+  params: Promise<{ locale: string; token: string }>;
 }): Promise<Metadata> {
-  const { locale, token } = params;
+  const { locale, token } = await params;
   const shareData = await getShareMetadata(token);
 
   if (!shareData) {

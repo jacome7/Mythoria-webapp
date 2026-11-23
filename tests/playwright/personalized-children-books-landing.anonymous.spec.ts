@@ -41,12 +41,16 @@ test.describe('personalized children books landing', () => {
         name: 'Crie um livro personalizado onde a criança é a heroína.',
       }),
     ).toBeVisible();
-    await expect(
-      page.getByRole('link', { name: 'Criar um livro para uma criança' }).first(),
-    ).toHaveAttribute(
-      'href',
-      '/pt-PT/tell-your-story/step-1?landingSlug=livro-personalizado-crianca&primaryIntent=kids_adventures',
-    );
+    const primaryCta = page.getByRole('link', { name: 'Criar um livro para uma criança' }).first();
+    await expect(primaryCta).toHaveAttribute('href', /^\/pt-PT\/sign-up\?redirect=/);
+    const signup = new URL((await primaryCta.getAttribute('href'))!, page.url());
+    const wizard = new URL(signup.searchParams.get('redirect')!, page.url());
+    expect(wizard.pathname).toBe('/pt-PT/tell-your-story/step-1');
+    expect(Object.fromEntries(wizard.searchParams)).toMatchObject({
+      landingSlug: 'livro-personalizado-crianca',
+      primaryIntent: 'kids_adventures',
+      landing_path: route,
+    });
     await expect(page.getByRole('link', { name: 'Ver livros criados' })).toHaveAttribute(
       'href',
       '#exemplos',

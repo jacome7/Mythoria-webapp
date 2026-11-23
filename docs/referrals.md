@@ -19,7 +19,7 @@ Updated: 2026-09-12. This is the WebApp's primary guide for operating referral c
 
 ## Current configuration and operational boundaries
 
-The repository's `.env.local` and `cloudbuild.yaml` enable the program, capture, commissions and partner portal in **live** mode. Cloud Build passes all nine referral variables to the Cloud Run runtime. `scripts/deploy.ps1` uses that file; enabling a local variable alone does not configure production.
+Production Cloud Run enables the program, capture, commissions and partner portal in **live** mode. `cloudbuild.yaml` records the existing referral variable names and retains their values on release.
 
 The current live owner allowlist contains `d279454a-c8b9-4a1e-8fc4-01e2fe1a88ac` (the RODRI pilot). **New owners must be added to the allowlist to receive live commission snapshots.** An empty allowlist does not mean all owners. Attribution can work while commission eligibility is disabled for an owner.
 
@@ -70,7 +70,7 @@ Suspending an owner retains existing customer associations but prevents new elig
 1. Sign in to Admin and ensure your account has `referrals:manage`; see [permissions](#admin-and-partner-permissions).
 2. Open `/referrals/owners/new`. Enter the display name, contact/invitation email, code, negotiated commission percentage, preferred language, and optional legal name/country.
 3. Save and open the owner detail page. Verify status, code, membership email and current terms. Creation includes the specified member invitation; additional memberships can be invited from the detail page.
-4. Copy the owner's UUID from the detail URL. Add it to `REFERRAL_PILOT_OWNER_IDS` locally and `_REFERRAL_PILOT_OWNER_IDS` in `cloudbuild.yaml`, preserving existing IDs in the comma-separated list. Restart the local process if needed; production needs a deployment/configuration update.
+4. Copy the owner's UUID from the detail URL. Add it to `REFERRAL_PILOT_OWNER_IDS` in the environment you are configuring, preserving existing IDs in the comma-separated list. Changes to production belong in a separate Cloud Run configuration update.
 5. Ensure the notification outbox drain runs and the Notification Engine has the localized referral templates. A saved invitation is not proof that the email was delivered.
 6. Have the invitee visit `/:locale/referrals`, use the invited email and complete Clerk verification. A verified eligible invitation becomes an active membership when the portal membership flow runs.
 7. Confirm the portal opens, the negotiated rate and FAQ are correct, and the referral code is active. Test with a separate customer account, not the partner's own account.
@@ -80,7 +80,7 @@ The owner detail currently displays a production-domain sharing link. For local 
 
 ## Configure local and production environments
 
-`env.manifest.ts` lists the WebApp settings. Next.js reads `.env.local` during development. `cloudbuild.yaml` supplies production settings using `_VARIABLE_NAME` substitutions and runtime bindings.
+`env.manifest.ts` lists the WebApp settings. Next.js reads `.env.local` during development. Cloud Run stores the production runtime settings. `cloudbuild.yaml` records the retained bindings and supplies the Docker build arguments.
 
 | WebApp variable                      | Current local value                                                   | Next-deployment default / meaning                                            |
 | ------------------------------------ | --------------------------------------------------------------------- | ---------------------------------------------------------------------------- |
@@ -329,7 +329,7 @@ Important database guarantees include one commission per payment order, one acti
 
 ## Deployment and rollback
 
-Before the next release, review the enabled flags and allowlist in `cloudbuild.yaml`, validate environment parity in both repositories, and confirm required identities, secrets, Stripe/Clerk configuration, notification templates and Scheduler jobs. Deploy the schema-compatible WebApp before the Admin that consumes new response fields. Verify ready revision/traffic, health, authenticated owner reports, consented attribution, payment completion and background-job evidence. No new migration is needed for the owner-table metrics.
+Before the next release, review the enabled flags and allowlist on the live Cloud Run service, validate environment parity in both repositories, and confirm required identities, secrets, Stripe/Clerk configuration, notification templates and Scheduler jobs. Deploy the schema-compatible WebApp before the Admin that consumes new response fields. Verify ready revision/traffic, health, authenticated owner reports, consented attribution, payment completion and background-job evidence. No new migration is needed for the owner-table metrics.
 
 To stop new activity, disable program/capture/commission flags and optionally hide the portal. Apply the change to the running environment as well as future deployment configuration. **Keep payment webhooks, provider reconciliation and durable retries operating for already captured orders.** Do not remove ledger tables or discard unpaid financial obligations. Reconcile and investigate before re-enabling.
 

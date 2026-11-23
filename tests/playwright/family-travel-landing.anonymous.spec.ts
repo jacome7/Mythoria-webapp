@@ -17,12 +17,16 @@ for (const viewport of [
     await expect(page.getByRole('heading', { level: 1 })).toHaveText(
       'Livros personalizados para guardar a história das suas férias',
     );
-    await expect(
-      page.getByRole('link', { name: 'Criar o meu livro de férias' }).first(),
-    ).toHaveAttribute(
-      'href',
-      '/pt-PT/tell-your-story/step-1?landingSlug=livro-personalizado-ferias&primaryIntent=family_travels',
-    );
+    const primaryCta = page.getByRole('link', { name: 'Criar o meu livro de férias' }).first();
+    await expect(primaryCta).toHaveAttribute('href', /^\/pt-PT\/sign-up\?redirect=/);
+    const signup = new URL((await primaryCta.getAttribute('href'))!, page.url());
+    const wizard = new URL(signup.searchParams.get('redirect')!, page.url());
+    expect(wizard.pathname).toBe('/pt-PT/tell-your-story/step-1');
+    expect(Object.fromEntries(wizard.searchParams)).toMatchObject({
+      landingSlug: 'livro-personalizado-ferias',
+      primaryIntent: 'family_travels',
+      landing_path: route,
+    });
     await expect(
       page.getByRole('link', { name: 'Ver exemplos de livros de viagem' }),
     ).toHaveAttribute('href', '#exemplos');

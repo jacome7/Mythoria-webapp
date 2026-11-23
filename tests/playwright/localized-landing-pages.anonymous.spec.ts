@@ -143,13 +143,19 @@ for (const landing of localizedLandings) {
         ),
       ).toBeVisible();
 
-      const primaryCta = page
-        .locator(`a[href^="/${landing.locale}/tell-your-story/step-1?landingSlug="]`)
-        .first();
+      const primaryCta = page.locator('a[data-cta-placement="hero_primary"]');
       await expect(primaryCta).toHaveAttribute(
         'href',
-        new RegExp(`primaryIntent=${landing.intent}`),
+        new RegExp(`^/${landing.locale}/sign-up\\?redirect=`),
       );
+      const signup = new URL((await primaryCta.getAttribute('href'))!, page.url());
+      const wizard = new URL(signup.searchParams.get('redirect')!, page.url());
+      expect(wizard.pathname).toBe(`/${landing.locale}/tell-your-story/step-1`);
+      expect(Object.fromEntries(wizard.searchParams)).toMatchObject({
+        landingSlug: landing.slug,
+        primaryIntent: landing.intent,
+        landing_path: route,
+      });
 
       await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
         'href',

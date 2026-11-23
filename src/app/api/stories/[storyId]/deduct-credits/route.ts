@@ -5,7 +5,7 @@ import { getCurrentAuthor } from '@/lib/auth';
  * Story-generation credits must be charged atomically by /api/stories/complete.
  * Keeping this explicit response protects users running an older cached client.
  */
-export async function POST(_request?: Request) {
+export async function POST() {
   const author = await getCurrentAuthor();
   if (!author) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 

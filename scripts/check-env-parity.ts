@@ -32,6 +32,7 @@ interface SourceMaps {
   cloudBuildSubstitutions: Record<string, string | undefined>;
   cloudBuildSetEnv: Record<string, string | undefined>;
   cloudBuildSecrets: Set<string>;
+  cloudBuildPreserved: Set<string>;
   buildArgs: Set<string>; // build-arg names
   dockerArgs: Set<string>;
   dockerEnvs: Set<string>;
@@ -49,7 +50,8 @@ function readEnvFile(name: string): Record<string, string | undefined> {
 function parseCloudBuild(): Partial<SourceMaps> {
   const file = path.join(root, 'cloudbuild.yaml');
   if (!fs.existsSync(file)) return {};
-  const doc = yaml.load(fs.readFileSync(file, 'utf8')) as
+  const raw = fs.readFileSync(file, 'utf8');
+  const doc = yaml.load(raw) as
     | {
         substitutions?: Record<string, string>;
         steps?: Array<{ args?: unknown[] }>;
@@ -83,19 +85,22 @@ function parseCloudBuild(): Partial<SourceMaps> {
 
   // Extract --set-env-vars value(s)
   const deployStep = (doc?.steps || []).find(
-    (s) => Array.isArray(s.args) && s.args.includes('deploy'),
+    ({ args }) =>
+      Array.isArray(args) &&
+      args[0] === 'run' &&
+      (args[1] === 'deploy' || (args[1] === 'services' && args[2] === 'update')),
   );
   if (deployStep) {
     const args: string[] = (deployStep.args as string[] | undefined) || [];
     for (let i = 0; i < args.length; i++) {
-      if (args[i] === '--set-env-vars' && args[i + 1]) {
+      if (['--set-env-vars', '--update-env-vars'].includes(args[i]) && args[i + 1]) {
         const entries = splitKeyValueArg(args[i + 1]);
         entries.forEach((pair) => {
           const [k, v] = pair.split('=');
           if (k && v !== undefined) setEnvVars[k.trim()] = v.trim();
         });
       }
-      if (args[i] === '--set-secrets' && args[i + 1]) {
+      if (['--set-secrets', '--update-secrets'].includes(args[i]) && args[i + 1]) {
         const entries = splitKeyValueArg(args[i + 1]);
         entries.forEach((pair) => {
           const [k] = pair.split('=');
@@ -132,6 +137,11 @@ function parseCloudBuild(): Partial<SourceMaps> {
 
   return {
     cloudBuildSubstitutions: substitutions,
+    cloudBuildPreserved: new Set(
+      [...raw.matchAll(/^\s*#\s*env-parity-preserved:[ \t]*([A-Z0-9_,]+)[ \t]*$/gm)].flatMap(
+        (match) => match[1].split(','),
+      ),
+    ),
     cloudBuildSetEnv: setEnvVars,
     cloudBuildSecrets: secretsSet,
     buildArgs,
@@ -180,6 +190,7 @@ function analyze(sources: SourceMaps) {
     ...Object.keys(sources.cloudBuildSubstitutions),
     ...Object.keys(sources.cloudBuildSetEnv),
     ...Array.from(sources.cloudBuildSecrets),
+    ...sources.cloudBuildPreserved,
     ...Array.from(sources.buildArgs),
     ...envManifest.map((v) => v.name),
   ]);
@@ -193,7 +204,11 @@ function analyze(sources: SourceMaps) {
       case 'build':
         return sources.buildArgs.has(key) || sources.cloudBuildSubstitutions[key] !== undefined;
       case 'runtime': {
-        if (sources.cloudBuildSetEnv[key] !== undefined || sources.cloudBuildSecrets.has(key))
+        if (
+          sources.cloudBuildSetEnv[key] !== undefined ||
+          sources.cloudBuildSecrets.has(key) ||
+          sources.cloudBuildPreserved.has(key)
+        )
           return true;
         // Heuristic: if a substitution _KEY exists and set-env-vars string references KEY=${_KEY}
         const subKey = `_${key}`;
@@ -269,6 +284,7 @@ function main() {
     cloudBuildSubstitutions: cloud.cloudBuildSubstitutions || {},
     cloudBuildSetEnv: cloud.cloudBuildSetEnv || {},
     cloudBuildSecrets: cloud.cloudBuildSecrets || new Set(),
+    cloudBuildPreserved: cloud.cloudBuildPreserved || new Set(),
     buildArgs: cloud.buildArgs || new Set(),
     dockerArgs: docker.args,
     dockerEnvs: docker.envs,

@@ -345,7 +345,8 @@ test.describe('Homepage hero — PT-PT campaign URLs', () => {
 
       await expect.poll(() => attributionPayloads.length).toBe(1);
       expect(attributionPayloads[0]).toMatchObject({
-        landingSlug: 'homepage',
+        landingPath: '/pt-PT',
+        latestPath: '/pt-PT',
         primaryIntent: campaign.intent,
         campaign: {
           utm_source: 'google',

@@ -37,7 +37,8 @@ jest.mock('@/db/services', () => ({
   },
 }));
 
-import { GET, generateSitemap } from './route';
+import { GET } from './route';
+import { generateSitemap } from './build-sitemap';
 
 const blogRows = [
   {

@@ -673,7 +673,7 @@ export const envManifest: EnvVarDescriptor[] = [
     scopes: ['prod', 'runtime'],
     secret: true,
     source: 'secret-manager',
-    note: 'OpenAI ChatGPT Ads Conversions API key (server-side). Secret Manager secret OPENAI_CONVERSIONS_API_KEY, mapped in cloudbuild.yaml --set-secrets as OPENAI_ADS_CAPI_KEY=OPENAI_CONVERSIONS_API_KEY:latest.',
+    note: 'OpenAI ChatGPT Ads Conversions API key (server-side). Secret Manager secret OPENAI_CONVERSIONS_API_KEY, bound in Cloud Run as OPENAI_ADS_CAPI_KEY=OPENAI_CONVERSIONS_API_KEY:latest.',
   },
   {
     name: 'NEXT_PUBLIC_GOOGLE_TAG_ID',
