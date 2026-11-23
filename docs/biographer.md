@@ -26,18 +26,30 @@ Private recovery audio expires seven days after capture. The API denies expired 
 
 For each environment, configure a recurring Cloud Scheduler POST to `/api/biographer/internal/expire-audio` on the web app, using the existing scheduler identity in `ANALYTICS_SCHEDULER_SERVICE_ACCOUNT` and a Google OIDC token with the WebApp origin as audience. Run every minute. The endpoint processes up to 100 turns per call. Monitor errors and the `more` flag for a sustained backlog. For local isolated testing, the endpoint also accepts the gateway's private callback header. Never print credentials in logs. Verify bucket privacy, the retention schedule and deletion permissions together.
 
-### Production rollout status (2026-11-23)
+### Production activation on 2026-11-23
 
-Story Whisperer remains disabled in the deployed WebApp. The rollout reuses the existing private recovery bucket `mythoria-biographer-private-oceanic-beach-460916-n5`, with uniform bucket-level access and public access prevention enforced. The WebApp and SGW currently share the default compute runtime identity, with project Editor and Secret Accessor roles. Confirm retention behavior and runtime deletion permissions before activation.
+Story Whisperer was enabled for signed-in users on the public WebApp. The activation used these Cloud Run revisions:
 
-Cloud Scheduler job `story-whisperer-expire-audio` exists in `europe-west9` and is **PAUSED** pending the WebApp deployment and activation checks. It is configured for `* * * * *` in `Europe/Lisbon`, with a POST to `https://mythoria-webapp-x2qrlilyyq-od.a.run.app/api/biographer/internal/expire-audio`. Its Google OIDC audience is `https://mythoria-webapp-x2qrlilyyq-od.a.run.app` and its service account is `analytics-scheduler@oceanic-beach-460916-n5.iam.gserviceaccount.com`. Do not resume or manually run it until the deployed route, identity, private bucket and deletion permissions have been verified. After activation, monitor failures and backlog.
+| Service                   | Revision                                             |
+| ------------------------- | ---------------------------------------------------- |
+| Story Generation Workflow | `story-generation-workflow-whisperer-candidate-1123` |
+| WebApp                    | `mythoria-webapp-guide-validation-1123`              |
+| Voice gateway             | `biographer-live-00005-mcd`                          |
 
-1. Deploy the SGW assessment endpoint with `BIOGRAPHER_ENABLED=true` and set `BIOGRAPHER_STORAGE_BUCKET` to the private bucket. Verify the private voice gateway and the matching interview and cancellation protocols.
-2. Deploy the WebApp with `BIOGRAPHER_ENABLED=false`, `BIOGRAPHER_LIVE_URL=wss://biographer-live-x2qrlilyyq-od.a.run.app/live`, `BIOGRAPHER_ALLOWED_ORIGINS=https://mythoria.pt`, and `BIOGRAPHER_STORAGE_BUCKET` set to the existing private bucket. Bind `BIOGRAPHER_INTERNAL_API_KEY` to Secret Manager secret `BIOGRAPHER_INTERNAL_API_KEY`, version `1`, to match the gateway. Deploy the schema-compatible WebApp before its Admin consumer.
-3. Validate a signed-in session in a controlled rollout using a revision or environment where the Guide is enabled and the dedicated gateway accepts browser connections. Verify provider access, transcript persistence, cancel-to-text, outline handoff, reconnect and retention. Apply public invocation only to the dedicated gateway. The WebApp flag enables the Guide for authenticated users of the revision, so test before routing public production traffic to an enabled revision.
-4. Resume `story-whisperer-expire-audio` after verifying the deployed endpoint, OIDC and the runtime's ability to delete from the private bucket. On rollback, disable WebApp admission first and let active sockets drain. Keep retention operating for already captured audio.
+The end-to-end check reached Gemini through the voice gateway. The signed-in author's transcript survived a page reload. The wizard then reached character review in Step 3 and the outline in Step 4. A bell mentioned only in the voice conversation appeared in the outline. After activation, the public UI exposed the Guide and a direct WebSocket connection received admission through the gateway's canonical WebApp callback.
 
-Cloud Run deployment flags `--set-env-vars` and `--set-secrets` replace their respective existing collections. A normal WebApp deployment must explicitly retain the required `BIOGRAPHER` environment and secret settings, or reapply them before activation. Inspect the resulting revision's configuration without revealing secret values; do not assume prior settings survive a deployment.
+The rollout began with the gateway private, the WebApp feature disabled and the retention job paused. The recovery bucket `mythoria-biographer-private-oceanic-beach-460916-n5` had uniform bucket-level access and public access prevention enforced. At staging, the WebApp and SGW shared the default compute runtime identity with project Editor and Secret Accessor roles.
+
+Cloud Scheduler job `story-whisperer-expire-audio` in `europe-west9` was enabled for production-wide retention after the rollout check. The first scheduled attempt succeeded at 08:30 UTC on 2026-11-23. Its configured schedule is a POST every minute (`Europe/Lisbon`) to `https://mythoria-webapp-x2qrlilyyq-od.a.run.app/api/biographer/internal/expire-audio`. The OIDC audience is the same service's HTTPS origin and the caller is `analytics-scheduler@oceanic-beach-460916-n5.iam.gserviceaccount.com`.
+
+### Future releases and rollback
+
+1. Deploy the compatible SGW assessment revision first. Check its `BIOGRAPHER_ENABLED` flag, private bucket binding and compatibility with the gateway's interview and cancellation protocols.
+2. Deploy a schema-compatible WebApp candidate before its Admin consumer. Check `BIOGRAPHER_LIVE_URL=wss://biographer-live-x2qrlilyyq-od.a.run.app/live`, `BIOGRAPHER_ALLOWED_ORIGINS=https://mythoria.pt`, the recovery bucket and the matching `BIOGRAPHER_INTERNAL_API_KEY` secret version (version `1` at activation). The WebApp flag controls admission for all authenticated users of that revision. Validate an enabled candidate before moving public traffic.
+3. Confirm provider access, transcript persistence, cancel-to-text, outline handoff and reconnect. Verify that the retention Scheduler continues to reach its endpoint and monitor for a sustained backlog. Preserve its OIDC configuration and bucket permissions across releases.
+4. To roll back, disable new WebApp admissions first and let existing sockets drain. Keep retention operating for already captured audio.
+
+The standard WebApp Cloud Build manifest uses `gcloud run services update` with the new image, labels and `--update-env-vars APP_GIT_SHA=…`. This preserves the other runtime environment variables and Secret Manager bindings. For custom deployments, use incremental updates for individual settings. The `--set-env-vars` and `--set-secrets` forms replace their respective collections. Verify the resulting revision's bindings without printing secret values.
 
 ## Database release
 
