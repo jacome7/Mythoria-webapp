@@ -77,7 +77,7 @@ test('Language switcher changes locale and persists', async ({ page }) => {
   await page.goto('/en-US');
   // Open dropdown
   await page.getByRole('button', { name: /^Language selector: EN$/ }).click();
-  await page.getByRole('button', { name: /Português/ }).click();
+  await page.getByRole('button', { name: 'Português PT', exact: true }).click();
   await page.waitForURL(/\/pt-PT/);
   await assertNoMissingTranslations(page);
   // Reload and ensure still on pt-PT due to localStorage persistence
