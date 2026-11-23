@@ -52,3 +52,7 @@ One protagonist reference is supported per journey, within the existing total li
 SGW validates ownership and subject metadata, prepares the selected crop, binds it to exactly one protagonist, and passes the stored character photograph through the existing illustration-reference pipeline. Failure to crop, bind or persist the explicit reference fails the job instead of silently ignoring the photo. The original photograph is excluded from cover/background references and generic subject guessing; visual appearance does not establish personal biography or real events. No image provider change or database migration is required.
 
 Keep original staging paths for retries: acceptance is not proof of relocation. Photo preview URLs may be remapped only after observed completion. Retrying an accepted payload/job does not reconcile or delete generated character associations. Existing pending job identities and exact payload recovery remain unchanged. A real-provider resemblance assessment remains a separate, explicitly authorized validation.
+
+## Image request diagnostics
+
+A Next Image reply of `"w" parameter (width) is required` can come from background prefetch when the browser sends literal `amp;w` and `amp;q` query keys. Check the request's referrer. Requests from the generated `swe-worker` were confirmed on both the candidate and canonical deployments, while correctly encoded optimizer requests returned images. The WebApp keeps its service worker, navigation page cache and offline fallback, with the entry worker's HTML asset scan disabled.

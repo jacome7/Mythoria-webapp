@@ -7,7 +7,9 @@ const withNextIntl = createNextIntlPlugin('./src/i18n/request.ts');
 const withPWA = withPWAInit({
   dest: 'public',
   cacheOnFrontEndNav: true,
-  aggressiveFrontEndNavCaching: true,
+  // Keep page caching and the offline fallback, but skip the entry worker's
+  // HTML asset scan. It can prefetch Next Image URLs with literal &amp; parameters.
+  aggressiveFrontEndNavCaching: false,
   reloadOnOnline: true,
   disable: process.env.NODE_ENV === 'development',
   workboxOptions: {
