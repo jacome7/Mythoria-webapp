@@ -105,6 +105,12 @@ async function main() {
     process.env.BIOGRAPHER_STORAGE_BUCKET = 'isolated-recovery';
     let assessmentCalls = 0;
     let failNextQuestion = false;
+    let pauseAssessment;
+    const andreaMaterial = [
+      'Andrea e André na Escola Secundária Almeida Garrett, em Vila Nova de Gaia.',
+      'Foi no outono de 1993, na turma 12.º B. Cheguei numa Aprilia Classic 50 cc azul.',
+      'A Andrea olhou para mim e disse: “Esse lugar é meu.”',
+    ];
     const sgwPath = require.resolve('../src/lib/sgw-client.ts');
     require.cache[sgwPath] = {
       id: sgwPath,
@@ -119,6 +125,26 @@ async function main() {
             return new Response(null, { status: 503 });
           }
           const input = JSON.parse(options.body);
+          if (input.turns.some(({ text }) => text === andreaMaterial[0])) {
+            const evidence = input.turns
+              .filter(({ role }) => role === 'user')
+              .map(({ text }) => text);
+            if (!input.requestQuestion) await pauseAssessment?.();
+            return Response.json({
+              question: 'O que disse a Andrea?',
+              readiness: {
+                rubricVersion: 3,
+                areas: {
+                  characters: 'ready',
+                  setting: 'ready',
+                  plot: andreaMaterial.every((text) => evidence.includes(text))
+                    ? 'ready'
+                    : 'missing',
+                },
+                hint: '',
+              },
+            });
+          }
           if (input.locale === 'pt-PT') {
             assert.equal(input.context.primaryIntent, 'romance');
             assert.equal(input.context.opening.choices.length, 4);
@@ -442,6 +468,89 @@ async function main() {
     );
     assert.ok(notes.some((note) => note.authorReply.includes('O Principezinho, com um bilhete')));
     assert.ok(!outlineInput.userDescription.includes('Paris'));
+
+    // Author finishes the Andrea scene by voice while the assistant keeps speaking.
+    const andreaDraft = (
+      await pg.query(
+        "INSERT INTO stories(author_id,title) VALUES ($1,'Synthetic Andrea encounter') RETURNING story_id",
+        [inesAuthor],
+      )
+    ).rows[0].story_id;
+    const andrea = (
+      await startWhisperer(inesAuthor, 'Teste', andreaDraft, {
+        locale: 'pt-PT',
+        primaryIntent: 'romance',
+      })
+    ).interview;
+    const andreaTyped = await sendWhispererTurn(inesAuthor, andreaDraft, andrea.projectId, {
+      id: randomUUID(),
+      text: andreaMaterial[0],
+    });
+    assert.equal(andreaTyped.readiness.ready, false);
+    const andreaTicket = await issueSession(inesAuthor, andrea.projectId);
+    await admitSession(andreaTicket.ticket, andrea.projectId, andreaTicket.sessionId);
+    const say = (role, text, final, turnId = randomUUID()) =>
+      checkpoint({
+        sessionId: andreaTicket.sessionId,
+        eventId: randomUUID(),
+        turnId,
+        role,
+        text,
+        final,
+      });
+    const setting = randomUUID();
+    await say('user', 'Foi no outono', false, setting);
+    assert.equal(
+      (await getWhisperer(inesAuthor, andreaDraft)).interview.readinessNeedsRefresh,
+      false,
+    );
+    await say('user', andreaMaterial[1], true, setting);
+    const interruptedScene = randomUUID();
+    await say('user', 'A Andrea olhou', false, interruptedScene);
+    await say('user', andreaMaterial[2], true, interruptedScene);
+
+    const beforeLiveAssessment = assessmentCalls;
+    const assessmentStarted = Promise.withResolvers();
+    const allowAssessment = Promise.withResolvers();
+    pauseAssessment = () => {
+      assessmentStarted.resolve();
+      return allowAssessment.promise;
+    };
+    const assessAndrea = () => refreshWhispererReadiness(inesAuthor, andreaDraft, andrea.projectId);
+    const tabOne = assessAndrea();
+    await Promise.race([assessmentStarted.promise, tabOne]);
+    const tabTwo = assessAndrea();
+    const trailing = randomUUID();
+    try {
+      await say('assistant', 'Terá disparado', false, trailing);
+      await say('assistant', 'Terá disparado o alarme?', true, trailing);
+    } finally {
+      allowAssessment.resolve();
+    }
+    const progressTabs = await Promise.all([tabOne, tabTwo]);
+    pauseAssessment = undefined;
+    assert.ok(progressTabs.every(({ readiness }) => readiness.ready));
+    assert.equal(assessmentCalls - beforeLiveAssessment, 1);
+    const andreaReopened = (await getWhisperer(inesAuthor, andreaDraft)).interview;
+    assert.equal(andreaReopened.readinessNeedsRefresh, false);
+    const andreaOutline = await handoffWhisperer(inesAuthor, andreaDraft, andrea.projectId, {
+      revision: andreaReopened.revision,
+      brief: '',
+      imageObjectPaths: [],
+    });
+    await verifyWhispererStructure(
+      inesAuthor,
+      andreaDraft,
+      andreaOutline.structureRequestId,
+      andreaOutline.userDescription,
+      [],
+    );
+    for (const material of andreaMaterial)
+      assert.ok(andreaOutline.userDescription.includes(material));
+    assert.ok(!andreaOutline.userDescription.includes('alarme'));
+    console.log(
+      'Passed: Andrea voice-to-outline handoff and one shared assessment across two tabs.',
+    );
 
     const multiTabDraft = randomUUID();
     const multiTabProject = (

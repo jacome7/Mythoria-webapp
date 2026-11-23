@@ -93,21 +93,30 @@ const retentionLogger = createLogger({
 
 // Keep audio cleanup outside the transcript acknowledgement. The sweep retries failures.
 export function clearTranscribedAudio(projectId: string, turnId: string) {
-  return scheduleAudioCleanup(() => purgeRecoveryAudio(projectId, turnId));
+  return scheduleAudioCleanup('transcribed', () => purgeRecoveryAudio(projectId, turnId));
 }
 
 export function clearDiscardedLiveAudio(projectId: string, turnId: string) {
-  return scheduleAudioCleanup(() => purgeDiscardedAudio(projectId, turnId));
+  return scheduleAudioCleanup('discarded', () => purgeDiscardedAudio(projectId, turnId));
 }
 
-async function scheduleAudioCleanup(purge: () => Promise<{ failed: number }>) {
+async function scheduleAudioCleanup(
+  trigger: 'transcribed' | 'discarded',
+  purge: () => Promise<{ removed: number; failed: number; more: boolean }>,
+) {
   const cleanup = async () => {
+    const started = performance.now();
     try {
-      if (!(await purge()).failed) return;
+      const result = await purge();
+      if (result.removed || result.failed || result.more)
+        retentionLogger.log(result.failed ? 'warn' : 'info', 'Recovery audio cleanup', {
+          trigger,
+          ...result,
+          elapsedMs: Math.round(performance.now() - started),
+        });
     } catch {
-      // The audio metadata stays available for the sweep.
+      retentionLogger.error('Audio deletion queued for the recovery sweep', { trigger });
     }
-    retentionLogger.error('Audio deletion queued for the recovery sweep');
   };
   try {
     after(cleanup);
@@ -118,6 +127,7 @@ async function scheduleAudioCleanup(purge: () => Promise<{ failed: number }>) {
 }
 
 export async function sweepRecoveryAudio() {
+  const started = performance.now();
   const rows = await db
     .selectDistinct({ projectId: segments.projectId, turnId: segments.turnId })
     .from(segments)
@@ -139,6 +149,12 @@ export async function sweepRecoveryAudio() {
       failed += 1;
     }
   }
-  if (failed) retentionLogger.error('Recovery audio deletion failed', { failed });
+  retentionLogger.log(failed ? 'error' : 'info', 'Recovery audio sweep', {
+    turns: rows.length,
+    removed,
+    failed,
+    more,
+    elapsedMs: Math.round(performance.now() - started),
+  });
   return { removed, failed, more: more || failed > 0 };
 }

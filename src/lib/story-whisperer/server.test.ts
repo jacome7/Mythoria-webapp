@@ -249,7 +249,10 @@ describe('Story Whisperer draft binding', () => {
       readiness: { rubricVersion: whispererRubricVersion, ready: false, missing: ['plot'] },
     });
     expect(refreshed.readiness.firstReadyTurnId).toBeUndefined();
-    expect(set).toHaveBeenCalledWith({ readinessRevision: 6, readiness: refreshed.readiness });
+    expect(set).toHaveBeenCalledWith({
+      readinessRevision: 6,
+      readiness: { ...refreshed.readiness, evidenceKey: expect.any(String) },
+    });
     expect(sgwFetch).toHaveBeenCalledTimes(1);
     const requestBody = JSON.parse(String(jest.mocked(sgwFetch).mock.calls[0][1]?.body));
     expect(requestBody.turns).toEqual(
@@ -301,7 +304,7 @@ describe('Story Whisperer draft binding', () => {
       [{ projectId: project }],
       [{ id: project, revision: 6 }],
       [{ id: 'owner' }],
-      [reply, { ...reply, id: 'new-turn', final: false }],
+      [reply, { ...reply, id: 'new-turn', final: true }],
       [],
     );
     await expect(refreshWhispererReadiness(author, draft, project)).rejects.toMatchObject({
