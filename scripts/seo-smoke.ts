@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { getLandingPageHubUpdatedAt } from '../src/content/landing-pages';
 
 const baseArg = process.argv.find((arg) => arg.startsWith('--base-url='));
 const baseUrl = new URL(baseArg?.slice('--base-url='.length) || 'http://localhost:3000');
@@ -321,7 +322,7 @@ async function main() {
   const hubEntry = entryByLoc.get('https://mythoria.pt/pt-PT/lp');
   assert.equal(
     hubEntry?.lastmod,
-    '2026-08-08T00:00:00.000Z',
+    new Date(getLandingPageHubUpdatedAt()).toISOString(),
     '/pt-PT/lp has an unstable or incorrect lastmod',
   );
 
