@@ -1,24 +1,51 @@
-/**
- * FAQ Service Tests
- * Tests for the FAQ service layer in mythoria-webapp
- *
- * SKIP: These are integration tests requiring a live database.
- * Run these tests in a CI environment with a test database configured.
- */
-
-import { describe, it, expect, beforeAll, afterAll } from '@jest/globals';
-import { db } from '@/db';
+/** @jest-environment node */
+import { readFileSync } from 'node:fs';
+import { Pool } from 'pg';
+import { drizzle } from 'drizzle-orm/node-postgres';
 import { faqService } from '@/db/services/faq';
 import { faqSections, faqEntries } from '@/db/schema';
 import { eq } from 'drizzle-orm';
 
-describe.skip('FAQ Service', () => {
+let testDb: ReturnType<typeof drizzle>;
+jest.mock('@/db', () => ({
+  get db() {
+    return testDb;
+  },
+}));
+
+const connection = process.env.FAQ_TEST_DATABASE_URL;
+const suite = connection ? describe : describe.skip;
+
+suite('FAQ Service', () => {
+  let pool: Pool;
   let testSectionId: string;
   let testEntryId: string;
 
   beforeAll(async () => {
+    if (!connection) throw new Error('FAQ test database URL is required');
+    const url = new URL(connection);
+    if (
+      !['postgres:', 'postgresql:'].includes(url.protocol) ||
+      url.hostname !== '127.0.0.1' ||
+      url.pathname !== '/mythoria_faq_test' ||
+      !url.port ||
+      url.search ||
+      url.hash
+    ) {
+      throw new Error('FAQ tests require the disposable mythoria_faq_test database on loopback');
+    }
+    pool = new Pool({ connectionString: url.href, connectionTimeoutMillis: 3000 });
+    testDb = drizzle(pool);
+    const migration = readFileSync('drizzle/0019_smooth_christian_walker.sql', 'utf8');
+    // The first statement changes an unrelated credit event enum.
+    const [, ...faqStatements] = migration.split('--> statement-breakpoint');
+    for (const statement of faqStatements) {
+      await pool.query(statement);
+    }
+    await pool.query('ALTER TABLE faq_entries DROP COLUMN IF EXISTS summary');
+
     // Create test section
-    const [section] = await db
+    const [section] = await testDb
       .insert(faqSections)
       .values({
         sectionKey: 'test-section',
@@ -31,7 +58,7 @@ describe.skip('FAQ Service', () => {
     testSectionId = section.id;
 
     // Create test entry
-    const [entry] = await db
+    const [entry] = await testDb
       .insert(faqEntries)
       .values({
         faqKey: 'test-faq',
@@ -47,12 +74,12 @@ describe.skip('FAQ Service', () => {
   });
 
   afterAll(async () => {
-    // Cleanup test data
-    if (testEntryId) {
-      await db.delete(faqEntries).where(eq(faqEntries.id, testEntryId));
-    }
-    if (testSectionId) {
-      await db.delete(faqSections).where(eq(faqSections.id, testSectionId));
+    try {
+      if (testSectionId) {
+        await testDb.delete(faqSections).where(eq(faqSections.id, testSectionId));
+      }
+    } finally {
+      await pool?.end();
     }
   });
 
@@ -66,8 +93,8 @@ describe.skip('FAQ Service', () => {
       // Should include our test section
       const testSection = result.find((s: any) => s.sectionKey === 'test-section');
       expect(testSection).toBeDefined();
-      expect(testSection.entries).toBeDefined();
-      expect(testSection.entries.length).toBeGreaterThan(0);
+      expect(testSection?.entries).toBeDefined();
+      expect(testSection?.entries.length).toBeGreaterThan(0);
     });
 
     it('should filter by section key', async () => {
@@ -89,8 +116,7 @@ describe.skip('FAQ Service', () => {
     it('should return empty array for non-existent locale', async () => {
       const result = await faqService.getFaqData('xx-XX');
 
-      expect(result).toBeDefined();
-      expect(Array.isArray(result)).toBe(true);
+      expect(result).toEqual([]);
     });
   });
 
@@ -106,6 +132,15 @@ describe.skip('FAQ Service', () => {
     });
 
     it('should return null for non-existent entry', async () => {
+      const result = await faqService.getFaqEntryById(
+        '00000000-0000-4000-8000-000000000001',
+        'en-US',
+      );
+
+      expect(result).toBeNull();
+    });
+
+    it('should return null for a malformed entry ID', async () => {
       const result = await faqService.getFaqEntryById('non-existent-id', 'en-US');
 
       expect(result).toBeNull();
@@ -125,10 +160,8 @@ describe.skip('FAQ Service', () => {
       expect(result).toBeDefined();
       expect(Array.isArray(result)).toBe(true);
 
-      // Should include relevance score
-      if (result.length > 0) {
-        expect(result[0].relevanceScore).toBeDefined();
-      }
+      expect(result[0]?.id).toBe(testEntryId);
+      expect(result[0]?.relevanceScore).toBeGreaterThan(0);
     });
 
     it('should return empty array for empty query', async () => {
@@ -139,10 +172,18 @@ describe.skip('FAQ Service', () => {
     });
 
     it('should limit results to 50', async () => {
-      const result = await faqService.searchFaqs('en-US', 'how');
+      await testDb.insert(faqEntries).values(
+        Array.from({ length: 51 }, (_, index) => ({
+          faqKey: `test-catalog-${index}`,
+          locale: 'en-US',
+          sectionId: testSectionId,
+          title: `Catalog question ${index}`,
+          contentMdx: 'Catalog test answer',
+        })),
+      );
+      const result = await faqService.searchFaqs('en-US', 'catalog');
 
-      expect(result).toBeDefined();
-      expect(result.length).toBeLessThanOrEqual(50);
+      expect(result).toHaveLength(50);
     });
   });
 

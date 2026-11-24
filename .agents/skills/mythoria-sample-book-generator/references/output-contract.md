@@ -23,6 +23,8 @@ assets/prompts/feature.prompt.md
 
 `assets/audio-teaser.mp3` is required after audio generation. It may be absent only when `audio-sample.json.status` is `pending_generation` or `blocked`.
 
+Run `npm run sample-book:validate -- public/sample-books/{slug} --draft` for local review of a draft pack. Pending or blocked audio, imported cover and feature images (`generated_from_existing_asset`), and an existing chapter image with no recorded generation status or model are flagged as warnings. Chapter artwork still requires its prompt file and a matching asset path. Run the same command without `--draft` to verify release media. Both modes require human review before publication.
+
 All generated files under `assets/` must also be published to:
 
 ```text
@@ -115,10 +117,12 @@ Default length is 600-900 words unless the user requested a different format. Ke
 
 ## Image Prompts
 
-`image-prompts.json` must contain exactly two image prompt entries:
+`image-prompts.json` must contain two image prompt entries:
 
 - `cover`
 - `feature`
+
+Add a `chapter` entry when `book.json.sampleChapterImage` references local chapter artwork.
 
 Each entry must include `promptPath`, `targetPath`, `status`, `model`, `size`, and `quality`.
 

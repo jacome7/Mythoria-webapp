@@ -1,6 +1,9 @@
 import { db } from '../index';
 import { faqSections, faqEntries } from '../schema';
 import { eq, and, asc, sql, or, inArray } from 'drizzle-orm';
+import { z } from 'zod';
+
+const faqEntryId = z.guid();
 
 export const faqService = {
   /**
@@ -66,6 +69,8 @@ export const faqService = {
    * Get a single FAQ entry by ID (for direct linking)
    */
   async getFaqEntryById(id: string, locale: string) {
+    if (!faqEntryId.safeParse(id).success) return null;
+
     const [entry] = await db
       .select({
         entry: faqEntries,

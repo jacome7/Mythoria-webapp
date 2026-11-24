@@ -83,6 +83,8 @@ Run these commands after making code changes and before committing or opening a 
 
 Only run the localization, env, or database commands when you touch the corresponding areas, but ensure CI-critical checks (`lint`, `typecheck`, `test`) are green for every change set.
 
+To include FAQ service integration tests in Jest, create an empty `mythoria_faq_test` database on a disposable PostgreSQL cluster bound to `127.0.0.1`. Set `FAQ_TEST_DATABASE_URL` to its PostgreSQL URL with an explicit port before running `npm test -- --runInBand`. The suite applies the FAQ table DDL and inserts its own fixture data.
+
 ## Localization Workflow
 
 - `src/messages/en-US` is the source-of-truth locale. Mirror file names across every locale directory. HTML fragments (e.g., legal pages) also require parity.

@@ -1,9 +1,11 @@
 import { existsSync, readFileSync, statSync } from 'node:fs';
 import { resolve } from 'node:path';
 
-const folderArg = process.argv[2];
-if (!folderArg) {
-  console.error('Usage: node scripts/validate-sample-book-output.mjs <sample-book-folder>');
+const [folderArg, mode, ...extraArgs] = process.argv.slice(2);
+if (!folderArg || folderArg.startsWith('-') || (mode && mode !== '--draft') || extraArgs.length) {
+  console.error(
+    'Usage: node scripts/validate-sample-book-output.mjs <sample-book-folder> [--draft]',
+  );
   process.exit(1);
 }
 
@@ -17,7 +19,6 @@ const requiredFiles = [
   'review-checklist.md',
   'assets/cover.jpeg',
   'assets/feature.jpeg',
-  'assets/audio-teaser.mp3',
   'assets/prompts/cover.prompt.md',
   'assets/prompts/feature.prompt.md',
 ];
@@ -77,15 +78,18 @@ const forbiddenClaims = [
   'clinically proven',
 ];
 const errors = [];
+const warnings = [];
 
-for (const relativePath of requiredFiles) {
+function requireFile(relativePath) {
   const path = resolve(folder, relativePath);
-  if (!existsSync(path)) {
+  if (!existsSync(path) || !statSync(path).isFile()) {
     errors.push(`Missing ${relativePath}`);
   } else if (statSync(path).size === 0) {
     errors.push(`Empty ${relativePath}`);
   }
 }
+
+requiredFiles.forEach(requireFile);
 
 function readJson(relativePath) {
   try {
@@ -102,6 +106,10 @@ const manifest = readJson('manifest.json');
 const book = readJson('book.json');
 const imagePrompts = readJson('image-prompts.json');
 const audio = readJson('audio-sample.json');
+const draft = mode === '--draft' && manifest.status === 'draft';
+if (mode === '--draft' && !draft) {
+  errors.push('--draft requires manifest.status to be draft');
+}
 const chapter = existsSync(resolve(folder, 'sample-chapter.md'))
   ? readFileSync(resolve(folder, 'sample-chapter.md'), 'utf8')
   : '';
@@ -146,23 +154,32 @@ if (!Array.isArray(book.safetyNotes) || book.safetyNotes.length < 3) {
 for (const key of ['cover', 'feature']) {
   const prompt = imagePrompts[key];
   if (!prompt) errors.push(`image-prompts.json is missing ${key}`);
+  if (draft && prompt?.status === 'generated_from_existing_asset') {
+    warnings.push(`${key} image uses an existing asset; confirm provenance before release`);
+    continue;
+  }
   if (prompt?.status !== 'generated') errors.push(`${key} image status must be generated`);
   if (prompt?.model !== 'gpt-image-2') errors.push(`${key} image model must be gpt-image-2`);
 }
 
 if (book.sampleChapterImage?.localPath) {
-  const chapterImagePath = resolve(folder, book.sampleChapterImage.localPath);
-  if (!existsSync(chapterImagePath)) {
-    errors.push(`Missing ${book.sampleChapterImage.localPath}`);
-  } else if (statSync(chapterImagePath).size === 0) {
-    errors.push(`Empty ${book.sampleChapterImage.localPath}`);
-  }
+  requireFile(book.sampleChapterImage.localPath);
 
   const chapterPrompt = imagePrompts.chapter;
   if (!chapterPrompt) errors.push('image-prompts.json is missing chapter');
-  if (chapterPrompt?.status !== 'generated') errors.push('chapter image status must be generated');
-  if (chapterPrompt?.model !== 'gpt-image-2')
-    errors.push('chapter image model must be gpt-image-2');
+  if (
+    draft &&
+    chapterPrompt &&
+    chapterPrompt.status === undefined &&
+    chapterPrompt.model === undefined
+  ) {
+    warnings.push('chapter image generation provenance is unrecorded');
+  } else {
+    if (chapterPrompt?.status !== 'generated')
+      errors.push('chapter image status must be generated');
+    if (chapterPrompt?.model !== 'gpt-image-2')
+      errors.push('chapter image model must be gpt-image-2');
+  }
   if (!chapterPrompt?.promptPath || !existsSync(resolve(folder, chapterPrompt.promptPath))) {
     errors.push('chapter image promptPath is missing or does not exist');
   }
@@ -171,10 +188,15 @@ if (book.sampleChapterImage?.localPath) {
   }
 }
 
-if (audio.status !== 'generated') errors.push('audio status must be generated');
+if (draft && ['pending_generation', 'blocked'].includes(audio.status)) {
+  warnings.push(`audio teaser is ${audio.status}`);
+} else {
+  requireFile('assets/audio-teaser.mp3');
+  if (audio.status !== 'generated') errors.push('audio status must be generated');
+  if (!audio.generatedAt) errors.push('audio.generatedAt is required');
+}
 if (audio.language !== 'pt-PT') errors.push('audio language must be pt-PT');
 if (audio.provider !== 'google-genai') errors.push('audio provider must be google-genai');
-if (!audio.generatedAt) errors.push('audio.generatedAt is required');
 
 const chapterBody = chapter.replace(/^---[\s\S]*?---/, '').trim();
 const wordCount = chapterBody.split(/\s+/u).filter(Boolean).length;
@@ -193,4 +215,7 @@ if (errors.length) {
   process.exit(1);
 }
 
-console.log(`Sample-book validation passed: ${folder} (${wordCount} chapter words)`);
+console.log(
+  `Sample-book ${draft ? 'draft ' : ''}validation passed: ${folder} (${wordCount} chapter words)`,
+);
+warnings.forEach((warning) => console.warn(`- ${warning}`));
