@@ -5,6 +5,24 @@ import fs from 'fs';
 // This file is added to .gitignore so it never leaves the developer machine/CI runtime.
 const authFile = 'tests/playwright/.auth/user.json';
 const skipAuthSetup = process.env.SKIP_AUTH_SETUP === '1';
+const chromium = {
+  ...devices['Desktop Chrome'],
+  ...(process.env.PLAYWRIGHT_CLERK_FIXTURE === '1'
+    ? {
+        serviceWorkers: 'block' as const,
+        launchOptions: {
+          executablePath: process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE || undefined,
+          args: [
+            '--disable-background-networking',
+            '--proxy-server=http://127.0.0.1:1',
+            `--proxy-bypass-list=<-loopback>;${process.env.PLAYWRIGHT_BASE_URL}`,
+            '--host-resolver-rules=MAP * ~NOTFOUND, EXCLUDE localhost, EXCLUDE 127.0.0.1',
+          ],
+        },
+      }
+    : {}),
+};
+const sessionTests = /(?:my-stories|navigation)\.auth\.spec\.ts$/;
 
 // Decide if we need to run the setup project this invocation.
 // Conditions: missing file OR REFRESH_AUTH=1 OR file older than AUTH_MAX_AGE_HOURS (default 12)
@@ -37,19 +55,25 @@ const projects = [
         {
           name: 'setup',
           testMatch: /auth\.setup\.ts/,
-          use: { ...devices['Desktop Chrome'] },
+          use: chromium,
         },
       ]
     : []),
   {
     name: 'chromium',
-    use: {
-      ...devices['Desktop Chrome'],
-      // Playwright loads the file after the setup project has run.
-      ...(skipAuthSetup ? {} : { storageState: authFile }),
-    },
-    ...(includeSetup ? { dependencies: ['setup'] } : {}),
+    testIgnore: sessionTests,
+    use: chromium,
   },
+  ...(skipAuthSetup
+    ? []
+    : [
+        {
+          name: 'chromium-session',
+          testMatch: sessionTests,
+          use: { ...chromium, storageState: authFile },
+          ...(includeSetup ? { dependencies: ['setup'] } : {}),
+        },
+      ]),
 ];
 
 export default defineConfig({

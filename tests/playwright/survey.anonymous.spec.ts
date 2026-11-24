@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from './support/fixtures';
 
 /**
  * Anonymous survey respondent smoke tests.
@@ -22,10 +22,7 @@ test.describe('anonymous survey respondent flow', () => {
       await page.setViewportSize({ width: viewport.width, height: viewport.height });
       const response = await page.goto(`/en-US/survey/${token}`, { waitUntil: 'domcontentloaded' });
       expect(response?.ok()).toBe(true);
-      await page.waitForLoadState('networkidle');
-
-      const rejectCookies = page.getByRole('button', { name: /reject all/i });
-      if (await rejectCookies.isVisible()) await rejectCookies.click();
+      await page.getByRole('button', { name: 'Reject optional', exact: true }).click();
 
       await expect(page).not.toHaveURL(/sign-in/);
       await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content', /noindex/);

@@ -1,4 +1,4 @@
-import { test, expect, type APIRequestContext } from '@playwright/test';
+import { test, expect, type APIRequestContext } from './support/fixtures';
 
 const MCP_ENDPOINT = '/api/mcp';
 const protectedScope = 'profile';

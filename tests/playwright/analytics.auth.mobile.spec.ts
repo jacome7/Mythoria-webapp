@@ -1,6 +1,6 @@
-import { createClerkClient } from '@clerk/backend';
-import { devices, expect, test } from '@playwright/test';
+import { devices, expect, test } from './support/fixtures';
 import { config } from 'dotenv';
+import { signInWithClerkTicket } from './support/sign-in';
 
 config({ path: '.env.local', quiet: true });
 
@@ -26,52 +26,6 @@ async function installAnalyticsCapture(page: import('@playwright/test').Page) {
     };
     Object.assign(window, { dataLayer, __analyticsEvents: events });
   });
-}
-
-async function authenticateWithTestUser(page: import('@playwright/test').Page) {
-  const clerk = createClerkClient({ secretKey: clerkSecretKey! });
-  const users = await clerk.users.getUserList({ emailAddress: [e2eEmail!] });
-  const user =
-    users.data[0] ||
-    (await clerk.users.createUser({
-      emailAddress: [e2eEmail!],
-      firstName: 'Analytics',
-      lastName: 'E2E',
-      skipPasswordRequirement: true,
-      skipLegalChecks: true,
-    }));
-  const ticket = await clerk.signInTokens.createSignInToken({
-    userId: user.id,
-    expiresInSeconds: 300,
-  });
-
-  await page.context().clearCookies();
-  await page.goto('/en-US/sign-in', { waitUntil: 'domcontentloaded' });
-  await page.waitForFunction(() =>
-    Boolean((window as unknown as { Clerk?: { loaded?: boolean } }).Clerk?.loaded),
-  );
-  await page.evaluate(async (token) => {
-    const clerk = (
-      window as unknown as {
-        Clerk: {
-          client: {
-            signIn: {
-              create: (params: { strategy: 'ticket'; ticket: string }) => Promise<{
-                status: string;
-                createdSessionId?: string | null;
-              }>;
-            };
-          };
-          setActive: (params: { session: string }) => Promise<void>;
-        };
-      }
-    ).Clerk;
-    const signIn = await clerk.client.signIn.create({ strategy: 'ticket', ticket: token });
-    if (signIn.status !== 'complete' || !signIn.createdSessionId) {
-      throw new Error(`Ticket sign-in did not complete: ${signIn.status}`);
-    }
-    await clerk.setActive({ session: signIn.createdSessionId });
-  }, ticket.token);
 }
 
 async function grantAnalyticsConsent(page: import('@playwright/test').Page) {
@@ -103,9 +57,9 @@ test('signed-out auth gate emits no story start', async ({ page }) => {
   expect(events.filter((entry) => entry[1] === 'story_creation_started')).toHaveLength(0);
 });
 
-test('authenticated mobile step emits one sanitized start and view', async ({ page }) => {
+test('authenticated mobile step emits one sanitized start and view', async ({ page, baseURL }) => {
   await installAnalyticsCapture(page);
-  await authenticateWithTestUser(page);
+  await signInWithClerkTicket(page, baseURL);
   await grantAnalyticsConsent(page);
 
   const authResponse = page.waitForResponse(

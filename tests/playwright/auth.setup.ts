@@ -1,6 +1,7 @@
-import { test as setup, expect } from '@playwright/test';
+import { test as setup, expect } from './support/fixtures';
 import fs from 'fs';
 import path from 'path';
+import { signInWithClerkTicket } from './support/sign-in';
 
 // Auth storage state (gitignored)
 const authFile = 'tests/playwright/.auth/user.json';
@@ -42,49 +43,54 @@ function ensureDir(p: string) {
   if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
 }
 
-// This setup supports ONLY social login or magic link (no password path).
-// Timeout can be adjusted with MANUAL_AUTH_TIMEOUT_MS (default 180000 ms).
-setup('authenticate (manual social or magic link only)', async ({ page }) => {
+// Use a ticket for a pre-provisioned dev identity when requested, or wait for a headed login.
+setup('authenticate and save a browser session', async ({ page, baseURL }) => {
   const email = process.env.CLERK_E2E_EMAIL; // optional prefill for magic link
   const manualTimeout = Number(process.env.MANUAL_AUTH_TIMEOUT_MS || 180000);
   setup.setTimeout(manualTimeout + 30_000);
 
   ensureDir(authFile);
 
-  await page.goto('/en-US/sign-in');
+  if (process.env.PLAYWRIGHT_CLERK_TICKET_AUTH === '1') {
+    await signInWithClerkTicket(page, baseURL);
+  } else {
+    await page.goto('/en-US/sign-in');
 
-  if (email) {
-    // Attempt to prefill email for magic link flow.
-    const emailField = page.getByLabel(/email/i);
-    if (await emailField.count()) {
-      await emailField.fill(email);
+    if (email) {
+      // Attempt to prefill email for magic link flow.
+      const emailField = page.getByLabel(/email/i);
+      if (await emailField.count()) {
+        await emailField.fill(email);
+      }
     }
-  }
 
-  console.log(
-    'Manual authentication required: complete social login or magic link in the headed browser.',
-  );
-  console.log(`Waiting up to ${manualTimeout / 1000}s for Clerk session (__session cookie).`);
-
-  const start = Date.now();
-  let authenticated = false;
-  while (Date.now() - start < manualTimeout) {
-    const cookies = await page.context().cookies();
-    if (cookies.some((c) => c.name.includes('__session'))) {
-      authenticated = true;
-      break;
-    }
-    await page.waitForTimeout(1000);
-  }
-  if (!authenticated) {
-    throw new Error(
-      'Manual authentication timed out. Increase MANUAL_AUTH_TIMEOUT_MS or ensure the social/magic link flow completed.',
+    console.log(
+      'Manual authentication required: complete social login or magic link in the headed browser.',
     );
+    console.log(`Waiting up to ${manualTimeout / 1000}s for Clerk session (__session cookie).`);
+
+    const start = Date.now();
+    let authenticated = false;
+    while (Date.now() - start < manualTimeout) {
+      const cookies = await page.context().cookies();
+      if (cookies.some((c) => c.name.includes('__session'))) {
+        authenticated = true;
+        break;
+      }
+      await page.waitForTimeout(1000);
+    }
+    if (!authenticated) {
+      throw new Error(
+        'Manual authentication timed out. Increase MANUAL_AUTH_TIMEOUT_MS or ensure the social/magic link flow completed.',
+      );
+    }
   }
 
   await page.goto('/en-US/my-stories');
-  const signInLink = page.getByRole('link', { name: /sign in/i });
-  expect(await signInLink.isVisible()).toBeFalsy();
+  await expect(page.getByRole('link', { name: 'New Story', exact: true })).toBeVisible();
+  const profile = await page.request.get('/api/auth/me');
+  expect(profile.ok()).toBe(true);
+  expect(await profile.json()).toHaveProperty('authorId');
 
   await page.context().storageState({ path: authFile });
   console.log(`Stored authenticated state at ${authFile}`);

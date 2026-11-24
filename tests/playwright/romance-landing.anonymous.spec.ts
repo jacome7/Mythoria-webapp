@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from './support/fixtures';
 
 const route = '/pt-PT/lp/livro-personalizado-para-casais';
 

@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { test, expect } from './support/fixtures';
 
 // Test assumes the auth.setup.ts project already ran and produced the storage state.
 // It simply navigates to the protected my-stories page and asserts signed-in UI.

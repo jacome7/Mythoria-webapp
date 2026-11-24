@@ -1,4 +1,4 @@
-import { test, expect, type APIRequestContext } from '@playwright/test';
+import { test, expect, type APIRequestContext } from './support/fixtures';
 
 const MCP_ENDPOINT = '/api/mcp';
 const bearerToken = process.env.MCP_E2E_BEARER_TOKEN;

@@ -1,4 +1,4 @@
-import { devices, expect, test, type Page } from '@playwright/test';
+import { devices, expect, test, type Page } from './support/fixtures';
 
 test.use({ ...devices['Pixel 7'] });
 test.describe.configure({ mode: 'serial' });

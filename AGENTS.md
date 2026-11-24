@@ -97,6 +97,8 @@ To include FAQ service integration tests in Jest, create an empty `mythoria_faq_
 
 ## Playwright & PWA Notes
 
+- Run the complete disposable Postgres and Chromium fixture with `npm run test:e2e:isolated`. See [Playwright testing](docs/playwright.md) for prerequisites, project boundaries and real Clerk testing.
+
 - Playwright stores auth state in `tests/playwright/.auth/user.json`. Force regeneration with `REFRESH_AUTH=1` if credentials expire. Anonymous suites bypass auth state by setting `SKIP_AUTH_SETUP=1`.
 - The application ships with a PWA offline fallback located at `/offline`. Middleware bypasses locale redirects for that route—preserve this behavior when adding new middleware logic.
 
