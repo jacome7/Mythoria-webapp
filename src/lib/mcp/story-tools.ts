@@ -11,6 +11,10 @@ import {
 } from '@/db/services';
 import { startStoryGeneration } from '@/lib/story-generation';
 import { hasPremiumBookMarker, premiumBookType } from '@/lib/premium-children-book/contract';
+import {
+  getCurrentPremiumAudiobook,
+  getPublishedPremiumRevision,
+} from '@/lib/premium-children-book/audiobook';
 import { CHARACTER_AGES, CHARACTER_ROLES } from '@/types/character-enums';
 import { GraphicalStyle, LiteraryPersona, NovelStyle, TargetAudience } from '@/types/story-enums';
 import {
@@ -595,7 +599,50 @@ function buildStoryLibraryActions(
       reasonCode: 'story_published',
       url: readUrl,
     });
-    if (hasPremiumBookMarker(story.features)) return actions;
+    if (hasPremiumBookMarker(story.features)) {
+      if (getPublishedPremiumRevision(story.features)) {
+        const hasAudio = Boolean(
+          getCurrentPremiumAudiobook(story.storyId, story.features, story.audiobookUri),
+        );
+        actions.push({
+          id: hasAudio ? 'listen' : 'generateAudiobook',
+          label: hasAudio ? copy.actionLabels.listen : copy.actionLabels.generateAudiobook,
+          available: true,
+          reason: hasAudio
+            ? 'Audiobook is ready to listen.'
+            : 'Choose narration options in the Mythoria listener.',
+          reasonCode: hasAudio ? 'audio_available' : 'audio_generation_available',
+          url: listenUrl,
+        });
+        actions.push(
+          {
+            id: 'edit',
+            label: copy.actionLabels.edit,
+            available: true,
+            reason: 'Choose a page in the reader to edit its illustration.',
+            reasonCode: 'edit_available',
+            url: readUrl + '#illustration-editor',
+          },
+          {
+            id: 'share',
+            label: copy.actionLabels.share,
+            available: true,
+            reason: 'Open the sharing options for this edition.',
+            reasonCode: 'share_available',
+            url: readUrl + '#share',
+          },
+          {
+            id: 'export',
+            label: copy.actionLabels.export,
+            available: true,
+            reason: 'Review the self-print options and price.',
+            reasonCode: 'export_available',
+            url: readUrl + '#self-print',
+          },
+        );
+      }
+      return actions;
+    }
     actions.push({
       id: 'listen',
       label: copy.actionLabels.listen,
@@ -697,6 +744,10 @@ function buildStoryLibraryEntry(story: AuthorStoryRecord, locale: string, copy: 
     story.status as StoryStatusValue,
   );
   const isPremiumBook = hasPremiumBookMarker(story.features);
+  const hasAudio = isPremiumBook
+    ? story.status === 'published' &&
+      Boolean(getCurrentPremiumAudiobook(story.storyId, story.features, story.audiobookUri))
+    : Boolean(story.hasAudio);
 
   return {
     id: story.storyId,
@@ -710,7 +761,7 @@ function buildStoryLibraryEntry(story: AuthorStoryRecord, locale: string, copy: 
     graphicalStyle: story.graphicalStyle,
     chapterCount: isPremiumBook ? 0 : (story.chapterCount ?? null),
     ...(isPremiumBook ? { bookType: premiumBookType } : {}),
-    hasAudio: !isPremiumBook && Boolean(story.hasAudio),
+    hasAudio,
     storyGenerationStatus: story.storyGenerationStatus ?? null,
     storyGenerationCompletedPercentage: story.storyGenerationCompletedPercentage ?? 0,
     isPublic: story.isPublic,
@@ -718,8 +769,9 @@ function buildStoryLibraryEntry(story: AuthorStoryRecord, locale: string, copy: 
     slug: story.slug,
     urls: {
       readUrl,
-      listenUrl: !isPremiumBook && story.hasAudio ? listenUrl : null,
-      editUrl: isPremiumBook && story.status === 'published' ? null : editUrl,
+      listenUrl: hasAudio ? listenUrl : null,
+      editUrl:
+        isPremiumBook && story.status === 'published' ? readUrl + '#illustration-editor' : editUrl,
       publicReadUrl: story.slug ? resolveStoryWebUrl(locale, story.slug) : null,
       publicApiUrl: story.slug ? resolveStoryApiUrl(story.slug) : null,
     },

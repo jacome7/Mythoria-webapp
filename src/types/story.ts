@@ -32,6 +32,7 @@ export interface Story {
   slug?: string;
   bookType?: BookType;
   premiumPrintAvailable?: boolean;
+  premiumAudiobookAvailable?: boolean;
   coverUri?: string | null;
   createdAt: string;
   updatedAt: string;

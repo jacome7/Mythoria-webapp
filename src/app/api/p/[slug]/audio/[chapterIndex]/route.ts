@@ -4,6 +4,7 @@ import { eq } from 'drizzle-orm';
 import { db } from '@/db';
 import { stories } from '@/db/schema';
 import { hasPremiumBookMarker } from '@/lib/premium-children-book/contract';
+import { premiumPageAudioResponse } from '@/lib/premium-children-book/audio-response';
 
 export async function GET(
   request: NextRequest,
@@ -15,8 +16,8 @@ export async function GET(
     console.log('[Audio Proxy] Fetching audio for slug:', slug, 'chapter:', chapterIndex);
 
     // Parse chapter index first
-    const chapterIdx = parseInt(chapterIndex);
-    if (isNaN(chapterIdx) || chapterIdx < 0) {
+    const chapterIdx = Number(chapterIndex);
+    if (!/^\d+$/.test(chapterIndex) || !Number.isSafeInteger(chapterIdx)) {
       return NextResponse.json({ error: 'Invalid chapter index' }, { status: 400 });
     }
 
@@ -35,7 +36,7 @@ export async function GET(
     }
 
     if (hasPremiumBookMarker(story.features)) {
-      return NextResponse.json({ error: 'No audiobook available for this story' }, { status: 404 });
+      return await premiumPageAudioResponse(request, story, chapterIdx);
     }
 
     // Get chapters for this story

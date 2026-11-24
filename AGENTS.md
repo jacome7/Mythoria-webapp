@@ -130,6 +130,8 @@ See [the local contract](docs/story-templates.md) and [cross-service runbook](..
 
 See [the WebApp contract](docs/premium-children-books.md) for premium selection, queue acceptance, private reading, rollback and validation. Keep each book revision pinned to its generation and hash. Never serve premium canonical page text or artwork through the conventional chapter or cached navigation paths.
 
+Read `editionLayout` from the verified manifest. Embedded-lettering editions carry a separate accessible transcript and frozen publication details. Missing layout identifies the historical overlay renderer.
+
 <!-- BEGIN:nextjs-agent-rules -->
 
 ## This is NOT the Next.js you know
@@ -159,6 +161,8 @@ Story Whisperer is the single-author Step 2 interview. See [its storage and serv
 ## Paid print proofs
 
 WebApp owns paid print intents, generation-pinned proof manifests, supplier release and reconciliation. Only an authenticated Admin ticket release can create a supplier job. See [the paid print operations guide](docs/PRINT_FULFILLMENT.md).
+
+Premium books publish as online editions. The owner reader and My Stories use the premium manifest for image edits, copies, and on-demand product actions. Keep credit and edition updates atomic. Use the print checkout metadata endpoint for public buyers, and enforce owner-only access on editing routes.
 
 ## Product experiments
 

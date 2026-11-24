@@ -59,6 +59,7 @@ import type { NextRequest } from 'next/server';
 import { SurveyRewardError, type SurveyRewardErrorCode } from '@/db/services/survey-rewards';
 import { SurveyRewardFundingError } from '@/lib/product-generation';
 import { POST } from './route';
+import { encodePremiumSelfPrintPin } from '@/lib/premium-children-book/self-print';
 
 const ENT = '11111111-1111-4111-8111-111111111111';
 const STORY = '22222222-2222-4222-8222-222222222222';
@@ -173,6 +174,60 @@ describe('POST /api/surveys/rewards/[entitlementId]/redeem', () => {
     expect(response.status).toBe(202);
     await expect(response.json()).resolves.toMatchObject({ alreadyStarted: true, runId: 'run-1' });
     expect(launchSelfPrintWorkflowMock).not.toHaveBeenCalled();
+  });
+
+  it('recovers a pending PDF gift after a correction using that attempt’s pinned edition', async () => {
+    const pin = (revision: string) => ({
+      version: 1 as const,
+      type: 'premium_children' as const,
+      state: 'published' as const,
+      revision,
+      manifest: {
+        key: `${STORY}/premium/revisions/${revision}/manifest.json`,
+        generation: '101',
+        bytes: 100,
+        sha256: 'b'.repeat(64),
+      },
+    });
+    const accepted = pin('22222222-2222-4222-8222-222222222223');
+    const current = pin('22222222-2222-4222-8222-222222222224');
+    getEntitlementForAuthorMock.mockResolvedValue({
+      entitlement: { entitlementId: ENT, status: 'processing' },
+    });
+    getStoryByIdMock.mockResolvedValue({
+      storyId: STORY,
+      authorId: 'author-1',
+      status: 'published',
+      features: { premiumBook: current },
+    });
+    startProductGenerationMock.mockResolvedValue({
+      duplicate: true,
+      remainingCredits: 0,
+      request: {
+        runId: 'original-run',
+        status: 'pending',
+        storyId: STORY,
+        authorId: 'author-1',
+        queueReference: encodePremiumSelfPrintPin(STORY, {
+          premiumBook: accepted,
+          generateCMYK: true,
+        }),
+      },
+    });
+    expect((await call({ rewardType: 'pdf', storyId: STORY })).status).toBe(202);
+    expect(launchSelfPrintWorkflowMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        workflowId: 'original-run',
+        premiumBook: expect.objectContaining(accepted),
+        recipients: [],
+      }),
+    );
+    expect(startProductGenerationMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        creditsSpent: 0,
+        funding: { type: 'survey_reward', entitlementId: ENT },
+      }),
+    );
   });
 
   it('does not launch again when a concurrent redeem returns a still-pending duplicate', async () => {

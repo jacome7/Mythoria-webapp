@@ -1,5 +1,5 @@
 // AUTO-GENERATED FILE. Run: npm run i18n:keys
-// Total keys: 3386
+// Total keys: 3395
 export type TranslationKey =
   | 'AIImageEditor.buttons.applyPhoto'
   | 'AIImageEditor.cancelButton'
@@ -1073,6 +1073,7 @@ export type TranslationKey =
   | 'ListenStory.needMoreCreditsGenerate'
   | 'ListenStory.needSignInToListen'
   | 'ListenStory.newNarrationDescription'
+  | 'ListenStory.pageTitle'
   | 'ListenStory.priceLine'
   | 'ListenStory.reNarrateLater'
   | 'ListenStory.replaceCurrentNarration'
@@ -2932,6 +2933,14 @@ export type TranslationKey =
   | 'duplicate.error'
   | 'duplicate.success'
   | 'editAnswer'
+  | 'editApply'
+  | 'editBalance'
+  | 'editBusy'
+  | 'editCost'
+  | 'editError'
+  | 'editPrompt'
+  | 'editSpread'
+  | 'editWarning'
   | 'email'
   | 'empty'
   | 'end'

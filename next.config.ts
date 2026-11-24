@@ -20,6 +20,9 @@ const withPWA = withPWAInit({
         urlPattern: ({ sameOrigin, url }) =>
           sameOrigin &&
           (/^\/api\/stories\/[^/]+\/(premium\/|chapters$)/.test(url.pathname) ||
+            (url.searchParams.has('runId') &&
+              /^\/api\/(stories|p)\/[^/]+\/audio\/[^/]+$/.test(url.pathname)) ||
+            url.pathname.startsWith('/api/print-requests/story/') ||
             url.pathname.startsWith('/api/share/') ||
             /^\/api\/p\/[^/]+$/.test(url.pathname)),
         handler: 'NetworkOnly',

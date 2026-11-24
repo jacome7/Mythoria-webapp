@@ -8,9 +8,12 @@ import { db } from '@/db';
 import { stories, chapters } from '@/db/schema';
 import { and, asc, eq, max } from 'drizzle-orm';
 import { Storage } from '@google-cloud/storage';
-import { ZodError } from 'zod';
+import { sgwFetch } from '@/lib/sgw-client';
+import { randomUUID } from 'node:crypto';
+import { z, ZodError } from 'zod';
 import {
   hasPremiumBookMarker,
+  readPremiumBookMarker,
   premiumBookType,
   storyFeatureRecord,
 } from '@/lib/premium-children-book/contract';
@@ -300,10 +303,6 @@ export async function POST(
     if (!original || original.authorId !== author.authorId) {
       return NextResponse.json({ error: 'Story not found' }, { status: 404 });
     }
-    if (hasPremiumBookMarker(original.features)) {
-      return NextResponse.json({ error: 'incompatible_book_features' }, { status: 422 });
-    }
-
     // Only allow duplicating published stories
     if (original.status !== 'published') {
       return NextResponse.json(
@@ -312,6 +311,23 @@ export async function POST(
       );
     }
 
+    if (hasPremiumBookMarker(original.features)) {
+      const marker = readPremiumBookMarker(original.features);
+      const intent = z.uuid().safeParse(body.intentId ?? randomUUID());
+      if (marker?.state !== 'published' || !intent.success)
+        return NextResponse.json({ error: 'invalid_copy' }, { status: 409 });
+      const result = await sgwFetch(`/internal/premium/stories/${storyId}/copy`, {
+        method: 'POST',
+        body: JSON.stringify({
+          ownerId: author.authorId,
+          revision: marker.revision,
+          intentId: intent.data,
+        }),
+      });
+      if (!result.ok) return NextResponse.json({ error: 'copy_failed' }, { status: result.status });
+      const copy = z.object({ storyId: z.uuid() }).parse(await result.json());
+      return NextResponse.json({ success: true, story: copy });
+    }
     const newTitle = original.title;
 
     // Begin transaction – create new story id, copy images, duplicate chapters

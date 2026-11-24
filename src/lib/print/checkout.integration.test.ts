@@ -327,7 +327,7 @@ import {
   }, 30_000);
 
   it.each([32, 33])(
-    'freezes an approved %i-page square purchase under None, rebinds a correction on hold, and releases once',
+    'freezes an approved %i-page Lulu square purchase, rebinds a correction on hold, and releases once',
     async (pageCount) => {
       jest.clearAllMocks();
       jest.replaceProperty(process, 'env', {
@@ -337,6 +337,8 @@ import {
         PRINT_ADMIN_SERVICE_ACCOUNT: 'admin@example.test',
         PRINT_SCHEDULER_SERVICE_ACCOUNT: 'scheduler@example.test',
         LULU_PREMIUM_SQUARE_POD_PACKAGE_ID: PREMIUM_SQUARE_PACKAGE,
+        LULU_PAPERBACK_POD_PACKAGE_ID: LULU_SKUS.paperback,
+        LULU_HARDCOVER_POD_PACKAGE_ID: LULU_SKUS.hardcover,
         LULU_PRINT_ENVIRONMENT: 'sandbox',
         LULU_PRINT_CLIENT_KEY: 'synthetic-client',
         LULU_PRINT_CONTACT_EMAIL: 'operator@example.test',
@@ -418,7 +420,7 @@ import {
         }
         const actor = 'operator@example.test';
         await setPrintSettings(
-          { defaultProvider: 'none', maxEurPerCopy: 20, hardcoverCredits: 12 },
+          { defaultProvider: 'lulu', maxEurPerCopy: 20, hardcoverCredits: 12 },
           actor,
         );
         const recipient = {
@@ -470,7 +472,7 @@ import {
             features.premiumBook.revision === replacement ? firstRevision : undefined,
         }));
         await expect(getPublicPrintOptions(selection)).resolves.toMatchObject({
-          luluDefault: false,
+          luluDefault: true,
           paperbackAvailable: false,
           hardcoverAvailable: true,
           squareEditionRevision: firstRevision,

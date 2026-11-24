@@ -85,7 +85,7 @@ const originalFetch = global.fetch;
 
 function mockFetch(printBody: Record<string, unknown>, onSubmit?: (init?: RequestInit) => void) {
   global.fetch = jest.fn(async (url: string, init?: RequestInit) => {
-    if (url === '/api/stories/story-1') {
+    if (url === '/api/print-requests/story/story-1') {
       return {
         ok: true,
         json: async () => ({

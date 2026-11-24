@@ -1,9 +1,10 @@
 'use client';
 
 import QualifiedShareOpen from '@/components/QualifiedShareOpen';
+import { premiumCopyIntent } from '@/lib/premium-children-book/copy-intent';
 import { useEffect, useState } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
-import { ArrowLeft, BookOpen, Copy, Edit3, Printer, Share2, Volume2 } from 'lucide-react';
+import { ArrowLeft, BookOpen, Copy, Edit3, Share2, Volume2 } from 'lucide-react';
 import { Show } from '@clerk/nextjs';
 import { useRouter } from 'next/navigation';
 import { useParams } from 'next/navigation';
@@ -56,6 +57,7 @@ export default function ReadStoryPage() {
   const [premiumBook, setPremiumBook] = useState<PremiumBookReaderData | undefined>(undefined);
   const [canSharePremiumBook, setCanSharePremiumBook] = useState(false);
   const [canPrintPremiumBook, setCanPrintPremiumBook] = useState(false);
+  const [canSelfPrintPremiumBook, setCanSelfPrintPremiumBook] = useState(false);
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [showShareModal, setShowShareModal] = useState(false);
@@ -73,6 +75,10 @@ export default function ReadStoryPage() {
           setPremiumBook(data.premiumBook);
           setCanSharePremiumBook(Boolean(data.canShare));
           setCanPrintPremiumBook(Boolean(data.canPrint));
+          setCanSelfPrintPremiumBook(Boolean(data.canSelfPrint));
+          if (data.canSelfPrint && window.location.hash === '#self-print')
+            setShowSelfPrintModal(true);
+          if (data.canShare && window.location.hash === '#share') setShowShareModal(true);
         } else if (response.status === 401) {
           setLoadError(tErrors('storySignInRequired'));
         } else if (response.status === 403) {
@@ -121,14 +127,16 @@ export default function ReadStoryPage() {
 
   const handleDuplicate = async () => {
     try {
+      const intent = premiumBook ? premiumCopyIntent(storyId) : undefined;
       const resp = await fetch(`/api/my-stories/${storyId}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         // Do not send locale when duplicating; language remains original.
-        body: JSON.stringify({ action: 'duplicate' }),
+        body: JSON.stringify({ action: 'duplicate', intentId: intent?.intentId }),
       });
       if (!resp.ok) throw new Error(`Duplicate failed: ${resp.status}`);
       const data = await resp.json();
+      intent?.complete();
       const newId = data?.story?.storyId || data?.storyId;
       const link = `/${locale}/stories/read/${newId}`;
       // localized message comes from MyStoriesPage duplicate.success for consistency
@@ -214,13 +222,12 @@ export default function ReadStoryPage() {
                 <span className="hidden sm:inline sm:ml-2">{tActions('read')}</span>
               </button>
 
+              <button onClick={navigateToListen} className="btn btn-ghost btn-sm">
+                <Volume2 className="w-4 h-4" />
+                <span className="hidden sm:inline sm:ml-2">{tActions('listen')}</span>
+              </button>
               {!premiumBook && (
                 <>
-                  <button onClick={navigateToListen} className="btn btn-ghost btn-sm">
-                    <Volume2 className="w-4 h-4" />
-                    <span className="hidden sm:inline sm:ml-2">{tActions('listen')}</span>
-                  </button>
-
                   <button onClick={navigateToEdit} className="btn btn-ghost btn-sm">
                     <Edit3 className="w-4 h-4" />
                     <span className="hidden sm:inline sm:ml-2">{tActions('edit')}</span>
@@ -229,15 +236,11 @@ export default function ReadStoryPage() {
                   <StoryPrintActions onPrint={handlePrint} onDownload={handleDownload} />
                 </>
               )}
-              {premiumBook && canPrintPremiumBook && (
-                <button
-                  onClick={handlePrint}
-                  aria-label={tActions('print')}
-                  className="btn btn-ghost btn-sm"
-                >
-                  <Printer aria-hidden="true" className="w-4 h-4" />
-                  <span className="hidden sm:inline sm:ml-2">{tActions('print')}</span>
-                </button>
+              {premiumBook && (canPrintPremiumBook || canSelfPrintPremiumBook) && (
+                <StoryPrintActions
+                  onPrint={canPrintPremiumBook ? handlePrint : undefined}
+                  onDownload={canSelfPrintPremiumBook ? handleDownload : undefined}
+                />
               )}
 
               {(!premiumBook || canSharePremiumBook) && (
@@ -251,7 +254,7 @@ export default function ReadStoryPage() {
                 </button>
               )}
 
-              {!premiumBook && (
+              {(!premiumBook || canSharePremiumBook) && (
                 <button onClick={handleDuplicate} className="btn btn-ghost btn-sm">
                   <Copy className="w-4 h-4" />
                   <span className="hidden sm:inline sm:ml-2">{tActions('duplicate')}</span>
@@ -266,6 +269,7 @@ export default function ReadStoryPage() {
           storyId={storyId}
           story={story}
           chapters={chapters}
+          editablePremium={canSharePremiumBook}
           premiumBook={premiumBook}
           currentChapter={0} // 0 = first page
         />

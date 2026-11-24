@@ -1219,8 +1219,12 @@ export const promotionCodeService = {
 
 // AI Edit operations
 export const aiEditService = {
-  async getEditCount(authorId: string, action: 'textEdit' | 'imageEdit'): Promise<number> {
-    const result = await db
+  async getEditCount(
+    authorId: string,
+    action: 'textEdit' | 'imageEdit',
+    reader: Pick<typeof db, 'select'> = db,
+  ): Promise<number> {
+    const result = await reader
       .select({ count: count() })
       .from(aiEdits)
       .where(and(eq(aiEdits.authorId, authorId), eq(aiEdits.action, action)));
@@ -1231,8 +1235,9 @@ export const aiEditService = {
   async calculateRequiredCredits(
     authorId: string,
     action: 'textEdit' | 'imageEdit',
+    reader: Pick<typeof db, 'select'> = db,
   ): Promise<number> {
-    const editCount = await this.getEditCount(authorId, action);
+    const editCount = await this.getEditCount(authorId, action, reader);
 
     if (action === 'textEdit') {
       // First 5 edits are free, then charge every 5th edit (6th, 11th, 16th, etc.)
@@ -1245,7 +1250,7 @@ export const aiEditService = {
       if (paidEdits % 5 === 0) {
         // Get pricing from database with fallback
         try {
-          const pricing = await pricingService.getPricingByServiceCode('AiTextEditing');
+          const pricing = await pricingService.getPricingByServiceCode('AiTextEditing', reader);
           return pricing?.credits || 1; // Fallback to 1 credit
         } catch (error) {
           console.error('Error fetching AiTextEditing pricing:', error);
@@ -1260,7 +1265,7 @@ export const aiEditService = {
       }
       // Get pricing from database with fallback
       try {
-        const pricing = await pricingService.getPricingByServiceCode('AiImageEditing');
+        const pricing = await pricingService.getPricingByServiceCode('AiImageEditing', reader);
         return pricing?.credits || 1; // Fallback to 1 credit
       } catch (error) {
         console.error('Error fetching AiImageEditing pricing:', error);

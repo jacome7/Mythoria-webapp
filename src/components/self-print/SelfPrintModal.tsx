@@ -59,6 +59,7 @@ interface SelfPrintErrorResponse {
   shortfall?: number;
   required?: number;
   available?: number;
+  retryable?: boolean;
 }
 
 interface SelfPrintSuccessResponse extends SelfPrintSuccessPayload {
@@ -199,7 +200,7 @@ export function SelfPrintModal({
       const data = (await response.json()) as SelfPrintResponse;
 
       if (!response.ok || !('success' in data && data.success)) {
-        idempotencyKeyRef.current = null;
+        if (!('retryable' in data && data.retryable)) idempotencyKeyRef.current = null;
         if (response.status === 402 && 'shortfall' in data) {
           setSubmitError(
             t('errors.insufficientCredits', {
@@ -209,6 +210,8 @@ export function SelfPrintModal({
           setCurrentCredits(data.available ?? currentCredits ?? 0);
         } else if (response.status === 401) {
           setSubmitError(t('errors.authRequired'));
+        } else if ('error' in data && data.error === 'premium_edition_unavailable') {
+          setSubmitError(t('errors.generic'));
         } else {
           setSubmitError(('error' in data && data.error) || t('errors.generic'));
         }
