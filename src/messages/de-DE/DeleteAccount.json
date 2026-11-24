@@ -4,14 +4,14 @@
     "subtitle": "Entferne dein Konto und alle zugehörigen Daten dauerhaft aus Mythoria",
     "notLoggedIn": {
       "title": "Anleitung zur Kontolöschung",
-      "description": "Um dein Konto zu löschen, musst du zuerst angemeldet sein.",
+      "description": "Melde dich bei dem Mythoria-Konto an, das du löschen möchtest. Nach der Anmeldung kehrst du zu dieser Seite zurück.",
+      "signIn": "Anmelden",
       "steps": {
-        "title": "So löschst du dein Konto:",
-        "step1": "Klicke auf das Benutzersymbol in der oberen rechten Ecke der Seite",
-        "step2": "Wähle 'Konto verwalten' aus dem Dropdown-Menü",
-        "step3": "Wähle in der linken Seitenleiste 'Sicherheit'",
-        "step4": "Klicke auf den Button 'Konto löschen' und folge dem Bestätigungsprozess"
-      }
+        "title": "Nach der Anmeldung",
+        "step1": "Wähle „{deleteButton}“ aus.",
+        "step2": "Gib die E-Mail-Adresse deines Kontos ein und wähle zur Bestätigung „{confirmButton}“ aus."
+      },
+      "contact": "Wenn du dich nicht anmelden kannst, schreibe an <email></email>, um Hilfe bei deinem Löschantrag zu erhalten."
     },
     "loggedIn": {
       "title": "Dein Konto löschen",

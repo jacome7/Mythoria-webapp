@@ -4,14 +4,14 @@
     "subtitle": "Elimina tu cuenta y todos tus datos asociados de Mythoria de forma permanente",
     "notLoggedIn": {
       "title": "Instrucciones para eliminar la cuenta",
-      "description": "Para eliminar tu cuenta, primero debes iniciar sesión.",
+      "description": "Inicia sesión en la cuenta de Mythoria que quieres eliminar. Volverás a esta página después de iniciar sesión.",
+      "signIn": "Iniciar sesión",
       "steps": {
-        "title": "Cómo eliminar tu cuenta:",
-        "step1": "Haz clic en el icono de usuario en la esquina superior derecha de la página",
-        "step2": "Selecciona 'Gestionar cuenta' en el menú desplegable",
-        "step3": "En la barra lateral izquierda, elige 'Seguridad'",
-        "step4": "Pulsa el botón 'Eliminar cuenta' y sigue el proceso de confirmación"
-      }
+        "title": "Después de iniciar sesión",
+        "step1": "Selecciona «{deleteButton}».",
+        "step2": "Introduce el correo electrónico de tu cuenta y selecciona «{confirmButton}» para confirmar."
+      },
+      "contact": "Si no puedes iniciar sesión, escribe a <email></email> para obtener ayuda con tu solicitud de eliminación."
     },
     "loggedIn": {
       "title": "Elimina tu cuenta",

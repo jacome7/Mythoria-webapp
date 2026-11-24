@@ -43,6 +43,10 @@ The page is split into multiple cards:
 - Dropdown changes save immediately.
 - A small spinner or checkmark appears next to each field while it’s saving or after it saves, and a toast message confirms success or failure.【F:src/app/[locale]/profile/page.tsx†L34-L221】【F:src/app/[locale]/profile/page.tsx†L270-L632】
 
+### Account deletion
+
+Open `/{locale}/privacy-policy/delete-account` from the privacy policy. If you’re signed out, follow the sign-in link to return to the deletion page in the same language. Select **Delete My Account**, enter your account email address, and select **Delete Account** to confirm. If you can’t sign in, the page links to the privacy contact at `dpo@mythoria.pt`.
+
 ## Settings and Database Storage
 
 The following settings are editable on the Profile & Preferences page and stored on the `authors` table unless otherwise noted.

@@ -4,14 +4,14 @@
     "subtitle": "Supprimez en permanence votre compte et toutes les données associées de Mythoria",
     "notLoggedIn": {
       "title": "Instructions de suppression du compte",
-      "description": "Pour supprimer votre compte, vous devez d'abord être connecté.",
+      "description": "Connectez-vous au compte Mythoria que vous souhaitez supprimer. Vous reviendrez sur cette page après la connexion.",
+      "signIn": "Se connecter",
       "steps": {
-        "title": "Comment supprimer votre compte:",
-        "step1": "Cliquez sur l'icône de l'utilisateur dans le coin supérieur droit de la page",
-        "step2": "Sélectionnez «Gérer le compte» dans le menu déroulant",
-        "step3": "Dans la barre latérale gauche, choisissez la «sécurité»",
-        "step4": "Cliquez sur le bouton «Supprimer le compte» et suivez le processus de confirmation"
-      }
+        "title": "Après la connexion",
+        "step1": "Sélectionnez « {deleteButton} ».",
+        "step2": "Saisissez l’adresse e-mail de votre compte, puis sélectionnez « {confirmButton} » pour confirmer."
+      },
+      "contact": "Si vous ne parvenez pas à vous connecter, écrivez à <email></email> pour obtenir de l’aide avec votre demande de suppression."
     },
     "loggedIn": {
       "title": "Supprimez votre compte",

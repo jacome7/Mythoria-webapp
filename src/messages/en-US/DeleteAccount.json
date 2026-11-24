@@ -4,14 +4,14 @@
     "subtitle": "Permanently remove your account and all associated data from Mythoria",
     "notLoggedIn": {
       "title": "Account Deletion Instructions",
-      "description": "To delete your account, you need to be logged in first.",
+      "description": "Sign in to the Mythoria account you want to delete. You’ll return to this page after signing in.",
+      "signIn": "Sign in",
       "steps": {
-        "title": "How to Delete Your Account:",
-        "step1": "Click on the user icon in the top-right corner of the page",
-        "step2": "Select 'Manage Account' from the dropdown menu",
-        "step3": "In the left sidebar, choose 'Security'",
-        "step4": "Click the 'Delete Account' button and follow the confirmation process"
-      }
+        "title": "After signing in",
+        "step1": "Select “{deleteButton}”.",
+        "step2": "Enter your account email address and select “{confirmButton}” to confirm."
+      },
+      "contact": "If you can’t sign in, email <email></email> for help with your deletion request."
     },
     "loggedIn": {
       "title": "Delete Your Account",
