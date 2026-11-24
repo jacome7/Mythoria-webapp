@@ -375,7 +375,7 @@ export const workshopsChildrenLandingPage: LandingPageContent = {
         {
           title: 'Repete com novos temas',
           body: 'Verão, Natal, ciência, ambiente, cidade, família, animais ou aventuras locais.',
-          iconSrc: `${iconBase}/fa-sync-alt-business-repeat-papercut.png`,
+          iconSrc: `${iconBase}/fa-sync-alt-business-repeat-papercut.webp`,
           iconAlt: 'Ícone papercut de repetição',
         },
       ],
