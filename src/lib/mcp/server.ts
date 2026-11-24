@@ -825,7 +825,6 @@ type StoryListCursorPayload = {
 type StoryAudioGenerationStatus = 'not_started' | 'generating' | 'completed' | 'failed';
 type StoryAudioAccessLevel = 'owner' | 'public';
 type StoryReadMode = 'full' | 'summary' | 'excerpt';
-type StoryReadNavigationDirection = 'next' | 'previous';
 type AudiobookChapterEntry = {
   chapterNumber: number;
   title: string;
@@ -906,12 +905,6 @@ const STORY_LIBRARY_SORT_FIELDS = ['updatedAt', 'createdAt', 'title'] as const;
 const STORY_LIBRARY_SORT_DIRECTIONS = ['asc', 'desc'] as const;
 const STORY_READ_MODES = ['full', 'summary', 'excerpt'] as const;
 const STORY_READ_NAVIGATION_DIRECTIONS = ['next', 'previous'] as const;
-const STORY_AUDIO_GENERATION_STATUS_VALUES = [
-  'not_started',
-  'generating',
-  'completed',
-  'failed',
-] as const;
 const TRACKED_JOB_TYPES = ['story_generation', 'audiobook_generation', 'export', 'print'] as const;
 const TRACKED_JOB_ID_PREFIX = 'mythoria-job:';
 
@@ -2164,15 +2157,6 @@ function normalizeGenerationFeatures(
 
 function hasAnyGenerationFeature(features: StoryGenerationFeatures): boolean {
   return features.ebook || features.printed || features.audiobook;
-}
-
-function getCreditEventType(
-  serviceCode: string,
-): 'eBookGeneration' | 'printOrder' | 'audioBookGeneration' {
-  if (serviceCode === 'eBookGeneration') return 'eBookGeneration';
-  if (serviceCode === 'printOrder') return 'printOrder';
-  if (serviceCode === 'audioBookGeneration') return 'audioBookGeneration';
-  throw new McpToolUserError(`Unsupported pricing service in credit breakdown: ${serviceCode}`);
 }
 
 function getCreditServiceLabel(serviceCode: string): string {
