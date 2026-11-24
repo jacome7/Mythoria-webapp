@@ -23,9 +23,9 @@ function needsAuthSetup(): boolean {
 }
 
 const includeSetup = needsAuthSetup();
-const hasAuthFile = fs.existsSync(authFile);
-const storageStatePath = skipAuthSetup ? undefined : hasAuthFile ? authFile : undefined;
-if (!includeSetup) {
+if (skipAuthSetup) {
+  console.log('Playwright auth setup disabled by SKIP_AUTH_SETUP=1. Tests run anonymously.');
+} else if (!includeSetup) {
   console.log(
     'Playwright auth setup project skipped (existing auth state considered fresh). Set REFRESH_AUTH=1 to force.',
   );
@@ -45,7 +45,8 @@ const projects = [
     name: 'chromium',
     use: {
       ...devices['Desktop Chrome'],
-      ...(storageStatePath ? { storageState: storageStatePath } : {}),
+      // Playwright loads the file after the setup project has run.
+      ...(skipAuthSetup ? {} : { storageState: authFile }),
     },
     ...(includeSetup ? { dependencies: ['setup'] } : {}),
   },

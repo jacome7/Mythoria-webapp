@@ -24,6 +24,22 @@ function collectHydrationErrors(page: Page): string[] {
   return hydrationErrors;
 }
 
+async function openHomepageWithLegacyIntent(page: Page, intent: 'sports_teams' | 'grandparents') {
+  const response = await page.request.get(`/i/${intent}`, {
+    headers: { 'accept-language': 'en-US' },
+    maxRedirects: 0,
+  });
+  expect(response.status()).toBe(308);
+  expect(response.headers()['location']).toBe(`https://mythoria.pt/en-US?intent=${intent}`);
+  const cookies = await page.context().cookies();
+  expect(cookies.find((cookie) => cookie.name === 'mythoria_intent_context')?.value).toContain(
+    intent,
+  );
+
+  // Visit the homepage on the test origin using only the cookie issued by the redirect.
+  await page.goto('/en-US', { waitUntil: 'domcontentloaded' });
+}
+
 test.describe('Homepage hero — default composition', () => {
   test('renders the generic headline with Christmas art and a Christmas story CTA without setting a campaign cookie', async ({
     page,
@@ -135,28 +151,15 @@ test.describe('Homepage hero — sports_teams via ?intent= query param', () => {
 
 test.describe('Homepage hero — sports_teams via /i/ cookie flow', () => {
   test('sets intent cookie and shows sports hero on redirect', async ({ page }) => {
-    // /i/sports_teams sets the cookie and redirects to the localized homepage
-    await page.goto('/i/sports_teams', { waitUntil: 'networkidle' });
-
-    // Confirm we landed on a homepage (not the /i/ route)
-    expect(page.url()).not.toContain('/i/');
+    await openHomepageWithLegacyIntent(page, 'sports_teams');
 
     const h1 = page.locator('section.papercut-hero h1');
     await expect(h1).toBeVisible();
-
-    // The cookie drives composition selection server-side and client-side
     await expect(h1).toContainText('team', { ignoreCase: true });
-
-    // Confirm the cookie was set
-    const cookies = await page.context().cookies();
-    const intentCookie = cookies.find((c) => c.name === 'mythoria_intent_context');
-    expect(intentCookie).toBeDefined();
-    expect(intentCookie?.value).toContain('sports_teams');
   });
 
   test('clearing intent cookie reverts to default composition', async ({ page }) => {
-    // First set the cookie via /i/
-    await page.goto('/i/sports_teams', { waitUntil: 'networkidle' });
+    await openHomepageWithLegacyIntent(page, 'sports_teams');
 
     // Clear the cookie
     await page.context().clearCookies();
@@ -193,18 +196,12 @@ test.describe('Homepage hero — grandparents intent', () => {
 
   test('sets intent cookie and shows grandparents hero on redirect', async ({ page }) => {
     const hydrationErrors = collectHydrationErrors(page);
-    await page.goto('/i/grandparents', { waitUntil: 'networkidle' });
-
-    expect(page.url()).not.toContain('/i/');
+    await openHomepageWithLegacyIntent(page, 'grandparents');
 
     const h1 = page.locator('section.papercut-hero h1');
     await expect(h1).toBeVisible();
     await expect(h1).toContainText('Grandparents', { ignoreCase: true });
 
-    const cookies = await page.context().cookies();
-    const intentCookie = cookies.find((c) => c.name === 'mythoria_intent_context');
-    expect(intentCookie).toBeDefined();
-    expect(intentCookie?.value).toContain('grandparents');
     expect(hydrationErrors).toEqual([]);
   });
 });
