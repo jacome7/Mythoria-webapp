@@ -9,9 +9,17 @@
       }
     },
     "progress": {
-      "title": "🏭 Fábrica de Histórias em Ação!",
+      "title": "A sua história está a ganhar forma",
       "description": "A sua história estará pronta em até 14 minutos",
-      "progressLabel": "Progresso",
+      "progressLabel": "Progresso do livro",
+      "stoppedTitle": "A criação da história foi interrompida",
+      "stages": {
+        "writing": "A escrever",
+        "illustrating": "A ilustrar",
+        "preparing": "A preparar o seu livro"
+      },
+      "leaveMessage": "Pode sair desta página. A criação da sua história continua.",
+      "myStories": "Ir para as minhas histórias",
       "estimatedTimeLabel": "Tempo estimado restante",
       "creatingMagic": "A criar magia...",
       "currentlyLabel": "Atualmente:",

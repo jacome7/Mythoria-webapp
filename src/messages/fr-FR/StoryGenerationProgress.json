@@ -9,9 +9,17 @@
       }
     },
     "progress": {
-      "title": "🏭 Fabrique à histoires en action !",
+      "title": "Votre histoire prend forme",
       "description": "Votre histoire sera prête dans un délai pouvant aller jusqu'à 14 minutes",
-      "progressLabel": "Progression",
+      "progressLabel": "Progression du livre",
+      "stoppedTitle": "La création de l’histoire s’est arrêtée",
+      "stages": {
+        "writing": "Écriture",
+        "illustrating": "Illustration",
+        "preparing": "Préparation de votre livre"
+      },
+      "leaveMessage": "La création de votre histoire continuera si vous quittez cette page.",
+      "myStories": "Aller à Mes histoires",
       "estimatedTimeLabel": "Temps restant estimé",
       "creatingMagic": "Création de la magie...",
       "currentlyLabel": "Actuellement :",

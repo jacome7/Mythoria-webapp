@@ -557,6 +557,23 @@
       "generateMyStory": "🚀 Générer mon histoire",
       "storyDataNotAvailable": "Données de l’histoire indisponibles. Veuillez réessayer.",
       "stepProgress": "Étape {currentStep} sur {totalSteps}",
+      "confirmation": {
+        "back": "Retour",
+        "title": "Prêt à créer votre histoire ?",
+        "nextHeading": "Et ensuite",
+        "writeStory": "Nous écrivons votre histoire",
+        "createArtwork": "Nous créons les illustrations",
+        "bookReady": "Votre livre est prêt",
+        "outcomesHeading": "Une fois prêt",
+        "readOnline": "Lire en ligne",
+        "share": "Partager",
+        "requestPrint": "Commander un livre imprimé",
+        "listenOnline": "Écouter en ligne",
+        "optionalAddOns": "L’impression et l’audio sont des options supplémentaires.",
+        "digitalBook": "Livre numérique · {count, plural, one {# crédit} other {# crédits}}",
+        "currentBalance": "Solde actuel :",
+        "balanceCredits": "{count, plural, one {# crédit} other {# crédits}}"
+      },
       "alerts": {
         "failedToFetchStoryData": "Échec de la récupération des données de l’histoire. Veuillez réessayer.",
         "failedToFetchUserCredits": "Échec de la récupération des crédits utilisateur. Veuillez réessayer.",

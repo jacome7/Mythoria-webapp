@@ -1,0 +1,230 @@
+.panel {
+  --ink: #0b2a50;
+  --teal: #08616c;
+  --gold: #cc913e;
+  --stage-art-height: clamp(4.75rem, 11.2vw, 10.5rem);
+
+  width: min(100%, 65rem);
+  margin-inline: auto;
+  padding: clamp(1.1rem, 2.2vw, 2rem) clamp(1.05rem, 4.2vw, 3.9rem) clamp(2rem, 3vw, 2.8rem);
+  border: 1.5px solid var(--gold);
+  border-radius: clamp(0.85rem, 1.7vw, 1.5rem);
+  background: radial-gradient(ellipse at 50% 20%, #fff8ea, #fff2dd);
+  box-shadow:
+    inset 0 0 0 1px #fffcf3,
+    0 1.2rem 2.5rem -0.9rem rgb(98 56 16 / 24%);
+  color: var(--ink);
+  text-align: center;
+}
+
+.header h1,
+.storyTitle,
+.myStories {
+  font-family: 'Times New Roman', Times, serif;
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
+
+.header h1 {
+  margin: clamp(0.6rem, 1.15vw, 1.1rem) 0 0;
+  font-size: clamp(1.65rem, 7.6vw, 4.6rem);
+  line-height: 1.05;
+  text-wrap: balance;
+}
+
+.storyTitle {
+  margin: clamp(0.5rem, 1.1vw, 1rem) 0 0;
+  font-size: clamp(1.35rem, 3.25vw, 3rem);
+  line-height: 1.13;
+  text-wrap: balance;
+}
+
+.ornament,
+.divider {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(0.4rem, 1vw, 0.9rem);
+  margin-inline: auto;
+}
+
+.ornament {
+  width: clamp(7.2rem, 17vw, 15.8rem);
+}
+
+.divider {
+  width: clamp(5.9rem, 13.5vw, 12.5rem);
+  margin-top: clamp(1.5rem, 2.25vw, 2.1rem);
+}
+
+.ornament::before,
+.ornament::after,
+.divider::before,
+.divider::after {
+  content: '';
+  flex: 1;
+  height: 2px;
+  border-radius: 1px;
+  background-color: #458e90;
+}
+
+.ornament img {
+  width: clamp(1.7rem, 3.5vw, 3.2rem);
+  height: auto;
+}
+
+.divider img {
+  width: clamp(1.35rem, 2.7vw, 2.5rem);
+  height: auto;
+}
+
+.progress {
+  margin-top: clamp(1.5rem, 2.15vw, 2.1rem);
+}
+
+.progressHeader {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: clamp(0.55rem, 1vw, 0.95rem);
+  font-size: clamp(1rem, 2.1vw, 1.95rem);
+  font-weight: 600;
+  line-height: 1.2;
+  text-align: start;
+}
+
+.percent {
+  color: var(--teal);
+  font-size: 1.12em;
+  font-variant-numeric: tabular-nums;
+  font-weight: 750;
+}
+
+.meter {
+  display: block;
+  width: 100%;
+  height: clamp(1.15rem, 2.4vw, 2.25rem);
+  overflow: hidden;
+  appearance: none;
+  border: 0;
+  border-radius: 999px;
+  background-color: #f2ddbd;
+  color: var(--teal);
+}
+
+.meter::-webkit-progress-bar {
+  border-radius: inherit;
+  background-color: #f2ddbd;
+  box-shadow: inset 0 1px 2px rgb(144 87 25 / 16%);
+}
+
+.meter::-webkit-progress-value {
+  background: linear-gradient(90deg, var(--teal), #3c9292);
+}
+
+.meter::-moz-progress-bar {
+  background: linear-gradient(90deg, var(--teal), #3c9292);
+}
+
+.stages {
+  --stage-gap: clamp(0.65rem, 4vw, 4rem);
+
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--stage-gap);
+  margin: clamp(1.6rem, 2.45vw, 2.35rem) 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.stage {
+  position: relative;
+  min-width: 0;
+  font-size: clamp(0.86rem, 1.85vw, 1.7rem);
+  font-weight: 600;
+  line-height: 1.2;
+  overflow-wrap: anywhere;
+  text-wrap: balance;
+}
+
+.stage:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  top: calc(var(--stage-art-height) / 2);
+  left: 100%;
+  width: var(--stage-gap);
+  height: 1.5px;
+  border-radius: 1px;
+  background-color: var(--gold);
+}
+
+.stageArt {
+  display: flex;
+  height: var(--stage-art-height);
+  align-items: center;
+  justify-content: center;
+  margin-bottom: clamp(0.4rem, 0.75vw, 0.7rem);
+}
+
+.stageArt img {
+  width: 100%;
+  max-width: clamp(5.6rem, 14.15vw, 13.1rem);
+  height: 100%;
+  object-fit: contain;
+  filter: drop-shadow(0 5px 5px rgb(82 46 15 / 15%));
+}
+
+.leaveMessage {
+  margin: clamp(1rem, 1.1vw, 1.15rem) 0 0;
+  font-size: clamp(0.975rem, 2vw, 1.9rem);
+  font-weight: 500;
+  line-height: 1.3;
+  text-wrap: balance;
+}
+
+.myStories {
+  display: flex;
+  width: min(100%, 39rem);
+  min-height: 2.95rem;
+  align-items: center;
+  justify-content: center;
+  margin: clamp(1.55rem, 2.25vw, 2.2rem) auto 0;
+  padding: clamp(0.4rem, 0.75vw, 0.7rem) 0.8rem;
+  border: 2px solid var(--teal);
+  border-radius: 999px;
+  background-color: transparent;
+  color: inherit;
+  font-size: clamp(1.35rem, 2.9vw, 2.7rem);
+  line-height: 1.16;
+  text-decoration: none;
+}
+
+.myStories:hover {
+  background-color: #e5ece0;
+}
+
+.myStories:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 4px;
+}
+
+@media (max-width: 639px) {
+  .panel {
+    box-shadow: inset 0 0 0 1px #fffcf3;
+  }
+
+  .stages {
+    margin-top: clamp(1.8rem, 8.5vw, 2.25rem);
+  }
+
+  .myStories {
+    width: 94%;
+  }
+}
+
+@media (min-width: 640px) {
+  .header h1 {
+    font-size: clamp(2.65rem, 4.95vw, 4.6rem);
+  }
+}

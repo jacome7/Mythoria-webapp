@@ -557,6 +557,23 @@
       "generateMyStory": "🚀 Generate My Story",
       "storyDataNotAvailable": "Story data not available. Please try again.",
       "stepProgress": "Step {currentStep} of {totalSteps}",
+      "confirmation": {
+        "back": "Back",
+        "title": "Ready to create your story?",
+        "nextHeading": "What happens next",
+        "writeStory": "We write your story",
+        "createArtwork": "We create the artwork",
+        "bookReady": "Your book is ready",
+        "outcomesHeading": "Once it’s ready",
+        "readOnline": "Read online",
+        "share": "Share it",
+        "requestPrint": "Request a print book",
+        "listenOnline": "Listen online",
+        "optionalAddOns": "Print and audio are optional add-ons.",
+        "digitalBook": "Digital book · {count, plural, one {# credit} other {# credits}}",
+        "currentBalance": "Current balance:",
+        "balanceCredits": "{count, plural, one {# credit} other {# credits}}"
+      },
       "alerts": {
         "failedToFetchStoryData": "Failed to fetch story data. Please try again.",
         "failedToFetchUserCredits": "Failed to fetch user credits. Please try again.",

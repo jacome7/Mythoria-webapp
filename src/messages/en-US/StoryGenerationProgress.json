@@ -9,9 +9,17 @@
       }
     },
     "progress": {
-      "title": "🏭 Story Factory in Action!",
+      "title": "Your story is taking shape",
       "description": "Your story will be ready in up to 14 minutes",
-      "progressLabel": "Progress",
+      "progressLabel": "Book progress",
+      "stoppedTitle": "Story generation stopped",
+      "stages": {
+        "writing": "Writing",
+        "illustrating": "Illustrating",
+        "preparing": "Preparing your book"
+      },
+      "leaveMessage": "Your story will keep generating if you leave.",
+      "myStories": "Go to My Stories",
       "estimatedTimeLabel": "Estimated time remaining",
       "creatingMagic": "Creating magic...",
       "currentlyLabel": "Currently:",

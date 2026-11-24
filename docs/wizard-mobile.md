@@ -1,12 +1,14 @@
 # Tell Your Story mobile layout
 
-The five steps share a mobile action bar at widths up to 768px. The header is 52px high only on Tell Your Story routes. Progress uses the existing localized sentence, with the current step wrapped in a rich-text `current` tag in all five locales.
+Steps 1–4 use a sticky mobile action bar at widths up to 768px. Step 5 keeps its actions inline with the digital book price and credit balance. The header is 52px high on mobile Tell Your Story routes. Steps 1–4 use a localized progress sentence. The confirmation screen displays the five numbered steps on desktop and mobile.
 
 ## Layout and navigation
 
 `WizardActionBar` renders one set of controls: in the document flow on desktop and in a body portal on mobile, outside card stacking contexts. A measured spacer reserves its height, including wrapped labels and safe-area padding. VisualViewport resize and scroll events move the bar above the keyboard area. Open dialogs and modal overlays hide the mobile bar. The wizard stylesheet removes duplicate card decoration and widens fields without changing other product routes.
 
-`StepNavigation` preserves validation callbacks and guards pending submissions. Disabled links prevent navigation. Step 3 returns to the saved step 2 journey; edit mode keeps its existing destination. Step 5 uses the same generation handler and credit checks through the shared bar. No generation or database contracts change.
+`StepNavigation` preserves validation callbacks and guards pending submissions. Disabled links prevent navigation. Step 3 returns to the saved step 2 journey; edit mode keeps its existing destination.
+
+Step 5 previews how the digital book is made and what readers can do when it is ready. Print and audio are optional add-ons. After submission, the progress screen shows the book title and the percentage reported for that story. The illustrations describe the overall process. Readers can leave for My Stories while generation continues.
 
 ## Local verification — 2026-10-31
 

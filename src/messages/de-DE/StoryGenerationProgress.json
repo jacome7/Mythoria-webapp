@@ -9,9 +9,17 @@
       }
     },
     "progress": {
-      "title": "🏭 Die Geschichtswerkstatt läuft heiß!",
+      "title": "Deine Geschichte nimmt Gestalt an",
       "description": "Deine Geschichte ist in bis zu 14 Minuten bereit.",
-      "progressLabel": "Fortschritt",
+      "progressLabel": "Buchfortschritt",
+      "stoppedTitle": "Die Erstellung der Geschichte wurde gestoppt",
+      "stages": {
+        "writing": "Schreiben",
+        "illustrating": "Illustrieren",
+        "preparing": "Dein Buch wird vorbereitet"
+      },
+      "leaveMessage": "Deine Geschichte wird weiter erstellt, wenn du die Seite verlässt.",
+      "myStories": "Zu Meine Geschichten",
       "estimatedTimeLabel": "Geschätzte verbleibende Zeit",
       "creatingMagic": "Magie entsteht...",
       "currentlyLabel": "Gerade passiert:",
