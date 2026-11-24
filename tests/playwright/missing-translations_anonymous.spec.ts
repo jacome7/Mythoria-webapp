@@ -1,4 +1,4 @@
-import { test, expect, Page } from '@playwright/test';
+import { test, expect, Page } from './support/fixtures';
 // Instrumented detection constants must match ClientProvider
 const FALLBACK_PREFIX = '__MISSING__:'; // Keep in sync with I18N_FALLBACK_PREFIX
 const MISSING_LOG_TAG = '[i18n-missing]';

@@ -1,4 +1,4 @@
-import { expect, test, type Page } from '@playwright/test';
+import { expect, test, type Page } from './support/fixtures';
 
 // Run with SKIP_AUTH_SETUP=1 and a local server. Never uses the saved authenticated state.
 test.use({
