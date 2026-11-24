@@ -1,0 +1,15 @@
+{
+  "status": "generated",
+  "targetPath": "assets/audio-teaser.mp3",
+  "text": "A estrela tinha levado duas camadas de tinta dourada. No lençol parecia uma batata com cinco cotovelos. A Mara virou-a ao contrário. Agora parecia a mesma batata de costas. Do outro lado do pano alguém perguntou se aquilo se comia assado. O Nico tapou o nariz para não se rir ao microfone. Faltavam nove minutos para o espetáculo de Natal, e a estrela que devia mostrar o caminho não conseguia sequer mostrar a própria cor. A Mara espreitou o cartão de frente para a lanterna. Havia um buraquinho no meio. Do outro lado do lençol, a batata estava a piscar o olho.",
+  "voiceDirection": "Narração em português europeu de Lisboa, próxima e curiosa. Dá tempo às pistas e às falas.",
+  "language": "pt-PT",
+  "provider": "google-genai",
+  "model": "gemini-3.8-flash-tts",
+  "voice": "Puck",
+  "recommendedDurationSeconds": 40,
+  "requestModel": "gemini-3.8-flash-tts",
+  "generatedAt": "2026-11-24T17:41:50.724Z",
+  "durationSeconds": 37.66,
+  "humanListeningReview": "pending"
+}

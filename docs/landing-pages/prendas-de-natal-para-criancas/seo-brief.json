@@ -1,0 +1,16 @@
+{
+  "locale": "pt-PT",
+  "country": "Portugal",
+  "slug": "prendas-de-natal-para-criancas",
+  "canonicalPath": "/pt-PT/lp/prendas-de-natal-para-criancas",
+  "primaryKeywords": ["prendas de natal para crianças", "história de natal personalizada"],
+  "secondaryKeywords": ["livro personalizado natal criança", "prenda de natal para criança"],
+  "avoidOwning": [
+    "livro personalizado para crianças sem intenção sazonal",
+    "livro para avós e netos",
+    "histórias de apoio"
+  ],
+  "structuredData": ["BreadcrumbList", "WebPage", "Service", "HowTo", "FAQPage"],
+  "ogImage": "/seasonal-books/ines/pt-PT/share.jpg",
+  "notes": "Termos hipotéticos sem volume medido. FAQ/HowTo não garantem resultados especiais ou citações."
+}

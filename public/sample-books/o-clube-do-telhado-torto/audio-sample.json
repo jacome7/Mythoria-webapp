@@ -1,0 +1,15 @@
+{
+  "status": "generated",
+  "targetPath": "assets/audio-teaser.mp3",
+  "text": "No desenho, a casa dos pássaros tinha quatro paredes direitinhas. Na bancada da escola, o telhado caía mais para um lado do que para o outro. A Eva fechou um olho. O Leo fechou os dois. Assim ficava perfeito, disse ele. Um pardal pousou no muro. Olhou para a casa, olhou para os dois e foi tirar uma minhoca de entre os tijolos. Foi então que a primeira gota caiu. Tloc. Mesmo em cima do telhado torto. A Eva baixou a cabeça até ao banco. Lá dentro, bem no sítio onde devia dormir um pássaro, acabava de nascer outra gota.",
+  "voiceDirection": "Narração em português europeu de Lisboa, próxima e curiosa. Dá tempo às pistas e às falas.",
+  "language": "pt-PT",
+  "provider": "google-genai",
+  "model": "gemini-3.8-flash-tts",
+  "voice": "Aoede",
+  "recommendedDurationSeconds": 40,
+  "requestModel": "gemini-3.8-flash-tts",
+  "generatedAt": "2026-11-24T17:42:00.935Z",
+  "durationSeconds": 32.02,
+  "humanListeningReview": "pending"
+}

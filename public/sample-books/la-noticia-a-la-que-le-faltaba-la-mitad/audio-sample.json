@@ -1,0 +1,15 @@
+{
+  "status": "generated",
+  "targetPath": "assets/audio-teaser.mp3",
+  "text": "Vera tenía sitio para once palabras en el titular. En la foto que le habían mandado faltaba sitio para una. Se veía la puerta de la biblioteca, tres cajas en el suelo y un cartel que decía: La biblioteca cierra el viernes. Dani señaló el margen derecho. Detrás de viernes había algo más. Un trazo negro, fino como una pestaña. ¿Y si justo lo que necesitaban saber se había quedado fuera de la foto? En la pared de la redacción, el reloj avanzó un minuto. Dani borró la última palabra del titular. Era la única que aún no les había confirmado nadie.",
+  "voiceDirection": "Narración en castellano de Madrid, cercana y curiosa. Deja respirar las pistas y las réplicas.",
+  "language": "es-ES",
+  "provider": "google-genai",
+  "model": "gemini-3.8-flash-tts",
+  "voice": "Charon",
+  "recommendedDurationSeconds": 40,
+  "requestModel": "gemini-3.8-flash-tts",
+  "generatedAt": "2026-11-24T17:42:11.851Z",
+  "durationSeconds": 32.14,
+  "humanListeningReview": "pending"
+}

@@ -1,0 +1,19 @@
+{
+  "schemaVersion": "1.0",
+  "status": "approved",
+  "slug": "a-noticia-a-que-faltava-metade",
+  "title": "A notícia a que faltava metade",
+  "language": "pt-PT",
+  "experimentalLanguage": false,
+  "placement": "seo-landing-page",
+  "usageTags": [
+    "christmas-reyes",
+    "illustrated-opening",
+    "sample-book"
+  ],
+  "riskRating": "yellow",
+  "sensitiveNiche": true,
+  "requiresHumanApproval": true,
+  "createdAt": "2026-11-24",
+  "updatedAt": "2026-11-24"
+}

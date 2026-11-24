@@ -62,6 +62,7 @@ export default getRequestConfig(async ({ requestLocale }) => {
     creditsAndPaymentsMessages,
     cookieConsentMessages,
     landingPagesMessages,
+    sampleBookDetailMessages,
     storyTemplatesMessages,
     surveyMessages,
   ] = await Promise.all([
@@ -117,6 +118,7 @@ export default getRequestConfig(async ({ requestLocale }) => {
     import(`../messages/${locale}/CreditsAndPayments.json`).then((module) => module.default),
     import(`../messages/${locale}/CookieConsent.json`).then((module) => module.default),
     import(`../messages/${locale}/LandingPages.json`).then((module) => module.default),
+    import(`../messages/${locale}/SampleBookDetail.json`).then((module) => module.default),
     import(`../messages/${locale}/StoryTemplates.json`).then((module) => module.default),
     import(`../messages/${locale}/Survey.json`).then((module) => module.default),
   ]);
@@ -187,6 +189,7 @@ export default getRequestConfig(async ({ requestLocale }) => {
       ...ns(creditsAndPaymentsMessages, 'CreditsAndPayments'),
       ...ns(cookieConsentMessages, 'CookieConsent'),
       ...ns(landingPagesMessages, 'LandingPages'),
+      ...ns(sampleBookDetailMessages, 'SampleBookDetail'),
       ...ns(storyTemplatesMessages, 'StoryTemplates'),
       ...ns(surveyMessages, 'Survey'),
     },

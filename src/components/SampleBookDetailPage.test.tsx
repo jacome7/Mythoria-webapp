@@ -2,7 +2,32 @@
 
 import { render, screen } from '@testing-library/react';
 import SampleBookDetailPage from './SampleBookDetailPage';
+import spanishFacts from '@/messages/es-ES/GetInspiredPage.json';
+import spanishDetail from '@/messages/es-ES/SampleBookDetail.json';
+import portugueseFacts from '@/messages/pt-PT/GetInspiredPage.json';
+import portugueseDetail from '@/messages/pt-PT/SampleBookDetail.json';
 import type { SampleBook } from '@/types/sample-book';
+
+let mockMessages: Record<string, unknown>;
+
+jest.mock('next-intl', () => ({
+  useTranslations: (namespace: string) => {
+    const lookup = (key: string): unknown =>
+      key.split('.').reduce<unknown>((entry, segment) => {
+        if (!entry || typeof entry !== 'object') return undefined;
+        return (entry as Record<string, unknown>)[segment];
+      }, mockMessages[namespace]);
+    return Object.assign(
+      (key: string, values: Record<string, string> = {}) => {
+        const message = lookup(key);
+        if (typeof message !== 'string')
+          throw new Error(`Missing test translation ${namespace}.${key}`);
+        return message.replace(/\{(\w+)\}/g, (_, name: string) => values[name]);
+      },
+      { has: (key: string) => typeof lookup(key) === 'string' },
+    );
+  },
+}));
 
 const book: SampleBook = {
   id: 'children-book-01',
@@ -26,6 +51,10 @@ const book: SampleBook = {
 };
 
 describe('SampleBookDetailPage Mythoria-created provenance', () => {
+  beforeEach(() => {
+    mockMessages = { ...portugueseDetail, ...portugueseFacts };
+  });
+
   it('renders an optional server-approved creation link without sample story text in the URL', () => {
     render(
       <SampleBookDetailPage
@@ -54,5 +83,38 @@ describe('SampleBookDetailPage Mythoria-created provenance', () => {
     expect(screen.queryByText(/contexto ficcional interno/i)).not.toBeInTheDocument();
     expect(screen.queryByText(/personagens ficcionais/i)).not.toBeInTheDocument();
     expect(screen.queryByText(/exemplo de livro inteiramente ficcional/i)).not.toBeInTheDocument();
+  });
+
+  it('localizes the sample chapter, audio, fiction label, facts and alt text in Spanish', () => {
+    mockMessages = { ...spanishDetail, ...spanishFacts };
+    const spanishBook: SampleBook = {
+      ...book,
+      title: 'La noticia a medias',
+      locale: 'es-ES',
+      intent: 'school_projects',
+      novelStyle: 'mystery',
+      graphicalStyle: 'euro_comic_book',
+      featureSrc: undefined,
+    };
+
+    render(
+      <SampleBookDetailPage
+        book={spanishBook}
+        chapter="El periódico cerraba a mediodía."
+        locale="es-ES"
+      />,
+    );
+
+    expect(screen.getByRole('heading', { name: 'Capítulo de muestra' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Fragmento en audio' })).toBeInTheDocument();
+    expect(screen.getByText('Libro creado con Mythoria')).toBeInTheDocument();
+    expect(screen.getByText('Español')).toBeInTheDocument();
+    expect(screen.getByText('Cómic')).toBeInTheDocument();
+    expect(screen.getByText('Misterio')).toBeInTheDocument();
+    expect(screen.getByText('Proyectos escolares')).toBeInTheDocument();
+    expect(
+      screen.getByAltText('Ilustración del capítulo de muestra de «La noticia a medias»'),
+    ).toBeInTheDocument();
+    expect(screen.queryByText('Capítulo de amostra')).not.toBeInTheDocument();
   });
 });

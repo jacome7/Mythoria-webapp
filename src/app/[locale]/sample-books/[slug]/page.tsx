@@ -24,23 +24,25 @@ export async function generateMetadata({ params }: SampleBookRouteProps): Promis
   if (!book) return {};
 
   const canonicalLocale = seo?.locale ?? book.locale;
+  const t = await getTranslations({ locale: canonicalLocale, namespace: 'SampleBookDetail' });
   const canonical = buildLocalizedUrl(canonicalLocale, `/sample-books/${book.slug}`);
   const indexable = Boolean(seo && locale === canonicalLocale);
   const isMythoriaCreatedExample = book.publicProvenance === 'mythoria_created_example';
   const isFictionalBook = Boolean(book.fictionalUserContext) && !isMythoriaCreatedExample;
+  const title = isFictionalBook ? t('fictionalTitle', { title: book.title }) : book.title;
 
   return {
-    title: `${book.title}${isFictionalBook ? ' — exemplo ficcional' : ''} | Mythoria`,
+    title: `${title} | Mythoria`,
     description: book.synopsis,
     robots: indexable ? 'index,follow,max-snippet:-1,max-image-preview:large' : 'noindex,follow',
     alternates: { canonical },
     openGraph: {
       type: 'article',
-      title: `${book.title}${isFictionalBook ? ' — exemplo ficcional' : ''}`,
+      title,
       description: book.synopsis,
       url: canonical,
       locale: canonicalLocale.replace('-', '_'),
-      images: [{ url: buildAbsoluteUrl(book.coverSrc), alt: `Capa de ${book.title}` }],
+      images: [{ url: buildAbsoluteUrl(book.coverSrc), alt: t('cover', { title: book.title }) }],
       modifiedTime: seo?.updatedAt ?? book.updatedAt,
     },
   };
@@ -75,6 +77,7 @@ export default async function SampleBookPage({ params, searchParams }: SampleBoo
   const canonical = buildLocalizedUrl(canonicalLocale, `/sample-books/${book.slug}`);
   const isMythoriaCreatedExample = book.publicProvenance === 'mythoria_created_example';
   const isFictionalBook = Boolean(book.fictionalUserContext) && !isMythoriaCreatedExample;
+  const t = await getTranslations({ locale: canonicalLocale, namespace: 'SampleBookDetail' });
   const structuredData = [
     {
       '@context': 'https://schema.org',
@@ -87,11 +90,13 @@ export default async function SampleBookPage({ params, searchParams }: SampleBoo
       image: [book.coverSrc, book.featureSrc, book.chapterImageSrc]
         .filter((src): src is string => Boolean(src))
         .map(buildAbsoluteUrl),
-      isBasedOn: isMythoriaCreatedExample
-        ? 'Demonstration book created by Mythoria with synthetic source inputs'
-        : isFictionalBook
-          ? 'Fictional editorial demonstration created by Mythoria'
-          : 'Printed personalized book created with Mythoria',
+      isBasedOn: t(
+        isMythoriaCreatedExample
+          ? 'sourceMythoria'
+          : isFictionalBook
+            ? 'sourceFictional'
+            : 'sourceBook',
+      ),
       publisher: { '@type': 'Organization', name: 'Mythoria' },
     },
     {
@@ -109,7 +114,7 @@ export default async function SampleBookPage({ params, searchParams }: SampleBoo
               {
                 '@type': 'ListItem',
                 position: 2,
-                name: 'Guias',
+                name: t('guides'),
                 item: buildLocalizedUrl(canonicalLocale, '/lp'),
               },
             ]

@@ -42,6 +42,33 @@ describe('LandingPageBookShowcase analytics', () => {
     trackOpenAiAdsEventMock.mockClear();
   });
 
+  it('opens a full PDF directly and tracks a book read without reporting a chapter preview', () => {
+    const pdf = { href: '/seasonal-books/ines/pt-PT/leitura.pdf', label: 'Ler o livro completo' };
+    render(
+      <LandingPageBookShowcase
+        books={[{ ...book, sampleChapter: undefined, fullBookPdf: pdf }]}
+        landingSlug="prendas-de-natal-para-criancas"
+        locale="pt-PT"
+        primaryIntent="kids_adventures"
+        labels={{
+          chapters: 'Capítulos',
+          listen: 'Ouvir',
+          readWithImage: 'Ler e ver imagem',
+          readSample: 'Ler capítulo de amostra',
+          sampleChapter: 'Capítulo de amostra',
+          closeSample: 'Fechar',
+        }}
+      />,
+    );
+    const link = screen.getByRole('link', { name: pdf.label });
+    expect(link).toHaveAttribute('href', pdf.href);
+    expect(link).toHaveAttribute('data-cta-placement', 'full_book_pdf');
+    link.addEventListener('click', (event) => event.preventDefault());
+    fireEvent.click(link);
+    expect(trackEventMock.mock.calls.map(([name]) => name)).toEqual(['sample_book_open']);
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+  });
+
   it('tracks chapter opening and one start/completion pair without personal story data', () => {
     const { container } = render(
       <LandingPageBookShowcase

@@ -1,0 +1,74 @@
+{
+  "id": "carta-pt-PT",
+  "title": "A carta que perdeu o envelope",
+  "slug": "a-carta-que-perdeu-o-envelope",
+  "language": "pt-PT",
+  "targetAudience": "children_3-6",
+  "readerAgeBand": "3–6 anos",
+  "buyerPersona": "Famílias que oferecem uma história personalizada",
+  "recipientType": "Criança",
+  "storyIntent": "Natal e Reis",
+  "synopsis": "Uma carta chega à feira de Natal sem envelope. A Rita tem de descobrir a quem pertence uma luva vermelha com seis dedos. O Pai Natal empresta-lhe os dedos para contar e um pajem dos Reis traz uma pista no bolso.",
+  "shortExcerpt": "A Rita contou os dedos da luva. Um, dois, três, quatro, cinco… E aquele, ali ao canto?",
+  "sampleChapterPath": "sample-chapter.md",
+  "sampleFormat": "read_aloud_opening",
+  "audioTeaserText": "Fuuuuu! Passou o vento pela feira. Levou o cheiro das castanhas, fez dançar o cachecol da Rita e deixou-lhe uma carta no nariz. A Rita abriu-a. Lá dentro, uma menina tinha desenhado uma luva vermelha. Um dedo, dois dedos, três dedos, quatro dedos, cinco dedos… Espera lá. Aquilo era mais um dedo? A Rita tirou a luva da própria mão. Só tinha cinco. Onde estaria uma pessoa com uma luva daquelas? Ouviu uma voz atrás dos embrulhos. E uma coisa amarela acenou-lhe lá do fundo. Seria o dedo que faltava?",
+  "graphicalStyle": "watercolor",
+  "novelStyle": "fairy_tale",
+  "fictionalUserContext": "Exemplo ficcional da Mythoria. As personagens e as suas circunstâncias são inventadas.",
+  "publicProvenance": "mythoria_created_example",
+  "publicTopics": [
+    "Natal e Reis",
+    "Cartas",
+    "Entreajuda"
+  ],
+  "coverImage": {
+    "localPath": "assets/cover.jpeg"
+  },
+  "featureImage": {
+    "localPath": "assets/feature.jpeg"
+  },
+  "sampleChapterImage": {
+    "localPath": "assets/sample-chapter.jpeg"
+  },
+  "audioSample": {
+    "localPath": "assets/audio-teaser.mp3",
+    "provider": "google-genai",
+    "model": "gemini-3.8-flash-tts",
+    "voice": "Aoede",
+    "status": "generated"
+  },
+  "safetyNotes": [
+    "História de ficção para ler em família.",
+    "As ilustrações representam personagens inventadas.",
+    "A identificação da luva é uma pista inventada, sem dados de uma criança real."
+  ],
+  "chapterTitle": "Um dedo a mais",
+  "chapterImageAlt": "A Rita mostra à vizinha o desenho da luva vermelha numa janela iluminada da feira.",
+  "styleLabel": "Álbum ilustrado",
+  "openingParagraphs": [
+    "Fuuuuu! Passou o vento pela feira de Natal. Levou o cheiro das castanhas, fez dançar o cachecol da Rita e deixou-lhe uma carta no nariz.",
+    "— Atchim! Quem é que me escreveu?",
+    "A carta não tinha envelope. Não tinha nome. Só tinha um desenho. A vizinha segurou numa ponta e a Rita esticou a outra com muito jeitinho. Era uma luva desenhada a lápis vermelho.",
+    "Um dedo, dois dedos, três dedos, quatro dedos, cinco dedos…",
+    "— Espera lá! E tu?",
+    "Ao canto da luva espreitava mais um. Um dedinho torto, com um remendo amarelo.",
+    "A Rita tirou uma luva sua. Cinco dedos. Tirou a outra. Cinco também. Voltou a enfiá-las depressa porque, sem luvas, até os polegares lhe batiam os dentes.",
+    "Na banca do correio, o Pai Natal carimbava envelopes. Pum! Pum! Pum! Um pingo de tinta tinha-lhe pintado a ponta do nariz.",
+    "— Mostra-me a tua mão, se faz favor — pediu a Rita.",
+    "O Pai Natal abriu a mão direita. A Rita contou. Abriu a esquerda. A Rita voltou a contar.",
+    "— Cinco de cada lado. Assim não serve!",
+    "— Para comer filhoses servem lindamente — disse o Pai Natal. E provou.",
+    "Ao lado dele estava o pajem dos Reis, a separar as cartas pequenas das pequeninas. A Rita mostrou-lhe o desenho. O pajem franziu a testa, enfiou a mão no bolso do casaco e tirou de lá… um botão. Tentou o outro bolso. Um cordel. Tentou o bolso de dentro.",
+    "— Oh! Era aqui que eu tinha guardado o meu lanche!",
+    "E tirou uma tangerina.",
+    "A Rita sentou-se no degrau. Queria tanto entregar a carta certa à pessoa certa. Rodou o desenho de pernas para o ar. Já não parecia uma luva. Parecia uma árvore com um peru pousado num ramo.",
+    "Da banca dos embrulhos veio uma voz pequenina.",
+    "— Viste o meu irmão? Estava mesmo aqui com o avô. O meu irmão tem um dedo a mais.",
+    "A Rita deu um salto.",
+    "— Na mão?",
+    "— Na luva! Foi ele que a fez para o meu teatro de fantoches. No dedo a mais mora um dragão.",
+    "Ao fundo da banca, uma coisa amarela acenou por cima dos embrulhos. Não era um botão. Não era uma tangerina. Era um dedinho torto, com um remendo amarelo.",
+    "A Rita e a menina levantaram juntas a carta. Do outro lado, o dragão fez-lhes uma vénia. E, no instante em que abriram a boca para chamar por ele… fuuuuu! De quem seria aquele envelope que acabava de aterrar no gorro do Pai Natal?"
+  ]
+}

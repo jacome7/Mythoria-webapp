@@ -26,9 +26,33 @@ describe('sample book catalog', () => {
   it('includes every legacy book and complete sample-book pack', async () => {
     const books = await getSampleBooksCatalog();
 
-    expect(books).toHaveLength(92);
+    expect(books).toHaveLength(100);
     expect(books.filter((book) => book.source === 'legacy')).toHaveLength(59);
-    expect(books.filter((book) => book.source === 'sample-pack')).toHaveLength(33);
+    expect(books.filter((book) => book.source === 'sample-pack')).toHaveLength(41);
+  });
+
+  it('shows each seasonal edition’s reader topics and keeps the fallback for older packs', async () => {
+    const books = await getSampleBooksCatalog();
+    const expectedTopics = {
+      'carta-pt-PT': 'Natal e Reis',
+      'carta-es-ES': 'Navidad y Reyes',
+      'teatro-pt-PT': 'Luz e papel',
+      'teatro-es-ES': 'Luz y papel',
+      'telhado-pt-PT': 'Aves do recreio',
+      'telhado-es-ES': 'Aves del patio',
+      'noticia-pt-PT': 'Jornal da escola',
+      'noticia-es-ES': 'Periódico escolar',
+    };
+    for (const [id, topic] of Object.entries(expectedTopics)) {
+      const tags = books.find((book) => book.id === id)?.tags;
+      expect(tags).toContain(topic);
+      expect(tags).not.toContain('sample-book');
+      expect(tags).not.toContain('illustrated-opening');
+      expect(tags).not.toContain('christmas-reyes');
+    }
+    expect(books.find((book) => book.slug === 'a-final-do-bairro-das-estrelas')?.tags).toContain(
+      'workshops-criancas',
+    );
   });
 
   it('maps each Romance landing-page pack to the romance intent and exposes its audio', async () => {

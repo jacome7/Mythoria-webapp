@@ -1,0 +1,15 @@
+{
+  "status": "generated",
+  "targetPath": "assets/audio-teaser.mp3",
+  "text": "En el dibujo, la casa de los pájaros tenía cuatro paredes bien derechas. En el banco del patio, el tejado caía más de un lado que del otro. Eva cerró un ojo. Leo cerró los dos. Así estaba perfecto, dijo. Un gorrión se posó en el muro. Miró la casa, los miró a ellos y se puso a sacar una lombriz de entre dos ladrillos. Entonces cayó la primera gota. Toc. Justo encima del tejado torcido. Eva bajó la cabeza a la altura del banco. Allí dentro, justo donde debía dormir un pájaro, acababa de nacer otra gota.",
+  "voiceDirection": "Narración en castellano de Madrid, cercana y curiosa. Deja respirar las pistas y las réplicas.",
+  "language": "es-ES",
+  "provider": "google-genai",
+  "model": "gemini-3.8-flash-tts",
+  "voice": "Aoede",
+  "recommendedDurationSeconds": 40,
+  "requestModel": "gemini-3.8-flash-tts",
+  "generatedAt": "2026-11-24T17:42:02.433Z",
+  "durationSeconds": 36.41,
+  "humanListeningReview": "pending"
+}
