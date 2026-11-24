@@ -561,6 +561,23 @@
       "generateMyStory": "🚀 Meine Geschichte generieren",
       "storyDataNotAvailable": "Geschichtsdaten nicht verfügbar. Bitte versuch es erneut.",
       "stepProgress": "Schritt {currentStep} von {totalSteps}",
+      "confirmation": {
+        "back": "Zurück",
+        "title": "Bereit, deine Geschichte zu erstellen?",
+        "nextHeading": "So geht es weiter",
+        "writeStory": "Wir schreiben deine Geschichte",
+        "createArtwork": "Wir erstellen die Illustrationen",
+        "bookReady": "Dein Buch ist fertig",
+        "outcomesHeading": "Sobald es fertig ist",
+        "readOnline": "Online lesen",
+        "share": "Teilen",
+        "requestPrint": "Ein gedrucktes Buch anfragen",
+        "listenOnline": "Online anhören",
+        "optionalAddOns": "Druck und Audio sind optionale Zusatzleistungen.",
+        "digitalBook": "Digitales Buch · {count, plural, one {# Guthabenpunkt} other {# Guthabenpunkte}}",
+        "currentBalance": "Aktuelles Guthaben:",
+        "balanceCredits": "{count, plural, one {# Guthabenpunkt} other {# Guthabenpunkte}}"
+      },
       "alerts": {
         "failedToFetchStoryData": "Geschichtsdaten konnten nicht abgerufen werden. Bitte versuch es erneut.",
         "failedToFetchUserCredits": "Credits konnten nicht abgerufen werden. Bitte versuch es erneut.",

@@ -1,6 +1,23 @@
 import { act, render, screen, waitFor } from '@testing-library/react';
 import WizardActionBar from './WizardActionBar';
 
+it('keeps inline confirmation actions in the panel on mobile', () => {
+  const previous = window.matchMedia;
+  window.matchMedia = jest.fn().mockReturnValue({
+    matches: true,
+    addEventListener: jest.fn(),
+    removeEventListener: jest.fn(),
+  });
+  const { container, unmount } = render(
+    <WizardActionBar inline>
+      <button>Generate story</button>
+    </WizardActionBar>,
+  );
+  expect(container).toContainElement(screen.getByRole('button', { name: 'Generate story' }));
+  unmount();
+  window.matchMedia = previous;
+});
+
 it('portals one mobile action bar, reserves space, and hides it for an open modal', async () => {
   const previous = window.matchMedia;
   window.matchMedia = jest.fn().mockReturnValue({

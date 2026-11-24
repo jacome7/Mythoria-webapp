@@ -9,9 +9,17 @@
       }
     },
     "progress": {
-      "title": "🏭 ¡Fábrica de historias en marcha!",
+      "title": "Tu historia está tomando forma",
       "description": "Tu historia estará lista en 14 minutos",
-      "progressLabel": "Progreso",
+      "progressLabel": "Progreso del libro",
+      "stoppedTitle": "La generación de la historia se ha detenido",
+      "stages": {
+        "writing": "Escribiendo",
+        "illustrating": "Ilustrando",
+        "preparing": "Preparando tu libro"
+      },
+      "leaveMessage": "Tu historia seguirá generándose si sales.",
+      "myStories": "Ir a Mis historias",
       "estimatedTimeLabel": "Tiempo restante",
       "creatingMagic": "Creando magia...",
       "currentlyLabel": "Actualmente:",

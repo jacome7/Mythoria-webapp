@@ -16,6 +16,7 @@ interface StepNavigationProps {
   nextLabel?: string;
   prevLabel?: string;
   busy?: boolean;
+  inline?: boolean;
 }
 
 const StepNavigation = ({
@@ -29,6 +30,7 @@ const StepNavigation = ({
   nextLabel,
   prevLabel,
   busy = false,
+  inline = false,
 }: StepNavigationProps) => {
   const router = useRouter();
   const pending = useRef(false);
@@ -61,7 +63,7 @@ const StepNavigation = ({
   };
 
   return (
-    <WizardActionBar>
+    <WizardActionBar inline={inline}>
       <div>
         {prevHref ? (
           <Link
@@ -96,7 +98,7 @@ const StepNavigation = ({
           <div></div> // Empty div to maintain flex layout
         )}
       </div>
-      <div></div>
+      {!inline && <div />}
       <div>
         {nextHref && onNext ? (
           <button

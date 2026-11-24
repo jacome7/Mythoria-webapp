@@ -42,13 +42,13 @@
   .shell :global(.card) :global(.card) :global(.mb-4) {
     margin-bottom: 8px;
   }
-  .shell.shell h1 {
+  .shell.shell h1:not([data-wizard-step='5'] h1) {
     color: #004f6e !important;
     font-size: 28px;
     line-height: 1.2;
     margin-bottom: 16px;
   }
-  .shell.shell h2 {
+  .shell.shell h2:not([data-wizard-step='5'] h2) {
     color: #004f6e !important;
     font-size: 20px;
     line-height: 1.3;
@@ -84,8 +84,5 @@
     :global(.card)
     :global(.card:not(.homepage-audience-card):not(.cl-card)) {
     border: 0 !important;
-  }
-  .shell [data-wizard-step='5'] h2 {
-    display: none;
   }
 }

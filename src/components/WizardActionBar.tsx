@@ -17,11 +17,14 @@ const serverSnapshot = () => false;
 export default function WizardActionBar({
   children,
   preview = false,
+  inline = false,
 }: {
   children: ReactNode;
   preview?: boolean;
+  inline?: boolean;
 }) {
-  const mobile = useSyncExternalStore(subscribe, mobileSnapshot, serverSnapshot);
+  const isMobileViewport = useSyncExternalStore(subscribe, mobileSnapshot, serverSnapshot);
+  const mobile = isMobileViewport && !inline;
   const ref = useRef<HTMLDivElement>(null);
   const [height, setHeight] = useState(72);
   const [modalOpen, setModalOpen] = useState(false);
@@ -89,7 +92,7 @@ export default function WizardActionBar({
     <div
       ref={ref}
       data-wizard-actions
-      className={`${styles.bar} ${preview ? styles.preview : ''}`}
+      className={`${styles.bar} ${preview ? styles.preview : ''} ${inline ? styles.inline : ''}`}
       hidden={mobile && modalOpen}
     >
       {children}

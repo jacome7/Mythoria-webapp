@@ -5,6 +5,14 @@ import { useState, useEffect, Suspense, useRef } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { useLocale, useTranslations } from 'next-intl';
+import {
+  PiArrowRight,
+  PiBookOpen,
+  PiHeadphones,
+  PiPrinter,
+  PiShareNetwork,
+  PiSparkleFill,
+} from 'react-icons/pi';
 import ThemedArtwork from '@/components/ThemedArtwork';
 import StepNavigation from '@/components/StepNavigation';
 import ProgressIndicator from '@/components/ProgressIndicator';
@@ -18,15 +26,37 @@ import { getStep1Data } from '@/lib/story-session';
 import { fetchStoryData } from '@/lib/story';
 import { useStorySessionGuard } from '@/hooks/useStorySessionGuard';
 import type { StoryData } from '@/types/story';
+import styles from './Confirmation.module.css';
+
+const creationStages = [
+  {
+    label: 'confirmation.writeStory',
+    src: '/Papercut_icons/PaperAndPencil.webp',
+    width: 256,
+    height: 282,
+  },
+  {
+    label: 'confirmation.createArtwork',
+    src: '/Papercut_icons/Color_pallete.webp',
+    width: 256,
+    height: 241,
+  },
+  {
+    label: 'confirmation.bookReady',
+    src: '/Papercut_icons/openBook.webp',
+    width: 256,
+    height: 235,
+  },
+] as const;
+
+const storyOutcomes = [
+  { label: 'confirmation.readOnline', Icon: PiBookOpen },
+  { label: 'confirmation.share', Icon: PiShareNetwork },
+  { label: 'confirmation.requestPrint', Icon: PiPrinter },
+  { label: 'confirmation.listenOnline', Icon: PiHeadphones },
+] as const;
 
 interface EbookPricing {
-  id: string;
-  name: string;
-  cost: number;
-  serviceCode: string;
-}
-
-interface ServiceResponse {
   id: string;
   name: string;
   cost: number;
@@ -54,10 +84,14 @@ function Step5Page() {
   const [editStoryDetails, setEditStoryDetails] = useState(false);
   const currentStoryId = useStorySessionGuard();
   const [storyData, setStoryData] = useState<StoryData | null>(null);
-  const [userCredits, setUserCredits] = useState<number>(0);
+  const [userCredits, setUserCredits] = useState<number | null>(null);
   const [ebookPricing, setEbookPricing] = useState<EbookPricing | null>(null);
   const hasTrackedStepView = useRef(false);
   const generationIdempotencyKey = useRef<string | null>(null);
+  const creditShortfall =
+    ebookPricing && userCredits !== null ? Math.max(ebookPricing.cost - userCredits, 0) : 0;
+  const hasInsufficientCredits = creditShortfall > 0;
+  const canGenerate = ebookPricing !== null && userCredits !== null && !hasInsufficientCredits;
 
   const loadStoryData = async (storyId: string) => {
     try {
@@ -75,8 +109,11 @@ function Step5Page() {
       if (!response.ok) {
         throw new Error('Failed to fetch user credits');
       }
-      const data = await response.json();
-      setUserCredits(data.currentBalance || 0);
+      const { currentBalance } = await response.json();
+      if (typeof currentBalance !== 'number' || !Number.isFinite(currentBalance)) {
+        throw new Error('User credit balance is unavailable');
+      }
+      setUserCredits(currentBalance);
     } catch (error) {
       console.error('Error fetching user credits:', error);
       setError(tStoryStepsStep5('alerts.failedToFetchUserCredits'));
@@ -91,15 +128,18 @@ function Step5Page() {
       if (!response.ok) {
         throw new Error('Failed to fetch pricing data');
       }
-      const data = await response.json();
-      const ebook = data.services.find(
-        (service: ServiceResponse) =>
-          service.serviceCode ===
-          (data.productProfile === 'biographer' ? 'biographerBookGeneration' : 'eBookGeneration'),
-      );
-      if (ebook) {
-        setEbookPricing(ebook);
+      const {
+        services,
+        productProfile,
+      }: { services: EbookPricing[]; productProfile: 'standard' | 'biographer' } =
+        await response.json();
+      const serviceCode =
+        productProfile === 'biographer' ? 'biographerBookGeneration' : 'eBookGeneration';
+      const ebook = services.find((service) => service.serviceCode === serviceCode);
+      if (!ebook || !Number.isFinite(ebook.cost)) {
+        throw new Error('Digital book pricing is unavailable');
       }
+      setEbookPricing(ebook);
     } catch (error) {
       console.error('Error fetching pricing data:', error);
       setError(tStoryStepsStep5('alerts.failedToFetchPricingData'));
@@ -126,16 +166,10 @@ function Step5Page() {
       story_id: currentStoryId,
       has_pricing: !!ebookPricing,
       ebook_cost: ebookPricing?.cost,
-      user_credits: userCredits,
-      can_generate: !!ebookPricing && userCredits >= ebookPricing.cost,
+      user_credits: userCredits ?? undefined,
+      can_generate: canGenerate,
     });
-  }, [currentStoryId, ebookPricing, isSignedIn, loading, storyData, userCredits]);
-
-  const hasInsufficientCredits = () => {
-    // If pricing isn't loaded yet, assume insufficient credits to prevent premature actions
-    if (!ebookPricing) return true;
-    return userCredits < ebookPricing.cost;
-  };
+  }, [canGenerate, currentStoryId, ebookPricing, isSignedIn, loading, storyData, userCredits]);
 
   const handleCompleteStory = async () => {
     const blockedReason =
@@ -143,26 +177,28 @@ function Step5Page() {
         ? 'story_data_missing'
         : !ebookPricing
           ? 'pricing_missing'
-          : userCredits < ebookPricing.cost
-            ? 'insufficient_credits'
-            : undefined;
+          : userCredits === null
+            ? 'credits_missing'
+            : hasInsufficientCredits
+              ? 'insufficient_credits'
+              : undefined;
     trackStoryCreation.generateClicked({
       step: 5,
       story_id: currentStoryId || undefined,
       has_story_data: !!storyData,
       has_pricing: !!ebookPricing,
       ebook_cost: ebookPricing?.cost,
-      user_credits: userCredits,
-      can_generate: !!ebookPricing && userCredits >= ebookPricing.cost,
+      user_credits: userCredits ?? undefined,
+      can_generate: canGenerate,
       blocked_reason: blockedReason,
     });
 
-    if (!currentStoryId || !storyData || !ebookPricing) {
+    if (!currentStoryId || !storyData || !ebookPricing || userCredits === null) {
       setError(tStoryStepsStep5('storyDataNotAvailable'));
       return;
     }
 
-    if (hasInsufficientCredits()) {
+    if (hasInsufficientCredits) {
       setError(tStoryStepsStep5('alerts.insufficientCreditsError'));
       return;
     }
@@ -271,143 +307,168 @@ function Step5Page() {
       </Show>
 
       <Show when="signed-in">
-        <div data-wizard-step="5" className="container mx-auto px-2 sm:px-4 py-8">
-          <div className="max-w-4xl mx-auto">
-            {/* Show progress component if story generation has started */}
-            {storyGenerationStarted ? (
-              <StoryGenerationProgress storyId={currentStoryId!} />
-            ) : (
-              <>
-                <ProgressIndicator currentStep={5} totalSteps={5} />
-
-                {/* Step content */}
-                <div className="card bg-base-100 shadow-xl">
-                  <div className="card-body">
-                    <h1 className="card-title text-3xl mb-6 text-gray-800">
-                      {tStoryStepsStep5('heading')}
-                    </h1>
-
-                    {error && (
-                      <div role="alert" className="alert alert-error mb-6">
-                        <span>{error}</span>
-                        {editStoryDetails && (
-                          <Link
-                            className="link"
-                            href={`/${locale}/tell-your-story/step-1?returnTo=review`}
-                          >
-                            {tStoryStepsStep5('alerts.editStoryDetails')}
-                          </Link>
-                        )}
-                      </div>
-                    )}
-
-                    {storyData ? (
-                      <div className="space-y-6">
-                        <div className="text-center">
-                          <h2 className="text-2xl font-bold mb-4 text-gray-800">
-                            {tStoryStepsStep5('readyToGenerate')}
-                          </h2>
-                          <p className="text-lg text-gray-600 mb-6">
-                            {tStoryStepsStep5('aboutToStart')}
-                            <strong className="block mt-2 text-xl font-bold text-primary">
-                              {storyData.title}
-                            </strong>
-                          </p>
-
-                          <ThemedArtwork
-                            src="/Papercut_icons/open-book-with-stars.webp"
-                            alt=""
-                            width={512}
-                            height={256}
-                            className="mx-auto mb-6 h-auto w-44 max-w-full"
-                          />
-
-                          {/* Credits Information */}
-                          <div className="space-y-4 mb-6">
-                            {/* Ebook Service Info */}
-                            {ebookPricing && (
-                              <div className="card bg-base-200 p-6">
-                                <h3 className="text-lg font-semibold mb-4 text-gray-800">
-                                  {tStoryStepsStep5('ebookGeneration')}
-                                </h3>
-                                <div className="flex justify-center items-center gap-6">
-                                  <div className="text-center">
-                                    <span className="text-sm text-gray-600">
-                                      {tStoryStepsStep5('cost')}
-                                    </span>
-                                    <div className="text-2xl font-bold text-primary">
-                                      {ebookPricing.cost} {tStoryStepsStep5('credits')}
-                                    </div>
-                                  </div>
-                                  <div className="text-center">
-                                    <span className="text-sm text-gray-600">
-                                      {tStoryStepsStep5('yourCredits')}
-                                    </span>
-                                    <div
-                                      className={`text-2xl font-bold ${hasInsufficientCredits() ? 'text-error' : 'text-success'}`}
-                                    >
-                                      {userCredits} {tStoryStepsStep5('credits')}
-                                    </div>
-                                  </div>
-                                </div>
-                              </div>
-                            )}
-
-                            {/* Insufficient Credits Warning */}
-                            {hasInsufficientCredits() && (
-                              <div className="alert alert-warning">
-                                <div className="flex flex-col items-center">
-                                  <span className="font-semibold text-gray-800">
-                                    {tStoryStepsStep5('insufficientCreditsTitle')}
-                                  </span>
-                                  <span className="text-sm mt-2 text-gray-700">
-                                    {tStoryStepsStep5('needMoreCredits', {
-                                      count: ebookPricing ? ebookPricing.cost - userCredits : 0,
-                                    })}
-                                  </span>
-                                  <a
-                                    href={`/${locale}/pricing#buy-credits`}
-                                    className="btn btn-outline btn-sm mt-2"
-                                  >
-                                    {tStoryStepsStep5('getMoreCredits')}
-                                  </a>
-                                </div>
-                              </div>
-                            )}
-                          </div>
-                        </div>
-                      </div>
-                    ) : (
-                      <div className="text-center py-12">
-                        <p className="text-lg text-gray-600">
-                          {tStoryStepsStep5('storyDataNotAvailable')}
-                        </p>
-                      </div>
-                    )}
-                    <StepNavigation
-                      currentStep={5}
-                      totalSteps={5}
-                      nextHref={null} // No next button, user must complete the story
-                      prevHref={
-                        editStoryId
-                          ? `/tell-your-story/step-4?edit=${editStoryId}`
-                          : '/tell-your-story/step-4'
-                      }
-                      nextDisabled={!storyData || submitting || hasInsufficientCredits()}
-                      busy={submitting}
-                      onNext={storyData ? handleCompleteStory : undefined}
-                      nextLabel={
-                        submitting
-                          ? tStoryStepsStep5('startingGeneration')
-                          : tStoryStepsStep5('generateMyStory')
-                      }
-                    />
-                  </div>
-                </div>
-              </>
-            )}
+        {storyGenerationStarted ? (
+          <div data-wizard-step="5" className={styles.generation}>
+            <StoryGenerationProgress storyId={currentStoryId!} storyTitle={storyData?.title} />
           </div>
-        </div>
+        ) : (
+          <div data-wizard-step="5" className={styles.confirmation}>
+            <div className={styles.wizardProgress}>
+              <ProgressIndicator currentStep={5} totalSteps={5} showStepsOnMobile />
+            </div>
+
+            <div className={styles.panel}>
+              <p className={styles.finale}>{tStoryStepsStep5('heading')}</p>
+
+              {error && (
+                <div className="alert alert-error mb-4" role="alert">
+                  <span>{error}</span>
+                  {editStoryDetails && (
+                    <Link
+                      className="link"
+                      href={`/${locale}/tell-your-story/step-1?returnTo=review`}
+                    >
+                      {tStoryStepsStep5('alerts.editStoryDetails')}
+                    </Link>
+                  )}
+                </div>
+              )}
+
+              {storyData ? (
+                <>
+                  <header className={styles.intro}>
+                    <span className={styles.flourish} aria-hidden="true">
+                      <PiSparkleFill />
+                    </span>
+                    <h1 className={styles.title}>{tStoryStepsStep5('confirmation.title')}</h1>
+                    <p className={styles.storyTitle}>{storyData.title}</p>
+                  </header>
+
+                  <section className={styles.section} aria-labelledby="confirmation-next-heading">
+                    <h2 id="confirmation-next-heading" className={styles.sectionHeading}>
+                      {tStoryStepsStep5('confirmation.nextHeading')}
+                    </h2>
+                    <ol className={styles.stages} role="list">
+                      {creationStages.map(({ label, src, width, height }, index) => (
+                        <li key={label} className={styles.stage}>
+                          <ThemedArtwork
+                            src={src}
+                            alt=""
+                            width={width}
+                            height={height}
+                            sizes="(max-width: 768px) 72px, 120px"
+                            className={styles.stageArtwork}
+                          />
+                          <span>{tStoryStepsStep5(label)}</span>
+                          {index < creationStages.length - 1 && (
+                            <PiArrowRight className={styles.stageArrow} aria-hidden="true" />
+                          )}
+                        </li>
+                      ))}
+                    </ol>
+                  </section>
+
+                  <section
+                    className={styles.section}
+                    aria-labelledby="confirmation-outcomes-heading"
+                  >
+                    <span className={styles.flourish} aria-hidden="true">
+                      <PiSparkleFill />
+                    </span>
+                    <h2 id="confirmation-outcomes-heading" className={styles.sectionHeading}>
+                      {tStoryStepsStep5('confirmation.outcomesHeading')}
+                    </h2>
+                    <ul className={styles.outcomes} role="list">
+                      {storyOutcomes.map(({ label, Icon }) => (
+                        <li key={label}>
+                          <Icon aria-hidden="true" />
+                          <span>{tStoryStepsStep5(label)}</span>
+                        </li>
+                      ))}
+                    </ul>
+                    <p className={styles.optional}>
+                      {tStoryStepsStep5('confirmation.optionalAddOns')}
+                    </p>
+                  </section>
+
+                  {(ebookPricing || userCredits !== null) && (
+                    <div className={styles.credits}>
+                      {ebookPricing && (
+                        <p className={styles.cost}>
+                          {tStoryStepsStep5('confirmation.digitalBook', {
+                            count: ebookPricing.cost,
+                          })}
+                        </p>
+                      )}
+                      {userCredits !== null && (
+                        <p className={styles.balance}>
+                          {tStoryStepsStep5('confirmation.currentBalance')}{' '}
+                          <strong
+                            className={
+                              hasInsufficientCredits ? styles.lowBalance : styles.availableBalance
+                            }
+                          >
+                            {tStoryStepsStep5('confirmation.balanceCredits', {
+                              count: userCredits,
+                            })}
+                          </strong>
+                        </p>
+                      )}
+                    </div>
+                  )}
+
+                  {hasInsufficientCredits && (
+                    <div className="alert alert-warning mt-4" role="status">
+                      <div className="flex flex-col items-center">
+                        <span className="font-semibold text-gray-800">
+                          {tStoryStepsStep5('insufficientCreditsTitle')}
+                        </span>
+                        <span className="mt-2 text-sm text-gray-700">
+                          {tStoryStepsStep5('needMoreCredits', {
+                            count: creditShortfall,
+                          })}
+                        </span>
+                        <a
+                          href={`/${locale}/pricing#buy-credits`}
+                          className="btn btn-outline btn-sm mt-2"
+                        >
+                          {tStoryStepsStep5('getMoreCredits')}
+                        </a>
+                      </div>
+                    </div>
+                  )}
+                </>
+              ) : (
+                <h1 className={`${styles.title} py-8 text-center`}>
+                  {tStoryStepsStep5('storyDataNotAvailable')}
+                </h1>
+              )}
+
+              <div className={styles.actions}>
+                <StepNavigation
+                  currentStep={5}
+                  totalSteps={5}
+                  nextHref={null}
+                  prevHref={
+                    editStoryId
+                      ? `/tell-your-story/step-4?edit=${editStoryId}`
+                      : '/tell-your-story/step-4'
+                  }
+                  nextDisabled={!storyData || submitting || !canGenerate}
+                  busy={submitting}
+                  onNext={storyData ? handleCompleteStory : undefined}
+                  prevLabel={tStoryStepsStep5('confirmation.back')}
+                  nextLabel={
+                    submitting
+                      ? tStoryStepsStep5('startingGeneration')
+                      : tStoryStepsStep5('generateMyStory')
+                  }
+                  inline
+                />
+              </div>
+            </div>
+          </div>
+        )}
       </Show>
     </>
   );

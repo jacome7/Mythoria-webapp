@@ -15,13 +15,16 @@ jest.mock('@clerk/nextjs', () => ({
 jest.mock('next/navigation', () => ({ useSearchParams: () => new URLSearchParams() }));
 jest.mock('next-intl', () => ({
   useLocale: () => 'en-US',
-  useTranslations: () => (key: string) => key,
+  useTranslations: () => (key: string, values?: { count: number }) =>
+    values ? `${key}: ${values.count}` : key,
 }));
 jest.mock('next/image', () => ({ __esModule: true, default: () => null }));
 jest.mock('@/components/ProgressIndicator', () => ({ __esModule: true, default: () => null }));
 jest.mock('@/components/StoryGenerationProgress', () => ({
   __esModule: true,
-  default: () => <div>generation-progress</div>,
+  default: ({ storyTitle }: { storyTitle?: string }) => (
+    <div aria-label={storyTitle}>generation-progress</div>
+  ),
 }));
 jest.mock('@/components/StepNavigation', () => ({
   __esModule: true,
@@ -44,14 +47,35 @@ jest.mock('@/hooks/useStorySessionGuard', () => ({ useStorySessionGuard: () => '
 
 const originalFetch = global.fetch;
 
-function mockFetch(completeBody: Record<string, unknown>, status = 202) {
+function mockFetch(
+  completeBody: Record<string, unknown> = {},
+  {
+    balance = 10,
+    cost = 5,
+    biographerCost,
+    status = 202,
+  }: {
+    balance?: number | null;
+    cost?: number | null;
+    biographerCost?: number;
+    status?: number;
+  } = {},
+) {
   global.fetch = jest.fn(async (url: string) => {
-    if (url === '/api/my-credits') return { ok: true, json: async () => ({ currentBalance: 10 }) };
+    if (url === '/api/my-credits') {
+      return { ok: balance !== null, json: async () => ({ currentBalance: balance }) };
+    }
     if (url === '/api/pricing/services?storyId=story-1') {
       return {
         ok: true,
         json: async () => ({
-          services: [{ id: '1', name: 'eBook', cost: 5, serviceCode: 'eBookGeneration' }],
+          productProfile: biographerCost === undefined ? 'standard' : 'biographer',
+          services: [
+            ...(cost === null ? [] : [{ cost, serviceCode: 'eBookGeneration' }]),
+            ...(biographerCost === undefined
+              ? []
+              : [{ cost: biographerCost, serviceCode: 'biographerBookGeneration' }]),
+          ],
         }),
       };
     }
@@ -66,19 +90,75 @@ async function generate() {
   const button = await screen.findByRole('button', { name: 'generate' });
   await waitFor(() => expect(button).toBeEnabled());
   fireEvent.click(button);
-  await screen.findByText('generation-progress');
+  expect(await screen.findByText('generation-progress')).toHaveAttribute(
+    'aria-label',
+    'Dragon Days',
+  );
 }
 
 beforeEach(() => {
   mockTrackOpenAiAdsEvent.mockReset();
   jest.spyOn(console, 'log').mockImplementation(() => undefined);
   jest.spyOn(console, 'warn').mockImplementation(() => undefined);
+  jest.spyOn(console, 'error').mockImplementation(() => undefined);
 });
+
 afterEach(() => {
   global.fetch = originalFetch;
   jest.restoreAllMocks();
 });
 
+it('shows the draft title, creation stages, outcomes, and live credit amounts', async () => {
+  mockFetch({}, { balance: 23, cost: 7 });
+  render(<Step5Page />);
+
+  expect(
+    await screen.findByRole('heading', { level: 1, name: 'confirmation.title' }),
+  ).toBeVisible();
+  expect(screen.getByText('Dragon Days')).toBeVisible();
+  expect(screen.getByRole('heading', { level: 2, name: 'confirmation.nextHeading' })).toBeVisible();
+  expect(
+    screen.getByRole('heading', { level: 2, name: 'confirmation.outcomesHeading' }),
+  ).toBeVisible();
+  expect(screen.getAllByRole('listitem')).toHaveLength(7);
+  expect(screen.getByText('confirmation.optionalAddOns')).toBeVisible();
+  expect(screen.getByText('confirmation.digitalBook: 7')).toBeVisible();
+  expect(screen.getByText('confirmation.balanceCredits: 23')).toBeVisible();
+  expect(screen.getByRole('button', { name: 'generate' })).toBeEnabled();
+});
+
+it('uses the story-specific Biographer price when both digital book services are available', async () => {
+  mockFetch({}, { balance: 23, cost: 7, biographerCost: 30 });
+  render(<Step5Page />);
+
+  expect(await screen.findByText('confirmation.digitalBook: 30')).toBeVisible();
+  expect(screen.getByRole('status')).toHaveTextContent('needMoreCredits: 7');
+  expect(screen.getByRole('button', { name: 'generate' })).toBeDisabled();
+});
+
+it('shows the exact shortfall and purchase link for a confirmed low balance', async () => {
+  mockFetch({}, { balance: 0, cost: 5 });
+  render(<Step5Page />);
+
+  expect(await screen.findByRole('status')).toHaveTextContent('needMoreCredits: 5');
+  expect(screen.getByRole('link', { name: 'getMoreCredits' })).toHaveAttribute(
+    'href',
+    '/en-US/pricing#buy-credits',
+  );
+  expect(screen.getByRole('button', { name: 'generate' })).toBeDisabled();
+});
+
+it.each([
+  [{ balance: null }, 'alerts.failedToFetchUserCredits'],
+  [{ cost: null }, 'alerts.failedToFetchPricingData'],
+] as const)('blocks generation when credit information is unavailable', async (options, error) => {
+  mockFetch({}, options);
+  render(<Step5Page />);
+
+  expect(await screen.findByRole('alert')).toHaveTextContent(error);
+  expect(screen.queryByRole('status')).not.toBeInTheDocument();
+  expect(screen.getByRole('button', { name: 'generate' })).toBeDisabled();
+});
 it('sends lead_created with the server event id after the story is queued', async () => {
   mockFetch({ runId: 'run-1', remainingCredits: 5, adEventId: 'story_run-1' });
   await generate();
@@ -108,7 +188,7 @@ it('shows localized field messages and keeps the draft review available after va
         { field: 'unexpected field', code: 'invalid' },
       ],
     },
-    400,
+    { status: 400 },
   );
   render(<Step5Page />);
   const button = await screen.findByRole('button', { name: 'generate' });
