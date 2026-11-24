@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { storyService } from '@/db/services';
+import { hasPremiumBookMarker } from '@/lib/premium-children-book/contract';
 import {
   getConfiguredStorageUrl,
   getFeaturedStoryPdfFilename,
@@ -20,7 +21,10 @@ export async function GET(
 
   try {
     const story = await storyService.getStoryBySlug(slug);
-    const pdfUri = story ? getFeaturedStoryPdfUri(story, document) : null;
+    const pdfUri =
+      story && !hasPremiumBookMarker(story.features)
+        ? getFeaturedStoryPdfUri(story, document)
+        : null;
     if (!story || !pdfUri) {
       return new NextResponse(null, { status: 404 });
     }

@@ -22,12 +22,13 @@ interface Story {
   chapterCount: number;
 }
 
-interface PrintingOption {
+export interface PrintingOption {
   serviceCode: string;
   credits: number;
   isActive: boolean;
   title: string;
   description: string;
+  editionRevision?: string;
 }
 
 export interface PaymentOrderBreakdown {
@@ -96,7 +97,8 @@ export default function PaymentStep({
 
   const { user } = useUser();
   const [options, setOptions] = useState<PrintingOption[]>([]);
-  const [luluDefault, setLuluDefault] = useState(false);
+  const [requiresCarrierContact, setRequiresCarrierContact] = useState(false);
+  const isSquare = Boolean(selectedPrintingOption?.editionRevision);
   const [recipientName, setRecipientName] = useState<string>();
   const [recipientEmail, setRecipientEmail] = useState<string>();
   const [recipientPhone, setRecipientPhone] = useState<string>();
@@ -105,8 +107,8 @@ export default function PaymentStep({
   const email = (recipientEmail ?? user?.primaryEmailAddress?.emailAddress ?? '').trim();
   const phone = (recipientPhone ?? address.phone ?? '').trim();
   const country = address.country.toUpperCase();
-  const needsTaxId = luluDefault && luluRequiresTaxId(country);
-  const addressIssue = luluDefault
+  const needsTaxId = requiresCarrierContact && luluRequiresTaxId(country);
+  const addressIssue = requiresCarrierContact
     ? luluAddressIssue({
         street1: address.line1,
         street2: address.line2,
@@ -117,7 +119,7 @@ export default function PaymentStep({
       })
     : undefined;
   const contactValid =
-    !luluDefault ||
+    !requiresCarrierContact ||
     (name.length > 0 &&
       name.length <= luluShippingLimits.name &&
       /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) &&
@@ -129,7 +131,7 @@ export default function PaymentStep({
     try {
       const [response, availability] = await Promise.all([
         fetch('/api/pricing/services'),
-        fetch('/api/print-requests/options'),
+        fetch('/api/print-requests/options?' + new URLSearchParams({ storyId: story.storyId })),
       ]);
       if (!response.ok || !availability.ok) {
         throw new Error('Failed to fetch pricing data');
@@ -140,25 +142,55 @@ export default function PaymentStep({
       const settings = (await availability.json()) as {
         hardcoverAvailable: boolean;
         luluDefault: boolean;
+        paperbackAvailable?: boolean;
+        squareEditionRevision?: string;
       };
-      setLuluDefault(settings.luluDefault);
+      setRequiresCarrierContact(settings.luluDefault || Boolean(settings.squareEditionRevision));
+      const isSquare = Boolean(settings.squareEditionRevision);
       const formats = [
-        'printedSoftCover',
+        ...(settings.paperbackAvailable !== false ? ['printedSoftCover'] : []),
         ...(settings.hardcoverAvailable ? ['printedHardCover'] : []),
       ].flatMap((serviceCode) => {
         const service = data.services.find((s) => s.isActive && s.serviceCode === serviceCode);
         if (!service) return [];
         const title = tPrintOrder(
-          serviceCode === 'printedHardCover' ? 'payment.hardcoverTitle' : 'payment.softcoverTitle',
+          isSquare
+            ? 'payment.squareHardcoverTitle'
+            : serviceCode === 'printedHardCover'
+              ? 'payment.hardcoverTitle'
+              : 'payment.softcoverTitle',
         );
-        return [{ serviceCode, title, credits: service.cost, isActive: true, description: title }];
+        return [
+          {
+            serviceCode,
+            title,
+            credits: service.cost,
+            isActive: true,
+            description: title,
+            editionRevision: settings.squareEditionRevision,
+          },
+        ];
       });
       setOptions(formats);
+      if (!formats.length && settings.paperbackAvailable === false) {
+        setError(tPrintOrder('errors.squareUnavailable'));
+        return;
+      }
       if (!formats.length) throw new Error('No active print formats');
+      if (
+        isSquare &&
+        !['shippingCost', 'extraBookCopy'].every((serviceCode) =>
+          data.services.some((service) => service.serviceCode === serviceCode && service.isActive),
+        )
+      ) {
+        setError(tPrintOrder('errors.squareUnavailable'));
+        return;
+      }
 
       // Get extra chapter cost
       const extraChapter = data.services.find(
-        (service: ServiceResponse) => service.serviceCode === 'extraChapterCost',
+        (service: ServiceResponse) =>
+          service.isActive && service.serviceCode === 'extraChapterCost',
       );
       if (extraChapter) {
         setExtraChapterCost(extraChapter.cost);
@@ -166,7 +198,7 @@ export default function PaymentStep({
 
       // Get extra book copy cost
       const extraBookCopy = data.services.find(
-        (service: ServiceResponse) => service.serviceCode === 'extraBookCopy',
+        (service: ServiceResponse) => service.isActive && service.serviceCode === 'extraBookCopy',
       );
       if (extraBookCopy) {
         setExtraBookCopyCost(extraBookCopy.cost);
@@ -174,7 +206,7 @@ export default function PaymentStep({
 
       // Get shipping cost
       const shipping = data.services.find(
-        (service: ServiceResponse) => service.serviceCode === 'shippingCost',
+        (service: ServiceResponse) => service.isActive && service.serviceCode === 'shippingCost',
       );
       if (shipping) {
         setShippingCost(shipping.cost);
@@ -184,7 +216,8 @@ export default function PaymentStep({
         !formats.some(
           (format) =>
             format.serviceCode === selectedPrintingOption?.serviceCode &&
-            format.credits === selectedPrintingOption.credits,
+            format.credits === selectedPrintingOption.credits &&
+            format.editionRevision === selectedPrintingOption.editionRevision,
         )
       )
         onSelectPrintingOption(formats[0]);
@@ -192,7 +225,7 @@ export default function PaymentStep({
       console.error('Error fetching printing options:', error);
       setError(tPrintOrder('errors.loadPricingFailed'));
     }
-  }, [tPrintOrder, selectedPrintingOption, onSelectPrintingOption]);
+  }, [tPrintOrder, story.storyId, selectedPrintingOption, onSelectPrintingOption]);
 
   const fetchUserCredits = useCallback(async () => {
     try {
@@ -218,7 +251,7 @@ export default function PaymentStep({
   }, [fetchPrintingOptions, fetchUserCredits]);
   const calculateExtraChapters = () => {
     // Base price includes first 4 chapters, charge for additional chapters only
-    return Math.max(0, story.chapterCount - 4);
+    return isSquare ? 0 : Math.max(0, story.chapterCount - 4);
   };
 
   const calculateExtraCopiesCost = () => {
@@ -285,7 +318,7 @@ export default function PaymentStep({
       numberOfCopies,
       totalCost: calculateTotalCost(),
       breakdown,
-      ...(luluDefault
+      ...(requiresCarrierContact
         ? {
             recipient: {
               name,
@@ -356,7 +389,7 @@ export default function PaymentStep({
             ) : (
               <p>{selectedPrintingOption.title}</p>
             )}
-            {luluDefault && (
+            {requiresCarrierContact && (
               <fieldset className="grid gap-2 my-4">
                 <legend className="font-semibold">{tPrintOrder('payment.recipient')}</legend>
                 <label>
@@ -445,8 +478,8 @@ export default function PaymentStep({
 
               <div className="flex justify-between">
                 <span>
-                  {tPrintOrder('payment.basePrice')} ({tPrintOrder('payment.includesFourChapters')}
-                  ):
+                  {tPrintOrder('payment.basePrice')}
+                  {!isSquare && ` (${tPrintOrder('payment.includesFourChapters')})`}:
                 </span>
                 <span>
                   {selectedPrintingOption.credits} {tPrintOrder('payment.credits')}

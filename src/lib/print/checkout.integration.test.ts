@@ -3,6 +3,7 @@ import { randomUUID } from 'node:crypto';
 import { and, eq } from 'drizzle-orm';
 import { drizzle } from 'drizzle-orm/node-postgres';
 import { Pool } from 'pg';
+import { getLuluCoverDimensions, quoteLuluOrder, validateLuluFile } from '@/lib/lulu/client';
 import { LULU_SKUS } from '@/lib/lulu/products';
 import {
   addresses,
@@ -18,6 +19,7 @@ import {
 let mockDatabase: ReturnType<typeof drizzle>;
 const mockSubmit = jest.fn();
 const mockRenderOrderProof = jest.fn();
+const mockLoadPublished = jest.fn();
 const target = process.env.PRINT_TEST_DATABASE_URL;
 
 jest.mock('@/db', () => ({
@@ -34,21 +36,36 @@ jest.mock('@/config/environment', () => ({
 }));
 jest.mock('./proof', () => ({
   assetFile: jest.fn(),
+  verifyProofFile: jest.fn(),
+  ensureProofFileAvailable: jest.fn(),
   renderOrderProof: (...args: unknown[]) => mockRenderOrderProof(...args),
   signedProofLink: jest.fn(async () => 'https://storage.test/signed'),
 }));
+jest.mock('@/lib/premium-children-book/storage', () => ({
+  loadPublishedPremiumBook: (...args: unknown[]) => mockLoadPublished(...args),
+}));
 jest.mock('@/lib/lulu/client', () => ({
+  luluConfigured: jest.requireActual('@/lib/lulu/client').luluConfigured,
+  getLuluCoverDimensions: jest.fn(async () => ({ width: 1368, height: 738 })),
+  validateLuluFile: jest.fn(async (kind, _options, saved, remember) => {
+    if (saved) return saved;
+    await remember(kind);
+    return kind;
+  }),
   quoteLuluOrder: jest.fn(async () => ({ shippingLevel: 'EXPRESS', totalEur: 20 })),
   getLuluJobCosts: jest.fn(async () => ({ currency: 'EUR', total: 20, fees: [] })),
   submitLuluJob: (...args: unknown[]) => mockSubmit(...args),
 }));
 
-import { startPrintCheckout, setPrintSettings } from './checkout';
+import { getPublicPrintOptions, startPrintCheckout, setPrintSettings } from './checkout';
+import { PREMIUM_SQUARE_PACKAGE } from './premium-edition';
 import {
+  correctSquareEdition,
   finalizeManualPrint,
   hasPaidOrderForStory,
   processPrintProof,
   reserveManualPrint,
+  setPrintHold,
   submitPrintOrder,
   withPrintTicket,
 } from './fulfillment';
@@ -308,4 +325,300 @@ import {
       jest.restoreAllMocks();
     }
   }, 30_000);
+
+  it.each([32, 33])(
+    'freezes an approved %i-page square purchase under None, rebinds a correction on hold, and releases once',
+    async (pageCount) => {
+      jest.clearAllMocks();
+      jest.replaceProperty(process, 'env', {
+        ...process.env,
+        PRINT_PROOF_BUCKET: 'private-proof',
+        PRINT_INTERNAL_AUDIENCE: 'https://webapp.test',
+        PRINT_ADMIN_SERVICE_ACCOUNT: 'admin@example.test',
+        PRINT_SCHEDULER_SERVICE_ACCOUNT: 'scheduler@example.test',
+        LULU_PREMIUM_SQUARE_POD_PACKAGE_ID: PREMIUM_SQUARE_PACKAGE,
+        LULU_PRINT_ENVIRONMENT: 'sandbox',
+        LULU_PRINT_CLIENT_KEY: 'synthetic-client',
+        LULU_PRINT_CONTACT_EMAIL: 'operator@example.test',
+        LULU_PRINT_SECRET_VERSION: 'projects/fixture/secrets/fixture/versions/1',
+      });
+      try {
+        delete process.env.PREMIUM_SQUARE_PRINT_APPROVAL;
+        const [author] = await mockDatabase
+          .insert(authors)
+          .values({
+            clerkUserId: randomUUID(),
+            email: randomUUID() + '@example.test',
+            displayName: 'Square order fixture',
+          })
+          .returning();
+        const storyId = randomUUID();
+        const firstRevision = randomUUID();
+        const replacement = randomUUID();
+        function marker(revision: string, generation: string) {
+          return {
+            version: 1,
+            type: 'premium_children',
+            state: 'published',
+            revision,
+            manifest: {
+              key: `${storyId}/premium/revisions/${revision}/manifest.json`,
+              generation,
+              sha256: 'a'.repeat(64),
+              bytes: 1024,
+            },
+          };
+        }
+        const originalMarker = marker(firstRevision, '101');
+        const correctedMarker = marker(replacement, '102');
+        await mockDatabase.insert(stories).values({
+          storyId,
+          authorId: author.authorId,
+          title: 'Square book',
+          status: 'published',
+          chapterCount: 9,
+          features: { premiumBook: originalMarker },
+        });
+        const [address] = await mockDatabase
+          .insert(addresses)
+          .values({
+            authorId: author.authorId,
+            type: 'delivery',
+            line1: 'Example 1',
+            city: 'Lisboa',
+            country: 'PT',
+            postalCode: '1000-001',
+          })
+          .returning();
+        await mockDatabase.insert(printProviders).values({
+          name: 'Square fixture',
+          companyName: 'Square fixture',
+          emailAddress: 'print@example.test',
+          phoneNumber: '1',
+          address: 'Example 1',
+          postalCode: '1000-001',
+          city: 'Lisboa',
+          country: 'PT',
+          prices: {},
+          availableCountries: ['PT'],
+        });
+        await mockDatabase.insert(authorCreditBalances).values({
+          authorId: author.authorId,
+          totalCredits: 50,
+        });
+        for (const [serviceCode, credits] of [
+          ['shippingCost', 3],
+          ['extraBookCopy', 4],
+          ['extraChapterCost', 50],
+        ] as const) {
+          await mockDatabase
+            .insert(pricing)
+            .values({ serviceCode, credits, isActive: true })
+            .onConflictDoUpdate({ target: pricing.serviceCode, set: { credits, isActive: true } });
+        }
+        const actor = 'operator@example.test';
+        await setPrintSettings(
+          { defaultProvider: 'none', maxEurPerCopy: 20, hardcoverCredits: 12 },
+          actor,
+        );
+        const recipient = {
+          name: 'Recipient',
+          email: 'receiver@example.test',
+          phone_number: '+351210000000',
+        };
+        const form = {
+          storyId,
+          shippingId: address.addressId,
+          intentId: randomUUID(),
+          totalCost: 19,
+          numberOfCopies: 2,
+          printingOption: {
+            serviceCode: 'printedHardCover' as const,
+            editionRevision: firstRevision,
+          },
+          recipient,
+        };
+        const selection = { storyId, authorId: author.authorId };
+        const emails: unknown[] = [];
+        const tickets = new Map<string, string>();
+        jest.spyOn(global, 'fetch').mockImplementation(async (url, init) => {
+          const data = JSON.parse(String(init?.body));
+          if (String(url) === 'https://notifications.test/email/print-order-proof') {
+            emails.push(data);
+            return Response.json({ success: true, data: { deliveryStatus: 'sent' } });
+          }
+          expect(String(url)).toBe('https://admin.test/api/tickets/paid-print');
+          const printRequestId = data.orderDetails.printRequestId;
+          const id = tickets.get(printRequestId) ?? randomUUID();
+          tickets.set(printRequestId, id);
+          return Response.json({ id, metadata: { printRequestId } });
+        });
+
+        await expect(getPublicPrintOptions(selection)).resolves.toMatchObject({
+          hardcoverAvailable: false,
+          paperbackAvailable: false,
+        });
+        await expect(startPrintCheckout(form, author)).rejects.toMatchObject({
+          code: 'square_print_unavailable',
+        });
+        expect(tickets.size).toBe(0);
+        expect(mockLoadPublished).not.toHaveBeenCalled();
+        process.env.PREMIUM_SQUARE_PRINT_APPROVAL = 'sandbox:approval-record-fixture';
+        mockLoadPublished.mockImplementation(async (_story, _author, features) => ({
+          format: { pageCount },
+          previousRevision:
+            features.premiumBook.revision === replacement ? firstRevision : undefined,
+        }));
+        await expect(getPublicPrintOptions(selection)).resolves.toMatchObject({
+          luluDefault: false,
+          paperbackAvailable: false,
+          hardcoverAvailable: true,
+          squareEditionRevision: firstRevision,
+        });
+        const bought = await Promise.all([
+          startPrintCheckout(form, author),
+          startPrintCheckout(form, author),
+        ]);
+        const { request, fulfillment } = bought[0];
+        expect(tickets.size).toBe(1);
+        expect(bought.filter((order) => !order.duplicate)).toHaveLength(1);
+        expect(fulfillment).toMatchObject({
+          provider: 'lulu',
+          binding: 'hardcover',
+          creditsSpent: 19,
+        });
+        expect(request.printingOptions).toMatchObject({
+          extraChapters: 0,
+          premiumEdition: { premiumBook: originalMarker, pageCount },
+        });
+
+        await mockDatabase
+          .update(stories)
+          .set({ features: { premiumBook: correctedMarker } })
+          .where(eq(stories.storyId, storyId));
+        function proof(generation: string) {
+          const asset = { bucket: 'b', object: 'o', generation, size: 1, sha256: 'a'.repeat(64) };
+          return {
+            interior: asset,
+            cover: { ...asset, object: 'cover', sha256: 'b'.repeat(64) },
+            pageCount,
+            qaPassed: true,
+            qaCriticalCount: 0,
+          };
+        }
+        mockRenderOrderProof.mockResolvedValue(proof('1'));
+        const firstProof = await processPrintProof(request.id);
+        expect(firstProof.fulfillment).toMatchObject({ status: 'proof_ready', proofVersion: 1 });
+        expect(mockRenderOrderProof.mock.calls[0][0]).toMatchObject({
+          premiumBook: originalMarker,
+          premiumPageCount: pageCount,
+        });
+        expect(mockSubmit).not.toHaveBeenCalled();
+        const onHold = await setPrintHold(firstProof, 'Customer requested a spelling correction');
+        const corrected = await correctSquareEdition(
+          onHold,
+          {
+            expectedRevision: firstRevision,
+            correctedRevision: replacement,
+            reason: 'Corrected spelling on page 8',
+          },
+          actor,
+        );
+        expect(corrected.fulfillment).toMatchObject({
+          status: 'held',
+          proofVersion: 2,
+          proofSentAt: null,
+          quote: null,
+        });
+        await setPrintHold(corrected, null);
+        delete process.env.PREMIUM_SQUARE_PRINT_APPROVAL;
+        await expect(getPublicPrintOptions(selection)).resolves.toMatchObject({
+          hardcoverAvailable: false,
+        });
+        await expect(
+          startPrintCheckout({ ...form, intentId: randomUUID() }, author),
+        ).rejects.toMatchObject({ code: 'square_print_unavailable' });
+        mockRenderOrderProof.mockResolvedValue(proof('2'));
+        const ready = await processPrintProof(request.id);
+        expect(ready.fulfillment).toMatchObject({ status: 'proof_ready', proofVersion: 2 });
+        expect(mockRenderOrderProof.mock.calls[2][0]).toMatchObject({
+          premiumBook: correctedMarker,
+          premiumPageCount: pageCount,
+        });
+        expect(emails).toMatchObject([
+          { recipient: { email: author.email }, proofVersion: 1, interiorGeneration: '1' },
+          {
+            recipient: { email: author.email },
+            proofVersion: 2,
+            interiorGeneration: '2',
+            revised: true,
+          },
+        ]);
+        expect(mockSubmit).not.toHaveBeenCalled();
+        const quote = ready.fulfillment.quote as { confirmationId: string; totalEur: number };
+        const release = {
+          confirmationId: quote.confirmationId,
+          confirmedTotalEur: quote.totalEur,
+          proofVersion: 2,
+          checkedInbox: true,
+        };
+        await expect(
+          submitPrintOrder(ready, { ...release, proofVersion: 1 }, actor),
+        ).rejects.toMatchObject({
+          code: 'print_not_approved',
+        });
+        mockSubmit.mockResolvedValue({
+          id: '101',
+          status: 'UNPAID',
+          externalId: request.id,
+          tracking: [],
+          lines: [{ external_id: request.id + '-1' }],
+        });
+        const approvals = await Promise.allSettled([
+          submitPrintOrder(ready, release, actor),
+          submitPrintOrder(ready, release, actor),
+        ]);
+        expect(approvals.filter(({ status }) => status === 'fulfilled')).toHaveLength(1);
+        expect(mockSubmit).toHaveBeenCalledTimes(1);
+        expect(mockSubmit.mock.calls[0][0]).toMatchObject({
+          podPackageId: PREMIUM_SQUARE_PACKAGE,
+          copies: 2,
+          externalId: request.id,
+        });
+        expect(getLuluCoverDimensions).toHaveBeenCalledTimes(2);
+        expect(getLuluCoverDimensions).toHaveBeenCalledWith({
+          podPackageId: PREMIUM_SQUARE_PACKAGE,
+          pageCount,
+        });
+        expect(validateLuluFile).toHaveBeenCalledWith(
+          'interior',
+          expect.objectContaining({ pageCount, requirePackageMatch: true }),
+          undefined,
+          expect.any(Function),
+        );
+        expect(validateLuluFile).toHaveBeenCalledWith(
+          'cover',
+          expect.objectContaining({ pageCount, requirePackageMatch: true }),
+          undefined,
+          expect.any(Function),
+        );
+        expect(quoteLuluOrder).toHaveBeenCalledWith(
+          expect.objectContaining({ pageCount, podPackageId: PREMIUM_SQUARE_PACKAGE }),
+        );
+        const [balance] = await mockDatabase
+          .select()
+          .from(authorCreditBalances)
+          .where(eq(authorCreditBalances.authorId, author.authorId));
+        expect(balance.totalCredits).toBe(31);
+        const debitEntries = await mockDatabase
+          .select()
+          .from(creditLedger)
+          .where(eq(creditLedger.authorId, author.authorId));
+        expect(debitEntries.map(({ amount }) => amount)).toEqual([-19]);
+      } finally {
+        jest.restoreAllMocks();
+      }
+    },
+    30_000,
+  );
 });

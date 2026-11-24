@@ -1,0 +1,22 @@
+{
+  "format": "Formato del libro",
+  "standard": "Estándar",
+  "title": "Libro infantil prémium",
+  "formatDescription": "Un libro cuadrado ilustrado para niños de 0 a 6 años, con imágenes que se extienden a lo largo de dos páginas.",
+  "correctFormat": "Elige el formato Estándar o un público de la edad adecuada en los ajustes del libro para continuar.",
+  "saveFailed": "No se ha podido guardar el formato del libro. Inténtalo de nuevo.",
+  "reviewFormat": "Vuelve a los ajustes del libro y revisa el formato antes de empezar.",
+  "readerLabel": "Lector de libros ilustrados",
+  "frontCover": "Portada",
+  "backCover": "Contraportada",
+  "pageNavigation": "Navegación entre páginas",
+  "goToPage": "Ir a la página",
+  "pageNumber": "Página {number}",
+  "pagePair": "Páginas {first} y {last}",
+  "previous": "Anterior",
+  "next": "Siguiente",
+  "pageText": "Leer el texto de la página",
+  "imageUnavailable": "Ilustración no disponible",
+  "generationProgress": "Estamos planificando las páginas, creando las ilustraciones y preparando el libro para su lectura.",
+  "generationInterrupted": "No se ha podido completar el libro. Puedes consultar su estado en Mis historias."
+}

@@ -13,6 +13,8 @@
       "confirmation": "Confirmation"
     },
     "errors": {
+      "squareUnavailable": "L’impression au format carré avec couverture rigide est actuellement indisponible.",
+      "editionChanged": "L’édition imprimée a changé. Revenez en arrière et vérifiez l’édition actuelle avant de commander.",
       "storyNotFound": "Histoire non trouvée",
       "storyNotPublished": "Seules les histoires publiées peuvent être imprimées",
       "loadingFailed": "Échec de charger les données de l'histoire",
@@ -31,6 +33,7 @@
       "paperback": "Couverture souple"
     },
     "payment": {
+      "squareHardcoverTitle": "Couverture rigide carrée (21,6 × 21,6 cm)",
       "softcoverTitle": "📖 Couverture souple",
       "softcoverDescription": "Couverture flexible avec finition brillante. Idéal pour la lecture quotidienne et manipulation.",
       "paperbackDescriptionWithChapters": "Livre broché magnifiquement imprimé et de haute qualité avec {chapters} chapitres.",

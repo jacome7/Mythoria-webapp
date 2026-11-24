@@ -194,6 +194,7 @@ export default function MyStoriesTable() {
           storyTitle={storyToShare.title}
           isPublic={storyToShare.isPublic}
           slug={storyToShare.slug}
+          viewOnly={storyToShare.bookType === 'premium_children'}
           onShareSuccess={() => {
             const refresh = async () => {
               try {

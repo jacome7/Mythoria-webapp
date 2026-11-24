@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getCurrentAuthor } from '@/lib/auth';
 import { ensureStoryIdAccess, AccessDeniedError } from '@/lib/authorization';
+import { hasPremiumBookMarker } from '@/lib/premium-children-book/contract';
 // storyService intentionally not imported; access handled via ensureStoryIdAccess
 
 export async function GET(
@@ -37,6 +38,10 @@ export async function GET(
         return NextResponse.json({ error: 'Not found' }, { status: 404 });
       }
       throw e;
+    }
+
+    if (hasPremiumBookMarker(story.features)) {
+      return NextResponse.json({ error: 'No audiobook available for this story' }, { status: 404 });
     }
 
     // Check if audiobook data exists

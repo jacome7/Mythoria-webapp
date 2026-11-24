@@ -9,6 +9,31 @@ import { stories, chapters } from '@/db/schema';
 import { and, asc, eq, max } from 'drizzle-orm';
 import { Storage } from '@google-cloud/storage';
 import { ZodError } from 'zod';
+import {
+  hasPremiumBookMarker,
+  premiumBookType,
+  storyFeatureRecord,
+} from '@/lib/premium-children-book/contract';
+import {
+  isBookFormatEditable,
+  premiumGenerationEnabled,
+  PremiumBookSelectionError,
+} from '@/lib/premium-children-book/selection';
+
+const editableFields = new Set([
+  'title',
+  'place',
+  'targetAudience',
+  'novelStyle',
+  'graphicalStyle',
+  'literaryPersona',
+  'customWritingPersona',
+  'plotDescription',
+  'additionalRequests',
+  'imageGenerationInstructions',
+  'chapterCount',
+  'storyLanguage',
+]);
 
 const storage = new Storage();
 const bucketName = process.env.STORAGE_BUCKET_NAME || 'mythoria-generated-stories';
@@ -155,7 +180,16 @@ export async function GET(
       return NextResponse.json({ error: 'Story not found' }, { status: 404 });
     }
 
-    return NextResponse.json({ story });
+    const { premiumBook: _serverMetadata, ...features } = storyFeatureRecord(story.features);
+    return NextResponse.json({
+      story: {
+        ...story,
+        features,
+        bookType: hasPremiumBookMarker(story.features) ? premiumBookType : 'standard',
+        bookFormatEditable: isBookFormatEditable(story.status),
+        premiumBookPilot: premiumGenerationEnabled() && Boolean(author.experimentalFeaturesEnabled),
+      },
+    });
   } catch (error) {
     console.error('Error fetching story:', error);
     return NextResponse.json({ error: 'Failed to fetch story' }, { status: 500 });
@@ -180,16 +214,29 @@ export async function PUT(
       return NextResponse.json({ error: 'Story not found' }, { status: 404 });
     }
 
-    const updates = await request.json();
+    const payload = await request.json().catch(() => null);
+    if (!payload || typeof payload !== 'object' || Array.isArray(payload)) {
+      return NextResponse.json({ error: 'Invalid story updates' }, { status: 400 });
+    }
+    const { features: _ignoredFeatures, ...updates } = payload;
+    if (Object.keys(updates).some((key) => !editableFields.has(key))) {
+      return NextResponse.json({ error: 'Invalid story updates' }, { status: 400 });
+    }
 
     if (typeof updates === 'object' && updates !== null && 'customWritingPersona' in updates) {
       updates.customWritingPersona = writingPersonaStorySchema.parse(updates.customWritingPersona);
     }
 
-    const updatedStory = await storyService.updateStory(storyId, updates);
+    const updatedStory = Object.keys(updates).length
+      ? await storyService.updateStory(storyId, updates)
+      : story;
 
-    return NextResponse.json({ story: updatedStory });
+    const { premiumBook: _serverMetadata, ...features } = storyFeatureRecord(updatedStory.features);
+    return NextResponse.json({ story: { ...updatedStory, features } });
   } catch (error) {
+    if (error instanceof PremiumBookSelectionError) {
+      return NextResponse.json({ error: error.code }, { status: 422 });
+    }
     if (error instanceof ZodError) {
       return NextResponse.json(
         { error: 'Invalid writing persona data', details: error.issues },
@@ -252,6 +299,9 @@ export async function POST(
     const original = await storyService.getStoryById(storyId);
     if (!original || original.authorId !== author.authorId) {
       return NextResponse.json({ error: 'Story not found' }, { status: 404 });
+    }
+    if (hasPremiumBookMarker(original.features)) {
+      return NextResponse.json({ error: 'incompatible_book_features' }, { status: 422 });
     }
 
     // Only allow duplicating published stories

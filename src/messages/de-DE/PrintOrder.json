@@ -13,6 +13,8 @@
       "confirmation": "Bestätigung"
     },
     "errors": {
+      "squareUnavailable": "Das quadratische Hardcover ist derzeit nicht erhältlich.",
+      "editionChanged": "Die Druckausgabe hat sich geändert. Gehe zurück und prüfe die aktuelle Ausgabe vor der Bestellung.",
       "storyNotFound": "Story nicht gefunden",
       "storyNotPublished": "Nur veröffentlichte Stories können gedruckt werden",
       "loadingFailed": "Story-Daten konnten nicht geladen werden",
@@ -31,6 +33,7 @@
       "paperback": "Taschenbuch"
     },
     "payment": {
+      "squareHardcoverTitle": "Quadratisches Hardcover (21,6 × 21,6 cm)",
       "softcoverTitle": "📖 Softcover",
       "softcoverDescription": "Flexibles Taschenbuch mit glänzendem Finish. Ideal für den täglichen Gebrauch.",
       "paperbackDescriptionWithChapters": "Wunderschön gedrucktes Taschenbuch in hoher Qualität mit {chapters} Kapiteln.",

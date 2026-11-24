@@ -1,5 +1,5 @@
 import { createHash, randomUUID } from 'crypto';
-import { and, asc, desc, eq, gt, isNull, lt, lte, or, sql } from 'drizzle-orm';
+import { and, asc, desc, eq, getTableColumns, gt, isNull, lt, lte, or, sql } from 'drizzle-orm';
 import { db } from '@/db';
 import {
   analyticsOutbox,
@@ -11,6 +11,7 @@ import {
   type AnalyticsConsent,
 } from '@/db/schema';
 import { publishStoryRequest } from '@/lib/pubsub';
+import { draftPremiumBookMarker, premiumBookType } from '@/lib/premium-children-book/contract';
 import {
   deliverAdConversions,
   fanOutAdConversions,
@@ -365,15 +366,74 @@ export async function deliverAnalytics(): Promise<{
   return { delivered, failed, skipped, deferred };
 }
 
-export async function compensateGeneration(runId: string): Promise<void> {
+export async function compensateGeneration(
+  runId: string,
+  publishFailure?: { claimedAt: Date; attempts: number; message: string },
+): Promise<void> {
   await db.transaction(async (tx) => {
+    // SGW activates a premium run under the same story-then-request lock order.
+    await tx
+      .select({ storyId: stories.storyId })
+      .from(stories)
+      .innerJoin(storyGenerationRequests, eq(storyGenerationRequests.storyId, stories.storyId))
+      .where(eq(storyGenerationRequests.runId, runId))
+      .for('update', { of: stories });
     const [request] = await tx
       .select()
       .from(storyGenerationRequests)
-      .where(eq(storyGenerationRequests.runId, runId));
-    if (!request || request.compensatedAt) return;
+      .where(
+        and(
+          eq(storyGenerationRequests.runId, runId),
+          eq(storyGenerationRequests.status, publishFailure ? 'publishing' : 'delivery_failed'),
+          publishFailure
+            ? eq(storyGenerationRequests.updatedAt, publishFailure.claimedAt)
+            : undefined,
+          isNull(storyGenerationRequests.compensatedAt),
+          isNull(storyGenerationRequests.terminalAt),
+        ),
+      )
+      .for('update');
+    if (!request) return;
 
     if (request.creditsSpent > 0) {
+      const [unclaimed] = await tx
+        .update(stories)
+        .set({
+          status: 'draft',
+          storyGenerationStatus: 'failed',
+          features: sql`case when ${stories.features} ? 'premiumBook'
+            then jsonb_set(${stories.features}, '{premiumBook}', ${JSON.stringify(draftPremiumBookMarker)}::jsonb)
+            else ${stories.features} end`,
+          updatedAt: new Date(),
+        })
+        .where(
+          and(
+            eq(stories.storyId, request.storyId),
+            eq(stories.authorId, request.authorId),
+            eq(stories.status, 'writing'),
+            eq(stories.storyGenerationStatus, 'queued'),
+            sql`(not coalesce(${stories.features} ? 'premiumBook', false) or (
+            ${stories.features}->'premiumBook'->>'state' = 'queued' and
+            ${stories.features}->'premiumBook'->>'revision' = ${runId}
+          ))`,
+          ),
+        )
+        .returning({ storyId: stories.storyId });
+      if (!unclaimed) {
+        // The broker can deliver despite reporting a failure. Allow terminal reconciliation.
+        await tx
+          .update(storyGenerationRequests)
+          .set({
+            status: 'published',
+            ...(publishFailure && {
+              publishAttempts: publishFailure.attempts,
+              lastError: publishFailure.message,
+            }),
+            updatedAt: new Date(),
+          })
+          .where(eq(storyGenerationRequests.runId, runId));
+        return;
+      }
       const refundKey = `story_generation_refund:${runId}`;
       const [refund] = await tx
         .insert(creditLedger)
@@ -396,11 +456,6 @@ export async function compensateGeneration(runId: string): Promise<void> {
           })
           .where(eq(authorCreditBalances.authorId, request.authorId));
       }
-
-      await tx
-        .update(stories)
-        .set({ status: 'draft', storyGenerationStatus: 'failed', updatedAt: new Date() })
-        .where(eq(stories.storyId, request.storyId));
     } else {
       // Admin/MCP restarts spend no credits. Preserve the last published story
       // while exposing the failed regeneration attempt.
@@ -414,6 +469,10 @@ export async function compensateGeneration(runId: string): Promise<void> {
       .update(storyGenerationRequests)
       .set({
         status: 'delivery_failed',
+        ...(publishFailure && {
+          publishAttempts: publishFailure.attempts,
+          lastError: publishFailure.message,
+        }),
         compensatedAt: new Date(),
         terminalAt: new Date(),
         updatedAt: new Date(),
@@ -426,20 +485,35 @@ export async function publishGenerations(): Promise<{ published: number; failed:
   const now = new Date();
   const abandonedBefore = new Date(now.getTime() - ABANDONED_PUBLISH_CLAIM_MS);
   const requests = await db
-    .select()
+    .select({
+      ...getTableColumns(storyGenerationRequests),
+      premium: sql<boolean>`exists (
+        select 1 from "stories" as "generation_story"
+        where "generation_story"."story_id" = "story_generation_requests"."story_id"
+          and "generation_story"."features"->'premiumBook'->>'type' = ${premiumBookType}
+          and "generation_story"."features"->'premiumBook'->>'revision' = "story_generation_requests"."run_id"::text
+      )`,
+    })
     .from(storyGenerationRequests)
     .where(
-      and(
-        or(
-          eq(storyGenerationRequests.status, 'queued'),
-          eq(storyGenerationRequests.status, 'retrying'),
-          and(
-            eq(storyGenerationRequests.status, 'publishing'),
-            lte(storyGenerationRequests.updatedAt, abandonedBefore),
-          ),
+      or(
+        and(
+          eq(storyGenerationRequests.status, 'delivery_failed'),
+          isNull(storyGenerationRequests.compensatedAt),
+          isNull(storyGenerationRequests.terminalAt),
         ),
-        lte(storyGenerationRequests.availableAt, now),
-        lt(storyGenerationRequests.publishAttempts, MAX_DELIVERY_ATTEMPTS),
+        and(
+          or(
+            eq(storyGenerationRequests.status, 'queued'),
+            eq(storyGenerationRequests.status, 'retrying'),
+            and(
+              eq(storyGenerationRequests.status, 'publishing'),
+              lte(storyGenerationRequests.updatedAt, abandonedBefore),
+            ),
+          ),
+          lte(storyGenerationRequests.availableAt, now),
+          lt(storyGenerationRequests.publishAttempts, MAX_DELIVERY_ATTEMPTS),
+        ),
       ),
     )
     .orderBy(asc(storyGenerationRequests.createdAt))
@@ -448,6 +522,10 @@ export async function publishGenerations(): Promise<{ published: number; failed:
   let published = 0;
   let failed = 0;
   for (const request of requests) {
+    if (request.status === 'delivery_failed') {
+      await compensateGeneration(request.runId);
+      continue;
+    }
     const claimTime = new Date();
     const [claimed] = await db
       .update(storyGenerationRequests)
@@ -470,11 +548,42 @@ export async function publishGenerations(): Promise<{ published: number; failed:
       .returning();
     if (!claimed) continue;
 
+    let messageId: string;
     try {
-      const messageId = await publishStoryRequest({
+      messageId = await publishStoryRequest({
         storyId: claimed.storyId,
         runId: claimed.runId,
+        ...(request.premium ? { bookType: premiumBookType } : {}),
       });
+    } catch (error) {
+      const attempts = claimed.publishAttempts + 1;
+      const message = (error instanceof Error ? error.message : String(error)).slice(0, 2000);
+      if (attempts >= MAX_DELIVERY_ATTEMPTS) {
+        // Keep the claim recoverable until the story reset, refund and terminal request commit.
+        await compensateGeneration(claimed.runId, { claimedAt: claimTime, attempts, message });
+      } else {
+        await db
+          .update(storyGenerationRequests)
+          .set({
+            status: 'retrying',
+            publishAttempts: attempts,
+            availableAt: retryAt(attempts),
+            lastError: message,
+            updatedAt: new Date(),
+          })
+          .where(
+            and(
+              eq(storyGenerationRequests.runId, claimed.runId),
+              eq(storyGenerationRequests.status, 'publishing'),
+              eq(storyGenerationRequests.updatedAt, claimTime),
+            ),
+          );
+      }
+      failed += 1;
+      continue;
+    }
+
+    try {
       await db
         .update(storyGenerationRequests)
         .set({
@@ -489,27 +598,13 @@ export async function publishGenerations(): Promise<{ published: number; failed:
           and(
             eq(storyGenerationRequests.runId, claimed.runId),
             eq(storyGenerationRequests.status, 'publishing'),
+            eq(storyGenerationRequests.updatedAt, claimTime),
           ),
         );
       published += 1;
-    } catch (error) {
-      const attempts = claimed.publishAttempts + 1;
-      await db
-        .update(storyGenerationRequests)
-        .set({
-          status: attempts >= MAX_DELIVERY_ATTEMPTS ? 'delivery_failed' : 'retrying',
-          publishAttempts: attempts,
-          availableAt: retryAt(attempts),
-          lastError: (error instanceof Error ? error.message : String(error)).slice(0, 2000),
-          updatedAt: new Date(),
-        })
-        .where(
-          and(
-            eq(storyGenerationRequests.runId, claimed.runId),
-            eq(storyGenerationRequests.status, 'publishing'),
-          ),
-        );
-      if (attempts >= MAX_DELIVERY_ATTEMPTS) await compensateGeneration(claimed.runId);
+    } catch {
+      // The broker accepted the message. A failed acknowledgement write is safe to retry.
+      console.error('Story queue acknowledgement could not be recorded', { runId: claimed.runId });
       failed += 1;
     }
   }

@@ -2,10 +2,12 @@
 import { createHmac } from 'node:crypto';
 import {
   findLuluJob,
+  getLuluCoverDimensions,
   getLuluJob,
   prepareLuluQuote,
   quoteLuluOrder,
   submitLuluJob,
+  validateLuluFile,
   verifyLuluWebhook,
 } from './client';
 jest.mock('google-auth-library', () => ({
@@ -83,6 +85,61 @@ it('compares landed costs for traceable services and validates both PDFs without
   expect(calls.filter((u) => u.endsWith('/print-job-cost-calculations/'))).toHaveLength(2);
   expect(calls.some((u) => u.includes('/print-jobs/'))).toBe(false);
 });
+it('uses the exact 33-page square count for dimensions, cover validation and pricing', async () => {
+  const square = { ...input, podPackageId: '0850X0850FCPRECW080CW444MXX', pageCount: 33 };
+  respond = (url, body) => {
+    if (url.endsWith('/cover-dimensions/')) {
+      expect(body).toEqual({
+        pod_package_id: square.podPackageId,
+        interior_page_count: 33,
+        unit: 'pt',
+      });
+      return { width: '1368.2', height: '738' };
+    }
+    if (url.endsWith('/validate-cover/')) {
+      expect(body).toEqual({
+        pod_package_id: square.podPackageId,
+        interior_page_count: 33,
+        source_url: square.coverUrl,
+      });
+      return { id: 9 };
+    }
+    if (url.endsWith('/validate-cover/9/')) return { id: 9, status: 'NORMALIZED' };
+    expect(body.line_items).toEqual([
+      { pod_package_id: square.podPackageId, quantity: square.copies, page_count: 33 },
+    ]);
+    return url.endsWith('/shipping-options/')
+      ? [{ level: 'GROUND', traceable: true }]
+      : { currency: 'EUR', total_cost_incl_tax: '25.30' };
+  };
+  await expect(getLuluCoverDimensions(square)).resolves.toEqual({ width: 1368.2, height: 738 });
+  await expect(validateLuluFile('cover', { ...square, sourceUrl: square.coverUrl })).resolves.toBe(
+    '9',
+  );
+  await expect(quoteLuluOrder(square)).resolves.toMatchObject({ totalEur: 25.3 });
+});
+it.each([
+  [33, ['0850X0850.FC.PRE.CW.080CW444.MXX'], true],
+  [34, ['0850X0850.FC.PRE.CW.080CW444.MXX'], false],
+  [33, ['other'], false],
+  [33, undefined, false],
+] as const)(
+  'requires the normalized square count and package (%i, %j)',
+  async (pageCount, packages, accepted) => {
+    respond = (url) =>
+      url.endsWith('/validate-interior/9/')
+        ? { id: 9, status: 'NORMALIZED', page_count: pageCount, valid_pod_package_ids: packages }
+        : { id: 9 };
+    const result = validateLuluFile('interior', {
+      sourceUrl: input.interiorUrl,
+      podPackageId: '0850X0850FCPRECW080CW444MXX',
+      pageCount: 33,
+      requirePackageMatch: true,
+    });
+    if (accepted) await expect(result).resolves.toBe('9');
+    else await expect(result).rejects.toThrow('LULU_INTERIOR_MISMATCH');
+  },
+);
 it('holds a destination without tracked shipping', async () => {
   respond = () => [{ level: 'MAIL', traceable: false }];
   await expect(quoteLuluOrder(input)).rejects.toThrow('NO_TRACKED_SHIPPING');

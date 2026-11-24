@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getCurrentAuthor } from '@/lib/auth';
 import { storyService } from '@/db/services';
 import { sgwFetch } from '@/lib/sgw-client';
+import { hasPremiumBookMarker } from '@/lib/premium-children-book/contract';
 
 export async function POST(request: NextRequest) {
   try {
@@ -23,6 +24,13 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         { success: false, error: 'Story not found or access denied' },
         { status: 404 },
+      );
+    }
+
+    if (hasPremiumBookMarker(story.features)) {
+      return NextResponse.json(
+        { success: false, error: 'incompatible_book_features' },
+        { status: 422 },
       );
     }
 

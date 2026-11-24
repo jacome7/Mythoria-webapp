@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
 import { authorService, aiEditService, storyService } from '@/db/services';
+import { hasPremiumBookMarker } from '@/lib/premium-children-book/contract';
 
 export async function POST(request: NextRequest) {
   try {
@@ -41,6 +42,12 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ success: false, error: 'Story not found' }, { status: 404 });
     }
 
+    if (hasPremiumBookMarker(story.features)) {
+      return NextResponse.json(
+        { success: false, error: 'incompatible_book_features' },
+        { status: 422 },
+      );
+    }
     const chapterCount = story.chapterCount || 6; // Default to 6 if not set
 
     // Calculate credits needed for all chapters

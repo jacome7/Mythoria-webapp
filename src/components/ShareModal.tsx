@@ -23,6 +23,7 @@ interface ShareModalProps {
   storyTitle: string;
   isPublic?: boolean;
   slug?: string;
+  viewOnly?: boolean;
   onShareSuccess?: (shareData: ShareData) => void;
 }
 
@@ -56,6 +57,7 @@ export default function ShareModal({
   storyTitle,
   isPublic = false,
   slug,
+  viewOnly = false,
   onShareSuccess,
 }: ShareModalProps) {
   const locale = useLocale();
@@ -120,7 +122,7 @@ export default function ShareModal({
       const response = await fetch(`/api/stories/${storyId}/share`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ allowEdit, makePublic, expiresInDays: 30 }),
+        body: JSON.stringify({ allowEdit: !viewOnly && allowEdit, makePublic, expiresInDays: 30 }),
       });
       const data = (await response.json().catch(() => undefined)) as ShareData | undefined;
       if (!response.ok || !data?.success) throw new Error('Share link creation failed');
@@ -335,26 +337,28 @@ export default function ShareModal({
                   <p className="text-sm text-gray-600">{tCommonShareModal('chooseOptions')}</p>
                 </div>
                 <div className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <div className="p-2 bg-blue-100 rounded-lg">
-                        <Users className="text-blue-600" />
+                  {!viewOnly && (
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <div className="p-2 bg-blue-100 rounded-lg">
+                          <Users className="text-blue-600" />
+                        </div>
+                        <div>
+                          <h4 className="font-medium">{tCommonShareModal('allowEdit')}</h4>
+                          <p className="text-sm text-gray-600">
+                            {tCommonShareModal('allowEditDesc')}
+                          </p>
+                        </div>
                       </div>
-                      <div>
-                        <h4 className="font-medium">{tCommonShareModal('allowEdit')}</h4>
-                        <p className="text-sm text-gray-600">
-                          {tCommonShareModal('allowEditDesc')}
-                        </p>
-                      </div>
+                      <input
+                        type="checkbox"
+                        className="toggle toggle-primary"
+                        checked={allowEdit}
+                        onChange={(event) => setAllowEdit(event.target.checked)}
+                        disabled={makePublic}
+                      />
                     </div>
-                    <input
-                      type="checkbox"
-                      className="toggle toggle-primary"
-                      checked={allowEdit}
-                      onChange={(event) => setAllowEdit(event.target.checked)}
-                      disabled={makePublic}
-                    />
-                  </div>
+                  )}
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
                       <div className="p-2 bg-green-100 rounded-lg">

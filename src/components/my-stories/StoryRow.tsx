@@ -20,6 +20,7 @@ import { useLocale } from 'next-intl';
 import { createPortal } from 'react-dom';
 import { Story } from '@/types/story';
 import { formatDate, FormatOptions } from '@/utils/date';
+import { premiumBookType } from '@/lib/premium-children-book/contract';
 
 interface StoryRowProps {
   story: Story;
@@ -51,6 +52,7 @@ export default function StoryRow({
   const tCommonShare = useTranslations('Share');
   const locale = useLocale();
   const router = useRouter();
+  const premium = story.bookType === premiumBookType;
 
   const [openMenu, setOpenMenu] = useState(false);
   const [menuPosition, setMenuPosition] = useState<{
@@ -191,8 +193,19 @@ export default function StoryRow({
         {story.status === 'published' ? (
           <Link
             href={`/${locale}/stories/${story.storyId}`}
-            className="text-primary hover:text-primary-focus hover:underline cursor-pointer"
+            className="inline-flex items-center gap-2 text-primary hover:text-primary-focus hover:underline cursor-pointer"
           >
+            {premium && story.coverUri && (
+              <Image
+                src={story.coverUri}
+                alt=""
+                width={32}
+                height={32}
+                unoptimized
+                loading="lazy"
+                className="aspect-square shrink-0 rounded object-cover"
+              />
+            )}
             {story.title}
           </Link>
         ) : (
@@ -257,31 +270,34 @@ export default function StoryRow({
       </td>
       <td className="px-2 py-1 md:px-4 md:py-2" data-row-action-ignore="true">
         <div className="hidden md:flex justify-end gap-1.5">
-          <button
-            className={`${actionButtonClass} ${story.status !== 'published' ? 'btn-disabled' : ''}`}
-            onClick={() => story.status === 'published' && onDuplicate(story)}
-            title={tMyStoriesPage('actions.duplicate')}
-            disabled={story.status !== 'published'}
-          >
-            <Copy className="w-4 h-4" />
-          </button>
-          {story.status === 'published' ? (
-            <Link
-              href={`/${locale}/stories/listen/${story.storyId}`}
-              className={actionButtonClass}
-              title={tMyStoriesPage('actions.listen')}
-            >
-              <Volume2 className="w-4 h-4" />
-            </Link>
-          ) : story.status === 'writing' ? (
+          {!premium && (
             <button
-              className={`${actionButtonClass} btn-disabled`}
-              disabled
-              title={tMyStoriesPage('actions.listenNotAvailable')}
+              className={`${actionButtonClass} ${story.status !== 'published' ? 'btn-disabled' : ''}`}
+              onClick={() => story.status === 'published' && onDuplicate(story)}
+              title={tMyStoriesPage('actions.duplicate')}
+              disabled={story.status !== 'published'}
             >
-              <Volume2 className="w-4 h-4" />
+              <Copy className="w-4 h-4" />
             </button>
-          ) : null}
+          )}
+          {!premium &&
+            (story.status === 'published' ? (
+              <Link
+                href={`/${locale}/stories/listen/${story.storyId}`}
+                className={actionButtonClass}
+                title={tMyStoriesPage('actions.listen')}
+              >
+                <Volume2 className="w-4 h-4" />
+              </Link>
+            ) : story.status === 'writing' ? (
+              <button
+                className={`${actionButtonClass} btn-disabled`}
+                disabled
+                title={tMyStoriesPage('actions.listenNotAvailable')}
+              >
+                <Volume2 className="w-4 h-4" />
+              </button>
+            ) : null)}
           {story.status === 'published' ? (
             <button
               className={actionButtonClass}
@@ -301,20 +317,24 @@ export default function StoryRow({
           ) : null}
           {story.status === 'published' && (
             <>
-              <button
-                className={actionButtonClass}
-                onClick={() => onPrint(story)}
-                title={tMyStoriesPage('actions.print')}
-              >
-                <Printer className="w-4 h-4" />
-              </button>
-              <button
-                className={actionButtonClass}
-                onClick={() => onDownload(story)}
-                title={tMyStoriesPage('actions.downloadPdf')}
-              >
-                <Download className="w-4 h-4" />
-              </button>
+              {(!premium || story.premiumPrintAvailable) && (
+                <button
+                  className={actionButtonClass}
+                  onClick={() => onPrint(story)}
+                  title={tMyStoriesPage('actions.print')}
+                >
+                  <Printer className="w-4 h-4" />
+                </button>
+              )}
+              {!premium && (
+                <button
+                  className={actionButtonClass}
+                  onClick={() => onDownload(story)}
+                  title={tMyStoriesPage('actions.downloadPdf')}
+                >
+                  <Download className="w-4 h-4" />
+                </button>
+              )}
             </>
           )}
           {story.status === 'writing' ? (
@@ -333,7 +353,7 @@ export default function StoryRow({
             >
               <Edit3 className="w-4 h-4" />
             </Link>
-          ) : (
+          ) : !premium ? (
             <Link
               href={`/${locale}/stories/edit/${story.storyId}`}
               className={actionButtonClass}
@@ -341,7 +361,7 @@ export default function StoryRow({
             >
               <Edit3 className="w-4 h-4" />
             </Link>
-          )}
+          ) : null}
           <button
             className={`${actionButtonClass} text-error hover:bg-error hover:text-error-content`}
             onClick={() => onDelete(story)}
@@ -389,23 +409,24 @@ export default function StoryRow({
                 }}
               >
                 <div className="p-2 space-y-1">
-                  {story.status === 'published' ? (
-                    <Link
-                      href={`/${locale}/stories/listen/${story.storyId}`}
-                      className="flex items-center gap-2 px-3 py-2 text-sm hover:bg-base-200 rounded-md"
-                      onClick={() => setOpenMenu(false)}
-                    >
-                      <Volume2 className="w-4 h-4" />
-                      {tMyStoriesPage('actions.listen')}
-                    </Link>
-                  ) : (
-                    story.status === 'writing' && (
-                      <div className="flex items-center gap-2 px-3 py-2 text-sm text-base-content/50 rounded-md">
+                  {!premium &&
+                    (story.status === 'published' ? (
+                      <Link
+                        href={`/${locale}/stories/listen/${story.storyId}`}
+                        className="flex items-center gap-2 px-3 py-2 text-sm hover:bg-base-200 rounded-md"
+                        onClick={() => setOpenMenu(false)}
+                      >
                         <Volume2 className="w-4 h-4" />
                         {tMyStoriesPage('actions.listen')}
-                      </div>
-                    )
-                  )}
+                      </Link>
+                    ) : (
+                      story.status === 'writing' && (
+                        <div className="flex items-center gap-2 px-3 py-2 text-sm text-base-content/50 rounded-md">
+                          <Volume2 className="w-4 h-4" />
+                          {tMyStoriesPage('actions.listen')}
+                        </div>
+                      )
+                    ))}
                   {story.status === 'published' && (
                     <>
                       <button
@@ -419,28 +440,32 @@ export default function StoryRow({
                         <Share2 className="w-4 h-4" />
                         {tMyStoriesPage('actions.share')}
                       </button>
-                      <button
-                        className="flex items-center gap-2 px-3 py-2 text-sm hover:bg-base-200 rounded-md w-full text-left"
-                        onClick={() => {
-                          onPrint(story);
-                          setOpenMenu(false);
-                          setMenuPosition(null);
-                        }}
-                      >
-                        <Printer className="w-4 h-4" />
-                        {tMyStoriesPage('actions.print')}
-                      </button>
-                      <button
-                        className="flex items-center gap-2 px-3 py-2 text-sm hover:bg-base-200 rounded-md w-full text-left"
-                        onClick={() => {
-                          onDownload(story);
-                          setOpenMenu(false);
-                          setMenuPosition(null);
-                        }}
-                      >
-                        <Download className="w-4 h-4" />
-                        {tMyStoriesPage('actions.downloadPdf')}
-                      </button>
+                      {(!premium || story.premiumPrintAvailable) && (
+                        <button
+                          className="flex items-center gap-2 px-3 py-2 text-sm hover:bg-base-200 rounded-md w-full text-left"
+                          onClick={() => {
+                            onPrint(story);
+                            setOpenMenu(false);
+                            setMenuPosition(null);
+                          }}
+                        >
+                          <Printer className="w-4 h-4" />
+                          {tMyStoriesPage('actions.print')}
+                        </button>
+                      )}
+                      {!premium && (
+                        <button
+                          className="flex items-center gap-2 px-3 py-2 text-sm hover:bg-base-200 rounded-md w-full text-left"
+                          onClick={() => {
+                            onDownload(story);
+                            setOpenMenu(false);
+                            setMenuPosition(null);
+                          }}
+                        >
+                          <Download className="w-4 h-4" />
+                          {tMyStoriesPage('actions.downloadPdf')}
+                        </button>
+                      )}
                     </>
                   )}
                   {story.status === 'writing' ? (
@@ -460,7 +485,7 @@ export default function StoryRow({
                       <Edit3 className="w-4 h-4" />
                       {tMyStoriesPage('actions.edit')}
                     </Link>
-                  ) : (
+                  ) : !premium ? (
                     <Link
                       href={`/${locale}/stories/edit/${story.storyId}`}
                       className="flex items-center gap-2 px-3 py-2 text-sm hover:bg-base-200 rounded-md"
@@ -472,22 +497,24 @@ export default function StoryRow({
                       <Edit3 className="w-4 h-4" />
                       {tMyStoriesPage('actions.edit')}
                     </Link>
-                  )}
+                  ) : null}
                   <div className="border-t border-base-300 my-1"></div>
-                  <button
-                    className={`flex items-center gap-2 px-3 py-2 text-sm rounded-md w-full text-left ${story.status !== 'published' ? 'opacity-50 cursor-not-allowed' : 'hover:bg-base-200'}`}
-                    onClick={() => {
-                      if (story.status === 'published') {
-                        onDuplicate(story);
-                      }
-                      setOpenMenu(false);
-                      setMenuPosition(null);
-                    }}
-                    disabled={story.status !== 'published'}
-                  >
-                    <Copy className="w-4 h-4" />
-                    {tMyStoriesPage('actions.duplicate')}
-                  </button>
+                  {!premium && (
+                    <button
+                      className={`flex items-center gap-2 px-3 py-2 text-sm rounded-md w-full text-left ${story.status !== 'published' ? 'opacity-50 cursor-not-allowed' : 'hover:bg-base-200'}`}
+                      onClick={() => {
+                        if (story.status === 'published') {
+                          onDuplicate(story);
+                        }
+                        setOpenMenu(false);
+                        setMenuPosition(null);
+                      }}
+                      disabled={story.status !== 'published'}
+                    >
+                      <Copy className="w-4 h-4" />
+                      {tMyStoriesPage('actions.duplicate')}
+                    </button>
+                  )}
                   <button
                     className="flex items-center gap-2 px-3 py-2 text-sm hover:bg-error hover:text-error-content rounded-md w-full text-left text-error"
                     onClick={() => {

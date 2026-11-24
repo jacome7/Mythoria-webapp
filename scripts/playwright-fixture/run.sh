@@ -46,6 +46,8 @@ export PLAYWRIGHT_CLERK_FIXTURE=1 PLAYWRIGHT_CLERK_TICKET_AUTH=1 REFRESH_AUTH=1
 export NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY="pk_live_$(printf 'clerk.fixture.invalid$' | base64 | tr -d '=')"
 export CLERK_SECRET_KEY=sk_live_fixture CLERK_E2E_EMAIL=author@fixture.invalid
 export SURVEY_LINK_SECRET=fixture-survey-secret-not-for-production MCP_E2E_BEARER_TOKEN=oat_browser_fixture
+export PREMIUM_BOOK_GENERATION_ENABLED=true PREMIUM_BOOK_BUCKET=premium-book-fixture-no-storage
+export PLAYWRIGHT_PREMIUM_STORAGE_DIR="$fixture/premium-storage"
 
 cleanup() {
   if [[ -n "${app_pid:-}" ]]; then kill "$app_pid" 2>/dev/null || true; fi
@@ -68,6 +70,9 @@ export NODE_OPTIONS="--require=$fixture_scripts/network.cjs"
 npm run db:push -- --config=drizzle.config.ts --force > db-schema.log 2>&1
 "$E2E_PG_BIN/psql" -X -v ON_ERROR_STOP=1 -h "$fixture/socket" -p "$DB_PORT" -U "$DB_USER" \
   -d "$DB_NAME" -f "$fixture_scripts/seed.sql" > database-seed.log
+node "$fixture_scripts/premium-book.cjs" > premium-book.sql
+"$E2E_PG_BIN/psql" -X -v ON_ERROR_STOP=1 -h "$fixture/socket" -p "$DB_PORT" -U "$DB_USER" \
+  -d "$DB_NAME" -f premium-book.sql >> database-seed.log
 npm run surveys:publish -- --apply > survey-publish.log 2>&1
 npm run surveys:local-test -- --email "$CLERK_E2E_EMAIL" --survey activation_no_story --apply > survey.log 2>&1
 export E2E_SURVEY_TOKEN="$(sed -n 's@^Open: .*/survey/@@p' survey.log)"
@@ -79,6 +84,7 @@ cp -R .next/static .next/standalone/.next/
 node "$fixture_scripts/session.cjs"
 export CLERK_JWT_KEY="$(cat clerk-public.pem)" CLERK_FIXTURE_SESSION="$(cat clerk-session.txt)"
 export NODE_OPTIONS="$NODE_OPTIONS --require=$fixture_scripts/clerk-backend.cjs"
+export NODE_OPTIONS="$NODE_OPTIONS --require=$fixture_scripts/premium-storage.cjs"
 node .next/standalone/server.js > server.log 2>&1 &
 app_pid=$!
 for attempt in {1..20}; do
