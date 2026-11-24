@@ -55,11 +55,21 @@
       "method": "Zahlungsmethode",
       "creditsInfo": "Die Zahlung wird beim Absenden der Bestellung von deinem Credit-Guthaben abgezogen.",
       "confirmOrder": "Bestätige deinen Druckauftrag",
-      "confirmOrderDescription": "Aufgrund der hohen Nachfrage kann die Lieferung bis zu 4 Wochen dauern. Bist du sicher, dass du fortfahren möchtest?"
+      "confirmOrderDescription": "Aufgrund der hohen Nachfrage kann die Lieferung bis zu 4 Wochen dauern. Bist du sicher, dass du fortfahren möchtest?",
+      "hardcoverTitle": "Hardcover",
+      "binding": "Einband",
+      "recipient": "Kontakt für die Lieferung",
+      "recipientName": "Name des Empfängers",
+      "recipientEmail": "E-Mail des Empfängers",
+      "recipientPhone": "Telefonnummer für den Versand",
+      "taxId": "Steuer-ID des Empfängers",
+      "addressTooLong": "Gehe zurück und kürze den Ortsnamen und jede Adresszeile auf höchstens 30 Zeichen.",
+      "postalCodeRequired": "Gehe zurück und ergänze die Postleitzahl der Lieferadresse.",
+      "subdivisionRequired": "Gehe zurück und gib das Kürzel für den Bundesstaat, die Provinz oder die Region ein."
     },
     "confirmation": {
       "title": "Bestellung erfolgreich aufgegeben!",
-      "message": "Dein Druckauftrag wurde übermittelt. Du erhältst Updates zum Druck- und Versandstatus per E-Mail."
+      "message": "Deine Zahlung ist bestätigt. Sobald die Druckdateien fertig sind, schicken wir dir die Innenseiten und den Umschlag per E-Mail. Antworte auf diese E-Mail, falls dir ein Fehler auffällt."
     },
     "buttons": {
       "continue": "Weiter",

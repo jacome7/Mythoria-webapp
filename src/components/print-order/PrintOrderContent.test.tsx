@@ -1,4 +1,6 @@
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { webcrypto } from 'node:crypto';
+import { TextEncoder } from 'node:util';
+import { fireEvent, render, screen } from '@testing-library/react';
 import React, { Suspense, type ComponentType, type ReactNode } from 'react';
 import PrintOrderContent from './PrintOrderContent';
 
@@ -81,8 +83,8 @@ jest.mock('@/components/print-order/steps/PaymentStep', () => ({
 
 const originalFetch = global.fetch;
 
-function mockFetch(printBody: Record<string, unknown>) {
-  global.fetch = jest.fn(async (url: string) => {
+function mockFetch(printBody: Record<string, unknown>, onSubmit?: (init?: RequestInit) => void) {
+  global.fetch = jest.fn(async (url: string, init?: RequestInit) => {
     if (url === '/api/stories/story-1') {
       return {
         ok: true,
@@ -100,22 +102,34 @@ function mockFetch(printBody: Record<string, unknown>) {
         }),
       };
     }
-    if (url === '/api/print-requests')
+    if (url === '/api/print-requests') {
+      onSubmit?.(init);
       return { ok: true, status: 200, json: async () => printBody };
+    }
     throw new Error(`Unexpected fetch ${url}`);
   }) as unknown as typeof fetch;
 }
 
-async function placeOrder() {
-  render(<PrintOrderContent storyId="story-1" />);
+async function submitOrder() {
+  const view = render(<PrintOrderContent storyId="story-1" />);
   fireEvent.click(await screen.findByRole('button', { name: 'story-next' }));
   fireEvent.click(await screen.findByRole('button', { name: 'address-next' }));
   fireEvent.click(await screen.findByRole('button', { name: 'select-option' }));
   fireEvent.click(screen.getByRole('button', { name: 'place-order' }));
-  await waitFor(() => expect(mockPush).toHaveBeenCalledWith('/en-US/my-stories'));
+  return view;
 }
 
+async function placeOrder() {
+  await submitOrder();
+  await screen.findByRole('heading', { name: 'confirmation.title' });
+}
+
+beforeAll(() => {
+  Object.defineProperty(globalThis, 'crypto', { value: webcrypto, configurable: true });
+  Object.defineProperty(globalThis, 'TextEncoder', { value: TextEncoder, configurable: true });
+});
 beforeEach(() => {
+  sessionStorage.clear();
   mockTrackOpenAiAdsEvent.mockReset();
   mockPush.mockReset();
 });
@@ -144,4 +158,30 @@ it('does not send print_order_requested without a server event id', async () => 
   await placeOrder();
 
   expect(mockTrackOpenAiAdsEvent).not.toHaveBeenCalled();
+});
+
+it('reuses a pending checkout intent after response loss and reload, then clears it on confirmation', async () => {
+  const ids: string[] = [];
+  const errorLog = jest.spyOn(console, 'error').mockImplementation(() => {});
+  try {
+    mockFetch({ success: true, request: { id: 'paid-order' } }, (init) => {
+      const body = JSON.parse(String(init?.body));
+      expect(body).not.toHaveProperty('storyId');
+      ids.push(body.checkout.intentId);
+      if (ids.length === 1) throw new TypeError('Interrupted after submission');
+    });
+    const first = await submitOrder();
+    await screen.findByText('errors.orderFailed');
+    first.unmount();
+    const replay = await submitOrder();
+    await screen.findByRole('heading', { name: 'confirmation.title' });
+    replay.unmount();
+    await placeOrder();
+    expect(ids).toHaveLength(3);
+    expect(ids[0]).toMatch(/^[a-f0-9-]{36}$/i);
+    expect(ids[1]).toBe(ids[0]);
+    expect(ids[2]).not.toBe(ids[1]);
+  } finally {
+    errorLog.mockRestore();
+  }
 });

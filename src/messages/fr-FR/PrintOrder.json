@@ -55,11 +55,21 @@
       "method": "Mode de paiement",
       "creditsInfo": "Le paiement sera déduit de votre solde de crédits lorsque vous passez la commande.",
       "confirmOrder": "Confirmez votre commande d'impression",
-      "confirmOrderDescription": "En raison de la forte demande, la livraison peut prendre jusqu'à 4 semaines. Êtes-vous sûr de vouloir procéder à votre commande?"
+      "confirmOrderDescription": "En raison de la forte demande, la livraison peut prendre jusqu'à 4 semaines. Êtes-vous sûr de vouloir procéder à votre commande?",
+      "hardcoverTitle": "Couverture rigide",
+      "binding": "Reliure",
+      "recipient": "Contact pour la livraison",
+      "recipientName": "Nom du destinataire",
+      "recipientEmail": "E-mail du destinataire",
+      "recipientPhone": "Téléphone pour le transporteur",
+      "taxId": "Identifiant fiscal du destinataire",
+      "addressTooLong": "Reviens en arrière et raccourcis la ville et chaque ligne de l’adresse à 30 caractères maximum.",
+      "postalCodeRequired": "Reviens en arrière et ajoute le code postal à l’adresse de livraison.",
+      "subdivisionRequired": "Reviens en arrière et saisis le code abrégé de l’État, de la province ou de la région."
     },
     "confirmation": {
       "title": "Ordre passé avec succès!",
-      "message": "Votre demande d'impression a été soumise. Vous recevrez des mises à jour sur l'impression et le statut d'expédition par e-mail."
+      "message": "Ton paiement est confirmé. Dès que les fichiers seront prêts, tu recevras les pages intérieures et la couverture par e-mail. Si tu repères un problème, réponds à cet e-mail."
     },
     "buttons": {
       "continue": "Continuer",

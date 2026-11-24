@@ -145,3 +145,7 @@ See [the recovery runbook](docs/biographer-database-rollout.md). Master migratio
 Execution update: the user subsequently authorized migration. `0050_biographer_complete` is applied (ledger ID 129), with successful fresh backup and independent postflight; see [execution record](docs/biographer-migration-applied-2026-11-17.md). Do not apply it again. `npm run biographer:local -- start|status|stop` manages WebApp plus SGW API/live processes in the sibling feature checkout using their npm development scripts; no Admin/Notification Engine is started. See [local testing](docs/biographer-local-testing.md). Proposals require no external search provider; new source-evidence arrays are empty and previously approved snapshots are preserved. Complete local book orchestration remains unconfigured; never assume localhost generation bypasses production Cloud Workflows/credits.
 
 Story Whisperer is the single-author Step 2 interview. See [its storage and service contracts](docs/biographer.md) and the [local test guide](docs/biographer-local-testing.md). Use the regular structure job and wizard pricing for its handoff.
+
+## Paid print proofs
+
+WebApp owns paid print intents, generation-pinned proof manifests, supplier release and reconciliation. Only an authenticated Admin ticket release can create a supplier job. See [the paid print operations guide](docs/PRINT_FULFILLMENT.md).

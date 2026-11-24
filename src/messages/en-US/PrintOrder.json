@@ -55,11 +55,21 @@
       "method": "Payment Method",
       "creditsInfo": "Payment will be deducted from your credits balance when you place the order.",
       "confirmOrder": "Confirm Your Print Order",
-      "confirmOrderDescription": "Due to high demand, the delivery can take up to 4 weeks. Are you sure you want to proceed with your order?"
+      "confirmOrderDescription": "Due to high demand, the delivery can take up to 4 weeks. Are you sure you want to proceed with your order?",
+      "hardcoverTitle": "Hardcover",
+      "binding": "Binding",
+      "recipient": "Delivery contact",
+      "recipientName": "Recipient name",
+      "recipientEmail": "Recipient email",
+      "recipientPhone": "Carrier phone number",
+      "taxId": "Recipient tax ID",
+      "addressTooLong": "Go back and shorten the city and each address line to 30 characters or fewer.",
+      "postalCodeRequired": "Go back and add the postal code to the shipping address.",
+      "subdivisionRequired": "Go back and enter the short code for the state, province, or region."
     },
     "confirmation": {
       "title": "Order Placed Successfully!",
-      "message": "Your print request has been submitted. You will receive updates on the printing and shipping status via email."
+      "message": "Your payment is confirmed. We’ll email the interior pages and cover as soon as your print files are ready. Reply to that email if you spot a problem."
     },
     "buttons": {
       "continue": "Continue",
