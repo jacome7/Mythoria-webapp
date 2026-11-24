@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
 import { authorService, storyService, chapterService } from '@/db/services';
+import { chapterJobAccessError } from '@/lib/premium-children-book/chapter-job-access';
 
 export async function POST(request: NextRequest) {
   try {
@@ -24,6 +25,8 @@ export async function POST(request: NextRequest) {
     if (!storyId) {
       return NextResponse.json({ success: false, error: 'Story ID is required' }, { status: 400 });
     }
+    const accessError = await chapterJobAccessError(storyId);
+    if (accessError) return accessError;
 
     if (!newImageUrl) {
       return NextResponse.json(

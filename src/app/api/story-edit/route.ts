@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
 import { getEnvironmentConfig } from '@/config/environment';
-import { authorService, aiEditService, chapterService } from '@/db/services';
+import { authorService, aiEditService, chapterService, storyService } from '@/db/services';
 import { sgwFetch } from '@/lib/sgw-client';
+import { hasPremiumBookMarker } from '@/lib/premium-children-book/contract';
 
 export async function POST(request: NextRequest) {
   try {
@@ -25,6 +26,13 @@ export async function POST(request: NextRequest) {
     // Validate required fields
     if (!storyId) {
       return NextResponse.json({ success: false, error: 'Story ID is required' }, { status: 400 });
+    }
+    const story = await storyService.getStoryById(storyId);
+    if (hasPremiumBookMarker(story?.features)) {
+      return NextResponse.json(
+        { success: false, error: 'incompatible_book_features' },
+        { status: 422 },
+      );
     }
 
     if (!userRequest || typeof userRequest !== 'string') {

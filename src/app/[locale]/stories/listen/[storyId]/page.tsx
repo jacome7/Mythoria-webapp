@@ -243,6 +243,10 @@ export default function ListenStoryPage() {
         // Handle story
         if (storyResponse.ok) {
           const storyData = await storyResponse.json();
+          if (storyData.story.bookType === 'premium_children') {
+            router.replace(`/${locale}/stories/read/${storyId}`);
+            return;
+          }
           console.log('Fetched story data:', storyData);
 
           if (storyData.story.status !== 'published') {
@@ -292,7 +296,7 @@ export default function ListenStoryPage() {
     if (storyId) {
       fetchInitialData();
     }
-  }, [storyId, tErrors]);
+  }, [storyId, tErrors, locale, router]);
 
   useEffect(() => {
     const status = audiobookProgress?.audiobookGenerationStatus;

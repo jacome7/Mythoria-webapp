@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getCurrentAuthor } from '@/lib/auth';
 import { ensureStoryIdAccess, AccessDeniedError } from '@/lib/authorization';
+import { hasPremiumBookMarker } from '@/lib/premium-children-book/contract';
 import { chapterService, storyService } from '@/db/services';
 
 export async function POST(
@@ -19,7 +20,10 @@ export async function POST(
 
     // Check if user has access (owner or collaborator)
     try {
-      await ensureStoryIdAccess(storyId, author.authorId);
+      const story = await ensureStoryIdAccess(storyId, author.authorId);
+      if (hasPremiumBookMarker(story.features)) {
+        return NextResponse.json({ error: 'incompatible_book_features' }, { status: 422 });
+      }
     } catch (e) {
       if (e instanceof AccessDeniedError) {
         return NextResponse.json({ error: 'Not found' }, { status: 404 });
@@ -77,7 +81,10 @@ export async function PUT(
 
     // Check if user has access (owner or collaborator)
     try {
-      await ensureStoryIdAccess(storyId, author.authorId);
+      const story = await ensureStoryIdAccess(storyId, author.authorId);
+      if (hasPremiumBookMarker(story.features)) {
+        return NextResponse.json({ error: 'incompatible_book_features' }, { status: 422 });
+      }
     } catch (e) {
       if (e instanceof AccessDeniedError) {
         return NextResponse.json({ error: 'Not found' }, { status: 404 });

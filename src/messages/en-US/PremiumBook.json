@@ -1,0 +1,22 @@
+{
+  "format": "Book format",
+  "standard": "Standard",
+  "title": "Premium Children’s Book",
+  "formatDescription": "An illustrated square book for ages 0–6, with pictures that continue across facing pages.",
+  "correctFormat": "Choose Standard or an eligible audience in Book Settings before continuing.",
+  "saveFailed": "Couldn’t save the book format. Try again.",
+  "reviewFormat": "Return to Book Settings and review your format before starting.",
+  "readerLabel": "Illustrated book reader",
+  "frontCover": "Front cover",
+  "backCover": "Back cover",
+  "pageNavigation": "Page navigation",
+  "goToPage": "Go to page",
+  "pageNumber": "Page {number}",
+  "pagePair": "Pages {first} and {last}",
+  "previous": "Previous",
+  "next": "Next",
+  "pageText": "Read the page text",
+  "imageUnavailable": "Illustration unavailable",
+  "generationProgress": "We’re planning the pages, creating the illustrations and getting your book ready to read.",
+  "generationInterrupted": "The book couldn’t be completed. You can check its status in My Stories."
+}

@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { PremiumBookSelectionError } from '@/lib/premium-children-book/selection';
 import { getCurrentAuthor } from '@/lib/auth';
 import { storyService } from '@/db/services';
 
@@ -53,6 +54,9 @@ export async function PATCH(
       message: 'Title updated successfully',
     });
   } catch (error) {
+    if (error instanceof PremiumBookSelectionError) {
+      return NextResponse.json({ error: error.code }, { status: 422 });
+    }
     console.error('Error updating story title:', error);
     return NextResponse.json({ error: 'Failed to update story title' }, { status: 500 });
   }

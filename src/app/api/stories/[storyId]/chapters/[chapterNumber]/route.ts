@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getCurrentAuthor } from '@/lib/auth';
 import { storyService, chapterService, authorService } from '@/db/services';
+import { hasPremiumBookMarker } from '@/lib/premium-children-book/contract';
 
 export async function GET(
   request: NextRequest,
@@ -32,6 +33,15 @@ export async function GET(
     const currentAuthor = await getCurrentAuthor();
     if (!currentAuthor) {
       return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
+    }
+
+    if (hasPremiumBookMarker(story.features)) {
+      return story.authorId === currentAuthor.authorId && story.status === 'published'
+        ? NextResponse.json(
+            { redirectToReader: true },
+            { headers: { 'Cache-Control': 'private, no-store' } },
+          )
+        : NextResponse.json({ error: 'Story not found' }, { status: 404 });
     }
 
     // Only allow access to published stories, or stories owned by the user

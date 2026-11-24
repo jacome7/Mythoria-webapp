@@ -15,6 +15,7 @@ import {
 } from '@/lib/product-generation';
 import { launchAudiobookWorkflow, launchSelfPrintWorkflow } from '@/lib/product-launch';
 import { getRecommendedVoice, getTTSProvider } from '@/lib/voice-options';
+import { hasPremiumBookMarker } from '@/lib/premium-children-book/contract';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -79,6 +80,7 @@ export async function POST(
     const story = await storyService.getStoryById(storyId);
     if (!story || story.authorId !== author.authorId) return failure('story_not_found', 404);
     if (story.status !== 'published') return failure('story_not_published', 409);
+    if (hasPremiumBookMarker(story.features)) return failure('incompatible_book_features', 422);
 
     // Fail before any state change: a PDF gift is e-mailed to the author.
     if (rewardType === 'pdf' && !author.email) return failure('author_email_missing', 409);

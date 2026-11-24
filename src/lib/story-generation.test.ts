@@ -20,25 +20,32 @@ jest.mock('@/db/services/pricing', () => ({
 }));
 
 import { startStoryGeneration } from './story-generation';
+import { draftPremiumBookMarker } from './premium-children-book/contract';
 
 function createTransaction(selectResults: unknown[][]) {
   const insertValues = jest.fn().mockResolvedValue(undefined);
   const updateWhere = jest.fn().mockResolvedValue(undefined);
+  const updateSet = jest.fn(() => ({ where: updateWhere }));
   const tx = {
     execute: jest.fn().mockResolvedValue(undefined),
     select: jest.fn(() => {
       const result = selectResults.shift() ?? [];
-      return {
-        from: jest.fn(() => ({ where: jest.fn().mockResolvedValue(result) })),
+      const query = {
+        where: jest.fn(() =>
+          Object.assign(Promise.resolve(result), {
+            for: jest.fn().mockResolvedValue(result),
+          }),
+        ),
       };
+      return { from: jest.fn(() => ({ ...query, innerJoin: jest.fn(() => query) })) };
     }),
     insert: jest.fn(() => ({ values: insertValues })),
     update: jest.fn(() => ({
-      set: jest.fn(() => ({ where: updateWhere })),
+      set: updateSet,
     })),
   };
   transactionMock.mockImplementation(async (callback) => callback(tx));
-  return { tx, insertValues, updateWhere };
+  return { tx, insertValues, updateWhere, updateSet };
 }
 
 const input = {
@@ -120,6 +127,86 @@ describe('startStoryGeneration', () => {
     await expect(startStoryGeneration(input)).rejects.toThrow('Insufficient credits');
     expect(tx.insert).not.toHaveBeenCalled();
     expect(tx.update).not.toHaveBeenCalled();
+  });
+
+  describe('premium eligibility and transactional selection', () => {
+    const saved = {
+      storyId: input.storyId,
+      status: 'draft',
+      targetAudience: 'children_3-6',
+      features: { premiumBook: draftPremiumBookMarker, futureFeature: { keep: true } },
+    };
+
+    beforeEach(() => {
+      process.env.PREMIUM_BOOK_GENERATION_ENABLED = 'true';
+      process.env.PREMIUM_BOOK_BUCKET = 'private-premium-test';
+    });
+    afterEach(() => {
+      delete process.env.PREMIUM_BOOK_GENERATION_ENABLED;
+      delete process.env.PREMIUM_BOOK_BUCKET;
+    });
+
+    it.each(['children_0-2', 'children_3-6'])(
+      'freezes %s in the same request as the debit',
+      async (audience) => {
+        const { updateSet, insertValues } = createTransaction([
+          [],
+          [],
+          [{ ...saved, targetAudience: audience }],
+          [{ experimental: true }],
+          [],
+          [{ totalCredits: 10 }],
+        ]);
+        const result = await startStoryGeneration(input);
+        expect(calculateCreditsMock).toHaveBeenCalledWith(input.features, 'standard');
+        expect(updateSet).toHaveBeenCalledWith(
+          expect.objectContaining({
+            features: {
+              ...input.features,
+              futureFeature: { keep: true },
+              premiumBook: {
+                ...draftPremiumBookMarker,
+                state: 'queued',
+                revision: result.runId,
+                ownerId: input.authorId,
+                audience,
+              },
+            },
+          }),
+        );
+        expect(insertValues).toHaveBeenCalledWith(
+          expect.objectContaining({ runId: result.runId, creditsSpent: 3 }),
+        );
+      },
+    );
+
+    it.each([
+      [{ ...saved, targetAudience: 'children_7-10' }, true],
+      [saved, false],
+    ])(
+      'rejects incompatible audience or opted-out author before debiting',
+      async (story, experimental) => {
+        const { tx } = createTransaction([[], [], [story], [{ experimental }]]);
+        await expect(startStoryGeneration(input)).rejects.toThrow('book_type_not_available');
+        expect(tx.insert).not.toHaveBeenCalled();
+        expect(calculateCreditsMock).not.toHaveBeenCalled();
+      },
+    );
+
+    it('rejects stale type and unrecognized saved metadata before debiting', async () => {
+      const stale = createTransaction([[], [], [saved]]);
+      await expect(
+        startStoryGeneration({ ...input, expectedBookType: 'standard' }),
+      ).rejects.toThrow('book_type_changed');
+      expect(stale.tx.insert).not.toHaveBeenCalled();
+      const invalid = createTransaction([
+        [],
+        [],
+        [{ ...saved, features: { premiumBook: { version: 2 } } }],
+      ]);
+      await expect(startStoryGeneration(input)).rejects.toThrow('Invalid premium book marker');
+      expect(invalid.tx.insert).not.toHaveBeenCalled();
+    });
   });
 
   it('adds the validated campaign intent to the authoritative generation event', async () => {

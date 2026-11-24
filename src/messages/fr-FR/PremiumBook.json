@@ -1,0 +1,22 @@
+{
+  "format": "Format du livre",
+  "standard": "Standard",
+  "title": "Livre jeunesse premium",
+  "formatDescription": "Un livre illustré carré pour les 0 à 6 ans, avec des illustrations qui se prolongent sur deux pages.",
+  "correctFormat": "Pour continuer, choisissez le format Standard ou une tranche d’âge éligible dans les paramètres du livre.",
+  "saveFailed": "Impossible d’enregistrer le format du livre. Réessayez.",
+  "reviewFormat": "Revenez aux paramètres du livre et vérifiez le format avant de commencer.",
+  "readerLabel": "Lecteur de livre illustré",
+  "frontCover": "Première de couverture",
+  "backCover": "Quatrième de couverture",
+  "pageNavigation": "Navigation entre les pages",
+  "goToPage": "Aller à la page",
+  "pageNumber": "Page {number}",
+  "pagePair": "Pages {first} et {last}",
+  "previous": "Précédente",
+  "next": "Suivante",
+  "pageText": "Lire le texte de la page",
+  "imageUnavailable": "Illustration indisponible",
+  "generationProgress": "Nous préparons les pages, créons les illustrations et mettons votre livre en forme pour la lecture.",
+  "generationInterrupted": "Le livre n’a pas pu être terminé. Vous pouvez consulter son état dans Mes histoires."
+}

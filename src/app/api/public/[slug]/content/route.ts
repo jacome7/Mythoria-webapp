@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { db } from '@/db';
 import { stories, chapters } from '@/db/schema';
 import { eq, and, asc, max } from 'drizzle-orm';
+import { hasPremiumBookMarker } from '@/lib/premium-children-book/contract';
 
 export async function GET(
   request: Request,
@@ -18,6 +19,7 @@ export async function GET(
         storyId: stories.storyId,
         title: stories.title,
         isPublic: stories.isPublic,
+        features: stories.features,
       })
       .from(stories)
       .where(
@@ -34,6 +36,9 @@ export async function GET(
     }
 
     const storyData = story[0];
+    if (hasPremiumBookMarker(storyData.features)) {
+      return NextResponse.json({ error: 'incompatible_book_features' }, { status: 422 });
+    }
     console.log('[Public Story Content API] Story data:', { 
       storyId: storyData.storyId, 
       title: storyData.title,

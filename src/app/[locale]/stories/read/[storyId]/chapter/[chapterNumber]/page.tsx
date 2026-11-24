@@ -59,6 +59,10 @@ export default function ReadChapterPage() {
         const response = await fetch(`/api/stories/${storyId}/chapters/${chapterNumber}`);
         if (response.ok) {
           const data = await response.json();
+          if (data.redirectToReader) {
+            router.replace(`/${locale}/stories/read/${storyId}`);
+            return;
+          }
           setStory(data.story);
           setChapters(data.chapters);
           setCurrentChapter(data.currentChapter);
@@ -82,7 +86,7 @@ export default function ReadChapterPage() {
     if (storyId && chapterNumber) {
       fetchChapter();
     }
-  }, [storyId, chapterNumber, tErrors]);
+  }, [storyId, chapterNumber, tErrors, locale, router]);
 
   const navigateToListen = () => {
     router.push(`/${locale}/stories/listen/${storyId}`);

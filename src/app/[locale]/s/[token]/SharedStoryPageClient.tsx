@@ -9,6 +9,8 @@ import { toAbsoluteImageUrl } from '@/utils/image-url';
 import { getLogoForGraphicalStyle } from '@/utils/logo-mapping';
 import { buildAuthEntryPath } from '@/lib/auth-return';
 import { buildStoryAuthReturnSearch } from '@/lib/campaign-context';
+import PremiumBookReader from '@/components/PremiumBookReader';
+import type { PremiumBookReaderData } from '@/lib/premium-children-book/reader';
 
 interface StoryPreview {
   title: string;
@@ -26,6 +28,7 @@ interface ApiResponse {
   accessLevel?: string;
   redirectUrl?: string;
   error?: string;
+  premiumBook?: PremiumBookReaderData;
 }
 
 export default function SharedStoryPageClient() {
@@ -42,6 +45,7 @@ export default function SharedStoryPageClient() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [storyPreview, setStoryPreview] = useState<StoryPreview | null>(null);
+  const [premiumBook, setPremiumBook] = useState<PremiumBookReaderData>();
   const [requiresAuth, setRequiresAuth] = useState(false);
   const [accessLevel, setAccessLevel] = useState<string>('');
 
@@ -61,10 +65,13 @@ export default function SharedStoryPageClient() {
       try {
         const response = await fetch(
           `/api/share/${token}${searchParams.get('utm_campaign') === 'story_share' ? '?utm_campaign=story_share' : ''}`,
+          { cache: 'no-store' },
         );
         const result: ApiResponse = await response.json();
 
-        if (result.success && result.redirectUrl) {
+        if (result.success && result.premiumBook) {
+          setPremiumBook(result.premiumBook);
+        } else if (result.success && result.redirectUrl) {
           // Normalize legacy redirect (if old format /stories/<id>) to /stories/read/<id>
           let target = result.redirectUrl;
           const legacyMatch = target.match(/^\/stories\/([^\/\?]+)(.*)$/);
@@ -106,6 +113,8 @@ export default function SharedStoryPageClient() {
       </div>
     );
   }
+
+  if (premiumBook) return <PremiumBookReader book={premiumBook} />;
 
   if (requiresAuth && storyPreview) {
     // Build a safe redirect param so that after sign-in/up user returns to this shared story

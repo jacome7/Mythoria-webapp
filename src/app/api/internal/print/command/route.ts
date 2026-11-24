@@ -4,6 +4,7 @@ import { PrintError, providerSchema, shippingSchema } from '@/lib/print/contract
 import {
   finalizeManualPrint,
   correctPrintShipping,
+  correctSquareEdition,
   hasPaidOrderForStory,
   printOrderView,
   queuePrintPreparation,
@@ -36,6 +37,7 @@ const commandSchema = z.object({
     'reserveManual',
     'finalizeManual',
     'correctShipping',
+    'correctSquareEdition',
   ]),
   input: z.unknown(),
 });
@@ -79,6 +81,16 @@ async function runCommand({ actor, operation, input }: z.infer<typeof commandSch
     }
     case 'revise':
       return printOrderView(await revisePrintProof(order));
+    case 'correctSquareEdition': {
+      const correction = z
+        .object({
+          expectedRevision: z.uuid(),
+          correctedRevision: z.uuid(),
+          reason: z.string().trim().min(1).max(500),
+        })
+        .parse(input);
+      return printOrderView(await correctSquareEdition(order, correction, actor.email));
+    }
     case 'hold': {
       const { reason } = z.object({ reason: z.string().trim().min(1).max(800) }).parse(input);
       return printOrderView(await setPrintHold(order, reason));
@@ -91,6 +103,7 @@ async function runCommand({ actor, operation, input }: z.infer<typeof commandSch
           confirmationId: z.string().uuid(),
           checkedInbox: z.literal(true),
           confirmedTotalEur: z.number().positive(),
+          proofVersion: z.number().int().positive().optional(),
         })
         .parse(input);
       return printOrderView(await submitPrintOrder(order, approval, actor.email));

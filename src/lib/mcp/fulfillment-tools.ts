@@ -36,7 +36,12 @@ import {
   type TrackedJobDescriptor,
   type TrackedJobType,
 } from './job-tracking';
-import { ensureStoryOwnership, type StoryChapterRecord, type StoryRecord } from './story-access';
+import {
+  ensureChapterBook,
+  ensureStoryOwnership,
+  type StoryChapterRecord,
+  type StoryRecord,
+} from './story-access';
 import { executeTool } from './tool-execution';
 import { resolveLocale, sanitizeOptionalText } from './tool-input';
 import { PROTECTED_TOOL_SCOPE, resolveToolRequiredScopes, TOOL_NAMES } from './tool-metadata';
@@ -902,6 +907,7 @@ export function registerFulfillmentTools(server: McpServer, authContext: McpAuth
           slug: input.slug,
         });
         const accessLevel = resolveStoryAudioAccess(story, authContext, copy);
+        ensureChapterBook(story);
         const chapters = await chapterService.getStoryChapters(story.storyId);
         const includeChapterDetails = input.includeChapterDetails ?? true;
         const audioEntries = buildAudiobookChapterEntries(story, chapters);
@@ -1001,6 +1007,7 @@ export function registerFulfillmentTools(server: McpServer, authContext: McpAuth
           slug: input.slug,
         });
         const accessLevel = resolveStoryAudioAccess(story, authContext, copy);
+        ensureChapterBook(story);
         const chapters = await chapterService.getStoryChapters(story.storyId);
         const audioEntries = buildAudiobookChapterEntries(story, chapters);
         const targetEntry = audioEntries.find(
@@ -1071,7 +1078,9 @@ export function registerFulfillmentTools(server: McpServer, authContext: McpAuth
           authContext,
           resolveToolRequiredScopes(TOOL_NAMES.storyExportRequest),
         );
-        ensureStoryOwnership(await storyService.getStoryById(storyId), author.authorId);
+        ensureChapterBook(
+          ensureStoryOwnership(await storyService.getStoryById(storyId), author.authorId),
+        );
 
         const payload = createJobPayload('export', storyId, { format });
         return toStructuredToolResult('Story export request queued.', {
@@ -1102,7 +1111,9 @@ export function registerFulfillmentTools(server: McpServer, authContext: McpAuth
           authContext,
           resolveToolRequiredScopes(TOOL_NAMES.storyPrintRequest),
         );
-        ensureStoryOwnership(await storyService.getStoryById(storyId), author.authorId);
+        ensureChapterBook(
+          ensureStoryOwnership(await storyService.getStoryById(storyId), author.authorId),
+        );
         const payload = createJobPayload('print', storyId, { deliveryNotes });
         return toStructuredToolResult('Story print request queued.', {
           ...payload,
@@ -1137,6 +1148,7 @@ export function registerFulfillmentTools(server: McpServer, authContext: McpAuth
         const resolvedLocale = resolveLocale(input.language);
         const copy = getStoryListeningCopy(resolvedLocale);
 
+        ensureChapterBook(story);
         if (story.status !== 'published') {
           throw new McpToolUserError('Story must be published before audiobook generation.');
         }

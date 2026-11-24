@@ -11,6 +11,7 @@ import { analyticsReference } from '@/lib/analytics/reference';
 import { cookiesFromHeaders, resolveAdContextSafely } from '@/lib/openai-ads/context';
 import { conversions, type OpenAiConversion } from '@/lib/openai-ads/events';
 import { enqueueAdConversion } from '@/lib/openai-ads/outbox';
+import { hasPremiumBookMarker } from '@/lib/premium-children-book/contract';
 
 /** Enqueues the OpenAI Ads `story_shared` conversion; never throws. */
 async function enqueueStoryShared(
@@ -120,6 +121,8 @@ export async function POST(request: Request, context: { params: Promise<{ storyI
         title: stories.title,
         isPublic: stories.isPublic,
         slug: stories.slug,
+        features: stories.features,
+        status: stories.status,
       })
       .from(stories)
       .leftJoin(storyCollaborators, eq(storyCollaborators.storyId, stories.storyId))
@@ -139,14 +142,20 @@ export async function POST(request: Request, context: { params: Promise<{ storyI
       )
       .limit(1);
 
-    console.log('[Share API] Story query result:', story);
     if (!story.length) {
       console.log('[Share API] Story not found or access denied');
       return NextResponse.json({ error: 'Story not found or access denied' }, { status: 404 });
     }
 
     const storyData = story[0];
-    console.log('[Share API] Story data:', storyData);
+    if (hasPremiumBookMarker(storyData.features)) {
+      if (storyData.authorId !== author.authorId) {
+        return NextResponse.json({ error: 'Story not found or access denied' }, { status: 404 });
+      }
+      if (storyData.status !== 'published' || allowEdit) {
+        return NextResponse.json({ error: 'incompatible_book_features' }, { status: 422 });
+      }
+    }
 
     // Handle public sharing
     if (makePublic) {
@@ -260,7 +269,7 @@ export async function GET(request: Request, context: { params: Promise<{ storyId
 
     // Check if user owns the story or is a collaborator with edit permissions
     const story = await db
-      .select({ storyId: stories.storyId })
+      .select({ storyId: stories.storyId, authorId: stories.authorId, features: stories.features })
       .from(stories)
       .leftJoin(storyCollaborators, eq(storyCollaborators.storyId, stories.storyId))
       .where(
@@ -277,7 +286,10 @@ export async function GET(request: Request, context: { params: Promise<{ storyId
       )
       .limit(1);
 
-    if (!story.length) {
+    if (
+      !story.length ||
+      (hasPremiumBookMarker(story[0].features) && story[0].authorId !== currentAuthorId)
+    ) {
       return NextResponse.json({ error: 'Story not found or access denied' }, { status: 404 });
     }
 
@@ -338,7 +350,7 @@ export async function DELETE(request: Request, context: { params: Promise<{ stor
 
     // Check if user owns the story or is a collaborator with edit permissions
     const story = await db
-      .select({ storyId: stories.storyId })
+      .select({ storyId: stories.storyId, authorId: stories.authorId, features: stories.features })
       .from(stories)
       .leftJoin(storyCollaborators, eq(storyCollaborators.storyId, stories.storyId))
       .where(
@@ -355,7 +367,10 @@ export async function DELETE(request: Request, context: { params: Promise<{ stor
       )
       .limit(1);
 
-    if (!story.length) {
+    if (
+      !story.length ||
+      (hasPremiumBookMarker(story[0].features) && story[0].authorId !== currentAuthorId)
+    ) {
       return NextResponse.json({ error: 'Story not found or access denied' }, { status: 404 });
     }
 

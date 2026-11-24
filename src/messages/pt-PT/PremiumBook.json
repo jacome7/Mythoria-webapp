@@ -1,0 +1,22 @@
+{
+  "format": "Formato do livro",
+  "standard": "Padrão",
+  "title": "Livro Infantil Premium",
+  "formatDescription": "Um livro quadrado ilustrado para crianças dos 0 aos 6 anos, com imagens que se estendem por duas páginas.",
+  "correctFormat": "Escolha o formato Padrão ou uma faixa etária elegível nas definições do livro para continuar.",
+  "saveFailed": "Não foi possível guardar o formato do livro. Tente novamente.",
+  "reviewFormat": "Volte às definições do livro e confirme o formato antes de começar.",
+  "readerLabel": "Leitor de livro ilustrado",
+  "frontCover": "Capa",
+  "backCover": "Contracapa",
+  "pageNavigation": "Navegação entre páginas",
+  "goToPage": "Ir para a página",
+  "pageNumber": "Página {number}",
+  "pagePair": "Páginas {first} e {last}",
+  "previous": "Anterior",
+  "next": "Seguinte",
+  "pageText": "Ler o texto da página",
+  "imageUnavailable": "Ilustração indisponível",
+  "generationProgress": "Estamos a planear as páginas, a criar as ilustrações e a preparar o seu livro para leitura.",
+  "generationInterrupted": "Não foi possível concluir o livro. Pode consultar o estado em As Minhas Histórias."
+}

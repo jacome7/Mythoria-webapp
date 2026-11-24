@@ -13,6 +13,7 @@ interface StoryGenerationProgressProps {
   storyId: string;
   storyTitle?: string;
   onComplete?: () => void;
+  premiumBook?: boolean;
 }
 
 type StoryProgress = Pick<Story, 'storyId' | 'title' | 'status' | 'storyGenerationStatus'> & {
@@ -37,8 +38,10 @@ export default function StoryGenerationProgress({
   storyId,
   storyTitle,
   onComplete,
+  premiumBook = false,
 }: StoryGenerationProgressProps) {
   const t = useTranslations('StoryGenerationProgress');
+  const tBook = useTranslations('PremiumBook');
   const router = useRouter();
   const params = useParams() as { locale?: string } | null;
   const locale = params?.locale && typeof params.locale === 'string' ? params.locale : 'en-US';
@@ -61,11 +64,14 @@ export default function StoryGenerationProgress({
         lastAppliedRequest = requestNumber;
 
         setProgress({ ...story, storyId });
-        if (story.status === 'published') {
+        const published = story.status === 'published';
+        const stopped =
+          story.storyGenerationStatus === 'failed' || story.storyGenerationStatus === 'cancelled';
+        if (published || (premiumBook && stopped)) {
           clearInterval(intervalId);
           controller.abort();
-          onComplete?.();
         }
+        if (published) onComplete?.();
       } catch (error) {
         if (!controller.signal.aborted) console.error('Error fetching story progress:', error);
       }
@@ -78,7 +84,7 @@ export default function StoryGenerationProgress({
       controller.abort();
       clearInterval(intervalId);
     };
-  }, [storyId, onComplete]);
+  }, [storyId, onComplete, premiumBook]);
 
   const story = progress?.storyId === storyId ? progress : undefined;
   const reportedPercentage = story?.storyGenerationCompletedPercentage ?? 0;
@@ -183,7 +189,16 @@ export default function StoryGenerationProgress({
       </ol>
 
       <ProgressOrnament divider />
-      {!isStopped && <p className={styles.leaveMessage}>{t('progress.leaveMessage')}</p>}
+      {premiumBook && isStopped && (
+        <p role="alert" className={styles.leaveMessage}>
+          {tBook('generationInterrupted')}
+        </p>
+      )}
+      {!isStopped && (
+        <p className={styles.leaveMessage}>
+          {premiumBook ? tBook('generationProgress') : t('progress.leaveMessage')}
+        </p>
+      )}
       <Link href={`/${locale}/stories`} className={styles.myStories}>
         {t('progress.myStories')}
       </Link>

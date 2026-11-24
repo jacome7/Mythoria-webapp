@@ -45,6 +45,8 @@ export const envManifest: EnvVarDescriptor[] = [
     'LULU_PRINT_CONTACT_EMAIL',
     'LULU_PAPERBACK_POD_PACKAGE_ID',
     'LULU_HARDCOVER_POD_PACKAGE_ID',
+    'LULU_PREMIUM_SQUARE_POD_PACKAGE_ID',
+    'PREMIUM_SQUARE_PRINT_APPROVAL',
   ].map((name): EnvVarDescriptor => ({
     name,
     required: false,
@@ -63,6 +65,20 @@ export const envManifest: EnvVarDescriptor[] = [
     required: false,
     scopes: ['runtime', 'dev', 'prod'],
     note: 'Trusted HTTPS origin used to construct personal invitation and resume links.',
+  },
+  {
+    name: 'PREMIUM_BOOK_GENERATION_ENABLED',
+    required: false,
+    scopes: ['runtime', 'dev', 'prod'],
+    secret: false,
+    note: 'Defaults off; accepts new premium children’s book generation.',
+  },
+  {
+    name: 'PREMIUM_BOOK_BUCKET',
+    required: false,
+    scopes: ['runtime', 'dev', 'prod'],
+    secret: false,
+    note: 'Shared private bucket for premium book manifests and generation-pinned assets.',
   },
   {
     name: 'BIOGRAPHER_ENABLED',

@@ -2,6 +2,7 @@ import { storyService } from '@/db/services';
 import { db } from '@/db';
 import { storyCollaborators } from '@/db/schema';
 import { eq, and } from 'drizzle-orm';
+import { hasPremiumBookMarker } from '@/lib/premium-children-book/contract';
 
 export class AccessDeniedError extends Error {
   constructor(message = 'Access denied') {
@@ -22,6 +23,8 @@ export async function ensureStoryIdAccess(storyId: string, requesterAuthorId: st
     throw new AccessDeniedError(); // Obscure existence
   }
   if (story.authorId === requesterAuthorId) return story;
+  // Premium viewing links are checked on every request and grant no lasting collaborator access.
+  if (hasPremiumBookMarker(story.features)) throw new AccessDeniedError();
 
   // Check collaborator access (editor or viewer)
   const collab = await db

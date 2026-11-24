@@ -3,6 +3,7 @@ import { chapterService } from '@/db/services';
 import { eq } from 'drizzle-orm';
 import { db } from '@/db';
 import { stories } from '@/db/schema';
+import { hasPremiumBookMarker } from '@/lib/premium-children-book/contract';
 
 export async function GET(
   request: NextRequest,
@@ -31,6 +32,10 @@ export async function GET(
     if (!story.isPublic) {
       console.error('[Audio Proxy] Story not public');
       return NextResponse.json({ error: 'Story not available' }, { status: 403 });
+    }
+
+    if (hasPremiumBookMarker(story.features)) {
+      return NextResponse.json({ error: 'No audiobook available for this story' }, { status: 404 });
     }
 
     // Get chapters for this story

@@ -1,9 +1,12 @@
 /** @jest-environment node */
-import { creditLedger } from '@/db/schema';
+import { creditLedger, printRequests } from '@/db/schema';
 import { LULU_SKUS } from '@/lib/lulu/products';
+import { PREMIUM_SQUARE_PACKAGE } from './premium-edition';
 
 const mockStatements: unknown[] = [];
 const mockInserts = jest.fn();
+const mockValues = jest.fn();
+const mockLoadManifest = jest.fn();
 const mockTransaction = jest.fn();
 const mockFetch = jest.fn();
 
@@ -24,7 +27,13 @@ function mockBuilder() {
 }
 
 jest.mock('@/db', () => ({
-  db: { transaction: (...args: unknown[]) => mockTransaction(...args) },
+  db: {
+    transaction: (...args: unknown[]) => mockTransaction(...args),
+    select: () => mockBuilder(),
+  },
+}));
+jest.mock('@/lib/premium-children-book/storage', () => ({
+  loadPublishedPremiumBook: (...args: unknown[]) => mockLoadManifest(...args),
 }));
 jest.mock('@/config/environment', () => ({
   getEnvironmentConfig: () => ({
@@ -34,13 +43,37 @@ jest.mock('@/config/environment', () => ({
   }),
 }));
 
-import { startPrintCheckout } from './checkout';
+import { getPublicPrintOptions, startPrintCheckout } from './checkout';
 
 const storyId = '32c3cb83-00c2-4933-972b-916ec8065f18';
 const shippingId = '8d9f18f9-6a1f-4acd-ac13-a4da2b998cee';
 const intentId = 'bac88002-1d44-4451-9285-d4bd2485a4ec';
 const orderId = 'e3c00abe-c343-428e-9b0e-138fe8e3d3a0';
 const ticketId = 'b53517fe-a406-493b-bda7-9cad123bd371';
+const revision = 'b63517fe-a406-493b-bda7-9cad123bd372';
+const premiumBook = {
+  version: 1,
+  type: 'premium_children',
+  state: 'published',
+  revision,
+  manifest: {
+    key: `${storyId}/premium/revisions/${revision}/manifest.json`,
+    generation: '33',
+    sha256: 'a'.repeat(64),
+    bytes: 1024,
+  },
+};
+const squareStory = {
+  storyId,
+  title: 'Story',
+  authorId: 'author',
+  chapterCount: 9,
+  features: { premiumBook },
+};
+const fees = [
+  { serviceCode: 'shippingCost', credits: 3 },
+  { serviceCode: 'extraBookCopy', credits: 4 },
+];
 
 describe('paid print checkout recovery', () => {
   beforeEach(() => {
@@ -53,6 +86,7 @@ describe('paid print checkout recovery', () => {
       PRINT_SCHEDULER_SERVICE_ACCOUNT: 'scheduler@test.example',
     });
     mockStatements.length = 0;
+    mockLoadManifest.mockResolvedValue({ format: { pageCount: 32 } });
     mockTransaction.mockImplementation(async (callback) =>
       callback({
         execute: jest.fn().mockResolvedValue(undefined),
@@ -60,7 +94,12 @@ describe('paid print checkout recovery', () => {
         update: mockBuilder,
         insert: (table: unknown) => {
           mockInserts(table);
-          return mockBuilder();
+          return {
+            values: (values: unknown) => {
+              mockValues(table, values);
+              return mockBuilder();
+            },
+          };
         },
       }),
     );
@@ -68,6 +107,151 @@ describe('paid print checkout recovery', () => {
   });
 
   afterEach(() => jest.restoreAllMocks());
+
+  function configureSquare(approved = true) {
+    process.env.LULU_PREMIUM_SQUARE_POD_PACKAGE_ID = PREMIUM_SQUARE_PACKAGE;
+    process.env.LULU_PRINT_ENVIRONMENT = 'sandbox';
+    process.env.LULU_PRINT_CLIENT_KEY = 'fixture';
+    process.env.LULU_PRINT_SECRET_VERSION = 'projects/test/secrets/test/versions/1';
+    process.env.LULU_PRINT_CONTACT_EMAIL = 'test@example.test';
+    if (approved) process.env.PREMIUM_SQUARE_PRINT_APPROVAL = 'sandbox:physical-proof-1';
+    else delete process.env.PREMIUM_SQUARE_PRINT_APPROVAL;
+  }
+
+  it.each([
+    ['none', false],
+    ['lulu', false],
+    ['none', true],
+    ['lulu', true],
+  ] as const)(
+    'resolves square options with default %s and physical approval %s',
+    async (defaultProvider, approved) => {
+      configureSquare(approved);
+      mockStatements.push(
+        [{ defaultProvider, maxEurPerCopy: '25' }],
+        [{ credits: 12, active: true }],
+        [squareStory],
+        fees,
+      );
+      await expect(getPublicPrintOptions({ storyId, authorId: 'author' })).resolves.toEqual({
+        paperbackAvailable: false,
+        hardcoverAvailable: approved,
+        luluDefault: defaultProvider === 'lulu',
+        squareEditionRevision: approved ? revision : undefined,
+      });
+      expect(mockLoadManifest).toHaveBeenCalledTimes(Number(approved));
+    },
+  );
+
+  const buyer = { authorId: 'author', displayName: 'Name', email: 'buyer@example.test' };
+  const squareForm = {
+    storyId,
+    shippingId,
+    intentId,
+    totalCost: 19,
+    numberOfCopies: 2,
+    printingOption: { serviceCode: 'printedHardCover' as const, editionRevision: revision },
+    recipient: {
+      name: 'Recipient',
+      email: 'recipient@example.test',
+      phone_number: '+351210000000',
+    },
+  };
+
+  function stageSquareCheckout() {
+    mockStatements.push(
+      [],
+      [squareStory],
+      [
+        {
+          addressId: shippingId,
+          country: 'PT',
+          line1: 'Rua 1',
+          city: 'Lisboa',
+          postalCode: '1000-001',
+        },
+      ],
+      [{ id: 'provider', availableCountries: ['PT'] }],
+      [{ defaultProvider: 'none', maxEurPerCopy: '25' }],
+      [
+        { serviceCode: 'printedHardCover', credits: 12 },
+        { serviceCode: 'extraChapterCost', credits: 99 },
+        ...fees,
+      ],
+      [{ totalCredits: 25 }],
+    );
+  }
+
+  it.each([32, 33])(
+    'freezes the %i-page edition at the existing hardcover price with None selected',
+    async (pageCount) => {
+      configureSquare();
+      mockLoadManifest.mockResolvedValue({ format: { pageCount } });
+      stageSquareCheckout();
+      const request = { id: orderId, storyId, shippingId, requestedAt: new Date() };
+      const staged = {
+        authorId: buyer.authorId,
+        creditsSpent: 19,
+        status: 'awaiting_ticket',
+        binding: 'hardcover',
+      };
+      const paid = { ...staged, ticketId, status: 'pending' };
+      mockStatements.push([request], [staged], [staged], [{ totalCredits: 6 }], undefined, [paid]);
+      mockFetch.mockResolvedValueOnce(
+        Response.json({ id: ticketId, metadata: { printRequestId: orderId } }),
+      );
+      await expect(startPrintCheckout(squareForm, buyer)).resolves.toMatchObject({
+        fulfillment: paid,
+      });
+      expect(mockValues).toHaveBeenCalledWith(
+        printRequests,
+        expect.objectContaining({
+          printingOptions: expect.objectContaining({
+            totalCost: 19,
+            extraChapters: 0,
+            premiumEdition: {
+              profile: 'premium_square_casewrap',
+              podPackageId: PREMIUM_SQUARE_PACKAGE,
+              pageCount,
+              luluEnvironment: 'sandbox',
+              premiumBook,
+            },
+          }),
+        }),
+      );
+      expect(mockValues).toHaveBeenCalledWith(
+        creditLedger,
+        expect.objectContaining({ amount: -19, idempotencyKey: `print_order:${orderId}` }),
+      );
+    },
+  );
+
+  it('fails before ticketing or charging for unapproved sales, stale editions, or a paperback downgrade', async () => {
+    configureSquare(false);
+    stageSquareCheckout();
+    await expect(startPrintCheckout(squareForm, buyer)).rejects.toMatchObject({
+      code: 'square_print_unavailable',
+    });
+    mockStatements.length = 0;
+    configureSquare();
+    stageSquareCheckout();
+    await expect(
+      startPrintCheckout(
+        { ...squareForm, printingOption: { serviceCode: 'printedHardCover' } },
+        buyer,
+      ),
+    ).rejects.toMatchObject({ code: 'print_edition_changed' });
+    mockStatements.length = 0;
+    stageSquareCheckout();
+    await expect(
+      startPrintCheckout(
+        { ...squareForm, printingOption: { serviceCode: 'printedSoftCover' } },
+        buyer,
+      ),
+    ).rejects.toMatchObject({ code: 'square_print_unavailable' });
+    expect(mockValues).not.toHaveBeenCalled();
+    expect(mockFetch).not.toHaveBeenCalled();
+  });
 
   it.each([
     [{ line1: 'X'.repeat(31) }, {}, 'each shipping address line'],

@@ -126,6 +126,10 @@ The expanded owner welcome is implemented in `src/lib/referrals/invitation.ts` a
 
 See [the local contract](docs/story-templates.md) and [cross-service runbook](../docs/STORY_TEMPLATES.md). Story templates are available to all users. Keep draft and structure retries idempotent, private job polling owner-scoped, and accepted jobs recoverable during rollback. Never run integration fixtures against the production-shared development database.
 
+## Premium children’s books
+
+See [the WebApp contract](docs/premium-children-books.md) for premium selection, queue acceptance, private reading, rollback and validation. Keep each book revision pinned to its generation and hash. Never serve premium canonical page text or artwork through the conventional chapter or cached navigation paths.
+
 <!-- BEGIN:nextjs-agent-rules -->
 
 ## This is NOT the Next.js you know

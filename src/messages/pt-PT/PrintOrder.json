@@ -13,6 +13,8 @@
       "confirmation": "Confirmação"
     },
     "errors": {
+      "squareUnavailable": "A impressão em capa dura quadrada está temporariamente indisponível.",
+      "editionChanged": "A edição para impressão mudou. Volte atrás e reveja a edição atual antes de encomendar.",
       "storyNotFound": "História não encontrada",
       "storyNotPublished": "Apenas histórias publicadas podem ser impressas",
       "loadingFailed": "Falha ao carregar dados da história",
@@ -31,6 +33,7 @@
       "paperback": "Capa Mole"
     },
     "payment": {
+      "squareHardcoverTitle": "Capa dura quadrada (21,6 × 21,6 cm)",
       "softcoverTitle": "📖 Capa Mole",
       "softcoverDescription": "Capa flexível com acabamento brilhante. Ideal para leitura frequente e fácil manuseamento.",
       "paperbackDescriptionWithChapters": "Livro em capa mole lindamente impresso e de alta qualidade com {chapters} capítulos.",

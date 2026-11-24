@@ -13,6 +13,8 @@
       "confirmation": "Confirmation"
     },
     "errors": {
+      "squareUnavailable": "Square hardcover printing is currently unavailable.",
+      "editionChanged": "The print edition has changed. Go back and review the current edition before ordering.",
       "storyNotFound": "Story not found",
       "storyNotPublished": "Only published stories can be printed",
       "loadingFailed": "Failed to load story data",
@@ -31,6 +33,7 @@
       "paperback": "Paperback"
     },
     "payment": {
+      "squareHardcoverTitle": "Square hardcover (8.5 × 8.5 in)",
       "softcoverTitle": "📖 Softcover",
       "softcoverDescription": "Flexible paperback with a glossy finish. Ideal for daily reading and handling.",
       "paperbackDescriptionWithChapters": "Beautifully printed, high-quality paperback book with {chapters} chapters.",

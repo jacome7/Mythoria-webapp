@@ -157,7 +157,10 @@ export async function POST(request: NextRequest) {
     });
   } catch (error) {
     if (error instanceof PrintError)
-      return NextResponse.json({ success: false, error: error.message }, { status: error.status });
+      return NextResponse.json(
+        { success: false, code: error.code, error: error.message },
+        { status: error.status },
+      );
     if (error instanceof z.ZodError || error instanceof SyntaxError) {
       return NextResponse.json({ success: false, error: 'Invalid print order' }, { status: 400 });
     }

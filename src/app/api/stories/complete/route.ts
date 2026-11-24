@@ -5,10 +5,13 @@ import { resolveServerAnalyticsContext } from '@/lib/analytics/server-context';
 import { startStoryGeneration } from '@/lib/story-generation';
 import { resolveAdContextSafely } from '@/lib/openai-ads/context';
 import { adEventId } from '@/lib/openai-ads/events';
+import { bookTypeSchema, PremiumBookContractError } from '@/lib/premium-children-book/contract';
+import { PremiumBookSelectionError } from '@/lib/premium-children-book/selection';
 
 const completeStorySchema = z.object({
   storyId: z.string().uuid(),
   idempotencyKey: z.string().uuid(),
+  expectedBookType: bookTypeSchema.optional(),
   features: z.object({
     ebook: z.boolean(),
     printed: z.boolean(),
@@ -33,7 +36,12 @@ export async function POST(request: NextRequest) {
         if (field === 'dedicationMessage' || field === 'customAuthor') {
           return [{ field, code: issue.code === 'too_big' ? 'too_long' : 'invalid' }];
         }
-        if (field === 'storyId' || field === 'idempotencyKey' || field === 'deliveryAddress') {
+        if (
+          field === 'storyId' ||
+          field === 'idempotencyKey' ||
+          field === 'deliveryAddress' ||
+          field === 'expectedBookType'
+        ) {
           return [{ field, code: 'invalid' }];
         }
         if (field === 'features') {
@@ -73,6 +81,7 @@ export async function POST(request: NextRequest) {
       storyId: input.storyId,
       idempotencyKey: input.idempotencyKey,
       features: input.features,
+      expectedBookType: input.expectedBookType,
       deliveryAddress: input.deliveryAddress,
       dedicationMessage: input.dedicationMessage,
       customAuthor: input.customAuthor,
@@ -92,6 +101,12 @@ export async function POST(request: NextRequest) {
       { status: 202 },
     );
   } catch (error) {
+    if (error instanceof PremiumBookSelectionError) {
+      return NextResponse.json({ error: error.code }, { status: 422 });
+    }
+    if (error instanceof PremiumBookContractError) {
+      return NextResponse.json({ error: 'invalid_book_format' }, { status: 422 });
+    }
     if (error instanceof Error && error.message === 'Story not found') {
       return NextResponse.json({ error: 'Story not found' }, { status: 404 });
     }

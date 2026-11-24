@@ -79,6 +79,10 @@ export default function StoryEditPage() {
     try {
       setLoading(true);
       const response = await fetch(`/api/stories/${storyId}/edit`);
+      if (response.status === 422) {
+        router.replace(`/${locale}/stories/read/${storyId}`);
+        return;
+      }
 
       if (!response.ok) {
         throw new Error(tStoryEditPage('errors.failedToLoadStoryData'));
@@ -96,7 +100,7 @@ export default function StoryEditPage() {
     } finally {
       setLoading(false);
     }
-  }, [storyId, userId, addToast, tStoryEditPage]);
+  }, [storyId, userId, addToast, tStoryEditPage, locale, router]);
 
   // Update story info
   const updateStoryInfo = async (updates: Partial<ApiStory>) => {

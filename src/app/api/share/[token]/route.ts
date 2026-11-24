@@ -7,6 +7,9 @@ import { db } from '@/db';
 import { stories, shareLinks, storyCollaborators, authors } from '@/db/schema';
 import { eq, and } from 'drizzle-orm';
 import { authorService } from '@/db/services';
+import { hasPremiumBookMarker } from '@/lib/premium-children-book/contract';
+import { toPremiumBookReaderData } from '@/lib/premium-children-book/reader';
+import { loadPublishedPremiumBook } from '@/lib/premium-children-book/storage';
 
 export async function GET(request: Request, context: { params: Promise<{ token: string }> }) {
   try {
@@ -21,6 +24,8 @@ export async function GET(request: Request, context: { params: Promise<{ token: 
         accessLevel: shareLinks.accessLevel,
         expiresAt: shareLinks.expiresAt,
         revoked: shareLinks.revoked,
+        features: stories.features,
+        storyStatus: stories.status,
         story: {
           storyId: stories.storyId,
           title: stories.title,
@@ -47,6 +52,7 @@ export async function GET(request: Request, context: { params: Promise<{ token: 
     }
 
     const link = shareLink[0];
+    const isPremiumBook = hasPremiumBookMarker(link.features);
 
     // Check if link is expired or revoked
     if (link.revoked || new Date(link.expiresAt) < new Date()) {
@@ -54,6 +60,9 @@ export async function GET(request: Request, context: { params: Promise<{ token: 
         { error: 'Share link has expired or been revoked' },
         { status: 410 },
       );
+    }
+    if (isPremiumBook && link.storyStatus !== 'published') {
+      return NextResponse.json({ error: 'Story not found' }, { status: 404 });
     }
 
     // For edit and view links, authentication is required
@@ -66,13 +75,22 @@ export async function GET(request: Request, context: { params: Promise<{ token: 
             title: link.story?.title || 'Untitled Story',
             synopsis: link.story?.synopsis || '',
             authorName: link.author?.displayName || 'Unknown Author',
-            coverUri: link.story?.coverUri || undefined,
+            coverUri: isPremiumBook ? undefined : link.story?.coverUri || undefined,
             targetAudience: link.story?.targetAudience || undefined,
             graphicalStyle: link.story?.graphicalStyle || undefined,
           },
           accessLevel: link.accessLevel,
         },
         { status: 401 },
+      );
+    }
+
+    if (isPremiumBook && link.story) {
+      const book = await loadPublishedPremiumBook(link.storyId, link.story.authorId, link.features);
+      if (!book) return NextResponse.json({ error: 'Story unavailable' }, { status: 503 });
+      return NextResponse.json(
+        { success: true, premiumBook: toPremiumBookReaderData(book, token) },
+        { headers: { 'Cache-Control': 'private, no-store' } },
       );
     }
 
