@@ -26,11 +26,20 @@ describe('authoritative registration time', () => {
   it('accepts both Clerk millisecond and Date representations without changing time', () => {
     expect(clerkCreationTime(created.getTime(), now)).toEqual(created);
     expect(clerkCreationTime(created, now)).toEqual(created);
-    expect(signUpOutboxEntry('user-1', created)).toMatchObject({
-      dedupeKey: 'sign_up:user-1',
+    expect(signUpOutboxEntry('clerk-1', created)).toMatchObject({
       occurredAt: created,
       availableAt: new Date('2026-09-05T11:05:00Z'),
     });
+  });
+  it('uses a stable signup key without retaining the raw Clerk ID', () => {
+    const entry = signUpOutboxEntry('clerk-1', created);
+    expect(entry.dedupeKey).toBe(
+      'sign_up:sha256:ffbd8c57a8afc79dc7ad013f439e2e6aafe67760455e52c94d1a2e50f304b282',
+    );
+    expect(signUpOutboxEntry('clerk-1', now).dedupeKey).toBe(entry.dedupeKey);
+    expect(signUpOutboxEntry('clerk-2', created).dedupeKey).not.toBe(entry.dedupeKey);
+    expect(JSON.stringify(entry)).not.toContain('clerk-1');
+    expect(entry).not.toHaveProperty('userId');
   });
   it('limits recovery to the original first 24 hours', () => {
     expect(canRecoverSignUp(created, now)).toBe(true);

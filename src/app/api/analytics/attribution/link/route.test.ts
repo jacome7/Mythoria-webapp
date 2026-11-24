@@ -8,6 +8,7 @@ const currentUserMock = jest.fn();
 const conflictMock = jest.fn();
 const signUpReturningMock = jest.fn();
 const pendingSignUpMock = jest.fn();
+const pendingSignUpWhereMock = jest.fn();
 const now = new Date('2026-09-05T12:00:00Z');
 const creation = new Date('2026-09-05T11:00:00Z');
 const consent =
@@ -35,6 +36,7 @@ jest.mock('@/db', () => ({
 import { NextRequest } from 'next/server';
 import { POST } from './route';
 import { PgDialect } from 'drizzle-orm/pg-core';
+import { signUpOutboxEntry } from '@/lib/analytics/signup';
 
 describe('POST /api/analytics/attribution/link', () => {
   beforeEach(() => {
@@ -67,7 +69,14 @@ describe('POST /api/analytics/attribution/link', () => {
     ]);
     transactionMock.mockImplementation(async (callback) =>
       callback({
-        select: () => ({ from: () => ({ where: () => ({ limit: pendingSignUpMock }) }) }),
+        select: () => ({
+          from: () => ({
+            where: (...args: unknown[]) => {
+              pendingSignUpWhereMock(...args);
+              return { limit: pendingSignUpMock };
+            },
+          }),
+        }),
         insert: () => ({
           values: (...args: unknown[]) => {
             insertValuesMock(...args);
@@ -183,10 +192,11 @@ describe('POST /api/analytics/attribution/link', () => {
     expect(
       insertValuesMock.mock.calls.every(
         ([entry]) =>
-          entry.dedupeKey === 'sign_up:clerk-1' &&
+          entry.dedupeKey === signUpOutboxEntry('clerk-1', creation).dedupeKey &&
           entry.occurredAt.getTime() === creation.getTime(),
       ),
     ).toBe(true);
+    expect(insertValuesMock.mock.calls[0][0]).not.toHaveProperty('userId');
     const { setWhere, set } = conflictMock.mock.calls[0][0];
     const query = new PgDialect().sqlToQuery(setWhere);
     for (const column of ['delivered_at', 'claim_token', 'claimed_at'])
@@ -239,6 +249,8 @@ describe('POST /api/analytics/attribution/link', () => {
     const second = await POST(request());
     await expect(second.json()).resolves.toEqual({ linked: true });
     expect(pendingSignUpMock).toHaveBeenCalledTimes(1);
+    const pendingQuery = new PgDialect().sqlToQuery(pendingSignUpWhereMock.mock.calls[0][0]);
+    expect(pendingQuery.params).toContain(signUpOutboxEntry('clerk-1', creation).dedupeKey);
     expect(conflictMock.mock.calls[1][0].set.skippedAt).toBeNull();
     expect(conflictMock.mock.calls[1][0].set).not.toHaveProperty('claimToken');
     expect(insertValuesMock.mock.calls[1][0].occurredAt).toEqual(creation);

@@ -28,6 +28,7 @@ jest.mock('./services/blog', () => ({ blogService: {} }));
 jest.mock('./services/faq', () => ({ faqService: {} }));
 import { authorService } from './services';
 import { analyticsOutbox } from './schema';
+import { signUpOutboxEntry } from '@/lib/analytics/signup';
 
 const now = new Date('2026-09-05T12:00:00Z');
 const created = new Date('2026-09-05T11:00:00Z');
@@ -61,10 +62,11 @@ describe('transactional signup producers', () => {
     expect(valuesMock).toHaveBeenCalledWith(
       expect.objectContaining({
         occurredAt: created,
-        dedupeKey: 'sign_up:clerk-1',
+        dedupeKey: signUpOutboxEntry('clerk-1', created).dedupeKey,
         authorId: 'author-1',
       }),
     );
+    expect(valuesMock.mock.calls[0][0]).not.toHaveProperty('userId');
     expect(nothingMock).toHaveBeenCalledWith({ target: analyticsOutbox.dedupeKey });
     expect(enqueueAdConversionMock).toHaveBeenCalledWith(
       expect.objectContaining({ insert: expect.any(Function) }),
@@ -135,10 +137,11 @@ describe('transactional signup producers', () => {
     expect(valuesMock).toHaveBeenCalledWith(
       expect.objectContaining({
         occurredAt: created,
-        dedupeKey: 'sign_up:clerk-1',
+        dedupeKey: signUpOutboxEntry('clerk-1', created).dedupeKey,
         params: { method: 'google' },
       }),
     );
+    expect(valuesMock.mock.calls[0][0]).not.toHaveProperty('userId');
     const [executor, input] = enqueueAdConversionMock.mock.calls[0];
     expect(executor).toEqual(expect.objectContaining({ insert: expect.any(Function) }));
     expect(input).toMatchObject({

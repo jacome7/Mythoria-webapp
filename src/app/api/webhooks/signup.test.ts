@@ -32,6 +32,7 @@ jest.mock('@/db', () => ({
 }));
 import { POST } from './route';
 import { PgDialect } from 'drizzle-orm/pg-core';
+import { signUpOutboxEntry } from '@/lib/analytics/signup';
 
 const now = new Date('2026-09-05T12:00:00Z');
 const created = new Date('2026-09-05T11:00:00Z');
@@ -74,11 +75,12 @@ describe('Clerk signup producer', () => {
     expect(valuesMock).toHaveBeenCalledTimes(2);
     expect(valuesMock).toHaveBeenCalledWith(
       expect.objectContaining({
-        dedupeKey: 'sign_up:clerk-1',
+        dedupeKey: signUpOutboxEntry('clerk-1', created).dedupeKey,
         occurredAt: created,
         params: { method: 'google' },
       }),
     );
+    expect(valuesMock.mock.calls[0][0]).not.toHaveProperty('userId');
     const { set, setWhere } = conflictMock.mock.calls[0][0];
     const query = new PgDialect().sqlToQuery(setWhere);
     for (const column of ['delivered_at', 'claim_token', 'claimed_at'])

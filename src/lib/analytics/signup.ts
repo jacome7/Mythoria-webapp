@@ -1,3 +1,4 @@
+import { createHash } from 'node:crypto';
 import type { NewAnalyticsOutboxEntry } from '@/db/schema';
 
 export const SIGN_UP_RECOVERY_MS = 24 * 60 * 60 * 1000;
@@ -42,10 +43,10 @@ export function signUpAttributionMatchesCreation(
 }
 
 export function signUpOutboxEntry(clerkUserId: string, occurredAt: Date): NewAnalyticsOutboxEntry {
+  const digest = createHash('sha256').update(`sign_up:${clerkUserId}`).digest('hex');
   return {
-    dedupeKey: `sign_up:${clerkUserId}`,
+    dedupeKey: `sign_up:sha256:${digest}`,
     eventName: 'sign_up',
-    userId: clerkUserId,
     params: { method: 'unknown' },
     occurredAt,
     availableAt: new Date(occurredAt.getTime() + 5 * 60 * 1000),

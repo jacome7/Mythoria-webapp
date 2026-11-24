@@ -5,6 +5,7 @@ import {
   clerkCreationTime,
   canRecoverSignUp,
   signUpAttributionMatchesCreation,
+  signUpOutboxEntry,
 } from '@/lib/analytics/signup';
 import { db } from '@/db';
 import { analyticsAttributions, analyticsOutbox, storyGenerationRequests } from '@/db/schema';
@@ -101,6 +102,7 @@ export async function POST(request: NextRequest) {
         : undefined;
       let signUpPending = false;
       if (recoverSignUp && occurredAt) {
+        const signUp = signUpOutboxEntry(author.clerkUserId, occurredAt);
         const signUpEligibility = and(
           isNull(analyticsOutbox.deliveredAt),
           eq(analyticsOutbox.occurredAt, occurredAt),
@@ -125,13 +127,10 @@ export async function POST(request: NextRequest) {
         const signUpUpdates = await tx
           .insert(analyticsOutbox)
           .values({
-            dedupeKey: `sign_up:${author.clerkUserId}`,
-            eventName: 'sign_up',
-            occurredAt,
+            ...signUp,
             authorId: author.authorId,
             attributionId: attribution.attributionId,
             clientId: attribution.clientId,
-            userId: author.clerkUserId,
             sessionId: attribution.sessionId,
             consent: attribution.consent,
             pageLocation,
@@ -139,7 +138,7 @@ export async function POST(request: NextRequest) {
             engagementTimeMsec: attribution.engagementTimeMsec,
             availableAt: new Date(),
             params: {
-              method: 'unknown',
+              ...signUp.params,
               ...attributionParams,
               ...(Object.keys(storyShare).length ? { story_share_attribution: 'within_30d' } : {}),
               ...storyShare,
@@ -180,12 +179,7 @@ export async function POST(request: NextRequest) {
           const [pending] = await tx
             .select({ outboxId: analyticsOutbox.outboxId })
             .from(analyticsOutbox)
-            .where(
-              and(
-                eq(analyticsOutbox.dedupeKey, `sign_up:${author.clerkUserId}`),
-                signUpEligibility,
-              ),
-            )
+            .where(and(eq(analyticsOutbox.dedupeKey, signUp.dedupeKey), signUpEligibility))
             .limit(1);
           signUpPending = Boolean(pending);
         }

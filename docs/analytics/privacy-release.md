@@ -16,6 +16,8 @@ A confirmed Analytics grant creates a first-party receipt even without a vendor 
 
 Withdrawal marks the receipt revoked and suppresses undelivered rows. An already-dispatching Measurement Protocol request finishes or times out before receipt revocation is acknowledged. The next request has to acquire a current receipt independently. Reporting should distinguish missing consent, observed missing session, no genuine GA client and delivery failures. A consent-mode export cannot measure the unobserved pre-grant gap directly.
 
+Apply migration `0054_signup_outbox_privacy` before deploying the updated signup writers. It replaces legacy signup keys in place with a deterministic SHA-256 digest and clears the stored GA outbox user ID. A database trigger applies the same transformation to inserts from older revisions, so they still conflict on the existing signup. Keep the migration in place on rollback. An older attribution-link revision can miss the pending status if its recovery request races a delivery claim. Keep `ANALYTICS_DELIVERY_TARGET=off` until attribution-link traffic reaches the updated revision. The shared drain continues to publish story requests.
+
 ## Release evidence
 
 - Run unit and isolated browser fixtures. The isolated browser spec captures every attempted tag request and checks that granting consent does not replay earlier click identifiers or create vendor traffic.
