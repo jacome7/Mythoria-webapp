@@ -3,7 +3,10 @@
 import { useEffect } from 'react';
 import { usePathname } from 'next/navigation';
 import { ensureGtag } from '@/lib/analytics';
-import { getAuditBrowserMeasurementId } from '@/lib/analytics/destinations';
+import {
+  ANALYTICS_TAG_READY_EVENT,
+  getAuditBrowserMeasurementId,
+} from '@/lib/analytics/destinations';
 import { canLoadAuditBrowserTag, sanitizeAnalyticsPathname } from '@/lib/analytics/page-context';
 import { CONSENT_UPDATED_EVENT, getDefaultConsent, getStoredConsent } from '@/lib/consent';
 
@@ -21,8 +24,13 @@ export default function GoogleAnalytics() {
       const url = new URL(window.location.href);
       const granted = getStoredConsent()?.state.analytics_storage === 'granted';
       const safe = granted && canLoadAuditBrowserTag(url, document.referrer);
+      const wasDisabled = globals[disableKey] !== false;
       globals[disableKey] = !safe;
-      if (!safe || document.getElementById(TAG_ID)) return;
+      if (!safe) return;
+      if (document.getElementById(TAG_ID)) {
+        if (wasDisabled) window.dispatchEvent(new Event(ANALYTICS_TAG_READY_EVENT));
+        return;
+      }
       const gtag = ensureGtag();
       if (!gtag) return;
 
@@ -49,6 +57,7 @@ export default function GoogleAnalytics() {
       script.setAttribute('referrerpolicy', 'no-referrer');
       script.src = `https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(measurementId)}`;
       document.head.append(script);
+      window.dispatchEvent(new Event(ANALYTICS_TAG_READY_EVENT));
     };
     sync();
     window.addEventListener(CONSENT_UPDATED_EVENT, sync);

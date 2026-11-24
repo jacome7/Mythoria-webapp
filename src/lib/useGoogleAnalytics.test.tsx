@@ -1,5 +1,6 @@
 import { act, render } from '@testing-library/react';
 import { CONSENT_UPDATED_EVENT, clearConsent, getGrantedConsent, saveConsent } from './consent';
+import { ANALYTICS_TAG_READY_EVENT } from './analytics/destinations';
 
 const mockTrackEvent = jest.fn().mockReturnValue(true);
 let mockPathname = '/en-US';
@@ -46,5 +47,16 @@ describe('useGoogleAnalytics', () => {
     window.history.replaceState(null, '', mockPathname + '?token=private-query');
     render(<AnalyticsHarness />);
     expect(mockTrackEvent).not.toHaveBeenCalled();
+  });
+
+  it('retries a page view when consent preceded tag initialization', () => {
+    saveConsent(getGrantedConsent());
+    mockTrackEvent.mockReturnValueOnce(false);
+    render(<AnalyticsHarness />);
+    act(() => {
+      window.dispatchEvent(new Event(ANALYTICS_TAG_READY_EVENT));
+      window.dispatchEvent(new Event(ANALYTICS_TAG_READY_EVENT));
+    });
+    expect(mockTrackEvent.mock.calls).toEqual([['page_view'], ['page_view']]);
   });
 });

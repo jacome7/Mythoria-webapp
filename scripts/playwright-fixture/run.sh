@@ -19,6 +19,8 @@ if [[ "${1:-}" != --fixture-child ]]; then
   fi
   exec env -i LC_ALL=C PLAYWRIGHT_BROWSERS_PATH="${PLAYWRIGHT_BROWSERS_PATH:-$browser_cache}" PATH="$PATH" HOME="$fixture" E2E_PG_BIN="$pg_bin" \
     PLAYWRIGHT_CHROMIUM_EXECUTABLE="${PLAYWRIGHT_CHROMIUM_EXECUTABLE:-}" \
+    RUN_ANALYTICS_NETWORK_AUDIT="${RUN_ANALYTICS_NETWORK_AUDIT:-0}" \
+    NEXT_PUBLIC_ANALYTICS_AUDIT_MEASUREMENT_ID="${NEXT_PUBLIC_ANALYTICS_AUDIT_MEASUREMENT_ID:-}" \
     bash "$0" --fixture-child "$fixture" "$@"
 fi
 shift
@@ -41,6 +43,15 @@ export DB_PORT PORT
 export DB_NAME=mythoria_playwright DB_USER=fixture DB_PASSWORD=local-fixture DB_HOST=127.0.0.1
 export DATABASE_URL="postgres://$DB_USER:$DB_PASSWORD@$DB_HOST:$DB_PORT/$DB_NAME?sslmode=disable"
 export PLAYWRIGHT_BASE_URL="http://localhost:$PORT" HOSTNAME=localhost
+if [[ "${RUN_ANALYTICS_NETWORK_AUDIT:-0}" == 1 ]]; then
+  if [[ ! "${NEXT_PUBLIC_ANALYTICS_AUDIT_MEASUREMENT_ID:-}" =~ ^G-[A-Z0-9]+$ ||
+    "$NEXT_PUBLIC_ANALYTICS_AUDIT_MEASUREMENT_ID" == G-86D0QFW197 ]]; then
+    echo 'The network audit requires a separate test measurement ID.' >&2
+    exit 1
+  fi
+  export NEXT_PUBLIC_ANALYTICS_AUDIT_ORIGIN="$PLAYWRIGHT_BASE_URL"
+  export NEXT_PUBLIC_BASE_URL="$PLAYWRIGHT_BASE_URL" NEXT_PUBLIC_GA_DEBUG=true
+fi
 export NEXT_TELEMETRY_DISABLED=1 CLERK_TELEMETRY_DISABLED=1
 export PLAYWRIGHT_CLERK_FIXTURE=1 PLAYWRIGHT_CLERK_TICKET_AUTH=1 REFRESH_AUTH=1
 export NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY="pk_live_$(printf 'clerk.fixture.invalid$' | base64 | tr -d '=')"

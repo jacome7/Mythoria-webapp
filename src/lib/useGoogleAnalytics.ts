@@ -3,6 +3,7 @@
 import { useEffect, useRef } from 'react';
 import { usePathname } from 'next/navigation';
 import { trackEvent } from './analytics';
+import { ANALYTICS_TAG_READY_EVENT } from './analytics/destinations';
 import { canLoadAuditBrowserTag, sanitizeAnalyticsPathname } from './analytics/page-context';
 import { CONSENT_UPDATED_EVENT, getStoredConsent } from './consent';
 
@@ -28,6 +29,10 @@ export function useGoogleAnalytics() {
     };
     view();
     window.addEventListener(CONSENT_UPDATED_EVENT, view);
-    return () => window.removeEventListener(CONSENT_UPDATED_EVENT, view);
+    window.addEventListener(ANALYTICS_TAG_READY_EVENT, view);
+    return () => {
+      window.removeEventListener(CONSENT_UPDATED_EVENT, view);
+      window.removeEventListener(ANALYTICS_TAG_READY_EVENT, view);
+    };
   }, [pathname]);
 }

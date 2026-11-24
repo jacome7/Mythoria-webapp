@@ -73,9 +73,10 @@ export function ensureGtag(): Window['gtag'] | null {
   window.dataLayer = window.dataLayer || [];
   window.gtag =
     window.gtag ||
-    ((...args: unknown[]) => {
-      window.dataLayer.push(args);
-    });
+    function gtag() {
+      // Match the queue entry shape consumed by Google's tag loader.
+      window.dataLayer.push(arguments);
+    };
   return window.gtag;
 }
 
@@ -86,6 +87,8 @@ export function trackEvent(
 ): boolean {
   const measurementId = browserDestination();
   if (!measurementId) return false;
+  const globals = window as unknown as Record<string, unknown>;
+  if (globals[`ga-disable-${measurementId}`] === true) return false;
   const gtag = window.gtag;
   if (!gtag || !document.getElementById('mythoria-audit-google-tag')) return false;
 

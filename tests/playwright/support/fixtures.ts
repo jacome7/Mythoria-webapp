@@ -17,12 +17,15 @@ export const test = base.extend<{ clerkFixture: void }>({
           throw new Error('The synthetic Clerk fixture requires an isolated localhost server.');
         }
 
-        // The app and Clerk's React SDK are unchanged. This fixture replaces only the
-        // remote ClerkJS client and GA script. App endpoints still run against PostgreSQL.
+        // The default fixture stubs ClerkJS and the GA loader. Only the dedicated network
+        // audit installs its own destination allowlist and forwards the real Google tag.
+        const audit = process.env.RUN_ANALYTICS_NETWORK_AUDIT === '1';
         await context.route(
           (url) =>
             url.origin === 'https://clerk.fixture.invalid' ||
-            (url.origin === 'https://www.googletagmanager.com' && url.pathname === '/gtag/js'),
+            (!audit &&
+              url.origin === 'https://www.googletagmanager.com' &&
+              url.pathname === '/gtag/js'),
           (route) => route.fulfill({ contentType: 'application/javascript', body: '' }),
         );
         await context.addInitScript(

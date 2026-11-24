@@ -4,7 +4,10 @@ import fs from 'fs';
 // Central location for the authenticated storage state produced by the auth setup project.
 // This file is added to .gitignore so it never leaves the developer machine/CI runtime.
 const authFile = 'tests/playwright/.auth/user.json';
-const skipAuthSetup = process.env.SKIP_AUTH_SETUP === '1';
+const auditOnly = process.env.RUN_ANALYTICS_NETWORK_AUDIT === '1';
+const skipAuthSetup = process.env.SKIP_AUTH_SETUP === '1' || auditOnly;
+const loopbackAudit =
+  auditOnly && /^http:\/\/localhost:\d+$/.test(process.env.PLAYWRIGHT_BASE_URL || '');
 const chromium = {
   ...devices['Desktop Chrome'],
   ...(process.env.PLAYWRIGHT_CLERK_FIXTURE === '1'
@@ -14,9 +17,13 @@ const chromium = {
           executablePath: process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE || undefined,
           args: [
             '--disable-background-networking',
-            '--proxy-server=http://127.0.0.1:1',
-            `--proxy-bypass-list=<-loopback>;${process.env.PLAYWRIGHT_BASE_URL}`,
-            '--host-resolver-rules=MAP * ~NOTFOUND, EXCLUDE localhost, EXCLUDE 127.0.0.1',
+            ...(!loopbackAudit
+              ? [
+                  '--proxy-server=http://127.0.0.1:1',
+                  `--proxy-bypass-list=<-loopback>;${process.env.PLAYWRIGHT_BASE_URL}`,
+                  '--host-resolver-rules=MAP * ~NOTFOUND, EXCLUDE localhost, EXCLUDE 127.0.0.1',
+                ]
+              : []),
           ],
         },
       }
@@ -62,6 +69,7 @@ const projects = [
   {
     name: 'chromium',
     testIgnore: sessionTests,
+    ...(auditOnly ? { testMatch: /analytics\.audit\.mobile\.spec\.ts$/ } : {}),
     use: chromium,
   },
   ...(skipAuthSetup

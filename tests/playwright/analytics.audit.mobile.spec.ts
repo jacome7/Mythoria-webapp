@@ -6,7 +6,7 @@ const auditOrigin = process.env.NEXT_PUBLIC_ANALYTICS_AUDIT_ORIGIN;
 const measurementId = process.env.NEXT_PUBLIC_ANALYTICS_AUDIT_MEASUREMENT_ID;
 const productionMeasurementId = 'G-86D0QFW197';
 const vendorHost =
-  /(^|\.)(google-analytics\.com|googletagmanager\.com|googleadservices\.com|doubleclick\.net)$/;
+  /(^|\.)(google-analytics\.com|googletagmanager\.com|googleadservices\.com|doubleclick\.net|googlesyndication\.com)$/;
 
 function decodeLayers(value: string): string {
   for (let depth = 0; depth < 5; depth++) {
@@ -27,6 +27,7 @@ test('inspects actual Google requests on the isolated audit stream', async ({
   baseURL,
 }) => {
   let isolatedOrigin = false;
+  let loopbackFixture = false;
   try {
     const configured = new URL(auditOrigin || '');
     isolatedOrigin =
@@ -35,18 +36,20 @@ test('inspects actual Google requests on the isolated audit stream', async ({
       !['mythoria.pt', 'www.mythoria.pt'].includes(configured.hostname) &&
       (configured.protocol === 'https:' ||
         ['localhost', '127.0.0.1'].includes(configured.hostname));
+    loopbackFixture = ['localhost', '127.0.0.1'].includes(configured.hostname);
   } catch {
     isolatedOrigin = false;
   }
   test.skip(
     process.env.RUN_ANALYTICS_NETWORK_AUDIT !== '1' ||
-      process.env.PLAYWRIGHT_CLERK_FIXTURE === '1' ||
+      (process.env.PLAYWRIGHT_CLERK_FIXTURE === '1' && !loopbackFixture) ||
       !isolatedOrigin ||
       !measurementId ||
       !/^G-[A-Z0-9]+$/.test(measurementId) ||
       measurementId === productionMeasurementId,
     'Requires an approved isolated audit deployment and a separate test stream.',
   );
+  test.setTimeout(60_000);
 
   const sentinels = {
     route: 'audit-private-route-7f4b5a',
@@ -57,6 +60,16 @@ test('inspects actual Google requests on the isolated audit stream', async ({
   };
   const returnPath = `/en-US/s/${sentinels.route}?token=${sentinels.query}`;
   const collected: Array<{ url: string; payload: string; allowed: boolean }> = [];
+  const collectionResponses: number[] = [];
+  context.on('response', (response) => {
+    const url = new URL(response.url());
+    if (
+      /(^|\.)google-analytics\.com$/.test(url.hostname) &&
+      url.pathname === '/g/collect' &&
+      url.searchParams.get('tid') === measurementId
+    )
+      collectionResponses.push(response.status());
+  });
 
   // Guard every page and popup before navigation. Only the specified audit stream may leave
   // the browser; an unexpected vendor request is recorded and aborted, never sent to production.
@@ -67,8 +80,14 @@ test('inspects actual Google requests on the isolated audit stream', async ({
       vendorHost.test(url.hostname) ||
       ['bzr.openai.com', 'bzrcdn.openai.com'].includes(url.hostname);
     if (!isVendor) {
-      if (url.hostname === 'audit-share.invalid') await route.abort();
-      else await route.continue();
+      if (
+        url.origin === auditOrigin ||
+        (loopbackFixture &&
+          process.env.PLAYWRIGHT_CLERK_FIXTURE === '1' &&
+          url.origin === 'https://clerk.fixture.invalid')
+      )
+        await route.fallback();
+      else await route.abort();
       return;
     }
     const payload = [request.url(), request.postData() || '', request.headers().referer || ''].join(
@@ -76,9 +95,11 @@ test('inspects actual Google requests on the isolated audit stream', async ({
     );
     const stream = url.searchParams.get('tid') || url.searchParams.get('id');
     const allowed =
+      url.protocol === 'https:' &&
       !decodeLayers(payload).includes(productionMeasurementId) &&
       stream === measurementId &&
-      ((url.hostname === 'www.googletagmanager.com' && url.pathname === '/gtag/js') ||
+      ((url.hostname === 'www.googletagmanager.com' &&
+        ['/gtag/js', '/gtag/destination'].includes(url.pathname)) ||
         (/(^|\.)google-analytics\.com$/.test(url.hostname) && url.pathname === '/g/collect'));
     collected.push({ url: request.url(), payload, allowed });
     if (allowed) await route.continue();
@@ -97,7 +118,12 @@ test('inspects actual Google requests on the isolated audit stream', async ({
   );
   expect(collected).toHaveLength(0);
   await page.getByRole('button', { name: /analytics only/i }).click();
-  await expect.poll(collectCount).toBeGreaterThan(0);
+  expect(collected).toHaveLength(0);
+  await page.goto('/en-US');
+  await expect.poll(collectCount, { timeout: 15000 }).toBeGreaterThan(0);
+  await expect
+    .poll(() => collectionResponses.some((status) => status >= 200 && status < 300))
+    .toBe(true);
   expect(
     collected.some(({ url, allowed }) => allowed && new URL(url).pathname === '/gtag/js'),
   ).toBe(true);

@@ -1,5 +1,6 @@
 const PRODUCTION_ORIGIN = 'https://mythoria.pt';
 const PRODUCTION_MEASUREMENT_ID = 'G-86D0QFW197';
+export const ANALYTICS_TAG_READY_EVENT = 'mythoria:analytics-tag-ready';
 
 function configuredOrigin(value?: string): string | undefined {
   try {
