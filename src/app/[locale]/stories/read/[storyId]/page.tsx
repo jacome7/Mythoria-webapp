@@ -89,11 +89,6 @@ export default function ReadStoryPage() {
     router.push(`/${locale}/stories/listen/${storyId}`);
   };
 
-  const navigateToRead = () => {
-    // Already on read page, do nothing
-    return;
-  };
-
   const navigateToEdit = () => {
     router.push(`/${locale}/stories/edit/${storyId}`);
   };

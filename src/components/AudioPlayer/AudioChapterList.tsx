@@ -2,16 +2,7 @@
 
 import React, { useMemo } from 'react';
 import Image from 'next/image';
-import {
-  BookOpen,
-  Download,
-  FastForward,
-  Loader2,
-  Pause,
-  Play,
-  Rewind,
-  Square,
-} from 'lucide-react';
+import { BookOpen, Download, Loader2, Pause, Play } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { CastButton } from './CastButton';
 import { AudioChapter, AudioPlayerState, AudioPlayerActions, CastControlsState } from './types';
@@ -52,12 +43,9 @@ export function AudioChapterList({
   playbackSpeed,
   playAudio,
   pauseAudio,
-  stopAudio,
   downloadAudio,
   setPlaybackSpeed,
   seekAudio,
-  skipForward,
-  skipBackward,
   castControls,
   formatDuration = defaultFormatDuration,
 }: AudioChapterListProps) {
