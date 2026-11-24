@@ -18,6 +18,7 @@ import {
   scrubPaymentOrderAdContext,
 } from '@/lib/openai-ads/outbox';
 import { ga4Service } from './ga4';
+import { getServerAnalyticsDestination, isGaClientId } from './destinations';
 import { ANALYTICS_BASE_URL, sanitizeAnalyticsPageUrl } from './page-context';
 import { storyShareEventParams, storyShareFromCampaign } from './story-share';
 
@@ -88,6 +89,7 @@ export async function deliverAnalytics(): Promise<{
   skipped: number;
   deferred: number;
 }> {
+  if (!getServerAnalyticsDestination()) return { delivered: 0, failed: 0, skipped: 0, deferred: 0 };
   const now = new Date();
   const abandonedBefore = new Date(now.getTime() - ABANDONED_ANALYTICS_CLAIM_MS);
   const entries = await db
@@ -142,6 +144,7 @@ export async function deliverAnalytics(): Promise<{
           skippedAt: new Date(),
           claimToken: null,
           claimedAt: null,
+          suppressionReason: 'consent_missing',
           lastError: 'Analytics storage was not granted',
         })
         .where(claimWhere);
@@ -149,7 +152,6 @@ export async function deliverAnalytics(): Promise<{
       skipped += 1;
       continue;
     }
-    const analyticsConsent = claimed.consent;
 
     let effectiveEntry = claimed;
     let effectiveAttribution: typeof analyticsAttributions.$inferSelect | undefined;
@@ -161,6 +163,7 @@ export async function deliverAnalytics(): Promise<{
         !effectiveEntry.engagementTimeMsec)
     ) {
       const eventTimeConditions = [
+        isNull(analyticsAttributions.revokedAt),
         lte(analyticsAttributions.createdAt, effectiveEntry.occurredAt),
         gt(analyticsAttributions.expiresAt, effectiveEntry.occurredAt),
         or(
@@ -241,6 +244,7 @@ export async function deliverAnalytics(): Promise<{
         .where(
           and(
             eq(analyticsAttributions.attributionId, effectiveEntry.attributionId),
+            isNull(analyticsAttributions.revokedAt),
             lte(analyticsAttributions.createdAt, effectiveEntry.occurredAt),
             gt(analyticsAttributions.storyShareExpiresAt, effectiveEntry.occurredAt),
             or(
@@ -301,6 +305,7 @@ export async function deliverAnalytics(): Promise<{
           skippedAt: new Date(),
           claimToken: null,
           claimedAt: null,
+          suppressionReason: 'session_unavailable',
           lastError: 'Explicit session-linked analytics context was unavailable before deadline',
         })
         .where(claimWhere);
@@ -309,21 +314,83 @@ export async function deliverAnalytics(): Promise<{
       continue;
     }
 
+    if (!effectiveEntry.attributionId || !isGaClientId(effectiveEntry.clientId)) {
+      const suppressionReason = effectiveEntry.attributionId
+        ? 'ga_client_unavailable'
+        : 'receipt_unavailable';
+      await db
+        .update(analyticsOutbox)
+        .set({
+          skippedAt: new Date(),
+          suppressionReason,
+          claimToken: null,
+          claimedAt: null,
+        })
+        .where(claimWhere);
+      logAnalyticsOutcome(effectiveEntry, 'skipped', { reason: suppressionReason });
+      skipped += 1;
+      continue;
+    }
+
     const event = {
       eventName: effectiveEntry.eventName,
       clientId: effectiveEntry.clientId!,
-      ...(effectiveEntry.userId ? { userId: effectiveEntry.userId } : {}),
       ...(effectiveEntry.sessionId ? { sessionId: effectiveEntry.sessionId } : {}),
       requireSessionAttribution: requiresSessionAttribution,
       ...(effectiveEntry.pageLocation ? { pageLocation: effectiveEntry.pageLocation } : {}),
       ...(effectiveEntry.pageReferrer ? { pageReferrer: effectiveEntry.pageReferrer } : {}),
       engagementTimeMsec: effectiveEntry.engagementTimeMsec!,
-      consent: analyticsConsent,
+      consent: claimed.consent,
       occurredAt: effectiveEntry.occurredAt,
       params: effectiveEntry.params,
     };
-    const validation = await ga4Service.validateEvent(event);
-    const result = validation.ok ? await ga4Service.sendEvent(event) : validation;
+    const attributionId = effectiveEntry.attributionId;
+    const withCurrentConsent = (send: typeof ga4Service.sendEvent) =>
+      db.transaction(async (tx) => {
+        // Sharing the receipt lock establishes a cutoff at revoke acknowledgment. Keep only
+        // a bounded network request inside each transaction and recheck between the two sends.
+        const [receipt] = await tx
+          .select()
+          .from(analyticsAttributions)
+          .where(
+            and(
+              eq(analyticsAttributions.attributionId, attributionId),
+              isNull(analyticsAttributions.revokedAt),
+              lte(analyticsAttributions.createdAt, event.occurredAt),
+            ),
+          )
+          .for('share');
+        if (!receipt || receipt.clientId !== event.clientId) return undefined;
+        return send({
+          ...event,
+          consent: {
+            analyticsStorage: 'granted',
+            adUserData:
+              receipt.consent.adUserData === 'granted' ? event.consent.adUserData : 'denied',
+            adPersonalization:
+              receipt.consent.adPersonalization === 'granted'
+                ? event.consent.adPersonalization
+                : 'denied',
+          },
+        });
+      });
+
+    const validation = await withCurrentConsent(ga4Service.validateEvent);
+    const result = validation?.ok ? await withCurrentConsent(ga4Service.sendEvent) : validation;
+    if (!result) {
+      await db
+        .update(analyticsOutbox)
+        .set({
+          skippedAt: new Date(),
+          suppressionReason: 'receipt_unavailable',
+          claimToken: null,
+          claimedAt: null,
+        })
+        .where(claimWhere);
+      logAnalyticsOutcome(effectiveEntry, 'skipped', { reason: 'receipt_unavailable' });
+      skipped += 1;
+      continue;
+    }
 
     if (result.ok) {
       // GA4 2xx acknowledges transport only. End-to-end ingestion is verified by the release probe.
@@ -351,7 +418,12 @@ export async function deliverAnalytics(): Promise<{
           claimToken: null,
           claimedAt: null,
           lastError: result.errors.join('; ').slice(0, 2000),
-          ...(attempts >= MAX_DELIVERY_ATTEMPTS ? { skippedAt: new Date() } : {}),
+          ...(attempts >= MAX_DELIVERY_ATTEMPTS
+            ? {
+                skippedAt: new Date(),
+                suppressionReason: validation?.ok ? 'transport_failed' : 'validation_failed',
+              }
+            : {}),
         })
         .where(claimWhere);
       logAnalyticsOutcome(effectiveEntry, 'failed', {

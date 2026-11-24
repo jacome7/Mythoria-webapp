@@ -1,11 +1,18 @@
+import { randomUUID } from 'node:crypto';
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
-import { and, eq, gt, sql } from 'drizzle-orm';
+import { and, eq, gt, isNull, sql } from 'drizzle-orm';
 import { db } from '@/db';
 import { analyticsAttributions, shareLinks, stories } from '@/db/schema';
 import { STORY_INTENTS } from '@/constants/intents';
-import { sanitizeClientAnalyticsContext } from '@/lib/analytics/ecommerce';
+import {
+  type ClientAnalyticsContext,
+  sanitizeClientAnalyticsContext,
+} from '@/lib/analytics/ecommerce';
 import { sanitizeAnalyticsPathname } from '@/lib/analytics/page-context';
+import { readAnalyticsConsentCookie } from '@/lib/analytics/consent-server';
+import { isGaClientId } from '@/lib/analytics/destinations';
+import { getLandingPageBySlug } from '@/content/landing-pages';
 import { analyticsReference } from '@/lib/analytics/reference';
 import { storyShareFromCampaign, type StoryShareContext } from '@/lib/analytics/story-share';
 import type { CampaignParams } from '@/lib/campaign-context';
@@ -19,7 +26,6 @@ import { AD_CONTEXT_LIMITS } from '@/lib/openai-ads/types';
 
 export const runtime = 'nodejs';
 
-const NORMAL_ATTRIBUTION_MAX_AGE_SECONDS = 24 * 60 * 60;
 const STORY_SHARE_MAX_AGE_SECONDS = 30 * 24 * 60 * 60;
 const optionalValue = z.string().trim().max(255).optional();
 const opprefValue = z.string().trim().max(AD_CONTEXT_LIMITS.oppref).optional();
@@ -31,7 +37,7 @@ const landingSlugValue = z
   .regex(/^[^\\/?#\u0000-\u001f\u007f]+$/)
   .optional();
 const attributionSchema = z.object({
-  analyticsContext: z.unknown(),
+  analyticsContext: z.unknown().optional(),
   landingPath: z.string().trim().max(160).optional(),
   latestPath: z.string().trim().max(160).optional(),
   landingSlug: z.string().trim().max(160).optional(),
@@ -156,68 +162,91 @@ function storyShareFields(context: StoryShareContext | undefined, now: Date) {
   };
 }
 
-function storyShareFromRow(
-  row: typeof analyticsAttributions.$inferSelect | undefined,
-  now: Date,
-): StoryShareContext | undefined {
-  if (
-    !row ||
-    !row.storyShareExpiresAt ||
-    row.storyShareExpiresAt <= now ||
-    !row.storyShareItemId ||
-    !row.storyShareMethod ||
-    !row.storyShareScope
-  ) {
-    return undefined;
-  }
-  return storyShareFromCampaign({
-    utm_source: row.storyShareMethod,
-    utm_medium:
-      row.storyShareMethod === 'whatsapp' || row.storyShareMethod === 'facebook'
-        ? 'social'
-        : row.storyShareMethod === 'email'
-          ? 'email'
-          : 'referral',
-    utm_campaign: 'story_share',
-    utm_id: row.storyShareItemId,
-    utm_content: row.storyShareScope,
-  });
+function cleanAdReference(value?: string): string | undefined {
+  return value && /^[A-Za-z0-9_.~-]+$/.test(value) ? value : undefined;
 }
 
-function storyShareFieldsFromRow(
-  row: typeof analyticsAttributions.$inferSelect | undefined,
-  now: Date,
-) {
-  const context = storyShareFromRow(row, now);
-  if (!context || !row?.storyShareTouchedAt || !row.storyShareExpiresAt) return {};
+function sanitizeCampaignAttribution(campaign: CampaignParams): CampaignParams {
+  const share = storyShareFromCampaign(campaign);
+  if (share)
+    return {
+      utm_source: share.method,
+      utm_medium: campaign.utm_medium,
+      utm_campaign: 'story_share',
+      utm_id: share.itemId,
+      utm_content: share.scope,
+    };
+  const source = campaign.utm_source;
+  const medium = campaign.utm_medium;
   return {
-    storyShareItemId: context.itemId,
-    storyShareMethod: context.method,
-    storyShareScope: context.scope,
-    storyShareTouchedAt: row.storyShareTouchedAt,
-    storyShareExpiresAt: row.storyShareExpiresAt,
+    ...(['google', 'bing', 'chatgpt', 'newsletter', 'facebook', 'instagram'].includes(source || '')
+      ? { utm_source: source }
+      : {}),
+    ...(['cpc', 'organic', 'paid', 'email', 'social', 'referral'].includes(medium || '')
+      ? { utm_medium: medium }
+      : {}),
   };
 }
 
 export async function POST(request: NextRequest) {
   try {
-    const body = attributionSchema.parse(await request.json());
-    const analytics = sanitizeClientAnalyticsContext(body.analyticsContext);
-    if (!analytics) return NextResponse.json({ captured: false }, { status: 202 });
+    const cookie = request.cookies.get(CONSENT_COOKIE_NAME)?.value;
+    const consent = readAnalyticsConsentCookie(cookie);
+    if (!consent) return NextResponse.json({ captured: false }, { status: 202 });
 
-    // `oppref` is split off the campaign so it never reaches GA4-facing columns or params.
-    const { oppref: campaignOppref, ...campaignParams } = body.campaign || {};
-    const campaign = campaignParams as CampaignParams;
+    const body = attributionSchema.parse(await request.json());
+    const incoming = sanitizeClientAnalyticsContext(body.analyticsContext);
     const now = new Date();
-    const advertisingGranted =
-      readAdvertisingConsent(request.cookies.get(CONSENT_COOKIE_NAME)?.value) === 'granted';
+    const validExistingId = z
+      .string()
+      .uuid()
+      .safeParse(request.cookies.get('mythoria_attribution')?.value);
+    const [existingRow] = validExistingId.success
+      ? await db
+          .select()
+          .from(analyticsAttributions)
+          .where(
+            and(
+              eq(analyticsAttributions.attributionId, validExistingId.data),
+              isNull(analyticsAttributions.revokedAt),
+            ),
+          )
+          .limit(1)
+      : [];
+    const analytics: ClientAnalyticsContext = {
+      ...(incoming && isGaClientId(incoming.clientId) ? incoming : {}),
+      clientId:
+        incoming && isGaClientId(incoming.clientId)
+          ? incoming.clientId
+          : existingRow?.clientId || `fp.${randomUUID()}`,
+      consent,
+    };
+
+    const {
+      oppref: campaignOppref,
+      gclid,
+      gbraid,
+      wbraid,
+      ...campaignParams
+    } = body.campaign || {};
+    const advertisingGranted = readAdvertisingConsent(cookie) === 'granted';
+    const campaign: CampaignParams = {
+      ...sanitizeCampaignAttribution(campaignParams),
+      ...(advertisingGranted
+        ? {
+            gclid: cleanAdReference(gclid),
+            gbraid: cleanAdReference(gbraid),
+            wbraid: cleanAdReference(wbraid),
+          }
+        : {}),
+    };
     const openAiFields = openAiReferenceFields(
       request,
       advertisingGranted,
-      body.oppref || campaignOppref,
+      cleanAdReference(body.oppref || campaignOppref),
       now,
     );
-    const expiresAt = new Date(now.getTime() + NORMAL_ATTRIBUTION_MAX_AGE_SECONDS * 1_000);
+    const expiresAt = new Date(now.getTime() + STORY_SHARE_MAX_AGE_SECONDS * 1_000);
     const pageFromContext = analytics.pageLocation
       ? sanitizeAnalyticsPathname(new URL(analytics.pageLocation).pathname)
       : undefined;
@@ -225,7 +254,12 @@ export async function POST(request: NextRequest) {
     const parsedLandingSlug = landingSlugValue.safeParse(
       body.landingSlug?.startsWith('/') ? undefined : body.landingSlug,
     );
-    const landingSlug = parsedLandingSlug.success ? parsedLandingSlug.data : undefined;
+    const landingSlug =
+      parsedLandingSlug.success &&
+      parsedLandingSlug.data &&
+      getLandingPageBySlug(parsedLandingSlug.data)
+        ? parsedLandingSlug.data
+        : undefined;
     const rawLandingPath = body.landingPath || legacyLandingPath;
     const landingPath = sanitizeAnalyticsPathname(rawLandingPath || '') || pageFromContext;
     const latestPath =
@@ -242,34 +276,6 @@ export async function POST(request: NextRequest) {
           ? 'wbraid'
           : undefined;
     const incomingStoryShare = await validateStoryShare(campaign, rawLandingPath);
-    const existingAttributionId = request.cookies.get('mythoria_attribution')?.value;
-    const validExistingId = z.string().uuid().safeParse(existingAttributionId);
-    const [existingRow] = validExistingId.success
-      ? await db
-          .select()
-          .from(analyticsAttributions)
-          .where(
-            and(
-              eq(analyticsAttributions.attributionId, validExistingId.data),
-              eq(analyticsAttributions.clientId, analytics.clientId),
-              gt(analyticsAttributions.expiresAt, now),
-            ),
-          )
-      : [];
-    const [shareCarryoverRow] = validExistingId.success
-      ? await db
-          .select()
-          .from(analyticsAttributions)
-          .where(
-            and(
-              eq(analyticsAttributions.attributionId, validExistingId.data),
-              eq(analyticsAttributions.clientId, analytics.clientId),
-              gt(analyticsAttributions.storyShareExpiresAt, now),
-            ),
-          )
-      : [];
-    const effectiveStoryShare =
-      incomingStoryShare || storyShareFromRow(existingRow || shareCarryoverRow, now);
     const shareFields = storyShareFields(incomingStoryShare, now);
     const insertValues = {
       clientId: analytics.clientId,
@@ -302,9 +308,7 @@ export async function POST(request: NextRequest) {
       latestAttributionAt: now,
       expiresAt,
       ...(advertisingGranted ? openAiFields : {}),
-      ...(incomingStoryShare
-        ? shareFields
-        : storyShareFieldsFromRow(existingRow || shareCarryoverRow, now)),
+      ...shareFields,
     };
     // Compare the row at UPDATE time, not the earlier SELECT snapshot: parallel
     // captures must not retain an old boundary after a real acquisition change.
@@ -319,9 +323,9 @@ export async function POST(request: NextRequest) {
       utmId: campaign.utm_id,
       utmTerm: campaign.utm_term,
       utmContent: campaign.utm_content,
-      gclid: campaign.gclid,
-      gbraid: campaign.gbraid,
-      wbraid: campaign.wbraid,
+      gclid: advertisingGranted ? campaign.gclid : null,
+      gbraid: advertisingGranted ? campaign.gbraid : null,
+      wbraid: advertisingGranted ? campaign.wbraid : null,
       ...(incomingStoryShare
         ? {
             storyShareItemId: shareFields.storyShareItemId,
@@ -344,6 +348,7 @@ export async function POST(request: NextRequest) {
       ? await db
           .update(analyticsAttributions)
           .set({
+            clientId: analytics.clientId,
             sessionId: analytics.sessionId,
             engagementTimeMsec: analytics.engagementTimeMsec,
             consent: analytics.consent,
@@ -355,9 +360,9 @@ export async function POST(request: NextRequest) {
             utmId: campaign.utm_id,
             utmTerm: campaign.utm_term,
             utmContent: campaign.utm_content,
-            gclid: campaign.gclid,
-            gbraid: campaign.gbraid,
-            wbraid: campaign.wbraid,
+            gclid: advertisingGranted ? campaign.gclid : null,
+            gbraid: advertisingGranted ? campaign.gbraid : null,
+            wbraid: advertisingGranted ? campaign.wbraid : null,
             latestPath,
             latestReferrerPath: referrerPath,
             latestAttributionAt: sql`case when ${unchangedContext}
@@ -380,25 +385,34 @@ export async function POST(request: NextRequest) {
             firstUtmTerm: existingRow.firstUtmTerm || existingRow.utmTerm || campaign.utm_term,
             firstUtmContent:
               existingRow.firstUtmContent || existingRow.utmContent || campaign.utm_content,
-            firstClickIdentifier:
-              existingRow.firstClickIdentifier ||
-              existingRow.gclid ||
-              existingRow.gbraid ||
-              existingRow.wbraid ||
-              clickIdentifier,
-            firstClickIdentifierKind:
-              existingRow.firstClickIdentifierKind ||
-              (existingRow.gclid
-                ? 'gclid'
-                : existingRow.gbraid
-                  ? 'gbraid'
-                  : existingRow.wbraid
-                    ? 'wbraid'
-                    : clickIdentifierKind),
+            firstClickIdentifier: !advertisingGranted
+              ? null
+              : existingRow.firstClickIdentifier ||
+                existingRow.gclid ||
+                existingRow.gbraid ||
+                existingRow.wbraid ||
+                clickIdentifier,
+            firstClickIdentifierKind: !advertisingGranted
+              ? null
+              : existingRow.firstClickIdentifierKind ||
+                (existingRow.gclid
+                  ? 'gclid'
+                  : existingRow.gbraid
+                    ? 'gbraid'
+                    : existingRow.wbraid
+                      ? 'wbraid'
+                      : clickIdentifierKind),
           })
-          .where(eq(analyticsAttributions.attributionId, existingRow.attributionId))
+          .where(
+            and(
+              eq(analyticsAttributions.attributionId, existingRow.attributionId),
+              isNull(analyticsAttributions.revokedAt),
+            ),
+          )
           .returning({ attributionId: analyticsAttributions.attributionId })
       : [];
+    // In-flight capture must never replace a receipt revoked while it was being refreshed.
+    if (existingRow && !existing) return NextResponse.json({ captured: false }, { status: 202 });
     const [inserted] = existing
       ? []
       : await db
@@ -406,26 +420,25 @@ export async function POST(request: NextRequest) {
           .values(insertValues)
           .returning({ attributionId: analyticsAttributions.attributionId });
     const attribution = existing || inserted;
+    if (!attribution) return NextResponse.json({ captured: false }, { status: 202 });
 
     const response = NextResponse.json({
       captured: true,
-      ...(effectiveStoryShare ? { storyShare: effectiveStoryShare } : {}),
+      ...(incomingStoryShare ? { storyShare: incomingStoryShare } : {}),
     });
     response.cookies.set('mythoria_attribution', attribution.attributionId, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
       path: '/',
-      maxAge: effectiveStoryShare
-        ? STORY_SHARE_MAX_AGE_SECONDS
-        : NORMAL_ATTRIBUTION_MAX_AGE_SECONDS,
+      maxAge: STORY_SHARE_MAX_AGE_SECONDS,
     });
     return response;
   } catch (error) {
     if (error instanceof z.ZodError) {
       return NextResponse.json({ error: 'Invalid attribution data' }, { status: 400 });
     }
-    console.error('Failed to capture analytics attribution:', error);
+    console.error('Failed to capture analytics attribution');
     return NextResponse.json({ error: 'Attribution capture failed' }, { status: 500 });
   }
 }

@@ -1,5 +1,6 @@
 'use client';
 
+import PricingOffer from '@/components/product-experiments/PricingOffer';
 import ModalPortal from '@/components/ModalPortal';
 import { useCallback, useEffect, useState } from 'react';
 import {
@@ -16,7 +17,7 @@ import {
 import { Link } from '@/i18n/routing';
 import { useTranslations } from 'next-intl';
 import ScrollFadeIn from '@/components/ScrollFadeIn';
-import { SELF_PRINTING_SERVICE_CODE } from '@/constants/pricing';
+import { initialAuthorGrant, SELF_PRINTING_SERVICE_CODE } from '@/constants/pricing';
 import FaqComponent from '@/components/faq/FaqComponent';
 
 interface CreditPackage {
@@ -337,7 +338,17 @@ export default function PricingPage() {
           <div className="text-center mt-8 mb-4">
             <p className="text-lg text-primary font-semibold">
               <Gift className="inline mr-2" />
-              {tPricingPage('newUserMessage')}
+              <PricingOffer
+                cost={services.find((s) => s.serviceCode === 'eBookGeneration')?.cost}
+                signupCredits={
+                  loading || error
+                    ? undefined
+                    : initialAuthorGrant(
+                        services.find((s) => s.serviceCode === 'initialAuthorCredits')?.cost,
+                      )
+                }
+                packages={creditPackages}
+              />
             </p>
           </div>
         </ScrollFadeIn>

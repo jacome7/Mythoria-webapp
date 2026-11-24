@@ -158,6 +158,15 @@ describe('landing page content registry', () => {
     expect(page?.books).toHaveLength(5);
   });
 
+  it('explains current credit pricing without promising a static offer on the Portuguese children page', () => {
+    const page = getLandingPage('pt-PT', 'livro-personalizado-crianca');
+
+    expect(page?.primaryCta).toBe('Criar um livro para uma criança');
+    expect(page?.hero.subheadline).toContain('custo atual em créditos');
+    expect(page?.hero.subheadline).toContain('antes de confirmares');
+    expect(page?.trustBadges).toContain('Custo antes de confirmar');
+  });
+
   it('provides categorized hub items and three crawlable related pages per landing page', () => {
     const hubItems = getLandingPageIndexItems();
     const related = getRelatedLandingPageItems('pt-PT', 'livro-personalizado-para-casais');
@@ -616,7 +625,7 @@ describe('landing page content registry', () => {
     expect(page?.primaryIntent).toBe('kids_adventures');
     expect(page?.riskRating).toBe('yellow');
     expect(page?.indexable).toBe(true);
-    expect(page?.editorialReviewDaysAgo).toBe(17);
+    expect(page?.editorialReviewDaysAgo).toBe(0);
     expect(page?.showInLandingPageIndex).toBe(true);
     expect(page?.homepageCard).toEqual({
       title: 'Livro personalizado para crianças',
@@ -653,7 +662,7 @@ describe('landing page content registry', () => {
     expect(page?.trustBadges).toEqual([
       'Conta adulta',
       'Privado por defeito',
-      'Reveja antes de partilhar',
+      'Custo antes de confirmar',
     ]);
     expect(getLandingPageStaticParams()).toContainEqual({
       locale: 'pt-PT',

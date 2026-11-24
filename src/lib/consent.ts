@@ -1,3 +1,6 @@
+import { getAuditBrowserMeasurementId } from './analytics/destinations';
+import { canLoadAuditBrowserTag } from './analytics/page-context';
+
 /**
  * Google Consent Mode v2 utilities
  *
@@ -150,8 +153,10 @@ export function saveConsent(
     return;
   }
 
+  const previous = getStoredConsent();
   const revokeReferral =
-    getStoredConsent()?.preferences?.referrals === true && preferences.referrals !== true;
+    previous?.preferences?.referrals === true && preferences.referrals !== true;
+  const revokeAnalytics = previous?.state.analytics_storage === 'granted' && !preferences.analytics;
   const stored: VersionedStoredConsent = {
     version: CONSENT_COOKIE_VERSION,
     state,
@@ -168,6 +173,10 @@ export function saveConsent(
   document.cookie = `${CONSENT_COOKIE_NAME}=${cookieValue}; expires=${expires.toUTCString()}; path=/; SameSite=Lax${window.location.protocol === 'https:' ? '; Secure' : ''}`;
   if (revokeReferral && typeof fetch === 'function')
     void fetch('/api/referrals/clear', { method: 'POST' }).catch(() => undefined);
+  if (revokeAnalytics && typeof fetch === 'function')
+    void fetch('/api/analytics/attribution/revoke', { method: 'POST', keepalive: true }).catch(
+      () => undefined,
+    );
 }
 
 /**
@@ -189,12 +198,7 @@ export function updateGoogleConsent(state: ConsentState): void {
     return;
   }
 
-  const consentPayload = {
-    ad_storage: state.ad_storage,
-    ad_user_data: state.ad_user_data,
-    ad_personalization: state.ad_personalization,
-    analytics_storage: state.analytics_storage,
-  };
+  const consentPayload = { ...getDefaultConsent(), analytics_storage: state.analytics_storage };
 
   const dispatchUpdate = () =>
     window.dispatchEvent(
@@ -206,15 +210,18 @@ export function updateGoogleConsent(state: ConsentState): void {
       }),
     );
 
-  if (window.gtag) {
-    window.gtag('consent', 'update', consentPayload);
-    dispatchUpdate();
-    return;
+  const measurementId = getAuditBrowserMeasurementId(window.location.origin);
+  if (measurementId && state.analytics_storage === 'denied') {
+    (window as unknown as Record<string, unknown>)[`ga-disable-${measurementId}`] = true;
   }
-
-  // gtag not ready yet; queue the update so it runs once the script loads
-  window.dataLayer = window.dataLayer || [];
-  window.dataLayer.push(['consent', 'update', consentPayload]);
+  if (
+    window.gtag &&
+    measurementId &&
+    document.getElementById('mythoria-audit-google-tag') &&
+    canLoadAuditBrowserTag(new URL(window.location.href), document.referrer)
+  ) {
+    window.gtag('consent', 'update', consentPayload);
+  }
   dispatchUpdate();
 }
 

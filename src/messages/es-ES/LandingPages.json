@@ -10,7 +10,7 @@
     "pricing": {
       "eyebrow": "Precios transparentes",
       "title": "Consulta el coste antes de crear",
-      "body": "Cada cuenta nueva incluye 5 créditos gratuitos. La tabla completa muestra los créditos necesarios para crear el ebook, generar el audiolibro, descargar el PDF y encargar la impresión. El coste aplicable aparece antes de cada confirmación.",
+      "body": "El coste actual en créditos se muestra antes de cada confirmación. Consulta la tabla para comparar el ebook, el audiolibro, el PDF y la impresión.",
       "cta": "Ver precios y créditos"
     },
     "related": {

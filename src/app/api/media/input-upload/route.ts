@@ -14,6 +14,9 @@ import { wizardMediaLogger, wizardMediaRequestId } from '@/lib/wizard-media-logg
 export async function POST(request: NextRequest) {
   const requestId = wizardMediaRequestId(request.headers);
   const operation = 'upload';
+  const assetId = wizardMediaRequestId(
+    new Headers({ 'x-request-id': request.headers.get('x-media-id') || '' }),
+  );
   const headers = { 'x-request-id': requestId };
   let stage = 'identity';
   const respond = (body: unknown, status: number) => {
@@ -47,7 +50,7 @@ export async function POST(request: NextRequest) {
     stage = 'workflow_request';
     const resp = await sgwFetch('/ai/media/upload', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', ...headers },
+      headers: { 'Content-Type': 'application/json', ...headers, 'x-media-id': assetId },
       body: JSON.stringify({ authorId: author.authorId, kind, contentType, dataUrl }),
     });
     if (!resp.ok) {

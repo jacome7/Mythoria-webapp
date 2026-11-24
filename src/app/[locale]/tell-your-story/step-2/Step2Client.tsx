@@ -1,5 +1,7 @@
 'use client';
 
+import { buildCreationObservation, type CreationOption } from '@/lib/growth/creation';
+import { useCreationObservation } from '@/lib/growth/use-creation-observation';
 import { STORY_BRIEF_MAX_LENGTH } from '@/lib/story-templates/story-input-limit';
 import DocumentImport from './DocumentImport';
 import WriterPanel from './WriterPanel';
@@ -41,7 +43,7 @@ import { trackOpenAiAdsEvent } from '@/lib/openai-ads/pixel';
 import MediaCapture from './MediaCapture';
 import CharacterSelection from './CharacterSelection';
 import WritingTips from './WritingTips';
-import { useStep2Session } from '@/hooks/useStep2Session';
+import { useStep2Session, emptyDocumentProvenance } from '@/hooks/useStep2Session';
 import { useJobPolling } from '@/hooks/useJobPolling';
 import styles from './Step2Page.module.css';
 import StoryTemplatePicker from '@/components/story-templates/StoryTemplatePicker';
@@ -138,10 +140,12 @@ function Step2Content({
   templatesEnabled = false,
   templates = [],
   whispererEnabled = false,
+  growthMeasurement = false,
 }: {
   templatesEnabled?: boolean;
   templates?: StoryTemplate[];
   whispererEnabled?: boolean;
+  growthMeasurement?: boolean;
 }) {
   const { isSignedIn, userId } = useAuth();
   const hasTrackedStepView = useRef(false);
@@ -182,10 +186,6 @@ function Step2Content({
   const [recoveredWhispererInputs, setRecoveredWhispererInputs] =
     useState<Partial<WhispererContext>>();
   const pendingWhispererRebuild = useRef<WhispererDraft | undefined>(undefined);
-  const startTime = useRef(0);
-  useEffect(() => {
-    startTime.current = Date.now();
-  }, []);
   const currentIntent = searchParams.get('primaryIntent');
   const primaryIntent = isValidIntent(currentIntent) ? currentIntent : intentContext?.intent;
   const templatesForIntent = useMemo(() => {
@@ -211,6 +211,8 @@ function Step2Content({
   const {
     storyText,
     setStoryText,
+    documentSource,
+    setDocumentSource,
     uploadedImages,
     setUploadedImages,
     uploadedAudio,
@@ -224,6 +226,40 @@ function Step2Content({
   } = useStep2Session();
 
   const { pollJob } = useJobPolling();
+  const creation = useCreationObservation(userId, growthMeasurement);
+  const beforeImport = useRef(documentSource);
+  const startedWithSavedDraft = useRef(false);
+  const directTemplate = templates.some(
+    (template) => template.id === searchParams.get('templateId'),
+  );
+  const entryKind = () =>
+    startedWithSavedDraft.current ? 'legacy' : directTemplate ? 'direct_template' : 'wizard';
+  const openCreationOption = (option: CreationOption) => creation.open(option, entryKind());
+  const openMediaOption = (type: ContentType) => {
+    openCreationOption(type === 'images' ? 'photo' : type);
+    setActiveModal(type);
+  };
+  const onDocumentChange = (action: 'append' | 'replace' | 'undo', previous: string) => {
+    if (action === 'undo') {
+      setDocumentSource(beforeImport.current);
+      return;
+    }
+    beforeImport.current = documentSource;
+    setDocumentSource({
+      retained: true,
+      alsoTyped:
+        action === 'append' &&
+        Boolean(previous.trim()) &&
+        (!beforeImport.current.retained || beforeImport.current.alsoTyped),
+    });
+  };
+  const onTextChange = (value: string) => {
+    if (!value.trim()) setDocumentSource(emptyDocumentProvenance);
+    else if (documentSource.retained && !documentSource.alsoTyped && value !== storyText) {
+      setDocumentSource({ retained: true, alsoTyped: true });
+    }
+    setStoryText(value);
+  };
 
   useEffect(() => {
     if (!preview || !templateState.ready || entryChecked.current || (whispererEnabled && !userId))
@@ -245,6 +281,7 @@ function Step2Content({
         ? (sessionStorage.getItem(whispererDraftKey(userId)) ??
           (!hasSavedContent ? lastWhispererDraft(userId) : null))
         : null;
+    startedWithSavedDraft.current = Boolean(hasSavedContent || activeInterview);
     setResumableWhispererDraft(activeInterview);
     setOnlyInterviewToResume(!!activeInterview && !hasSavedContent);
     const returningFromLaterStep = /\/tell-your-story\/step-[3-5]$/.test(previousWizardPath ?? '');
@@ -326,6 +363,7 @@ function Step2Content({
   ]);
 
   const openWhisperer = async (resumeDraftId?: string) => {
+    openCreationOption('guide');
     if (!userId || whispererRestoring) return;
     setWhispererRestoring(true);
     setSubmissionError(null);
@@ -586,6 +624,8 @@ function Step2Content({
       setRecoveredWhispererInputs(undefined);
       entryApplied.current = true;
       setMediaEpoch((value) => value + 1);
+      creation.reset();
+      startedWithSavedDraft.current = false;
       resetInputs();
       templateState.save(null);
       sessionStorage.removeItem('experimentalStep2Submission');
@@ -791,6 +831,8 @@ function Step2Content({
     }
     if (!submission.jobId) {
       if (!submission.structurePayload) {
+        const provenance = creation.read(resumingStructure ? 'legacy' : entryKind());
+        const documentRetained = documentSource.retained && Boolean(storyText.trim());
         const prepared = await prepareStructureRequest({
           submission,
           inputs: resolvedInputs,
@@ -799,6 +841,17 @@ function Step2Content({
           locale,
           journey,
           questionReferences,
+          creationObservation:
+            provenance &&
+            buildCreationObservation({
+              ...provenance,
+              text: Boolean(storyText.trim()) && (!documentRetained || documentSource.alsoTyped),
+              document: documentRetained,
+              photo: resolvedInputs.imageObjectPaths.length > 0,
+              audio: Boolean(resolvedInputs.audioObjectPath),
+              guide: Boolean(whisperer),
+              templateAnswerCount: journey?.templateId ? journey.answers.length : undefined,
+            }),
         });
         submission = prepared.submission;
         resolvedInputs = prepared.inputs;
@@ -878,7 +931,6 @@ function Step2Content({
       has_audio: !!audioObjectPath,
       template_id: journey?.templateId ?? undefined,
       question_depth: journey?.answers.length ?? 0,
-      time_to_continue_ms: Date.now() - startTime.current,
       processed_with_genai: !!(
         whisperer ||
         brief.trim() ||
@@ -1071,6 +1123,9 @@ function Step2Content({
                             className="btn btn-primary"
                             onClick={() => {
                               clearStorySession();
+                              creation.reset();
+                              startedWithSavedDraft.current = false;
+                              setDocumentSource(emptyDocumentProvenance);
                               templateState.save(null);
                               setStoryText('');
                               setUploadedImages([]);
@@ -1110,7 +1165,11 @@ function Step2Content({
                     <StoryTemplatePicker
                       templates={templatesForIntent}
                       journey={journey}
-                      onChange={templateState.save}
+                      onChange={(next) => {
+                        if (next?.templateId && next.templateId !== journey?.templateId)
+                          openCreationOption('template');
+                        templateState.save(next);
+                      }}
                       incomingTemplateId={searchParams.get('templateId')}
                       contribution={guideContribution}
                       disabled={isCreatingStory || !templateState.ready}
@@ -1146,7 +1205,7 @@ function Step2Content({
                               <textarea
                                 className="textarea textarea-bordered w-full min-h-24 text-base"
                                 value={storyText}
-                                onChange={(e) => setStoryText(e.target.value)}
+                                onChange={(e) => onTextChange(e.target.value)}
                                 placeholder={tTemplates('memoryContributionPlaceholder')}
                               />
                             </label>
@@ -1172,7 +1231,7 @@ function Step2Content({
                                     type="button"
                                     key={card.type}
                                     className="btn btn-outline"
-                                    onClick={() => setActiveModal(card.type)}
+                                    onClick={() => openMediaOption(card.type)}
                                   >
                                     {card.title}
                                     {card.status && (
@@ -1327,9 +1386,12 @@ function Step2Content({
                     }
                     onOpen={(type) => {
                       if (!journey) templateState.save(createTemplateJourney());
-                      setActiveModal(type);
+                      openMediaOption(type);
                     }}
-                    onCatalog={() => setCatalogOpen(true)}
+                    onCatalog={() => {
+                      openCreationOption('template');
+                      setCatalogOpen(true);
+                    }}
                     onBackCatalog={() => {
                       setCatalogOpen(false);
                       if (!journey) templateState.save(createTemplateJourney());
@@ -1384,7 +1446,7 @@ function Step2Content({
                         imageSrc={card.imageSrc}
                         imageClassName={card.imageClassName}
                         status={card.status}
-                        onClick={() => setActiveModal(card.type)}
+                        onClick={() => openMediaOption(card.type)}
                       />
                     ))}
                   </div>
@@ -1563,14 +1625,20 @@ function Step2Content({
                 </div>
 
                 <div className={writerStyles.body}>
-                  <DocumentImport value={storyText} onChange={setStoryText} fits={fitsBrief} />
+                  <DocumentImport
+                    value={storyText}
+                    onChange={setStoryText}
+                    fits={fitsBrief}
+                    onOpen={() => openCreationOption('document')}
+                    onImportChange={onDocumentChange}
+                  />
                   <div className={writerStyles.editor}>
                     <textarea
                       className={writerStyles.textarea}
                       aria-label={tStoryStepsStep2('tabWrite')}
                       placeholder={tStoryStepsStep2('textPlaceholder')}
                       value={storyText}
-                      onChange={(e) => setStoryText(e.target.value)}
+                      onChange={(e) => onTextChange(e.target.value)}
                     />
                   </div>
                   <p className={writerStyles.counter}>
@@ -1743,6 +1811,7 @@ export default function Step2Client(props: {
   templatesEnabled?: boolean;
   templates?: StoryTemplate[];
   whispererEnabled?: boolean;
+  growthMeasurement?: boolean;
 }) {
   return <Step2Content {...props} />;
 }

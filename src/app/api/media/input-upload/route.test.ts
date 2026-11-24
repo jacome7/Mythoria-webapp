@@ -85,3 +85,30 @@ it('replaces an invalid correlation identifier before logging a failed identity 
     status: 500,
   });
 });
+
+it('forwards only bounded analysis failure codes and recovery actions', async () => {
+  jest.mocked(sgwFetch).mockResolvedValue({
+    ok: false,
+    status: 503,
+    json: async () => ({
+      code: 'provider_busy',
+      error: 'private upstream detail',
+      recovery: 'unsafe',
+    }),
+  } as Response);
+  expect(await analyze(request({ objectPath: 'owner/inputs/photo.webp' }))).toMatchObject({
+    status: 503,
+    body: { error: 'Story media analysis failed', code: 'provider_busy', recovery: 'retry' },
+  });
+});
+
+it('does not forward an unrecognized upstream error', async () => {
+  jest.mocked(sgwFetch).mockResolvedValue({
+    ok: false,
+    status: 500,
+    json: async () => ({ code: 'private marker', error: 'private upstream detail' }),
+  } as Response);
+  expect(await analyze(request({ objectPath: 'owner/inputs/photo.webp' }))).toMatchObject({
+    body: { error: 'Story media analysis failed', code: 'analysis_failed', recovery: 'retry' },
+  });
+});

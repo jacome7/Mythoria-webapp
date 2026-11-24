@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useTranslations, useLocale } from 'next-intl';
 import { createPortal } from 'react-dom';
 import { UploadedImage, UploadedAudio } from '@/hooks/useStep2Session';
+import { MediaAnalysisError } from '@/lib/media-analysis-errors';
 import { useMediaUpload } from '@/hooks/useMediaUpload';
 import styles from './Step2Page.module.css';
 
@@ -38,6 +39,14 @@ export default function MediaCapture({
 }: Props) {
   const MAX_IMAGES = Math.max(0, Math.min(3, imageLimit));
   const alive = useRef(true);
+  const imageOperations = useRef(new Map<string, number>());
+  const nextImageOperation = (id: string) => {
+    const token = (imageOperations.current.get(id) ?? 0) + 1;
+    imageOperations.current.set(id, token);
+    return token;
+  };
+  const isCurrentImage = (id: string, token: number) =>
+    alive.current && imageOperations.current.get(id) === token;
   const setUploadedImages: typeof commitImages = (value) => {
     if (alive.current) commitImages(value);
   };
@@ -76,34 +85,42 @@ export default function MediaCapture({
     setUploadedImages((prev) => prev.map((img) => (img.id === id ? { ...img, ...patch } : img)));
   };
 
-  const runAnalysis = async (id: string, objectPath: string) => {
+  const runAnalysis = async (id: string, objectPath: string, token: number) => {
     setUploadedImages((prev) =>
       prev.map((img) =>
         img.id === id
-          ? { ...img, status: 'analyzing', error: undefined, attempts: img.attempts + 1 }
+          ? {
+              ...img,
+              status: 'analyzing',
+              error: undefined,
+              errorCode: undefined,
+              attempts: img.attempts + 1,
+            }
           : img,
       ),
     );
     try {
       const metadata = await analyzeImage(objectPath, locale, id);
-      updateImage(id, { status: 'done', metadata });
+      if (isCurrentImage(id, token)) updateImage(id, { status: 'done', metadata });
     } catch (e) {
+      if (!isCurrentImage(id, token)) return;
       updateImage(id, {
         status: 'error',
-        error: e instanceof Error ? e.message : 'Analysis failed',
+        errorCode: e instanceof MediaAnalysisError ? e.code : 'analysis_failed',
       });
     } finally {
       if (alive.current) saveToSession();
     }
   };
 
-  const processImage = async (id: string, file: File) => {
+  const processImage = async (id: string, file: File, token: number) => {
     try {
       const { objectPath, publicUrl } = await uploadInput('image', file, id);
-      if (!alive.current) return;
+      if (!isCurrentImage(id, token)) return;
       updateImage(id, { objectPath, publicUrl });
-      await runAnalysis(id, objectPath);
+      await runAnalysis(id, objectPath, token);
     } catch (e) {
+      if (!isCurrentImage(id, token)) return;
       updateImage(id, {
         status: 'error',
         error: e instanceof Error ? e.message : 'Upload failed',
@@ -126,7 +143,7 @@ export default function MediaCapture({
             MAX_IMAGES,
           ),
         );
-        void processImage(id, file);
+        void processImage(id, file, nextImageOperation(id));
       };
       reader.readAsDataURL(file);
     });
@@ -136,14 +153,15 @@ export default function MediaCapture({
     const img = uploadedImages.find((i) => i.id === id);
     if (!img || img.status !== 'error') return;
     if (img.objectPath) {
-      void runAnalysis(id, img.objectPath);
+      void runAnalysis(id, img.objectPath, nextImageOperation(id));
     } else if (img.file) {
       updateImage(id, { status: 'uploading', error: undefined });
-      void processImage(id, img.file);
+      void processImage(id, img.file, nextImageOperation(id));
     }
   };
 
   const removeImage = (id: string) => {
+    imageOperations.current.delete(id);
     setUploadedImages((prev) => prev.filter((i) => i.id !== id));
     saveToSession();
   };
@@ -422,6 +440,11 @@ export default function MediaCapture({
                                 {statusLabel(img.status)}
                               </span>
                             </div>
+                            {img.status === 'error' && img.errorCode && (
+                              <p className="text-xs text-error" role="status">
+                                {t(`imageAnalysis.errors.${img.errorCode}`)}
+                              </p>
+                            )}
                             <div className="flex gap-2">
                               {img.status === 'done' && (
                                 <button
@@ -432,7 +455,10 @@ export default function MediaCapture({
                                 </button>
                               )}
                               {img.status === 'error' &&
-                                (img.objectPath || img.file ? (
+                                (img.errorCode === 'content_rejected' ||
+                                img.errorCode === 'invalid_cache' ||
+                                img.errorCode === 'unauthorized' ? null : img.objectPath ||
+                                  img.file ? (
                                   <button
                                     className="btn btn-xs btn-primary"
                                     onClick={() => retryAnalysis(img.id)}
@@ -441,7 +467,7 @@ export default function MediaCapture({
                                   </button>
                                 ) : (
                                   <span className="text-xs text-error">
-                                    {t('imageAnalysis.attemptsExhausted')}
+                                    {t('imageAnalysis.reselect')}
                                   </span>
                                 ))}
                             </div>

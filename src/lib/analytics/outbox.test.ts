@@ -9,6 +9,7 @@ const sendEventMock = jest.fn();
 const fanOutAdConversionsMock = jest.fn();
 const deliverAdConversionsMock = jest.fn();
 const scrubPaymentOrderAdContextMock = jest.fn();
+const receiptMock = jest.fn();
 
 jest.mock('@/db', () => ({
   db: {
@@ -20,6 +21,11 @@ jest.mock('@/db', () => ({
 
 jest.mock('@/lib/pubsub', () => ({
   publishStoryRequest: (...args: unknown[]) => publishStoryRequestMock(...args),
+}));
+
+jest.mock('./destinations', () => ({
+  ...jest.requireActual('./destinations'),
+  getServerAnalyticsDestination: () => ({ measurementId: 'G-TEST123', apiSecret: 'test' }),
 }));
 
 jest.mock('./ga4', () => ({
@@ -80,6 +86,17 @@ function mockUpdateSequence(returningRows: unknown[][]) {
 describe('durable outbox drains', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    receiptMock.mockResolvedValue([
+      {
+        clientId: '123.456',
+        consent: { analyticsStorage: 'granted', adUserData: 'denied', adPersonalization: 'denied' },
+      },
+    ]);
+    transactionMock.mockImplementation((callback) =>
+      callback({
+        select: () => ({ from: () => ({ where: () => ({ for: receiptMock }) }) }),
+      }),
+    );
   });
 
   it('validates analytics before delivery and retries a rejected payload', async () => {
@@ -88,6 +105,7 @@ describe('durable outbox drains', () => {
       dedupeKey: 'purchase:order-1',
       eventName: 'purchase',
       authorId: 'author-1',
+      attributionId: 'receipt-1',
       clientId: '123.456',
       userId: null,
       sessionId: 123,
@@ -115,6 +133,34 @@ describe('durable outbox drains', () => {
     expect(sendEventMock).not.toHaveBeenCalled();
     expect(set).toHaveBeenCalledWith(
       expect.objectContaining({ attempts: 1, lastError: 'invalid value' }),
+    );
+  });
+
+  it('withholds collection when the receipt is revoked after validation', async () => {
+    const entry = {
+      outboxId: 'outbox-1',
+      dedupeKey: 'share:synthetic',
+      eventName: 'share',
+      attributionId: 'receipt-1',
+      clientId: '123.456',
+      sessionId: 123,
+      engagementTimeMsec: 100,
+      consent: { analyticsStorage: 'granted', adUserData: 'denied', adPersonalization: 'denied' },
+      params: {},
+      occurredAt: new Date(),
+      attempts: 0,
+    };
+    mockPendingRows([entry]);
+    const set = mockUpdate([entry]);
+    validateEventMock.mockResolvedValue({ ok: true, errors: [] });
+    receiptMock.mockResolvedValueOnce([{ clientId: entry.clientId, consent: entry.consent }]);
+    receiptMock.mockResolvedValueOnce([]);
+
+    await expect(deliverAnalytics()).resolves.toMatchObject({ delivered: 0, skipped: 1 });
+    expect(validateEventMock).toHaveBeenCalledTimes(1);
+    expect(sendEventMock).not.toHaveBeenCalled();
+    expect(set).toHaveBeenCalledWith(
+      expect.objectContaining({ suppressionReason: 'receipt_unavailable' }),
     );
   });
 
@@ -160,6 +206,7 @@ describe('durable outbox drains', () => {
     };
     const enriched = {
       ...pending,
+      attributionId: 'receipt-1',
       clientId: '123.456',
       sessionId: 1712345678,
       engagementTimeMsec: 100,
@@ -168,6 +215,7 @@ describe('durable outbox drains', () => {
     selectMock.mockReturnValueOnce(selectionFor([pending])).mockReturnValueOnce(
       selectionFor([
         {
+          attributionId: 'receipt-1',
           clientId: '123.456',
           sessionId: 1712345678,
           engagementTimeMsec: 100,

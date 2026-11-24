@@ -70,7 +70,7 @@ steps:
       - '--update-labels'
       - 'git-sha=${_GIT_SHA},cloud-build-id=$BUILD_ID'
       - '--update-env-vars'
-      - 'APP_GIT_SHA=${_GIT_SHA}'
+      - 'APP_GIT_SHA=${_GIT_SHA},ANONYMOUS_ANALYTICS_ENABLED=true,ANALYTICS_DELIVERY_TARGET=${_ANALYTICS_DELIVERY_TARGET},OPENAI_ADS_CAPI_DELIVERY_ENABLED=${_OPENAI_ADS_CAPI_DELIVERY_ENABLED}'
       - '--quiet'
       # Existing Cloud Run environment variables.
       # env-parity-preserved: NODE_ENV,NEXT_PUBLIC_BASE_URL,NEXT_PUBLIC_SUPPORTED_LOCALES,NEXT_PUBLIC_TTS_PROVIDER
@@ -111,6 +111,8 @@ substitutions:
   _SERVICE_NAME: 'mythoria-webapp'
   _REGION: 'europe-west9'
   _NEXT_PUBLIC_BASE_URL: 'https://mythoria.pt'
+  _ANALYTICS_DELIVERY_TARGET: 'off'
+  _OPENAI_ADS_CAPI_DELIVERY_ENABLED: 'false'
   _NEXT_PUBLIC_SUPPORTED_LOCALES: 'en-US,pt-PT,es-ES,fr-FR,de-DE'
   _NEXT_PUBLIC_GOOGLE_ADS_ID: 'AW-17204783135'
   _NEXT_PUBLIC_GOOGLE_TAG_ID: 'GT-PBCDVJTJ'

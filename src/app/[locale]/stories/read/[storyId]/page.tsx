@@ -1,5 +1,6 @@
 'use client';
 
+import QualifiedShareOpen from '@/components/QualifiedShareOpen';
 import { useEffect, useState } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
 import { ArrowLeft, BookOpen, Copy, Edit3, Share2, Volume2 } from 'lucide-react';
@@ -189,6 +190,7 @@ export default function ReadStoryPage() {
       </Show>
 
       <Show when="signed-in">
+        <QualifiedShareOpen storyId={storyId} />
         {/* Action Bar */}
         <div className="relative z-[80] overflow-visible bg-base-200 border-b border-base-300 px-3 py-3 sm:px-4 print:hidden">
           <div className="max-w-6xl mx-auto flex items-center justify-between gap-2">

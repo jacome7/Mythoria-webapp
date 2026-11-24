@@ -1,5 +1,6 @@
 'use client';
 
+import QualifiedShareOpen from '@/components/QualifiedShareOpen';
 import { useEffect, useState } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
 import { ArrowLeft, Edit3, Share2, Volume2 } from 'lucide-react';
@@ -187,6 +188,7 @@ export default function ReadChapterPage() {
         </div>
 
         {/* Story Reader */}
+        <QualifiedShareOpen storyId={storyId} />
         <StoryReader
           storyId={storyId}
           story={story}

@@ -1,9 +1,6 @@
 import {
   clearGoogleAnalyticsContextCache,
-  clearUserAnalyticsContext,
   getGoogleAnalyticsContext,
-  setUserId,
-  setUserProperties,
   trackAuth,
   trackCommerce,
   trackEvent,
@@ -50,83 +47,61 @@ describe('canonical analytics event propagation', () => {
     document.cookie = 'mythoria_consent=; Max-Age=0; path=/';
     document.cookie = 'mythoria_intent_context=; Max-Age=0; path=/';
     clearGoogleAnalyticsContextCache();
-  });
-
-  it('queues only the supplied canonical parameters', () => {
-    trackEvent('landing_cta_click', { cta_placement: 'hero_primary' });
-    expect(window.dataLayer[0]).toEqual([
-      'event',
-      'landing_cta_click',
-      expect.objectContaining({
-        cta_placement: 'hero_primary',
-        send_to: process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID || 'G-86D0QFW197',
-      }),
-    ]);
-    const queued = window.dataLayer[0] as unknown[];
-    expect(queued[2]).not.toHaveProperty('timestamp');
-    expect(queued[2]).not.toHaveProperty('page_location');
-    expect(queued[2]).not.toHaveProperty('page_title');
-  });
-
-  it('adds only a validated low-cardinality intent to browser events', () => {
-    document.cookie = `mythoria_intent_context=${encodeURIComponent(
-      JSON.stringify({ intent: 'romance' }),
-    )}; path=/`;
-    trackEvent('page_view', { page_type: 'homepage' });
-    expect(window.dataLayer[0]).toEqual([
-      'event',
-      'page_view',
-      expect.objectContaining({
-        page_type: 'homepage',
-        primary_intent: 'romance',
-      }),
-    ]);
-
-    window.dataLayer = [];
-    document.cookie = `mythoria_intent_context=${encodeURIComponent(
-      JSON.stringify({ intent: 'not-real' }),
-    )}; path=/`;
-    trackEvent('story_creation_started', {});
-    expect((window.dataLayer[0] as unknown[])[2]).not.toHaveProperty('primary_intent');
-  });
-
-  it('sets User-ID before emitting login', () => {
-    const gtag = jest.fn();
+    window.history.replaceState(null, '', '/en-US');
+    process.env.NEXT_PUBLIC_ANALYTICS_AUDIT_ORIGIN = window.location.origin;
+    process.env.NEXT_PUBLIC_ANALYTICS_AUDIT_MEASUREMENT_ID = 'G-TEST123';
+    const tag = document.createElement('script');
+    tag.id = 'mythoria-audit-google-tag';
+    document.head.append(tag);
     grantAnalyticsConsent();
-    window.gtag = gtag;
-    trackAuth.login({ user_id: 'user_clerk_1', method: 'google' });
-    expect(gtag).toHaveBeenNthCalledWith(1, 'set', { user_id: 'user_clerk_1' });
-    expect(gtag).toHaveBeenNthCalledWith(
-      2,
+  });
+
+  afterEach(() => {
+    delete process.env.NEXT_PUBLIC_ANALYTICS_AUDIT_ORIGIN;
+    delete process.env.NEXT_PUBLIC_ANALYTICS_AUDIT_MEASUREMENT_ID;
+    document.getElementById('mythoria-audit-google-tag')?.remove();
+  });
+
+  it('does not queue diagnostic events before consent or on private navigation', () => {
+    window.gtag = jest.fn();
+    document.cookie = 'mythoria_consent=; Max-Age=0; path=/';
+    expect(trackEvent('landing_cta_click', { cta_placement: 'hero' })).toBe(false);
+    grantAnalyticsConsent();
+    window.history.replaceState(null, '', '/en-US/s/private-sentinel/edit');
+    expect(trackEvent('landing_cta_click')).toBe(false);
+    expect(window.gtag).not.toHaveBeenCalled();
+  });
+
+  it('uses only a fixed page envelope and bounded parameters in the isolated stream', () => {
+    window.gtag = jest.fn();
+    document.title = 'private-title-sentinel';
+    trackEvent('landing_cta_click', {
+      cta_placement: 'hero',
+      cta_destination: '/en-US/s/private-sentinel',
+      page_title: 'private-title-sentinel',
+      page_referrer: 'private-referrer-sentinel',
+      gclid: 'private-click-sentinel',
+    });
+    expect(window.gtag).toHaveBeenCalledWith('event', 'landing_cta_click', {
+      cta_placement: 'hero',
+      page_title: 'Mythoria',
+      page_location: window.location.origin + '/en-US',
+      page_referrer: '',
+      send_to: 'G-TEST123',
+    });
+  });
+
+  it('emits a login without setting or attaching a Clerk ID', () => {
+    window.gtag = jest.fn();
+    trackAuth.login({ user_id: 'clerk-synthetic-sentinel', method: 'google' });
+    expect(window.gtag).toHaveBeenCalledTimes(1);
+    expect(window.gtag).toHaveBeenCalledWith(
       'event',
       'login',
       expect.objectContaining({ method: 'google' }),
     );
-  });
-
-  it('gates User-ID and user properties until analytics consent is granted', () => {
-    const gtag = jest.fn();
-    window.gtag = gtag;
-
-    setUserId('user_clerk_1');
-    setUserProperties({ profile_complete: true });
-    expect(gtag).not.toHaveBeenCalled();
-
-    grantAnalyticsConsent();
-    setUserId('user_clerk_1');
-    setUserProperties({ profile_complete: true });
-    expect(gtag).toHaveBeenNthCalledWith(1, 'set', { user_id: 'user_clerk_1' });
-    expect(gtag).toHaveBeenNthCalledWith(2, 'set', 'user_properties', {
-      profile_complete: true,
-    });
-
-    clearUserAnalyticsContext();
-    expect(gtag).toHaveBeenNthCalledWith(3, 'set', { user_id: null });
-    expect(gtag).toHaveBeenNthCalledWith(
-      4,
-      'set',
-      'user_properties',
-      expect.objectContaining({ profile_complete: null }),
+    expect(JSON.stringify(jest.mocked(window.gtag).mock.calls)).not.toContain(
+      'clerk-synthetic-sentinel',
     );
   });
 
@@ -138,7 +113,16 @@ describe('canonical analytics event propagation', () => {
     expect(gtag).toHaveBeenCalledWith(
       'event',
       'begin_checkout',
-      expect.objectContaining({ currency: 'EUR', value: 38, items: checkout.items }),
+      expect.objectContaining({
+        currency: 'EUR',
+        value: 38,
+        items: [
+          expect.objectContaining({
+            item_id: 'credit_package_starter',
+            item_name: 'Credits package',
+          }),
+        ],
+      }),
     );
   });
 
@@ -180,7 +164,7 @@ describe('canonical analytics event propagation', () => {
       clientId: '123.456',
       sessionId: 1712345678,
       primaryIntent: 'grandparents',
-      pageLocation: 'http://localhost/',
+      pageLocation: window.location.origin + '/en-US',
       engagementTimeMsec: 100,
       consent: {
         analyticsStorage: 'granted',

@@ -19,32 +19,27 @@ Google Ads uses `purchase` as its sole Primary conversion objective. `sign_up`, 
 
 ## Identity, attribution, and privacy
 
-- Consent Mode defaults to denied. No server event is delivered without analytics consent and a genuine GA client ID.
-- Attribution records contain only allowlisted campaign parameters and sanitized internal paths, expire after 24 hours, and contain no PII or raw URLs. The first touch is immutable; later captures update only the latest path, referrer, session, consent, and expiry.
-- Durable events carry the attribution row ID plus sanitized same-origin `page_location`/`page_referrer`. Query strings, UUID path segments, private share tokens, raw click IDs, email addresses, prompts, and story/chapter content are excluded from Measurement Protocol parameters.
-- Audiobook and self-print requests persist a shared `product_generation_requests` row before queueing. The requested event is written only after the queue accepts the stable run ID; SGW writes the terminal event through the existing reconciler. `paid_action` is interaction telemetry, not proof of a product outcome.
-- A physical print order uses the existing `print_requests.id` as the deduplication source for `print_order_requested`; GA4 receives only its hashed `print_request_ref`.
-- Manual `page_view` events retain only `utm_source`, `utm_medium`, `utm_campaign`, `utm_term`, `utm_content`, `gclid`, `gbraid`, and `wbraid`.
-- Authentication, payment, token, session, code, and state parameters are removed.
-- IDs used for deduplication remain operational fields and are not registered as GA4 custom definitions.
+- Product access is independent of optional analytics. A confirmed Analytics grant creates an HttpOnly first-party receipt. A first-party receipt can support consented SQL reporting when no GA client or session is observable.
+- The receipt stays stable across renewal and expires after 30 days of inactivity. Withdrawal expires the receipt, clears optional links and suppresses undelivered events. Regrant starts a new observation window. Existing signup, navigation and share activity before that grant stays outside analytics.
+- The browser audit stream uses a fixed title, safe route templates, an empty referrer and event-specific typed parameters. Outbound Measurement Protocol likewise excludes raw Clerk IDs, story paths and titles, bearer tokens, prompt text, filenames, arbitrary properties and query strings. Google tag configuration that could emit automatic traffic is only available on an isolated audit origin.
+- Advertising references require Advertising consent. Google Ads conversion goals and GA4 key events are separate property settings.
+- Workflow and payment identifiers needed for internal idempotency stay in restricted operational records. Register only bounded event parameters as GA4 custom definitions.
 
 ## Durable delivery
 
-`analytics_outbox` stores sanitized Measurement Protocol payloads and retry state. The scheduler drain validates payloads with `/debug/mp/collect` and `ENFORCE_RECOMMENDATIONS`, then sends valid events to the EU `/mp/collect` endpoint with the authoritative occurrence time as `timestamp_micros`.
+The outbox retains queued event context. The scheduler applies the current receipt and validates the outbound envelope with `/debug/mp/collect` and `ENFORCE_RECOMMENDATIONS`. It sends an eligible event to the EU collection endpoint and rechecks the receipt before each request. Suppression reasons distinguish missing or withdrawn consent, missing context and exhausted delivery.
 
-An HTTP `2xx` from Measurement Protocol means only that Google received the transport request. The debug endpoint validates the payload but does not validate the API secret. Consequently, `delivered_at` means “submitted to transport”, not “confirmed in GA4”. Every production release must run `npm run ga4:smoke`, which sends `analytics_delivery_probe` and polls the Realtime Data API until ingestion is independently confirmed.
-
-The deployment script obtains the Realtime read token by impersonating `analytics-scheduler@oceanic-beach-460916-n5.iam.gserviceaccount.com` with the `analytics.readonly` OAuth scope. That service account must remain a GA4 property Viewer, and the human or CI identity running the deployment needs `roles/iam.serviceAccountTokenCreator` only on that service account. No service-account key is required or permitted for this smoke.
+An HTTP success from Measurement Protocol confirms transport. Use the isolated `npm run ga4:smoke` probe to validate and independently confirm test-property ingestion. [Analytics containment and verification](analytics/privacy-release.md)
 
 `story_generation_requests` is the durable generation queue. The story-completion API debits credits and inserts the request atomically under a per-author advisory lock. Duplicate idempotency keys return the stable run. A permanent publish failure issues one idempotent compensating credit.
 
 Admin UI/MCP corrective restarts reuse this queue with `credits_spent = 0`. They never create a debit or refund ledger entry. If their publish retry budget is exhausted, the request becomes `delivery_failed` and `story_generation_status` becomes `failed`, while an already published story remains published and readable.
 
-The workflow service records terminal events only after its authoritative terminal transition. It copies the consented `user_id`, immutable first-touch attribution, and sanitized page context from the durable requested-event row, and uses `story_generation_completed:<run_id>` as the completion idempotency key. GA4 receives a 12-character `run_ref`, never the raw run ID. Its scheduled reconciler repairs missed outbox writes without changing the Pub/Sub `{storyId, runId}` message contract.
+The workflow service records terminal events only after its authoritative terminal transition. It carries the stored consent receipt, attribution and page context from the durable requested-event row, and uses `story_generation_completed:<run_id>` as the completion idempotency key. GA4 receives a 12-character `run_ref`, never the raw run ID. Its scheduled reconciler repairs missed outbox writes without changing the Pub/Sub `{storyId, runId}` message contract.
 
 ## Ecommerce values
 
-`value` is net item revenue excluding tax and shipping. `tax` and `shipping` are separate. Items carry authoritative discount, coupon, variant, quantity, and net unit price where available. `gross_value`, `gross_unit_price`, and `payment_type` are not sent. A partial refund includes items only when Stripe identifies them; otherwise it contains the authoritative partial value without an invented allocation.
+`value` is net item revenue excluding tax and shipping. `tax` and `shipping` are separate. The outbound item schema permits controlled product identifiers, discount, quantity and net unit price. `gross_value`, `gross_unit_price`, and `payment_type` are not sent. A partial refund includes items only when Stripe identifies them; otherwise it contains the authoritative partial value without an invented allocation.
 
 ## OpenAI ChatGPT Ads
 

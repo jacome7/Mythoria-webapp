@@ -1,8 +1,8 @@
+import { randomBytes } from 'node:crypto';
+import { getServerAnalyticsDestination } from '../src/lib/analytics/destinations';
 import { GoogleAuth } from 'google-auth-library';
 
-const DEFAULT_PROPERTY_ID = '490896080';
-const DEFAULT_MEASUREMENT_ID = 'G-86D0QFW197';
-const EVENT_NAME = 'analytics_delivery_probe';
+const PRODUCTION_PROPERTY_ID = '490896080';
 
 interface ProbeOptions {
   propertyId: string;
@@ -17,6 +17,7 @@ interface ProbeOptions {
 
 async function getEventCount(
   propertyId: string,
+  eventName: string,
   accessToken: string,
   fetchImpl: typeof fetch,
 ): Promise<number> {
@@ -34,7 +35,7 @@ async function getEventCount(
         dimensionFilter: {
           filter: {
             fieldName: 'eventName',
-            stringFilter: { matchType: 'EXACT', value: EVENT_NAME },
+            stringFilter: { matchType: 'EXACT', value: eventName },
           },
         },
         limit: 1,
@@ -60,31 +61,40 @@ export async function runGa4DeliveryProbe({
   fetchImpl = fetch,
   sleep = (milliseconds) => new Promise((resolve) => setTimeout(resolve, milliseconds)),
 }: ProbeOptions): Promise<void> {
-  const baseline = await getEventCount(propertyId, accessToken, fetchImpl);
+  if (propertyId === PRODUCTION_PROPERTY_ID || measurementId === 'G-86D0QFW197') {
+    throw new Error('The smoke probe requires the isolated audit property and stream');
+  }
+  const eventName = `analytics_delivery_probe_${randomBytes(6).toString('hex')}`;
+  // A unique event name correlates transport and Realtime without a custom dimension.
+  await getEventCount(propertyId, eventName, accessToken, fetchImpl);
   const sessionId = Math.floor(Date.now() / 1000);
   const clientId = `${Math.floor(Math.random() * 1_000_000_000)}.${sessionId}`;
-  const delivery = await fetchImpl(
-    `https://region1.google-analytics.com/mp/collect?measurement_id=${encodeURIComponent(measurementId)}&api_secret=${encodeURIComponent(apiSecret)}`,
-    {
+  const url = (path: string) =>
+    `https://region1.google-analytics.com/${path}?measurement_id=${encodeURIComponent(measurementId)}&api_secret=${encodeURIComponent(apiSecret)}`;
+  const send = (path: string, validate = false) =>
+    fetchImpl(url(path), {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
+      signal: AbortSignal.timeout(10_000),
       body: JSON.stringify({
         client_id: clientId,
-        events: [
-          {
-            name: EVENT_NAME,
-            params: { session_id: sessionId, engagement_time_msec: 100 },
-          },
-        ],
+        ...(validate ? { validation_behavior: 'ENFORCE_RECOMMENDATIONS' } : {}),
+        events: [{ name: eventName, params: { session_id: sessionId, engagement_time_msec: 100 } }],
       }),
-    },
-  );
+    });
+  const validation = await send('debug/mp/collect', true);
+  if (!validation.ok)
+    throw new Error(`Measurement Protocol validation returned HTTP ${validation.status}`);
+  const validated = (await validation.json()) as { validationMessages?: unknown[] };
+  if (validated.validationMessages?.length)
+    throw new Error('Measurement Protocol rejected the probe schema');
+  const delivery = await send('mp/collect');
   if (!delivery.ok) throw new Error(`Measurement Protocol returned HTTP ${delivery.status}`);
 
   const deadline = Date.now() + timeoutMs;
   while (Date.now() < deadline) {
     await sleep(pollMs);
-    if ((await getEventCount(propertyId, accessToken, fetchImpl)) > baseline) return;
+    if ((await getEventCount(propertyId, eventName, accessToken, fetchImpl)) > 0) return;
   }
   throw new Error(
     'GA4 accepted the transport request but the probe was not confirmed by Realtime Data API',
@@ -102,15 +112,17 @@ async function getAccessToken(): Promise<string> {
 }
 
 async function main(): Promise<void> {
-  const apiSecret = process.env.GOOGLE_ANALYTICS_API_SECRET?.trim();
-  if (!apiSecret) throw new Error('GOOGLE_ANALYTICS_API_SECRET is required');
-  await runGa4DeliveryProbe({
-    propertyId: process.env.GA4_PROPERTY_ID || DEFAULT_PROPERTY_ID,
-    measurementId: process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID || DEFAULT_MEASUREMENT_ID,
-    apiSecret,
-    accessToken: await getAccessToken(),
-  });
-  console.log(`GA4 Realtime confirmed ${EVENT_NAME}`);
+  const propertyId = process.env.GA4_AUDIT_PROPERTY_ID?.trim();
+  const destination = getServerAnalyticsDestination();
+  if (
+    process.env.ANALYTICS_DELIVERY_TARGET !== 'audit' ||
+    !propertyId ||
+    propertyId === PRODUCTION_PROPERTY_ID ||
+    !destination
+  )
+    throw new Error('Configure the isolated audit property and stream before running the probe');
+  await runGa4DeliveryProbe({ ...destination, propertyId, accessToken: await getAccessToken() });
+  console.log('Audit GA4 Realtime confirmed the synthetic delivery probe');
 }
 
 if (process.env.NODE_ENV !== 'test') {

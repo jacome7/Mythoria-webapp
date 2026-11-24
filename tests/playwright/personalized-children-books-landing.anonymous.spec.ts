@@ -62,12 +62,13 @@ test.describe('personalized children books landing', () => {
       page.getByRole('heading', { name: 'Personalize os detalhes que tornam a história única.' }),
     ).toBeVisible();
     await expect(page.getByRole('heading', { name: 'Limites' })).toHaveCount(0);
+    await expect(page.getByText('Custo antes de confirmar', { exact: true })).toBeVisible();
     const expectedReviewDate = new Intl.DateTimeFormat('pt-PT', {
       day: 'numeric',
       month: 'long',
       year: 'numeric',
       timeZone: 'UTC',
-    }).format(new Date(Date.now() - 17 * 24 * 60 * 60 * 1000));
+    }).format(new Date('2026-11-24T00:00:00Z'));
     await expect(
       page.getByText(`Conteúdo editorial Mythoria · Revisto em ${expectedReviewDate}`),
     ).toBeVisible();

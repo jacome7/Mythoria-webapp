@@ -4,6 +4,8 @@ import {
   type StoryTemplateJourney,
 } from '@/lib/story-templates/journey';
 import { saveStep2Submission, type Step2Submission } from '@/lib/story-templates/submission';
+import type { CreationObservation } from '@/lib/growth/creation';
+import { getStoredConsent } from '@/lib/consent';
 
 export interface OutlineInputs {
   brief: string;
@@ -49,6 +51,7 @@ interface StructureRequestOptions {
   locale: string;
   journey: StoryTemplateJourney | null;
   questionReferences: ReturnType<typeof confirmedCharacterReferences>;
+  creationObservation?: CreationObservation | null;
 }
 
 export async function prepareStructureRequest({
@@ -59,11 +62,12 @@ export async function prepareStructureRequest({
   locale,
   journey,
   questionReferences,
+  creationObservation,
 }: StructureRequestOptions) {
   const { brief, characterIds, audioObjectPath } = inputs;
   let { imageObjectPaths } = inputs;
   const storyId = submission.storyId;
-  let structureRequestId = templatesEnabled ? crypto.randomUUID() : undefined;
+  let structureRequestId = crypto.randomUUID();
   let whispererDescription: string | undefined;
   if (whisperer) {
     const handoff = await fetch(
@@ -96,6 +100,7 @@ export async function prepareStructureRequest({
     whispererDescription = result.userDescription;
     imageObjectPaths = [...result.imageObjectPaths];
   }
+  const consent = getStoredConsent();
   const prepared = {
     ...submission,
     outlineFailure: undefined,
@@ -118,6 +123,10 @@ export async function prepareStructureRequest({
       ...(whisperer ? { storyWhisperer: true } : {}),
       ...(questionReferences.length ? { characterReferences: questionReferences } : {}),
     }),
+    creationAnalytics:
+      creationObservation && consent?.state.analytics_storage === 'granted'
+        ? { consentAt: consent.timestamp, snapshot: creationObservation }
+        : undefined,
   };
   saveStep2Submission(prepared, templatesEnabled);
   return { submission: prepared, inputs: { ...inputs, imageObjectPaths } };
@@ -128,10 +137,23 @@ export async function queueStructureRequest(
   templatesEnabled: boolean,
   structureError: () => Error,
 ): Promise<Step2Submission> {
+  let payload = submission.structurePayload;
+  const consent = getStoredConsent();
+  if (
+    payload &&
+    submission.creationAnalytics &&
+    consent?.state.analytics_storage === 'granted' &&
+    consent.timestamp === submission.creationAnalytics.consentAt
+  ) {
+    payload = JSON.stringify({
+      ...JSON.parse(payload),
+      creationObservation: submission.creationAnalytics.snapshot,
+    });
+  }
   const response = await fetch('/api/stories/genai-structure', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: submission.structurePayload,
+    body: payload,
   });
   const data = await response.json();
   if (!response.ok || !data.jobId) throw structureError();

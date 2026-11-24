@@ -1,4 +1,5 @@
-import { and, desc, eq, gt, isNull, lte, or } from 'drizzle-orm';
+import { readAnalyticsConsentCookie } from './consent-server';
+import { and, eq, gt, isNull, lte, or } from 'drizzle-orm';
 import { db } from '@/db';
 import { analyticsAttributions } from '@/db/schema';
 import { getValidatedIntent } from '@/lib/campaign-context';
@@ -47,26 +48,6 @@ function contextFromAttribution(row: AttributionRow): ClientAnalyticsContext {
   };
 }
 
-function consentFromStoredValue(storedConsentValue?: string): AnalyticsConsent | undefined {
-  try {
-    const stored = JSON.parse(decodeURIComponent(storedConsentValue || '')) as {
-      state?: {
-        analytics_storage?: string;
-        ad_user_data?: string;
-        ad_personalization?: string;
-      };
-    };
-    if (stored.state?.analytics_storage !== 'granted') return undefined;
-    return {
-      analyticsStorage: 'granted',
-      adUserData: stored.state.ad_user_data === 'granted' ? 'granted' : 'denied',
-      adPersonalization: stored.state.ad_personalization === 'granted' ? 'granted' : 'denied',
-    };
-  } catch {
-    return undefined;
-  }
-}
-
 /** Resolve consented GA4 identity consistently across server-side funnel endpoints. */
 export async function resolveServerAnalyticsContext({
   browserContext,
@@ -76,7 +57,7 @@ export async function resolveServerAnalyticsContext({
   occurredAt = new Date(),
 }: ResolveServerAnalyticsContextInput): Promise<ResolvedServerAnalyticsContext> {
   const incoming = sanitizeClientAnalyticsContext(browserContext);
-  const consent = consentFromStoredValue(storedConsentValue);
+  const consent = readAnalyticsConsentCookie(storedConsentValue);
   if (!consent) return {};
   let attribution: AttributionRow | undefined;
 
@@ -89,6 +70,7 @@ export async function resolveServerAnalyticsContext({
           eq(analyticsAttributions.attributionId, attributionId),
           lte(analyticsAttributions.createdAt, occurredAt),
           gt(analyticsAttributions.expiresAt, occurredAt),
+          isNull(analyticsAttributions.revokedAt),
           or(
             isNull(analyticsAttributions.latestAttributionAt),
             lte(analyticsAttributions.latestAttributionAt, occurredAt),
@@ -99,26 +81,6 @@ export async function resolveServerAnalyticsContext({
       .limit(1);
   }
 
-  if (!attribution) {
-    [attribution] = await db
-      .select()
-      .from(analyticsAttributions)
-      .where(
-        and(
-          eq(analyticsAttributions.authorId, authorId),
-          lte(analyticsAttributions.createdAt, occurredAt),
-          gt(analyticsAttributions.expiresAt, occurredAt),
-          or(
-            isNull(analyticsAttributions.latestAttributionAt),
-            lte(analyticsAttributions.latestAttributionAt, occurredAt),
-          ),
-          ...(incoming?.sessionId ? [eq(analyticsAttributions.sessionId, incoming.sessionId)] : []),
-        ),
-      )
-      .orderBy(desc(analyticsAttributions.createdAt))
-      .limit(1);
-  }
-
   const storedContext = attribution ? contextFromAttribution(attribution) : undefined;
   if (
     attribution &&
@@ -126,9 +88,7 @@ export async function resolveServerAnalyticsContext({
     (incoming.clientId !== attribution.clientId ||
       (incoming.sessionId && attribution.sessionId && incoming.sessionId !== attribution.sessionId))
   ) {
-    console.warn('[Analytics] Incoming GA identity did not match explicit attribution', {
-      attributionId: attribution.attributionId,
-    });
+    console.warn('[Analytics] Incoming GA identity did not match explicit attribution');
   }
   const candidateContext = storedContext
     ? {

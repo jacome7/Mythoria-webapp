@@ -30,11 +30,14 @@ function measureCalls(): unknown[][] {
 }
 
 describe('OpenAI Ads pixel helper', () => {
-  const originalPixelId = process.env.NEXT_PUBLIC_OPENAI_PIXEL_ID;
+  const originalPixelId = process.env.NEXT_PUBLIC_OPENAI_AUDIT_PIXEL_ID;
   const originalDebug = process.env.NEXT_PUBLIC_OPENAI_PIXEL_DEBUG;
 
   beforeEach(() => {
-    process.env.NEXT_PUBLIC_OPENAI_PIXEL_ID = PIXEL_ID;
+    process.env.NEXT_PUBLIC_OPENAI_AUDIT_PIXEL_ID = PIXEL_ID;
+    process.env.NEXT_PUBLIC_ANALYTICS_AUDIT_ORIGIN = window.location.origin;
+    process.env.NEXT_PUBLIC_ANALYTICS_AUDIT_MEASUREMENT_ID = 'G-TEST123';
+    window.history.replaceState(null, '', '/en-US');
     delete process.env.NEXT_PUBLIC_OPENAI_PIXEL_DEBUG;
     __resetOpenAiPixelForTests();
     clearConsent();
@@ -44,12 +47,14 @@ describe('OpenAI Ads pixel helper', () => {
   });
 
   afterAll(() => {
-    process.env.NEXT_PUBLIC_OPENAI_PIXEL_ID = originalPixelId;
+    process.env.NEXT_PUBLIC_OPENAI_AUDIT_PIXEL_ID = originalPixelId;
+    delete process.env.NEXT_PUBLIC_ANALYTICS_AUDIT_ORIGIN;
+    delete process.env.NEXT_PUBLIC_ANALYTICS_AUDIT_MEASUREMENT_ID;
     process.env.NEXT_PUBLIC_OPENAI_PIXEL_DEBUG = originalDebug;
   });
 
   it('is disabled without a pixel id', () => {
-    delete process.env.NEXT_PUBLIC_OPENAI_PIXEL_ID;
+    delete process.env.NEXT_PUBLIC_OPENAI_AUDIT_PIXEL_ID;
     grantConsent(true);
     expect(isOpenAiPixelEnabled()).toBe(false);
     trackOpenAiAdsEvent(conversions.storyLead('run-1'));
@@ -193,8 +198,8 @@ describe('OpenAI Ads pixel helper', () => {
       trackOpenAiAdsEvent(conversions.pageViewed('/survey/:token'));
       expect(measureCalls()).toHaveLength(0);
 
-      window.history.replaceState(null, '', '/en-US/my-stories');
-      trackOpenAiAdsEvent(conversions.pageViewed('/my-stories'));
+      window.history.replaceState(null, '', '/en-US/pricing');
+      trackOpenAiAdsEvent(conversions.pageViewed('/pricing'));
       expect(measureCalls()).toHaveLength(1);
     } finally {
       window.history.replaceState(null, '', original);

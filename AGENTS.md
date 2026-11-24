@@ -155,3 +155,7 @@ Story Whisperer is the single-author Step 2 interview. See [its storage and serv
 ## Paid print proofs
 
 WebApp owns paid print intents, generation-pinned proof manifests, supplier release and reconciliation. Only an authenticated Admin ticket release can create a supplier job. See [the paid print operations guide](docs/PRINT_FULFILLMENT.md).
+
+## Product experiments
+
+The reviewed rollout windows, first-party assignment contract, and D7/D30 readout are documented in [product experiments](docs/analytics/product-experiments.md). Keep new enrollment disabled until v2 measurement reconciles.

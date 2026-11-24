@@ -49,6 +49,11 @@ export type OpenAiCapiResult =
   { ok: true } | { ok: false; status?: number; retryable: boolean; error: string };
 
 function capiCredentials(): { apiKey: string; pixelId: string } | null {
+  if (
+    process.env.OPENAI_ADS_CAPI_DELIVERY_ENABLED !== 'true' ||
+    process.env.NEXT_PUBLIC_BASE_URL !== 'https://mythoria.pt'
+  )
+    return null;
   const apiKey = process.env.OPENAI_ADS_CAPI_KEY?.trim();
   const pixelId = process.env.NEXT_PUBLIC_OPENAI_PIXEL_ID?.trim();
   return apiKey && pixelId ? { apiKey, pixelId } : null;

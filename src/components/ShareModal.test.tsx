@@ -4,6 +4,7 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 
 const trackEventMock = jest.fn();
 const trackOpenAiAdsEventMock = jest.fn();
+const getStoredConsentMock = jest.fn();
 
 jest.mock('next-intl', () => ({
   useLocale: () => 'en-US',
@@ -11,6 +12,10 @@ jest.mock('next-intl', () => ({
 }));
 jest.mock('@/lib/analytics', () => ({
   trackEvent: (...args: unknown[]) => trackEventMock(...args),
+}));
+jest.mock('@/lib/consent', () => ({
+  CONSENT_UPDATED_EVENT: 'mythoria:consent-updated',
+  getStoredConsent: () => getStoredConsentMock(),
 }));
 jest.mock('@/lib/openai-ads/pixel', () => ({
   trackOpenAiAdsEvent: (...args: unknown[]) => trackOpenAiAdsEventMock(...args),
@@ -23,6 +28,7 @@ describe('ShareModal', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
+    getStoredConsentMock.mockReturnValue({ state: { analytics_storage: 'granted' } });
     global.fetch = jest.fn().mockResolvedValue(
       new Response(JSON.stringify({ success: true, storyRef }), {
         status: 200,
@@ -53,7 +59,7 @@ describe('ShareModal', () => {
   it('records copy only after clipboard success and uses the opaque public campaign URL', async () => {
     renderPublicModal();
     const copy = await screen.findByRole('button', { name: 'copy' });
-    await waitFor(() => expect(copy).toBeEnabled());
+    await screen.findByDisplayValue(/utm_source=copy_link/);
     fireEvent.click(copy);
 
     await waitFor(() => expect(navigator.clipboard.writeText).toHaveBeenCalledTimes(1));
@@ -80,7 +86,7 @@ describe('ShareModal', () => {
     async (method) => {
       renderPublicModal();
       const button = await screen.findByRole('button', { name: method });
-      await waitFor(() => expect(button).toBeEnabled());
+      await screen.findByDisplayValue(/utm_source=copy_link/);
       fireEvent.click(button);
 
       expect(window.open).toHaveBeenCalledTimes(1);
@@ -96,7 +102,7 @@ describe('ShareModal', () => {
     Object.defineProperty(navigator, 'share', { configurable: true, value: nativeShare });
     renderPublicModal();
     const button = await screen.findByRole('button', { name: 'more' });
-    await waitFor(() => expect(button).toBeEnabled());
+    await screen.findByDisplayValue(/utm_source=copy_link/);
     fireEvent.click(button);
 
     await waitFor(() => expect(nativeShare).toHaveBeenCalledTimes(1));
@@ -104,6 +110,19 @@ describe('ShareModal', () => {
       'share',
       expect.objectContaining({ method: 'native_share', item_id: storyRef }),
     );
+  });
+
+  it('copies an ordinary public link with no analytics consent or reference lookup', async () => {
+    getStoredConsentMock.mockReturnValue(null);
+    renderPublicModal();
+    fireEvent.click(screen.getByRole('button', { name: 'copy' }));
+    await waitFor(() =>
+      expect(navigator.clipboard.writeText).toHaveBeenCalledWith(
+        expect.stringMatching(/\/p\/safe-public-slug$/),
+      ),
+    );
+    expect(fetch).not.toHaveBeenCalled();
+    expect(trackEventMock).not.toHaveBeenCalled();
   });
 
   it('tags a generated private edit link with its private scope', async () => {

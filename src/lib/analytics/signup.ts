@@ -38,16 +38,7 @@ export function signUpAttributionMatchesCreation(
   const sessionStart = attribution.sessionId ? attribution.sessionId * 1000 : undefined;
   if (sessionStart !== undefined && (!Number.isFinite(sessionStart) || sessionStart > eventTime))
     return false;
-  if (createdAt <= eventTime) return true;
-  // Late consent is eligible only when the captured GA session already covered creation.
-  // A fresh session after registration is insufficient evidence; do not invent pre-consent tracking.
-  return Boolean(
-    sessionStart &&
-    Number.isFinite(sessionStart) &&
-    sessionStart <= eventTime &&
-    eventTime - sessionStart < SIGN_UP_RECOVERY_MS &&
-    createdAt - eventTime < SIGN_UP_RECOVERY_MS,
-  );
+  return createdAt <= eventTime;
 }
 
 export function signUpOutboxEntry(clerkUserId: string, occurredAt: Date): NewAnalyticsOutboxEntry {

@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { parseTemplateJourney } from './journey';
+import { creationObservation } from '@/lib/growth/creation';
 
 const schema = z.object({
   owner: z.string(),
@@ -10,6 +11,7 @@ const schema = z.object({
   jobId: z.string().optional(),
   structureRequestId: z.string().uuid().optional(),
   structurePayload: z.string().max(60_000).optional(),
+  creationAnalytics: z.object({ consentAt: z.number(), snapshot: creationObservation }).optional(),
   whisperer: z
     .object({ draftId: z.uuid(), projectId: z.uuid(), revision: z.number().int().nonnegative() })
     .optional(),

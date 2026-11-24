@@ -35,6 +35,8 @@ function mockFetchResponse(status: number, body = '') {
 describe('OpenAI Conversions API transport', () => {
   beforeEach(() => {
     process.env = { ...ORIGINAL_ENV };
+    process.env.OPENAI_ADS_CAPI_DELIVERY_ENABLED = 'true';
+    process.env.NEXT_PUBLIC_BASE_URL = 'https://mythoria.pt';
     process.env.OPENAI_ADS_CAPI_KEY = 'capi-key';
     process.env.NEXT_PUBLIC_OPENAI_PIXEL_ID = 'pixel/id';
   });

@@ -27,7 +27,7 @@ function mockAttributions(rows: unknown[]) {
 describe('resolveServerAnalyticsContext', () => {
   beforeEach(() => jest.clearAllMocks());
 
-  it('falls back to the latest consented author attribution', async () => {
+  it('uses the explicit consented browser receipt', async () => {
     mockAttributions([
       {
         attributionId: 'attribution-1',
@@ -44,6 +44,7 @@ describe('resolveServerAnalyticsContext', () => {
 
     await expect(
       resolveServerAnalyticsContext({
+        attributionId: 'attribution-1',
         authorId: 'author-1',
         storedConsentValue: grantedCookie,
       }),

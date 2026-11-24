@@ -25,6 +25,8 @@ export * from './leads';
 export * from './faq';
 export * from './partners';
 export * from './analytics';
+export * from './growth';
+export * from './product-experiments';
 export * from './referrals';
 export * from './surveys';
 

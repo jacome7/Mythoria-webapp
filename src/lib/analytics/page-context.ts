@@ -1,23 +1,91 @@
+import { SUPPORTED_LOCALES } from '@/config/locales';
+import { getLandingPage } from '@/content/landing-pages';
+
 export const ANALYTICS_BASE_URL = 'https://mythoria.pt';
 
-const UUID_SEGMENT =
-  /\/[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}(?=\/|$)/gi;
-const BIOGRAPHER_CREDENTIAL_SEGMENT = /(\/biographer\/(?:invite|resume)\/)[^/]+/gi;
-const PRIVATE_SHARE_SEGMENT = /(\/s\/)[^/]+/gi;
-// `/survey/<bearer token>` carries an invitation credential. `/survey/reward/<id>` is a different
-// route whose id is an entitlement uuid (already redacted by UUID_SEGMENT; the explicit rule below
-// also covers any non-uuid value).
-const SURVEY_REWARD_SEGMENT = /(\/survey\/reward\/)[^/]+/gi;
-const SURVEY_TOKEN_SEGMENT = /(\/survey\/)(?!reward(?:\/|$))[^/]+/gi;
+const STATIC_PUBLIC_ROUTES = new Set([
+  '',
+  '/aboutUs',
+  '/blog',
+  '/contactUs',
+  '/faqs',
+  '/get-inspired',
+  '/guias',
+  '/lp',
+  '/partners',
+  '/pricing',
+  '/privacy-policy',
+  '/termsAndConditions',
+]);
+const STATIC_APP_ROUTES = new Set([
+  '/buy-credits',
+  '/credits-and-payments',
+  '/my-characters',
+  '/my-personas',
+  '/my-stories',
+  '/privacy-policy/delete-account',
+  '/profile',
+  '/profile/onboarding',
+  '/referrals',
+  '/tell-your-story',
+  '/tell-your-story/step-1',
+  '/tell-your-story/step-2',
+  '/tell-your-story/step-3',
+  '/tell-your-story/step-4',
+  '/tell-your-story/step-5',
+]);
+
+/** Map every recognized dynamic route to a fixed template. Unknown routes have no context. */
+export function sanitizeAnalyticsPathname(pathname: string): string | undefined {
+  if (!pathname.startsWith('/') || pathname.length > 4096 || /[?#\\]/.test(pathname)) {
+    return undefined;
+  }
+  if (pathname === '/' || pathname === '/offline') return pathname;
+  const [, locale, ...segments] = pathname.replace(/\/$/, '').split('/');
+  if (!SUPPORTED_LOCALES.includes(locale)) return undefined;
+  const prefix = `/${locale}`;
+  const path = segments.length ? `/${segments.join('/')}` : '';
+  const [section, identifier, operation, index] = segments;
+  if (STATIC_PUBLIC_ROUTES.has(path) || STATIC_APP_ROUTES.has(path)) return prefix + path;
+  if (section === 'lp' && identifier && segments.length === 2) {
+    return identifier === ':landing' || getLandingPage(locale, identifier)
+      ? `${prefix}/lp/${identifier}`
+      : `${prefix}/lp/:landing`;
+  }
+  if (['blog', 'guias', 'sample-books'].includes(section) && identifier && segments.length === 2) {
+    return `${prefix}/${section}/:article`;
+  }
+  if (section === 's' && identifier) {
+    return `${prefix}/s/:token${operation === 'edit' ? '/edit' : ''}`;
+  }
+  if (section === 'p' && identifier) {
+    if (operation === 'chapter' && index) return `${prefix}/p/:story/chapter/:chapter`;
+    return `${prefix}/p/:story${operation === 'listen' ? '/listen' : ''}`;
+  }
+  if (section === 'stories' && identifier) {
+    if (['read', 'edit', 'listen', 'print'].includes(identifier) && operation) {
+      return `${prefix}/stories/${identifier}/:id${index === 'chapter' ? '/chapter/:chapter' : ''}`;
+    }
+    return `${prefix}/stories/:id`;
+  }
+  if (section === 'sign-in' || section === 'sign-up') return `${prefix}/${section}`;
+  if (section === 'biographer') return `${prefix}/biographer`;
+  if (section === 'survey' && identifier) {
+    return `${prefix}/survey/${identifier === 'reward' ? 'reward/:id' : ':token'}`;
+  }
+  return undefined;
+}
 
 function allowedOrigins(): Set<string> {
-  const origins = new Set([new URL(ANALYTICS_BASE_URL).origin]);
-  const configured = process.env.NEXT_PUBLIC_BASE_URL;
-  if (configured) {
+  const origins = new Set([ANALYTICS_BASE_URL]);
+  for (const candidate of [
+    process.env.NEXT_PUBLIC_BASE_URL,
+    process.env.NEXT_PUBLIC_ANALYTICS_AUDIT_ORIGIN,
+  ]) {
     try {
-      origins.add(new URL(configured).origin);
+      if (candidate) origins.add(new URL(candidate).origin);
     } catch {
-      // Invalid environment values are rejected by the environment manifest.
+      // Invalid configuration never adds an origin.
     }
   }
   if (process.env.NODE_ENV !== 'production') {
@@ -27,26 +95,36 @@ function allowedOrigins(): Set<string> {
   return origins;
 }
 
-export function sanitizeAnalyticsPathname(pathname: string): string | undefined {
-  if (!pathname.startsWith('/') || pathname.length > 160) return undefined;
-  return pathname
-    .replace(UUID_SEGMENT, '/:id')
-    .replace(PRIVATE_SHARE_SEGMENT, '$1:token')
-    .replace(BIOGRAPHER_CREDENTIAL_SEGMENT, '$1:token')
-    .replace(SURVEY_REWARD_SEGMENT, '$1:id')
-    .replace(SURVEY_TOKEN_SEGMENT, '$1:token')
-    .replace(/\/{2,}/g, '/');
-}
-
 export function sanitizeAnalyticsPageUrl(value?: string | null): string | undefined {
   if (!value || value.length > 4096) return undefined;
   try {
     const url = new URL(value);
-    if (!allowedOrigins().has(url.origin)) return undefined;
+    if (!allowedOrigins().has(url.origin) || url.username || url.password) return undefined;
     const pathname = sanitizeAnalyticsPathname(url.pathname);
-    return pathname ? `${url.origin}${pathname}` : undefined;
+    return pathname ? url.origin + pathname : undefined;
   } catch {
     return undefined;
+  }
+}
+
+/** A third-party SDK can read the document even when its explicit events use route templates. */
+export function canLoadAuditBrowserTag(url: URL, referrer: string): boolean {
+  if (url.search || url.hash || sanitizeAnalyticsPathname(url.pathname) !== url.pathname) {
+    return false;
+  }
+  const path = url.pathname.replace(/^\/[a-z]{2}-[A-Z]{2}/, '');
+  if (!STATIC_PUBLIC_ROUTES.has(path) && !path.startsWith('/lp/')) return false;
+  if (!referrer) return true;
+  try {
+    const source = new URL(referrer);
+    return (
+      !source.search &&
+      !source.hash &&
+      (source.pathname === '/' ||
+        (source.origin === url.origin && canLoadAuditBrowserTag(source, '')))
+    );
+  } catch {
+    return false;
   }
 }
 
@@ -63,21 +141,12 @@ export function currentBrowserPageContext(): {
   };
 }
 
-/**
- * Explicit, already-redacted `page_location` / `page_path` for events fired on pages whose real URL
- * carries a credential. GA4 otherwise derives `page_location` from `document.location`.
- */
-export function redactedPageParams(redactedPath: string): {
-  page_location: string;
-  page_path: string;
-} {
+export function redactedPageParams(path: string): { page_location: string; page_path: string } {
+  const pathname = sanitizeAnalyticsPathname(path) || '/';
   const origin = typeof window === 'undefined' ? ANALYTICS_BASE_URL : window.location.origin;
-  return { page_location: `${origin}${redactedPath}`, page_path: redactedPath };
+  return { page_location: origin + pathname, page_path: pathname };
 }
 
-/** Redacted page params derived from the current browser path (uuid / token segments removed). */
 export function currentRedactedPageParams(): { page_location: string; page_path: string } {
-  const path =
-    typeof window === 'undefined' ? '/' : sanitizeAnalyticsPathname(window.location.pathname);
-  return redactedPageParams(path || '/');
+  return redactedPageParams(typeof window === 'undefined' ? '/' : window.location.pathname);
 }

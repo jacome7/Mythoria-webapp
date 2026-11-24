@@ -26,7 +26,6 @@ $IMAGE_NAME = "gcr.io/$PROJECT_ID/$SERVICE_NAME"
 $GIT_SHA = $null
 $GCLOUD = if ($IsWindows -or $env:OS -eq 'Windows_NT') { 'gcloud.cmd' } else { 'gcloud' }
 $NODE_VERSION = (Get-Content -Raw (Join-Path $PSScriptRoot '..\\.node-version')).Trim()
-$GA4_VERIFIER_SERVICE_ACCOUNT = "analytics-scheduler@$PROJECT_ID.iam.gserviceaccount.com"
 # -----------------------------------------------------------------------------
 
 function Show-Help {
@@ -206,34 +205,6 @@ function Test-ProductionSeo {
     Write-Success "Production SEO and crawler smoke passed"
 }
 
-function Test-GA4Delivery {
-    if ($Staging) { return }
-
-    Write-Info "Confirming Measurement Protocol ingestion through GA4 Realtime"
-    # Windows PowerShell 5.1 turns redirected native stderr into a terminating error under 'Stop',
-    # and gcloud always warns on stderr when impersonating. Rely on the explicit checks below instead.
-    $ErrorActionPreference = 'Continue'
-    try {
-        $env:GOOGLE_ANALYTICS_API_SECRET = (& $GCLOUD secrets versions access latest --secret=GOOGLE_ANALYTICS_API_SECRET --project=$PROJECT_ID 2>$null).Trim()
-        $env:GA4_ACCESS_TOKEN = (& $GCLOUD auth print-access-token `
-            --project=$PROJECT_ID `
-            --impersonate-service-account=$GA4_VERIFIER_SERVICE_ACCOUNT `
-            --scopes=https://www.googleapis.com/auth/analytics.readonly 2>$null).Trim()
-        if (-not $env:GOOGLE_ANALYTICS_API_SECRET -or -not $env:GA4_ACCESS_TOKEN) {
-            throw 'GA4 delivery probe credentials are unavailable.'
-        }
-        & npm run ga4:smoke
-        if ($LASTEXITCODE -ne 0) {
-            throw 'GA4 Realtime delivery probe failed.'
-        }
-    }
-    finally {
-        Remove-Item Env:GOOGLE_ANALYTICS_API_SECRET -ErrorAction SilentlyContinue
-        Remove-Item Env:GA4_ACCESS_TOKEN -ErrorAction SilentlyContinue
-    }
-    Write-Success "GA4 Realtime delivery probe passed"
-}
-
 function Main {
     if ($Help) { Show-Help; return }
 
@@ -252,7 +223,6 @@ function Main {
 
     Test-Deployment
     Test-ProductionSeo -ExpectedGitSha $GIT_SHA
-    Test-GA4Delivery
     Write-Success "All done"
 }
 

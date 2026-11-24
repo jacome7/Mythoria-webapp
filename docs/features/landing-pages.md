@@ -1,5 +1,9 @@
 # Landing Pages (SEO/GEO Campaign Pages)
 
+## Portuguese personalized children's book page (2026-11-24)
+
+The `pt-PT` page at `/pt-PT/lp/livro-personalizado-crianca` describes the illustrated-book journey, privacy and adult review. Its copy points visitors to the current credit cost shown before confirmation and explains that audio, PDF and print are separate options. Keep the page free of fixed euro prices or a guaranteed free-book claim unless the corresponding live entitlement and price are read dynamically from the same pricing service used by generation; the initial-credit grant and ebook price are configurable independently.
+
 ## Purpose
 
 The landing-page engine renders focused, SEO- and GenAI-optimized marketing pages under

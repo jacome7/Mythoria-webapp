@@ -8,7 +8,8 @@ import type {
 } from './analytics/ecommerce';
 import { readIntentContextFromDocumentCookie } from './campaign-context';
 import { INTENT_CONTEXT_COOKIE } from '@/types/intent-context';
-import { currentBrowserPageContext } from './analytics/page-context';
+import { canLoadAuditBrowserTag, currentBrowserPageContext } from './analytics/page-context';
+import { getAuditBrowserMeasurementId, isGaClientId } from './analytics/destinations';
 import {
   GA4_EVENT_NAMES,
   sanitizeAnalyticsEventParams,
@@ -25,7 +26,6 @@ declare global {
   }
 }
 
-const DEFAULT_MEASUREMENT_ID = 'G-86D0QFW197';
 const isDebugModeEnabled = process.env.NEXT_PUBLIC_GA_DEBUG === 'true';
 
 export type AnalyticsEvent = GA4EventName;
@@ -61,8 +61,12 @@ export interface PaidActionEventParams extends AnalyticsEventParams {
   story_id?: string;
 }
 
-const getMeasurementId = (): string =>
-  process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID || DEFAULT_MEASUREMENT_ID;
+function browserDestination(): string | undefined {
+  if (typeof window === 'undefined') return undefined;
+  if (getStoredConsent()?.state.analytics_storage !== 'granted') return undefined;
+  if (!canLoadAuditBrowserTag(new URL(window.location.href), document.referrer)) return undefined;
+  return getAuditBrowserMeasurementId(window.location.origin);
+}
 
 export function ensureGtag(): Window['gtag'] | null {
   if (typeof window === 'undefined') return null;
@@ -76,9 +80,14 @@ export function ensureGtag(): Window['gtag'] | null {
 }
 
 /** Queue a consent-aware GA4 event without injecting high-cardinality page context. */
-export function trackEvent(eventName: AnalyticsEvent, parameters?: Record<string, unknown>): void {
-  const gtag = ensureGtag();
-  if (!gtag) return;
+export function trackEvent(
+  eventName: AnalyticsEvent,
+  parameters?: Record<string, unknown>,
+): boolean {
+  const measurementId = browserDestination();
+  if (!measurementId) return false;
+  const gtag = window.gtag;
+  if (!gtag || !document.getElementById('mythoria-audit-google-tag')) return false;
 
   try {
     const primaryIntent = readIntentContextFromDocumentCookie(
@@ -88,41 +97,30 @@ export function trackEvent(eventName: AnalyticsEvent, parameters?: Record<string
     const safeParameters = sanitizeAnalyticsEventParams(eventName, parameters || {});
     if (!safeParameters) {
       console.warn('[Analytics] Event rejected by runtime contract', { eventName });
-      return;
+      return false;
     }
     const eventParams = {
       ...(primaryIntent && parameters?.primary_intent === undefined
         ? { primary_intent: primaryIntent }
         : {}),
       ...safeParameters,
-      send_to: getMeasurementId(),
+      page_location: currentBrowserPageContext().pageLocation || window.location.origin,
+      page_referrer: '',
+      page_title: 'Mythoria',
+      send_to: measurementId,
       ...(isDebugModeEnabled ? { debug_mode: true } : {}),
     };
     gtag('event', eventName, eventParams);
 
-    if (process.env.NODE_ENV === 'development') {
-      console.log('[Analytics] Event tracked:', eventName, eventParams);
-    }
-  } catch (error) {
-    console.error('[Analytics] Error tracking event:', eventName, error);
-  }
-}
-
-export function setUserId(userId: string | null): void {
-  const gtag = ensureGtag();
-  if (!gtag) return;
-  if (userId && getStoredConsent()?.state.analytics_storage !== 'granted') return;
-  try {
-    gtag('set', { user_id: userId });
-  } catch (error) {
-    console.error('Error setting user ID:', error);
+    return true;
+  } catch {
+    return false;
   }
 }
 
 export const trackAuth = {
   signUpStarted: (params: AuthEventParams = {}) => trackEvent('sign_up_started', params),
-  login: ({ user_id: userId, method }: AuthEventParams = {}) => {
-    if (userId) setUserId(userId);
+  login: ({ method }: AuthEventParams = {}) => {
     trackEvent('login', { method: method || 'email' });
   },
 };
@@ -177,37 +175,11 @@ export const trackPaidAction = (params: PaidActionEventParams): void => {
   });
 };
 
-export function setUserProperties(properties: Record<string, string | number | boolean>): void {
-  const gtag = ensureGtag();
-  if (!gtag) return;
-  if (getStoredConsent()?.state.analytics_storage !== 'granted') return;
-  try {
-    gtag('set', 'user_properties', properties);
-  } catch (error) {
-    console.error('Error setting user properties:', error);
-  }
-}
-
-/** Remove consent-gated identity data after logout or consent withdrawal. */
-export function clearUserAnalyticsContext(): void {
-  const gtag = ensureGtag();
-  if (!gtag) return;
-  try {
-    gtag('set', { user_id: null });
-    gtag('set', 'user_properties', {
-      email_verified: null,
-      profile_complete: null,
-      signup_date: null,
-    });
-  } catch (error) {
-    console.error('Error clearing analytics user context:', error);
-  }
-}
-
 const getGtagValue = (fieldName: 'client_id' | 'session_id', timeoutMs: number): Promise<unknown> =>
   new Promise((resolve) => {
-    const gtag = ensureGtag();
-    if (!gtag) {
+    const measurementId = browserDestination();
+    const gtag = window.gtag;
+    if (!gtag || !measurementId) {
       resolve(undefined);
       return;
     }
@@ -219,7 +191,7 @@ const getGtagValue = (fieldName: 'client_id' | 'session_id', timeoutMs: number):
       resolve(value);
     };
     const timer = window.setTimeout(() => finish(undefined), timeoutMs);
-    gtag('get', getMeasurementId(), fieldName, finish);
+    gtag('get', measurementId, fieldName, finish);
   });
 
 const CONTEXT_CACHE_MS = 5 * 60 * 1000;
@@ -252,7 +224,7 @@ async function resolveGoogleAnalyticsContext(
       getGtagValue('session_id', attemptBudget),
     ]);
     const clientId = typeof rawClientId === 'string' ? rawClientId.trim() : '';
-    if (!clientId) continue;
+    if (!isGaClientId(clientId)) continue;
 
     const consent = getStoredConsent()?.state;
     if (consent?.analytics_storage !== 'granted') return undefined;
@@ -282,7 +254,7 @@ export async function getGoogleAnalyticsContext(
   timeoutOrOptions: number | { timeoutMs?: number; forceRefresh?: boolean } = 5_000,
 ): Promise<ClientAnalyticsContext | undefined> {
   const consent = getStoredConsent()?.state;
-  if (consent?.analytics_storage !== 'granted') {
+  if (consent?.analytics_storage !== 'granted' || !browserDestination() || !window.gtag) {
     clearGoogleAnalyticsContextCache();
     return undefined;
   }
@@ -309,15 +281,16 @@ export async function getGoogleAnalyticsContext(
 
   analyticsContextResolution ??= resolveGoogleAnalyticsContext(
     Date.now() + Math.max(0, options.timeoutMs),
-  ).then((context) => {
-    if (context) {
+  );
+  const resolution = analyticsContextResolution;
+  const context = await resolution;
+  if (analyticsContextResolution === resolution) {
+    analyticsContextResolution = undefined;
+    if (context && browserDestination()) {
       cachedAnalyticsContext = { value: context, expiresAt: Date.now() + CONTEXT_CACHE_MS };
     }
-    analyticsContextResolution = undefined;
-    return context;
-  });
-  const context = await analyticsContextResolution;
-  return context
+  }
+  return context && getStoredConsent()?.state.analytics_storage === 'granted'
     ? { ...context, ...currentBrowserPageContext(), engagementTimeMsec: 100 }
     : undefined;
 }

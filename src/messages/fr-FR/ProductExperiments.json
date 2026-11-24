@@ -1,0 +1,12 @@
+{
+  "ProductExperiments": {
+    "ideaLabel": "Quelle histoire aimerais-tu raconter ?",
+    "ideaContinue": "Continuer avec cette idée",
+    "ideaSaveFailed": "Ton idée est toujours là. Copie-la avant de continuer avec le bouton habituel.",
+    "ebookCost": "Un livre numérique standard coûte {credits, number} crédits.",
+    "signupCredits": "Un nouveau compte bénéficie de {credits, number} crédits.",
+    "balance": "Ton solde actuel est de {credits, number} crédits.",
+    "covered": "Ce solde couvre le livre numérique.",
+    "pack": "Un lot de {credits, number} crédits coûte {price}."
+  }
+}

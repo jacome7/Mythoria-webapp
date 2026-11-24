@@ -29,12 +29,22 @@ const analyticsContext = {
   },
 };
 
-function request(body: Record<string, unknown>, withCookie = false): NextRequest {
+function request(
+  body: Record<string, unknown>,
+  withCookie = false,
+  advertising = false,
+): NextRequest {
+  const consent = encodeURIComponent(
+    JSON.stringify({
+      state: { analytics_storage: 'granted', ad_user_data: advertising ? 'granted' : 'denied' },
+      preferences: { advertising },
+    }),
+  );
   return new NextRequest('https://mythoria.pt/api/analytics/attribution', {
     method: 'POST',
     headers: {
       'content-type': 'application/json',
-      ...(withCookie ? { cookie: `mythoria_attribution=${attributionId}` } : {}),
+      cookie: `mythoria_consent=${consent}${withCookie ? `; mythoria_attribution=${attributionId}` : ''}`,
     },
     body: JSON.stringify(body),
   });
@@ -80,9 +90,6 @@ describe('POST /api/analytics/attribution', () => {
       firstLandingPath: '/en-US/pricing',
       firstPrimaryIntent: 'romance',
       firstUtmSource: 'google',
-      firstUtmCampaign: 'summer',
-      firstClickIdentifier: 'click-1',
-      firstClickIdentifierKind: 'gclid',
       latestPath: '/en-US/pricing',
       latestReferrerPath: '/en-US',
     });
@@ -96,7 +103,10 @@ describe('POST /api/analytics/attribution', () => {
       })),
     });
     const consent = encodeURIComponent(
-      JSON.stringify({ state: { ad_user_data: 'granted' }, preferences: { advertising: true } }),
+      JSON.stringify({
+        state: { analytics_storage: 'granted', ad_user_data: 'granted' },
+        preferences: { advertising: true },
+      }),
     );
 
     const response = await POST(
@@ -172,9 +182,7 @@ describe('POST /api/analytics/attribution', () => {
       landingSlug: '/en-US/original',
       primaryIntent: 'family',
     };
-    mockSelect.mockReturnValue({
-      from: jest.fn(() => ({ where: jest.fn().mockResolvedValue([existing]) })),
-    });
+    mockSelect.mockReturnValue(selectRows([existing]));
     const set = jest.fn((_values: Record<string, unknown>) => ({
       where: jest.fn(() => ({
         returning: jest.fn().mockResolvedValue([{ attributionId }]),
@@ -187,11 +195,12 @@ describe('POST /api/analytics/attribution', () => {
         {
           analyticsContext: {
             ...analyticsContext,
-            pageLocation: 'https://mythoria.pt/en-US/create?utm_source=google',
+            pageLocation: 'https://mythoria.pt/en-US/tell-your-story?utm_source=google',
           },
           primaryIntent: 'romance',
           campaign: { utm_source: 'google', utm_campaign: 'retarget', gbraid: 'new-click' },
         },
+        true,
         true,
       ),
     );
@@ -205,9 +214,8 @@ describe('POST /api/analytics/attribution', () => {
         firstUtmCampaign: 'launch',
         firstClickIdentifier: 'original-click',
         firstClickIdentifierKind: 'gclid',
-        latestPath: '/en-US/create',
+        latestPath: '/en-US/tell-your-story',
         utmSource: 'google',
-        utmCampaign: 'retarget',
         gbraid: 'new-click',
       }),
     );
@@ -291,65 +299,54 @@ describe('POST /api/analytics/attribution', () => {
     });
   });
 
-  it('carries a day-29 share context into a fresh GA session without extending its expiry', async () => {
-    const storyShareExpiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000);
-    const storyShareTouchedAt = new Date(Date.now() - 29 * 24 * 60 * 60 * 1000);
-    const carryover = {
+  it('keeps the receipt across GA hydration and does not re-emit a legacy share open', async () => {
+    const existing = {
       attributionId,
-      clientId: '123.456',
+      clientId: 'fp.00000000-0000-4000-8000-000000000001',
       storyShareItemId: 'a1b2c3d4e5f6',
-      storyShareMethod: 'copy_link',
-      storyShareScope: 'public',
-      storyShareTouchedAt,
-      storyShareExpiresAt,
+      storyShareExpiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000),
     };
-    mockSelect.mockReturnValueOnce(selectRows([])).mockReturnValueOnce(selectRows([carryover]));
-    mockInsert.mockReturnValue({
-      values: jest.fn((values) => ({
-        returning: jest.fn().mockResolvedValue([{ attributionId }]),
-        values,
-      })),
-    });
+    mockSelect.mockReturnValue(selectRows([existing]));
+    const set = jest.fn(() => ({ where: () => ({ returning: async () => [{ attributionId }] }) }));
+    mockUpdate.mockReturnValue({ set });
 
     const response = await POST(request({ analyticsContext }, true));
-    const insertValues = mockInsert.mock.results[0]?.value.values.mock.calls[0]?.[0];
-    expect(await response.json()).toMatchObject({
-      captured: true,
-      storyShare: { itemId: 'a1b2c3d4e5f6', method: 'copy_link', scope: 'public' },
-    });
-    expect(insertValues).toMatchObject({
-      storyShareTouchedAt,
-      storyShareExpiresAt,
-    });
+    expect(await response.json()).toEqual({ captured: true });
+    expect(set).toHaveBeenCalledWith(expect.objectContaining({ clientId: '123.456' }));
+    expect(set).toHaveBeenCalledWith(
+      expect.not.objectContaining({ storyShareExpiresAt: expect.anything() }),
+    );
+    expect(response.cookies.get('mythoria_attribution')?.value).toBe(attributionId);
+    expect(mockInsert).not.toHaveBeenCalled();
   });
 
-  it('does not carry an expired day-31 share context into a fresh GA session', async () => {
-    const expired = {
-      attributionId,
-      clientId: '123.456',
-      storyShareItemId: 'a1b2c3d4e5f6',
-      storyShareMethod: 'copy_link',
-      storyShareScope: 'public',
-      storyShareTouchedAt: new Date(Date.now() - 31 * 24 * 60 * 60 * 1000),
-      storyShareExpiresAt: new Date(Date.now() - 1),
-    };
-    mockSelect.mockReturnValueOnce(selectRows([])).mockReturnValueOnce(selectRows([expired]));
-    mockInsert.mockReturnValue({
-      values: jest.fn((values) => ({
-        returning: jest.fn().mockResolvedValue([{ attributionId }]),
-        values,
-      })),
+  it('issues an HttpOnly first-party receipt only when the HTTP request records analytics consent', async () => {
+    const missing = new NextRequest('https://mythoria.pt/api/analytics/attribution', {
+      method: 'POST',
+      body: JSON.stringify({ analyticsContext }),
     });
+    const denied = await POST(missing);
+    expect(denied.status).toBe(202);
+    expect(denied.cookies.get('mythoria_attribution')).toBeUndefined();
+    expect(mockInsert).not.toHaveBeenCalled();
 
-    const response = await POST(request({ analyticsContext }, true));
-    const insertValues = mockInsert.mock.results[0]?.value.values.mock.calls[0]?.[0];
-    expect(await response.json()).toEqual({ captured: true });
-    expect(insertValues).not.toHaveProperty('storyShareItemId');
+    const values = jest.fn(() => ({ returning: async () => [{ attributionId }] }));
+    mockInsert.mockReturnValue({ values });
+    const accepted = await POST(request({}));
+    expect(accepted.cookies.get('mythoria_attribution')).toMatchObject({
+      value: attributionId,
+      httpOnly: true,
+    });
+    expect(values).toHaveBeenCalledWith(
+      expect.objectContaining({
+        clientId: expect.stringMatching(/^fp\.[a-f0-9-]+$/),
+      }),
+    );
   });
 
   it.each([
     ['OAuth refresh', {}, {}, ['session_id', 'consent']],
-    ['campaign change', { campaign: { utm_campaign: 'new-campaign' } }, {}, ['utm_campaign']],
+    ['campaign change', { campaign: { utm_source: 'newsletter' } }, {}, ['utm_source']],
     ['session change', {}, { sessionId: 1712345999 }, ['session_id']],
     [
       'ad consent change',
@@ -388,6 +385,7 @@ describe('POST /api/analytics/attribution', () => {
             },
           },
           true,
+          _name === 'ad consent change',
         ),
       );
       expect(response.status).toBe(200);
@@ -406,7 +404,7 @@ describe('POST /api/analytics/attribution', () => {
         expect(query.sql).not.toContain(`"${field}"`);
       // Omitted OAuth query fields are not overwritten and cannot create a false boundary.
       if (_name === 'OAuth refresh') expect(query.sql).not.toContain('"utm_campaign"');
-      if (_name === 'campaign change') expect(query.params).toContain('new-campaign');
+      if (_name === 'campaign change') expect(query.params).toContain('newsletter');
       if (_name === 'session change') expect(query.params).toContain(1712345999);
       if (_name === 'ad consent change')
         expect(query.params).toContain(

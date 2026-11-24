@@ -16,11 +16,11 @@ export const childrenBooksLandingPage: LandingPageContent = {
   ogImageSrc: `${landingBase}/hero/og-cover.jpeg`,
   primaryIntent: 'kids_adventures',
   riskRating: 'yellow',
-  updatedAt: '2026-08-08',
-  editorialReviewDaysAgo: 17,
+  updatedAt: '2026-11-24',
+  editorialReviewDaysAgo: 0,
   indexable: true,
   showInLandingPageIndex: true,
-  showFormatsNearHero: false,
+  showFormatsNearHero: true,
   showFormatsNearProcess: true,
   primaryCtaHref:
     '/pt-PT/tell-your-story/step-1?landingSlug=livro-personalizado-crianca&primaryIntent=kids_adventures',
@@ -56,12 +56,12 @@ export const childrenBooksLandingPage: LandingPageContent = {
     headline:
       'Transforme nomes, interesses, pessoas, animais, lugares, memórias ou desenhos numa história que parece ter sido feita só para ela.',
     subheadline:
-      'Escolha os detalhes, o tom e o estilo. Depois, reveja o livro com calma antes de o partilhar ou escolher um formato disponível.',
+      'Escolhe os detalhes, o tom e o estilo. O custo atual em créditos aparece antes de confirmares; áudio, PDF e impressão são opções à parte.',
     imageSrc: `${landingBase}/hero/hero.jpeg`,
     imageAlt:
       'Livro infantil Mia e a Pastelaria da Lua num cenário de leitura noturna, criado com a Mythoria',
   },
-  trustBadges: ['Conta adulta', 'Privado por defeito', 'Reveja antes de partilhar'],
+  trustBadges: ['Conta adulta', 'Privado por defeito', 'Custo antes de confirmar'],
   quickAnswer: {
     title: 'O que é um livro personalizado para uma criança?',
     body: 'É uma história construída com o nome, a idade, os interesses e os detalhes que o adulto escolher — pessoas familiares, animais, lugares, memórias, desenhos ou ideias. O adulto define o tom e o estilo e revê o resultado antes de o partilhar.',
@@ -74,9 +74,9 @@ export const childrenBooksLandingPage: LandingPageContent = {
     ],
   },
   whyThisFits: {
-    title: 'Um livro acabado, preparado por um adulto.',
+    title: 'Uma história criada e revista por um adulto.',
     body: [
-      'Não precisa de saber escrever uma história inteira. Começa com os detalhes que conhece e escolhe uma direção narrativa e visual.',
+      'Não precisas de saber escrever uma história inteira. Começa com os detalhes que conheces e escolhe uma direção narrativa e visual.',
       'Antes de o livro sair do espaço privado, o adulto deve confirmar nomes, texto, imagens, pessoas identificáveis e tudo o que prefere retirar.',
     ],
   },

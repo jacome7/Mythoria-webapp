@@ -21,7 +21,7 @@ describe('sanitizeAdContext', () => {
       obref: 'browser-1',
       ipAddress: '203.0.113.7',
       userAgent: 'Mozilla/5.0',
-      sourceUrl: 'https://mythoria.pt/en-US/buy-credits?oppref=ref-123',
+      sourceUrl: 'https://mythoria.pt/en-US/buy-credits',
       capturedAt: CAPTURED_AT,
     });
   });
@@ -39,7 +39,7 @@ describe('sanitizeAdContext', () => {
       }),
     ).toEqual({
       adConsent: 'denied',
-      sourceUrl: 'https://mythoria.pt/en-US/buy-credits?utm_source=x',
+      sourceUrl: 'https://mythoria.pt/en-US/buy-credits',
       capturedAt: CAPTURED_AT,
     });
   });
@@ -61,13 +61,13 @@ describe('sanitizeAdContext', () => {
     });
   });
 
-  it('caps the source URL length', () => {
+  it('strips long queries from the source URL', () => {
     const context = sanitizeAdContext({
       adConsent: 'granted',
       sourceUrl: `https://mythoria.pt/?q=${'a'.repeat(3000)}`,
       capturedAt: CAPTURED_AT,
     });
-    expect(context?.sourceUrl).toHaveLength(2048);
+    expect(context?.sourceUrl).toBe('https://mythoria.pt/');
   });
 
   it('rejects values that are not a usable context', () => {

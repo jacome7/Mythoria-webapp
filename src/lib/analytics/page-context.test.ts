@@ -23,7 +23,7 @@ describe('analytics page context privacy boundary', () => {
   it('redacts survey bearer tokens but keeps the reward route readable', () => {
     const token = 'AbCdEfGhIjKlMnOpQrStUv.0123456789abcdefghijkl';
     expect(sanitizeAnalyticsPathname(`/en-US/survey/${token}`)).toBe('/en-US/survey/:token');
-    expect(sanitizeAnalyticsPathname(`/pt-PT/survey/${token}/`)).toBe('/pt-PT/survey/:token/');
+    expect(sanitizeAnalyticsPathname(`/pt-PT/survey/${token}/`)).toBe('/pt-PT/survey/:token');
     expect(
       sanitizeAnalyticsPathname('/en-US/survey/reward/00000000-0000-4000-8000-000000000001'),
     ).toBe('/en-US/survey/reward/:id');
@@ -33,7 +33,7 @@ describe('analytics page context privacy boundary', () => {
     expect(sanitizeAnalyticsPageUrl(`https://mythoria.pt/fr-FR/survey/${token}?x=1`)).toBe(
       'https://mythoria.pt/fr-FR/survey/:token',
     );
-    expect(sanitizeAnalyticsPathname('/en-US/surveys-info')).toBe('/en-US/surveys-info');
+    expect(sanitizeAnalyticsPathname('/en-US/surveys-info')).toBeUndefined();
   });
 
   it('builds redacted page params for events fired on credential-bearing pages', () => {
@@ -48,13 +48,13 @@ describe('Biographer bearer credential redaction', () => {
     const token = 'A'.repeat(43);
     for (const route of ['invite', 'resume']) {
       expect(sanitizeAnalyticsPathname(`/en-US/biographer/${route}/${token}`)).toBe(
-        `/en-US/biographer/${route}/:token`,
+        '/en-US/biographer',
       );
       expect(
         sanitizeAnalyticsPageUrl(
           `https://mythoria.pt/pt-PT/biographer/${route}/${token}?tracking=1`,
         ),
-      ).toBe(`https://mythoria.pt/pt-PT/biographer/${route}/:token`);
+      ).toBe('https://mythoria.pt/pt-PT/biographer');
     }
   });
 });

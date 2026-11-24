@@ -49,12 +49,7 @@ describe('CookieConsentBanner', () => {
     expect(getStoredConsent()).toMatchObject({
       preferences: { analytics: true, advertising: true },
     });
-    expect(window.gtag).toHaveBeenCalledWith('consent', 'update', {
-      analytics_storage: 'granted',
-      ad_storage: 'granted',
-      ad_user_data: 'granted',
-      ad_personalization: 'granted',
-    });
+    expect(window.gtag).not.toHaveBeenCalled();
   });
 
   it('accepts analytics without advertising from the first layer', async () => {
@@ -70,12 +65,7 @@ describe('CookieConsentBanner', () => {
         ad_personalization: 'denied',
       },
     });
-    expect(window.gtag).toHaveBeenCalledWith('consent', 'update', {
-      analytics_storage: 'granted',
-      ad_storage: 'denied',
-      ad_user_data: 'denied',
-      ad_personalization: 'denied',
-    });
+    expect(window.gtag).not.toHaveBeenCalled();
   });
 
   it('supports independent analytics and advertising choices', async () => {

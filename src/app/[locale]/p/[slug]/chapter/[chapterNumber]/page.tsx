@@ -6,6 +6,9 @@ import { AlertCircle, Download, Edit3, Loader2, Printer } from 'lucide-react';
 import { Show } from '@clerk/nextjs';
 import { useParams } from 'next/navigation';
 import StoryReader from '@/components/StoryReader';
+import QualifiedShareOpen from '@/components/QualifiedShareOpen';
+import { useExperimentArm } from '@/lib/product-experiments/client';
+import ReaderExperiment from '@/components/product-experiments/ReaderExperiment';
 import PublicStoryRating from '@/components/PublicStoryRating';
 import { SelfPrintModal } from '@/components/self-print/SelfPrintModal';
 import { buildAuthEntryPath } from '@/lib/auth-return';
@@ -101,6 +104,8 @@ export default function PublicChapterPage() {
     }
   }, [data, tPublicStoryChapter]);
 
+  const readerArm = useExperimentArm('reader_cta', !!data && !error && !loading);
+
   if (loading) {
     return (
       <div className="min-h-screen bg-base-100 flex items-center justify-center">
@@ -136,6 +141,7 @@ export default function PublicChapterPage() {
 
   return (
     <div className="min-h-screen bg-base-100">
+      <QualifiedShareOpen publicSlug={slug} />
       {/* Header */}
       <div className="bg-base-200 border-b border-base-300 p-4 print:hidden">
         <div className="max-w-6xl mx-auto">
@@ -166,6 +172,8 @@ export default function PublicChapterPage() {
         currentChapter={chapterNumber}
       />
 
+      <ReaderExperiment lastChapter={isLastChapter} arm={readerArm} />
+
       {/* Last Chapter CTAs */}
       {isLastChapter && (
         <div className="max-w-4xl mx-auto p-4 print:hidden">
@@ -178,7 +186,10 @@ export default function PublicChapterPage() {
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <a href={`/${locale}`} className="btn btn-primary flex items-center gap-2">
+              <a
+                href={readerArm === 'treatment' ? `/${locale}/tell-your-story` : `/${locale}`}
+                className="btn btn-primary flex items-center gap-2"
+              >
                 <Edit3 className="w-4 h-4" />
                 {tPublicStoryPage('actions.createOwnStory')}
               </a>

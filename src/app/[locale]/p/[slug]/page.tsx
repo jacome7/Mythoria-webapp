@@ -1,3 +1,4 @@
+import QualifiedShareOpen from '@/components/QualifiedShareOpen';
 import { Metadata } from 'next';
 import { notFound, permanentRedirect } from 'next/navigation';
 import PublicStoryPageClient, { type PublicStoryData } from './PublicStoryPageClient';
@@ -174,6 +175,7 @@ export default async function PublicStoryPage({
         }}
       />
       <PublicStoryPageClient initialData={initialData} />
+      <QualifiedShareOpen publicSlug={slug} />
     </>
   );
 }

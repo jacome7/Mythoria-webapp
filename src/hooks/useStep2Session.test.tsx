@@ -1,5 +1,17 @@
 import { act, renderHook } from '@testing-library/react';
 import { useStep2Session } from './useStep2Session';
+
+it('remembers retained document provenance when the wizard reloads', () => {
+  sessionStorage.clear();
+  const { result, unmount } = renderHook(() => useStep2Session());
+  act(() => {
+    result.current.setStoryText('Imported paragraph');
+    result.current.setDocumentSource({ retained: true, alsoTyped: false });
+  });
+  unmount();
+  const restored = renderHook(() => useStep2Session());
+  expect(restored.result.current.documentSource).toEqual({ retained: true, alsoTyped: false });
+});
 it('clears only step 2 inputs and persists the reset across remounts', () => {
   sessionStorage.clear();
   localStorage.clear();
@@ -31,4 +43,21 @@ it('reports storage failure while keeping the text editable', () => {
   } finally {
     spy.mockRestore();
   }
+});
+
+it('retains an interrupted upload as a reselectable error after refresh', () => {
+  sessionStorage.setItem(
+    'step2Data',
+    JSON.stringify({
+      text: 'Story',
+      images: [{ id: 'photo', status: 'uploading' }],
+      audio: null,
+      lastSaved: 0,
+    }),
+  );
+  const { result, unmount } = renderHook(() => useStep2Session());
+  expect(result.current.storyText).toBe('Story');
+  expect(result.current.uploadedImages).toMatchObject([{ id: 'photo', status: 'error' }]);
+  expect(result.current.uploadedImages[0].file).toBeUndefined();
+  unmount();
 });

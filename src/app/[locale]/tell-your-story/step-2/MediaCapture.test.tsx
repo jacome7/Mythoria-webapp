@@ -133,3 +133,41 @@ it.each(['upload', 'analysis'])('retries a failed %s and runs image analysis', a
   expect(mockUpload).toHaveBeenCalledTimes(failure === 'upload' ? 1 : 0);
   await waitFor(() => expect(screen.getByText('imageAnalysis.statusReady')).toBeInTheDocument());
 });
+
+it('does not revive a removed photo when an analysis callback arrives late', async () => {
+  let finish!: (value: unknown) => void;
+  mockAnalyze.mockReturnValue(
+    new Promise((resolve) => {
+      finish = resolve;
+    }),
+  );
+  const initial: UploadedImage = {
+    id: 'failed',
+    preview: '',
+    status: 'error',
+    attempts: 1,
+    objectPath: 'test/photo.jpg',
+  };
+  function Harness() {
+    const [images, setImages] = React.useState([initial]);
+    return (
+      <MediaCapture
+        activeModal="images"
+        setActiveModal={jest.fn()}
+        uploadedImages={images}
+        setUploadedImages={setImages}
+        uploadedAudio={null}
+        setUploadedAudio={jest.fn()}
+        saveToSession={jest.fn()}
+      />
+    );
+  }
+  render(<Harness />);
+  fireEvent.click(screen.getByRole('button', { name: /imageAnalysis.retry/ }));
+  fireEvent.click(screen.getByRole('button', { name: 'actions.remove' }));
+  finish({ description: 'Late result' });
+  await waitFor(() =>
+    expect(screen.queryByText('imageAnalysis.statusReady')).not.toBeInTheDocument(),
+  );
+  expect(screen.queryByText('imageAnalysis.statusAnalyzing')).not.toBeInTheDocument();
+});

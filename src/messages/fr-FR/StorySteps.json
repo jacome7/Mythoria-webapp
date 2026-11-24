@@ -130,7 +130,18 @@
         "charactersLabel": "Personnages détectés",
         "noText": "Aucun texte détecté.",
         "noCharacters": "Aucune personne ni animal détecté.",
-        "waitingHint": "Veuillez attendre la fin de l'analyse de toutes les images avant de continuer."
+        "waitingHint": "Veuillez attendre la fin de l'analyse de toutes les images avant de continuer.",
+        "errors": {
+          "invalid_response": "L’analyse est incomplète. Réessaie.",
+          "content_rejected": "Cette image n’a pas pu être acceptée. Supprime-la et choisis-en une autre.",
+          "provider_busy": "L’analyse est occupée. Réessaie dans un instant.",
+          "timeout": "L’analyse a pris trop de temps. Réessaie.",
+          "storage_failure": "Nous n’avons pas pu enregistrer l’analyse. Réessaie.",
+          "analysis_failed": "Nous n’avons pas pu analyser cette image. Réessaie.",
+          "unauthorized": "Ta session a expiré. Reconnecte-toi, puis retrouve ton histoire.",
+          "invalid_cache": "Nous ne pouvons pas lire l’analyse enregistrée. Supprime cette image et choisis-la à nouveau."
+        },
+        "reselect": "L’envoi a été interrompu. Supprime cette image et choisis-la à nouveau."
       },
       "photoTips": {
         "title": "📸 Astuces photo",

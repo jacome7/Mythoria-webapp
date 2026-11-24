@@ -2,7 +2,7 @@
 
 Mythoria reports conversions to OpenAI ChatGPT Ads through two channels that share one event contract:
 
-- **Measurement Pixel (browser):** the `oaiq` SDK, loaded only with Advertising consent.
+- **Measurement Pixel (browser):** the `oaiq` SDK on the explicitly configured, eligible audit origin with Advertising consent.
 - **Conversions API (server):** authoritative events written to a durable outbox and delivered by the scheduled analytics drain.
 
 Browser and server send the same event name and `event_id`, so OpenAI keeps one copy (it deduplicates on Pixel ID + event name + `event_id` and keeps the first it receives). Only **standard** events can drive conversion-optimized campaigns; custom events are reporting only.
@@ -13,20 +13,20 @@ Official docs:
 - [Conversions API](https://developers.openai.com/ads/conversions-api)
 - [Supported events](https://developers.openai.com/ads/supported-events)
 
-Code lives in `src/lib/openai-ads/` (`events.ts`, `types.ts`, `hashing.ts`, `hashing.server.ts`, `context.ts`, `outbox.ts`, `capi.ts`, `pixel.ts`) and `src/components/OpenAIAdsPixel.tsx`. Everything is disabled when `NEXT_PUBLIC_OPENAI_PIXEL_ID` is unset.
+Code lives in `src/lib/openai-ads/` (`events.ts`, `types.ts`, `hashing.ts`, `hashing.server.ts`, `context.ts`, `outbox.ts`, `capi.ts`, `pixel.ts`) and `src/components/OpenAIAdsPixel.tsx`. Server dispatch on the canonical production origin requires `OPENAI_ADS_CAPI_DELIVERY_ENABLED=true` as well as its existing production credentials. The deployment defaults server dispatch to off while the privacy audit is pending.
 
 ## Consent model
 
-| Channel / data                                | Without Advertising consent                   | With Advertising consent                                       |
-| --------------------------------------------- | --------------------------------------------- | -------------------------------------------------------------- |
-| Browser Pixel                                 | Never loads, `trackOpenAiAdsEvent` is a no-op | Loads, sends events, adds hashed user data for signed-in users |
-| Server event (Conversions API)                | Always sent, with `opt_out: true`             | Sent                                                           |
-| `oppref`, `obref`, IP, user agent, hashed PII | Never captured, stored or sent                | Added to the event `user` / `oppref` fields                    |
+| Channel / data                                | Without Advertising consent    | With Advertising consent                                     |
+| --------------------------------------------- | ------------------------------ | ------------------------------------------------------------ |
+| Browser Pixel                                 | Never loads                    | Eligible isolated audit surfaces with a distinct audit Pixel |
+| Server event (Conversions API)                | Suppressed                     | Eligible after the release gate                              |
+| `oppref`, `obref`, IP, user agent, hashed PII | Never captured, stored or sent | Added to the event `user` / `oppref` fields                  |
 
 - Server consent is read from the `mythoria_consent` cookie (`preferences.advertising` or `state.ad_user_data`), independent of analytics consent.
 - Revoking Advertising consent calls `oaiq("consent", false)` (the SDK drops `__oppref` / `__obref`), and the attribution revoke route nulls the stored `oppref` / `obref`. `ManageCookiesButton` also withdraws consent before reloading.
-- The Pixel SDK attaches the page URL and referrer path (`origin + pathname`) to every event by itself, so `trackOpenAiAdsEvent` sends nothing while the current page or the same-origin referrer is a credential URL (`/s/<share token>`, `/survey/<invitation token>`). Server events still cover those conversions.
-- A denied `AdContext` carries only `adConsent`, `sourceUrl` and `capturedAt`. `sanitizeAdContext` strips identifiers and any `oppref` in the URL from every denied context.
+- The Pixel SDK attaches the page URL and referrer path to measures. The browser helper restricts SDK use to the isolated audit origin and approved public routes with safe URLs and referrers.
+- A denied `AdContext` carries only `adConsent`, `sourceUrl` and `capturedAt`. `sanitizeAdContext` drops identifiers from denied context and uses a route template for the source URL in either case.
 - Hashes follow the OpenAI rules (SHA-256 hex): email trim + lowercase; phone digits only without leading `+` or zeros (8-15 digits); external id trim only; names lowercase without whitespace or ASCII punctuation (accents kept). Browser hashing uses `crypto.subtle`; server hashing uses `node:crypto`. Never import `hashing.server.ts` from client code.
 
 ## Event map

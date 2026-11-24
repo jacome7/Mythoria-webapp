@@ -10,7 +10,10 @@ test.describe.configure({ mode: 'serial' });
 const clerkSecretKey = process.env.CLERK_SECRET_KEY;
 const e2eEmail = process.env.CLERK_E2E_EMAIL;
 
-test.skip(!clerkSecretKey || !e2eEmail, 'Clerk E2E credentials are required.');
+test.skip(
+  process.env.PLAYWRIGHT_CLERK_FIXTURE !== '1' || !clerkSecretKey || !e2eEmail,
+  'Requires the isolated synthetic Clerk and database fixture.',
+);
 
 async function installAnalyticsCapture(page: import('@playwright/test').Page) {
   await page.addInitScript(() => {
@@ -57,7 +60,10 @@ test('signed-out auth gate emits no story start', async ({ page }) => {
   expect(events.filter((entry) => entry[1] === 'story_creation_started')).toHaveLength(0);
 });
 
-test('authenticated mobile step emits one sanitized start and view', async ({ page, baseURL }) => {
+test('authenticated mobile creation keeps the story and synthetic identity out of the tag queue', async ({
+  page,
+  baseURL,
+}) => {
   await installAnalyticsCapture(page);
   await signInWithClerkTicket(page, baseURL);
   await grantAnalyticsConsent(page);
@@ -71,12 +77,6 @@ test('authenticated mobile step emits one sanitized start and view', async ({ pa
   );
   await authResponse;
   await expect(page.locator('input[required]')).toBeVisible();
-  await page.waitForFunction(() =>
-    (window as unknown as { __analyticsEvents: unknown[][] }).__analyticsEvents.some(
-      (entry) => entry[1] === 'story_step_viewed',
-    ),
-  );
-
   const events = await page.evaluate(
     () => (window as unknown as { __analyticsEvents: unknown[][] }).__analyticsEvents,
   );
@@ -84,12 +84,5 @@ test('authenticated mobile step emits one sanitized start and view', async ({ pa
   const views = events.filter((entry) => entry[1] === 'story_step_viewed');
   const pageViews = events.filter((entry) => entry[1] === 'page_view');
 
-  expect(starts).toHaveLength(1);
-  expect(views).toHaveLength(1);
-  expect(pageViews).toHaveLength(1);
-  expect(views[0][2]).toMatchObject({ step_number: 1 });
-  expect(JSON.stringify([...starts, ...views, ...pageViews])).not.toMatch(
-    /secret|child@example\.com|token=/i,
-  );
-  expect(JSON.stringify(pageViews)).toContain('utm_campaign=analytics-e2e');
+  expect([...starts, ...views, ...pageViews]).toEqual([]);
 });

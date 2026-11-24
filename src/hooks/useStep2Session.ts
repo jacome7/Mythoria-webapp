@@ -1,5 +1,6 @@
 'use client';
 
+import type { MediaAnalysisCode } from '@/lib/media-analysis-errors';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
 export type AnalysisStatus = 'uploading' | 'analyzing' | 'done' | 'error';
@@ -28,6 +29,7 @@ export interface UploadedImage {
   publicUrl?: string;
   metadata?: ImageMetadataSummary;
   error?: string;
+  errorCode?: MediaAnalysisCode;
 }
 
 export interface UploadedAudio {
@@ -39,12 +41,16 @@ export interface UploadedAudio {
   error?: string;
 }
 
+export type DocumentProvenance = { retained: boolean; alsoTyped: boolean };
+export const emptyDocumentProvenance: DocumentProvenance = { retained: false, alsoTyped: false };
+
 interface PersistedImage {
   id: string;
   status: AnalysisStatus;
   objectPath?: string;
   publicUrl?: string;
   metadata?: ImageMetadataSummary;
+  errorCode?: MediaAnalysisCode;
 }
 
 interface SessionData {
@@ -53,6 +59,7 @@ interface SessionData {
   audio: { objectPath?: string; status: AnalysisStatus; durationSeconds?: number } | null;
   lastSaved: number;
   selectedCharacterIds?: string[];
+  documentSource?: DocumentProvenance;
 }
 
 function readSession(): SessionData | null {
@@ -113,25 +120,27 @@ export function useStep2Session() {
   const relocated = readRelocatedInputs();
 
   const [storyText, setStoryText] = useState<string>(initial?.text || '');
+  const [documentSource, setDocumentSource] = useState<DocumentProvenance>(
+    initial?.documentSource ?? emptyDocumentProvenance,
+  );
   const [selectedCharacterIds, setSelectedCharacterIds] = useState<string[]>(
     initial?.selectedCharacterIds ?? [],
   );
   const [uploadedImages, setUploadedImages] = useState<UploadedImage[]>(() =>
-    (initial?.images || [])
-      .filter((img) => !!img.objectPath) // only restore images that finished uploading
-      .map((img) => {
-        const { objectPath, publicUrl } = remapRelocated(img.objectPath, img.publicUrl, relocated);
-        return {
-          id: img.id,
-          preview: publicUrl || '',
-          // In-flight states couldn't survive a reload; surface them as retryable errors.
-          status: img.status === 'done' ? 'done' : ('error' as AnalysisStatus),
-          attempts: 0,
-          objectPath,
-          publicUrl,
-          metadata: img.metadata,
-        };
-      }),
+    (initial?.images || []).map((img) => {
+      const { objectPath, publicUrl } = remapRelocated(img.objectPath, img.publicUrl, relocated);
+      return {
+        id: img.id,
+        preview: publicUrl || '',
+        // In-flight states couldn't survive a reload; surface them as retryable errors.
+        status: img.status === 'done' ? 'done' : ('error' as AnalysisStatus),
+        attempts: 0,
+        objectPath,
+        publicUrl,
+        metadata: img.metadata,
+        errorCode: img.errorCode,
+      };
+    }),
   );
   const [uploadedAudio, setUploadedAudio] = useState<UploadedAudio | null>(() => {
     const a = initial?.audio;
@@ -160,6 +169,7 @@ export function useStep2Session() {
         objectPath: img.objectPath,
         publicUrl: img.publicUrl,
         metadata: img.metadata,
+        errorCode: img.errorCode,
       })),
       audio: uploadedAudio
         ? {
@@ -170,6 +180,7 @@ export function useStep2Session() {
         : null,
       lastSaved: Date.now(),
       selectedCharacterIds,
+      documentSource,
     };
     try {
       sessionStorage.setItem('step2Data', JSON.stringify(data));
@@ -179,7 +190,7 @@ export function useStep2Session() {
     }
     if (savedIndicatorRef.current) clearTimeout(savedIndicatorRef.current);
     savedIndicatorRef.current = setTimeout(() => setIsSaving(false), 500);
-  }, [storyText, uploadedImages, uploadedAudio, selectedCharacterIds]);
+  }, [storyText, uploadedImages, uploadedAudio, selectedCharacterIds, documentSource]);
 
   // Persist every committed edit, including media completion and character choices.
   // A navigation or refresh within the old ten-second window must not discard inputs.
@@ -195,6 +206,7 @@ export function useStep2Session() {
 
   const resetInputs = useCallback(() => {
     setStoryText('');
+    setDocumentSource(emptyDocumentProvenance);
     setUploadedImages([]);
     setUploadedAudio(null);
     setSelectedCharacterIds([]);
@@ -218,6 +230,8 @@ export function useStep2Session() {
     resetInputs,
     storyText,
     setStoryText,
+    documentSource,
+    setDocumentSource,
     uploadedImages,
     setUploadedImages,
     uploadedAudio,

@@ -18,6 +18,8 @@ import {
 } from '@/lib/campaign-context';
 import { SUPPORTED_LOCALES } from '@/config/locales';
 import { resolveDynamicPublicSeoPath } from '@/lib/public-seo-resolver';
+import { anonymousAnalyticsEnabled, anonymousRequestSurface } from '@/lib/analytics/anonymous';
+import { recordAnonymousDocumentRequest } from '@/db/services/anonymous-analytics';
 
 const intlMiddleware = createMiddleware(routing);
 
@@ -132,7 +134,7 @@ export function applyPublicContextCookies(req: NextRequest, response: NextRespon
 }
 
 export const proxy = clerkMiddleware(
-  async (auth, req: NextRequest) => {
+  async (auth, req: NextRequest, event) => {
     const pathname = req.nextUrl.pathname;
 
     // Allow service worker, manifest, and well-known assets to bypass i18n/auth so they stay at the root scope
@@ -150,6 +152,18 @@ export const proxy = clerkMiddleware(
 
     const canonicalRedirect = getCanonicalRedirectResponse(req);
     if (canonicalRedirect) return canonicalRedirect;
+
+    if (
+      anonymousAnalyticsEnabled() &&
+      req.method === 'GET' &&
+      req.headers.get('sec-fetch-dest') === 'document' &&
+      req.headers.get('sec-fetch-mode') === 'navigate' &&
+      !req.headers.get('purpose')?.includes('prefetch') &&
+      !req.headers.get('sec-purpose')?.includes('prefetch')
+    ) {
+      const surface = anonymousRequestSurface(pathname);
+      if (surface) event.waitUntil(recordAnonymousDocumentRequest(surface));
+    }
 
     // Allow the PWA offline fallback route to remain at root without locale prefix.
     // We skip the i18n middleware so it doesn't redirect /offline -> /en-US/offline (which 404s)

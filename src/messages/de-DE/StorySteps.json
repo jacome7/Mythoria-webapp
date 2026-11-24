@@ -130,7 +130,18 @@
         "charactersLabel": "Erkannte Figuren",
         "noText": "Kein Text erkannt.",
         "noCharacters": "Keine Personen oder Tiere erkannt.",
-        "waitingHint": "Bitte warte, bis alle Bilder analysiert wurden, bevor du fortfährst."
+        "waitingHint": "Bitte warte, bis alle Bilder analysiert wurden, bevor du fortfährst.",
+        "errors": {
+          "invalid_response": "Die Analyse war unvollständig. Versuche es erneut.",
+          "content_rejected": "Dieses Bild konnte nicht akzeptiert werden. Entferne es und wähle ein anderes.",
+          "provider_busy": "Die Analyse ist ausgelastet. Versuche es gleich noch einmal.",
+          "timeout": "Die Analyse hat zu lange gedauert. Versuche es erneut.",
+          "storage_failure": "Die Analyse konnte nicht gespeichert werden. Versuche es erneut.",
+          "analysis_failed": "Dieses Bild konnte nicht analysiert werden. Versuche es erneut.",
+          "unauthorized": "Deine Sitzung ist abgelaufen. Melde dich erneut an und kehre zu deiner Geschichte zurück.",
+          "invalid_cache": "Die gespeicherte Analyse konnte nicht gelesen werden. Entferne dieses Bild und wähle es erneut aus."
+        },
+        "reselect": "Das Hochladen wurde unterbrochen. Entferne dieses Bild und wähle es erneut aus."
       },
       "photoTips": {
         "title": "📸 Foto-Tipps",

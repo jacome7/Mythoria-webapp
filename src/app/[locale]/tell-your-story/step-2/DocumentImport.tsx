@@ -9,10 +9,14 @@ export default function DocumentImport({
   value,
   onChange,
   fits,
+  onOpen,
+  onImportChange,
 }: {
   value: string;
   onChange: (value: string) => void;
   fits: (value: string) => boolean;
+  onOpen?: () => void;
+  onImportChange?: (action: 'append' | 'replace' | 'undo', previous: string) => void;
 }) {
   const t = useTranslations('StorySteps.step2.documentImport');
   const locale = useLocale();
@@ -102,6 +106,7 @@ export default function DocumentImport({
     const next = combined(append);
     if (!next || !fits(next)) return;
     setUndo({ before: value, after: next });
+    onImportChange?.(append ? 'append' : 'replace', value);
     onChange(next);
     input.current?.closest('dialog')?.close();
     setReview(null);
@@ -123,7 +128,10 @@ export default function DocumentImport({
           <button
             type="button"
             className="btn btn-primary w-full min-h-11"
-            onClick={() => input.current?.click()}
+            onClick={() => {
+              onOpen?.();
+              input.current?.click();
+            }}
           >
             {t('button')}
           </button>
@@ -238,6 +246,7 @@ export default function DocumentImport({
           type="button"
           className="btn btn-ghost btn-sm"
           onClick={() => {
+            onImportChange?.('undo', value);
             onChange(undo.before);
             setUndo(null);
           }}

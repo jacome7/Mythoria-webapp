@@ -10,7 +10,7 @@
     "pricing": {
       "eyebrow": "Tarifs transparents",
       "title": "Consultez le coût avant de créer",
-      "body": "Chaque nouveau compte comprend 5 crédits gratuits. Le tableau complet indique les crédits nécessaires pour créer l’ebook, générer le livre audio, télécharger le PDF et commander l’impression. Le coût applicable est affiché avant chaque confirmation.",
+      "body": "Le coût actuel en crédits est affiché avant chaque confirmation. Consultez le tableau pour comparer l’ebook, le livre audio, le PDF et l’impression.",
       "cta": "Voir les tarifs et les crédits"
     },
     "related": {

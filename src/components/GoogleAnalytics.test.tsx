@@ -1,78 +1,85 @@
-import { render } from '@testing-library/react';
-
-jest.mock('next/script', () => ({
-  __esModule: true,
-  default: ({
-    id,
-    strategy,
-    dangerouslySetInnerHTML,
-    src,
-  }: {
-    id?: string;
-    strategy?: string;
-    dangerouslySetInnerHTML?: { __html: string };
-    src?: string;
-  }) => (
-    <script
-      data-testid={id || 'external-tag'}
-      data-strategy={strategy}
-      data-src={src}
-      dangerouslySetInnerHTML={dangerouslySetInnerHTML}
-    />
-  ),
-}));
-
+import { act, render } from '@testing-library/react';
+import {
+  clearConsent,
+  consentStateFromPreferences,
+  saveConsent,
+  updateGoogleConsent,
+} from '@/lib/consent';
 import GoogleAnalytics from './GoogleAnalytics';
 
-describe('GoogleAnalytics bootstrap', () => {
-  it('removes private invitation fragments before any tag initialization', () => {
-    const token = 'a'.repeat(43);
-    window.history.replaceState(null, '', `/en-US/biographer/invite#${token}`);
-    const state = window as unknown as Window & {
-      __mythoriaBiographerFragment?: string;
-      gtag?: jest.Mock;
-    };
-    const previous = state.gtag;
-    state.gtag = jest.fn();
-    const { container } = render(<GoogleAnalytics measurementId="G-TEST123" />);
-    const source = container.querySelector('#gtag-init')?.textContent || '';
-    new Function(source)();
-    expect(window.location.hash).toBe('');
-    expect(state.__mythoriaBiographerFragment).toBeUndefined();
-    expect(state.gtag).not.toHaveBeenCalled();
-    state.gtag = previous;
-    window.history.replaceState(null, '', '/');
-  });
-  it('initializes consent and the queue before configuring tags without automatic page views', () => {
-    const { container, getByTestId } = render(
-      <GoogleAnalytics measurementId="G-TEST123" googleAdsId="AW-TEST" googleTagId="GT-TEST" />,
-    );
-    const initScript = container.querySelector('#gtag-init');
-    expect(initScript).not.toBeNull();
-    const source = initScript?.textContent || '';
-    expect(() => new Function(source)).not.toThrow();
-    expect(source.indexOf('window.history.replaceState')).toBeLessThan(
-      source.indexOf("window.gtag('config'"),
-    );
-    expect(source).not.toContain('window.__mythoriaBiographerFragment');
+let mockPathname = '/en-US';
+jest.mock('next/navigation', () => ({ usePathname: () => mockPathname }));
 
-    expect(source.indexOf("window.gtag('consent', 'default'")).toBeLessThan(
-      source.indexOf('window.gtag(\'config\', "G-TEST123"'),
+function setConsent(analytics: boolean) {
+  const preferences = { analytics, advertising: false };
+  const state = consentStateFromPreferences(preferences);
+  saveConsent(state, preferences);
+  act(() => updateGoogleConsent(state));
+}
+
+describe('Google Analytics audit bootstrap', () => {
+  const tag = () => document.getElementById('mythoria-audit-google-tag');
+  beforeEach(() => {
+    mockPathname = '/en-US';
+    window.history.replaceState(null, '', mockPathname);
+    process.env.NEXT_PUBLIC_ANALYTICS_AUDIT_ORIGIN = window.location.origin;
+    process.env.NEXT_PUBLIC_ANALYTICS_AUDIT_MEASUREMENT_ID = 'G-TEST123';
+    window.gtag = jest.fn();
+    clearConsent();
+  });
+  afterEach(() => {
+    tag()?.remove();
+    delete process.env.NEXT_PUBLIC_ANALYTICS_AUDIT_ORIGIN;
+    delete process.env.NEXT_PUBLIC_ANALYTICS_AUDIT_MEASUREMENT_ID;
+    clearConsent();
+  });
+
+  it('leaves a private fragment available to the product and leaves the SDK off', () => {
+    mockPathname = '/en-US/biographer/invite';
+    window.history.replaceState(null, '', mockPathname + '#private-sentinel');
+    setConsent(true);
+    render(<GoogleAnalytics />);
+    expect(window.location.hash).toBe('#private-sentinel');
+    expect(tag()).toBeNull();
+    expect(window.gtag).not.toHaveBeenCalled();
+  });
+
+  it('loads only the isolated audit stream on an eligible route after consent', () => {
+    render(<GoogleAnalytics />);
+    expect(tag()).toBeNull();
+    setConsent(true);
+    expect(tag()).toHaveAttribute('src', expect.stringContaining('gtag/js?id=G-TEST123'));
+    expect(tag()).toHaveAttribute('referrerpolicy', 'no-referrer');
+    expect(window.gtag).toHaveBeenCalledWith(
+      'config',
+      'G-TEST123',
+      expect.objectContaining({
+        send_page_view: false,
+        page_title: 'Mythoria',
+        page_referrer: '',
+        allow_google_signals: false,
+      }),
     );
-    expect(source.indexOf("window.gtag('consent', 'update'")).toBeLessThan(
-      source.indexOf('window.gtag(\'config\', "G-TEST123"'),
-    );
-    expect(source).toContain('window.gtag = window.gtag || function()');
-    expect(source).toContain("ad_storage: 'denied'");
-    expect(source).toContain("analytics_storage: 'denied'");
-    expect(source).toContain('ad_storage: storedState.ad_storage');
-    expect(source).not.toContain('ad_storage: consentState.ad_storage');
-    expect(source).toContain('window.gtag(\'config\', "G-TEST123", { send_page_view: false');
-    expect(source).toContain('window.gtag(\'config\', "AW-TEST", { send_page_view: false });');
-    expect(source).toContain('window.gtag(\'config\', "GT-TEST", { send_page_view: false });');
-    expect(getByTestId('external-tag')).toHaveAttribute(
-      'data-src',
-      'https://www.googletagmanager.com/gtag/js?id=GT-TEST',
-    );
+    expect(window.gtag).toHaveBeenCalledWith('set', 'url_passthrough', false);
+  });
+
+  it('sets the SDK opt-out before further measurements on a sensitive SPA route', () => {
+    setConsent(true);
+    const { rerender } = render(<GoogleAnalytics />);
+    const flags = window as unknown as Record<string, unknown>;
+    expect(flags['ga-disable-G-TEST123']).toBe(false);
+
+    mockPathname = '/en-US/sign-in';
+    window.history.pushState(null, '', mockPathname + '?return=%2Fen-US%2Fs%2Fprivate-sentinel');
+    rerender(<GoogleAnalytics />);
+    expect(flags['ga-disable-G-TEST123']).toBe(true);
+    expect(JSON.stringify(jest.mocked(window.gtag).mock.calls)).not.toContain('private-sentinel');
+  });
+
+  it('never connects an audit browser to the production stream', () => {
+    process.env.NEXT_PUBLIC_ANALYTICS_AUDIT_MEASUREMENT_ID = 'G-86D0QFW197';
+    setConsent(true);
+    render(<GoogleAnalytics />);
+    expect(tag()).toBeNull();
   });
 });

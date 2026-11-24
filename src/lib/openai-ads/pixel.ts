@@ -5,6 +5,8 @@
  * when `NEXT_PUBLIC_OPENAI_PIXEL_ID` is set and the visitor granted Advertising consent.
  */
 import { SUPPORTED_LOCALES } from '@/config/locales';
+import { canLoadAuditBrowserTag } from '@/lib/analytics/page-context';
+import { getAuditBrowserMeasurementId } from '@/lib/analytics/destinations';
 import { getStoredConsent } from '@/lib/consent';
 import {
   OPENAI_CUSTOM_EVENT_TYPE,
@@ -48,8 +50,17 @@ function isDev(): boolean {
 
 /** Build-time inlined Pixel id; `undefined` disables the Pixel entirely. */
 export function getOpenAiPixelId(): string | undefined {
-  const pixelId = process.env.NEXT_PUBLIC_OPENAI_PIXEL_ID?.trim();
-  return pixelId ? pixelId : undefined;
+  if (typeof window === 'undefined' || !getAuditBrowserMeasurementId(window.location.origin)) {
+    return undefined;
+  }
+  const pixelId = process.env.NEXT_PUBLIC_OPENAI_AUDIT_PIXEL_ID?.trim();
+  if (
+    !pixelId ||
+    pixelId === process.env.NEXT_PUBLIC_OPENAI_PIXEL_ID ||
+    !canLoadAuditBrowserTag(new URL(window.location.href), document.referrer)
+  )
+    return undefined;
+  return pixelId;
 }
 
 export function isOpenAiPixelDebug(): boolean {

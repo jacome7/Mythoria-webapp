@@ -8,6 +8,7 @@ export default async function Step2Page({ params }: { params: Promise<{ locale: 
   const { locale } = await params;
   return (
     <Step2Client
+      growthMeasurement={process.env.GROWTH_MEASUREMENT_V2_ENABLED === 'true'}
       templatesEnabled
       templates={getStoryTemplates(locale)}
       whispererEnabled={biographerEnabled()}

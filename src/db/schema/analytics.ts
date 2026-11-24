@@ -1,9 +1,11 @@
 import {
   bigint,
+  date,
   index,
   integer,
   jsonb,
   pgTable,
+  primaryKey,
   text,
   timestamp,
   uniqueIndex,
@@ -66,6 +68,7 @@ export const analyticsAttributions = pgTable(
     createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
     linkedAt: timestamp('linked_at', { withTimezone: true }),
     expiresAt: timestamp('expires_at', { withTimezone: true }).notNull(),
+    revokedAt: timestamp('revoked_at', { withTimezone: true }),
   },
   (table) => ({
     authorIdIdx: index('analytics_attributions_author_id_idx').on(table.authorId),
@@ -98,6 +101,7 @@ export const analyticsOutbox = pgTable(
     claimedAt: timestamp('claimed_at', { withTimezone: true }),
     deliveredAt: timestamp('delivered_at', { withTimezone: true }),
     skippedAt: timestamp('skipped_at', { withTimezone: true }),
+    suppressionReason: varchar('suppression_reason', { length: 48 }),
     lastError: text('last_error'),
     createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
   },
@@ -283,3 +287,18 @@ export type ProductGenerationRequest = typeof productGenerationRequests.$inferSe
 export type NewProductGenerationRequest = typeof productGenerationRequests.$inferInsert;
 export type AdConversionOutboxEntry = typeof adConversionOutbox.$inferSelect;
 export type NewAdConversionOutboxEntry = typeof adConversionOutbox.$inferInsert;
+
+/** Daily first-party aggregates with no row-level visitor, URL or action identifiers. */
+export const anonymousAnalyticsDaily = pgTable(
+  'anonymous_analytics_daily',
+  {
+    day: date('day').notNull(),
+    category: varchar('category', { length: 16 }).notNull(),
+    surface: varchar('surface', { length: 24 }).notNull(),
+    outcome: varchar('outcome', { length: 16 }).notNull(),
+    count: bigint('count', { mode: 'number' }).notNull(),
+  },
+  (table) => ({
+    key: primaryKey({ columns: [table.day, table.category, table.surface, table.outcome] }),
+  }),
+);

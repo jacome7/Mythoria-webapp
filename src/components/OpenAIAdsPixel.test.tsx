@@ -57,10 +57,13 @@ const calls = () => (window.oaiq?.q ?? []) as unknown[][];
 const scriptTag = () => document.querySelector(`script[src="${OAIQ_SCRIPT_SRC}"]`);
 
 describe('OpenAIAdsPixel', () => {
-  const originalPixelId = process.env.NEXT_PUBLIC_OPENAI_PIXEL_ID;
+  const originalPixelId = process.env.NEXT_PUBLIC_OPENAI_AUDIT_PIXEL_ID;
 
   beforeEach(() => {
-    process.env.NEXT_PUBLIC_OPENAI_PIXEL_ID = PIXEL_ID;
+    process.env.NEXT_PUBLIC_OPENAI_AUDIT_PIXEL_ID = PIXEL_ID;
+    process.env.NEXT_PUBLIC_ANALYTICS_AUDIT_ORIGIN = window.location.origin;
+    process.env.NEXT_PUBLIC_ANALYTICS_AUDIT_MEASUREMENT_ID = 'G-TEST123';
+    window.history.replaceState(null, '', '/en-US');
     mockPathname = '/pt-PT';
     mockUseUserValue = { isLoaded: true, isSignedIn: false, user: null };
     __resetOpenAiPixelForTests();
@@ -73,11 +76,13 @@ describe('OpenAIAdsPixel', () => {
   });
 
   afterAll(() => {
-    process.env.NEXT_PUBLIC_OPENAI_PIXEL_ID = originalPixelId;
+    process.env.NEXT_PUBLIC_OPENAI_AUDIT_PIXEL_ID = originalPixelId;
+    delete process.env.NEXT_PUBLIC_ANALYTICS_AUDIT_ORIGIN;
+    delete process.env.NEXT_PUBLIC_ANALYTICS_AUDIT_MEASUREMENT_ID;
   });
 
   it('renders nothing and loads nothing without a pixel id', () => {
-    delete process.env.NEXT_PUBLIC_OPENAI_PIXEL_ID;
+    delete process.env.NEXT_PUBLIC_OPENAI_AUDIT_PIXEL_ID;
     const preferences = { analytics: true, advertising: true };
     saveConsent(consentStateFromPreferences(preferences), preferences);
     const { container } = render(<OpenAIAdsPixel />);
@@ -125,13 +130,14 @@ describe('OpenAIAdsPixel', () => {
     const { rerender } = render(<OpenAIAdsPixel />);
 
     mockPathname = '/pt-PT/s/0b8c7e1e-1f2a-4c3d-9e8f-0a1b2c3d4e5f';
+    window.history.replaceState(null, '', mockPathname);
     rerender(<OpenAIAdsPixel />);
     rerender(<OpenAIAdsPixel />);
 
     const pageViews = calls()
       .filter((call) => call[0] === 'measure')
       .map((call) => (call[2] as { contents: { id: string }[] }).contents[0].id);
-    expect(pageViews).toEqual(['/', '/s/:token']);
+    expect(pageViews).toEqual(['/']);
   });
 
   it('re-runs init with hashed user identifiers once per signed-in user', async () => {

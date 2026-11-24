@@ -1,5 +1,6 @@
 'use client';
 
+import { isMediaAnalysisCode, MediaAnalysisError } from '@/lib/media-analysis-errors';
 import type { ImageMetadataSummary } from '@/hooks/useStep2Session';
 
 interface UploadResult {
@@ -20,13 +21,17 @@ export function useMediaUpload() {
   const uploadInput = async (
     kind: 'image' | 'audio',
     file: File,
-    requestId = crypto.randomUUID(),
+    assetId = crypto.randomUUID(),
   ): Promise<UploadResult> => {
     const contentType = file.type || (kind === 'image' ? 'image/jpeg' : 'audio/wav');
     const dataUrl = await fileToDataUrl(file);
     const resp = await fetch('/api/media/input-upload', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'x-request-id': requestId },
+      headers: {
+        'Content-Type': 'application/json',
+        'x-request-id': crypto.randomUUID(),
+        'x-media-id': assetId,
+      },
       body: JSON.stringify({ kind, contentType, dataUrl }),
     });
     const data = await resp.json();
@@ -40,16 +45,20 @@ export function useMediaUpload() {
   const analyzeImage = async (
     objectPath: string,
     locale?: string,
-    requestId = crypto.randomUUID(),
+    assetId = crypto.randomUUID(),
   ): Promise<ImageMetadataSummary> => {
     const resp = await fetch('/api/media/analyze-image', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'x-request-id': requestId },
+      headers: {
+        'Content-Type': 'application/json',
+        'x-request-id': crypto.randomUUID(),
+        'x-media-id': assetId,
+      },
       body: JSON.stringify({ objectPath, locale }),
     });
     const data = await resp.json();
     if (!resp.ok || !data?.metadata) {
-      throw new Error(data?.error || `Image analysis failed (${resp.status})`);
+      throw new MediaAnalysisError(isMediaAnalysisCode(data?.code) ? data.code : 'analysis_failed');
     }
     return data.metadata as ImageMetadataSummary;
   };

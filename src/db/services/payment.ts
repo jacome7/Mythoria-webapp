@@ -9,6 +9,10 @@ import {
 import { referralFlags, ReferralError } from '@/lib/referrals/policy';
 import { claimPaymentEvent, finishPaymentEvent } from '@/lib/referrals/inbox';
 import { referralOutbox } from '@/db/schema/referrals';
+import {
+  growthMeasurementEnabled,
+  snapshotShareFirstPayment,
+} from '@/lib/growth/measurement-server';
 import { and, count, desc, eq, ne, sql } from 'drizzle-orm';
 
 import { db } from '../index';
@@ -92,6 +96,7 @@ interface StripeCheckoutMetadata {
     invoiceId?: string | null;
     invoiceHostedUrl?: string | null;
     invoicePdf?: string | null;
+    livemode?: boolean;
     paymentMethodType?: string | null;
     paymentStatus?: string | null;
     amountSubtotal?: number | null;
@@ -912,6 +917,7 @@ export const paymentService = {
           paymentIntentId,
           invoiceId,
           paymentStatus: session.payment_status,
+          livemode: session.livemode,
           amountSubtotal: session.amount_subtotal,
           amountTotal: session.amount_total,
           totalDetails: session.total_details,
@@ -973,6 +979,7 @@ export const paymentService = {
         invoicePdf,
         paymentMethodType,
         paymentStatus: session.payment_status,
+        livemode: session.livemode,
         amountSubtotal: session.amount_subtotal,
         amountTotal: session.amount_total,
         totalDetails: session.total_details,
@@ -1096,6 +1103,8 @@ export const paymentService = {
       stripe: {
         paymentIntentId: paymentIntent.id,
         paymentStatus: paymentIntent.status,
+        livemode: paymentIntent.livemode,
+        amountTotal: paymentIntent.amount_received,
         paymentMethodType: paymentIntent.payment_method_types?.[0] || null,
       },
     });
@@ -1315,6 +1324,13 @@ export const paymentService = {
         .onConflictDoNothing();
       const finalStripeAmount = (updatedOrder.metadata as StripeCheckoutMetadata | null)?.stripe
         ?.amountTotal;
+      if (growthMeasurementEnabled()) {
+        await tx
+          .transaction((analyticsTx) =>
+            snapshotShareFirstPayment(analyticsTx, updatedOrder.orderId),
+          )
+          .catch(() => console.warn('Could not save share attribution for first payment'));
+      }
       await accrueOrderCommission(
         tx,
         updatedOrder.orderId,

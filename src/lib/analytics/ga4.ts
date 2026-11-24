@@ -1,6 +1,7 @@
 import type { AnalyticsConsent } from '@/db/schema';
 import { sanitizeAnalyticsPageUrl } from './page-context';
 import { sanitizeAnalyticsEventParams } from './events';
+import { getServerAnalyticsDestination, isGaClientId } from './destinations';
 
 export interface MeasurementProtocolEventParams {
   eventName: string;
@@ -18,7 +19,6 @@ export interface MeasurementProtocolEventParams {
 
 export interface MeasurementProtocolPayload {
   client_id: string;
-  user_id?: string;
   timestamp_micros?: number;
   consent: {
     ad_user_data: 'GRANTED' | 'DENIED';
@@ -34,24 +34,6 @@ export interface MeasurementProtocolPayload {
   }>;
 }
 
-const BLOCKED_CUSTOM_PARAMS = new Set([
-  'gclid',
-  'gbraid',
-  'wbraid',
-  'dclid',
-  'gclsrc',
-  '_gl',
-  'email',
-  'email_address',
-  'story_content',
-  'chapter_content',
-  'prompt',
-  'page_location',
-  'page_referrer',
-  'session_id',
-  'engagement_time_msec',
-]);
-
 const toProtocolConsent = (value: 'granted' | 'denied'): 'GRANTED' | 'DENIED' =>
   value === 'granted' ? 'GRANTED' : 'DENIED';
 
@@ -60,7 +42,7 @@ export function buildMeasurementProtocolPayload(
   validate = false,
 ): MeasurementProtocolPayload | null {
   const clientId = event.clientId.trim();
-  if (!clientId || !/^[a-zA-Z][a-zA-Z0-9_]{0,39}$/.test(event.eventName)) return null;
+  if (!isGaClientId(clientId) || event.consent.analyticsStorage !== 'granted') return null;
   if (
     event.sessionId !== undefined &&
     (!Number.isSafeInteger(event.sessionId) || event.sessionId <= 0)
@@ -75,15 +57,8 @@ export function buildMeasurementProtocolPayload(
   const pageReferrer = sanitizeAnalyticsPageUrl(event.pageReferrer);
   const contractedParams = sanitizeAnalyticsEventParams(event.eventName, event.params);
   if (!contractedParams) return null;
-  const customParams = Object.fromEntries(
-    Object.entries(contractedParams).filter(
-      ([key]) => !BLOCKED_CUSTOM_PARAMS.has(key.toLowerCase()),
-    ),
-  );
-
   return {
     client_id: clientId,
-    ...(event.userId ? { user_id: event.userId } : {}),
     ...(event.occurredAt ? { timestamp_micros: event.occurredAt.getTime() * 1000 } : {}),
     consent: {
       ad_user_data: toProtocolConsent(event.consent.adUserData),
@@ -94,7 +69,7 @@ export function buildMeasurementProtocolPayload(
       {
         name: event.eventName,
         params: {
-          ...customParams,
+          ...contractedParams,
           ...(pageLocation ? { page_location: pageLocation } : {}),
           ...(pageReferrer ? { page_referrer: pageReferrer } : {}),
           ...(event.sessionId ? { session_id: event.sessionId } : {}),
@@ -113,11 +88,9 @@ async function sendEvent(
   event: MeasurementProtocolEventParams,
   validate: boolean,
 ): Promise<{ ok: boolean; errors: string[] }> {
-  const measurementId = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID;
-  const apiSecret = process.env.GOOGLE_ANALYTICS_API_SECRET;
-  if (!measurementId || !apiSecret) {
-    return { ok: false, errors: ['GA4 credentials are missing'] };
-  }
+  const destination = getServerAnalyticsDestination();
+  if (!destination) return { ok: false, errors: ['GA4 destination is disabled'] };
+  const { measurementId, apiSecret } = destination;
 
   const payload = buildMeasurementProtocolPayload(event, validate);
   if (!payload) return { ok: false, errors: ['Invalid Measurement Protocol payload'] };
@@ -128,6 +101,7 @@ async function sendEvent(
   try {
     const response = await fetch(url, {
       method: 'POST',
+      signal: AbortSignal.timeout(6_000),
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),
     });
@@ -138,11 +112,11 @@ async function sendEvent(
 
     const body = (await response.json()) as ValidationResponse;
     const errors = (body.validationMessages || []).map(
-      (message) => message.description || message.validationCode || 'Unknown validation error',
+      (message) => message.validationCode || 'GA4 rejected a field',
     );
     return { ok: errors.length === 0, errors };
-  } catch (error) {
-    return { ok: false, errors: [error instanceof Error ? error.message : String(error)] };
+  } catch {
+    return { ok: false, errors: ['GA4 network request failed'] };
   }
 }
 

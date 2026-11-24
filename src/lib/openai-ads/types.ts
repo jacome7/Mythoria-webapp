@@ -1,3 +1,5 @@
+import { ANALYTICS_BASE_URL, sanitizeAnalyticsPageUrl } from '@/lib/analytics/page-context';
+
 /**
  * Request-time advertising context captured for a server-side OpenAI conversion.
  *
@@ -32,26 +34,12 @@ function optionalString(value: unknown, maxLength: number): string | undefined {
   return trimmed.length > 0 && trimmed.length <= maxLength ? trimmed : undefined;
 }
 
-/** Removes the `oppref` click reference from a URL so it cannot leak without consent. */
-function stripOppref(url: string): string {
-  if (!/[?&]oppref=/i.test(url)) return url;
-  try {
-    const parsed = new URL(url);
-    for (const key of [...parsed.searchParams.keys()]) {
-      if (key.toLowerCase() === 'oppref') parsed.searchParams.delete(key);
-    }
-    return parsed.toString();
-  } catch {
-    return url.split('?')[0];
-  }
-}
-
 /**
  * Validates an untrusted value (jsonb column, order metadata) as an `AdContext`.
  *
  * Returns `undefined` when the value is not a usable context. When consent is not `'granted'`,
- * `oppref`, `obref`, `ipAddress` and `userAgent` are stripped and `oppref` is removed from
- * `sourceUrl`, so a denied context can never carry identifiers.
+ * `oppref`, `obref`, `ipAddress` and `userAgent` are stripped. The URL always uses the
+ * allowlisted analytics route template.
  */
 export function sanitizeAdContext(value: unknown): AdContext | undefined {
   if (typeof value !== 'object' || value === null || Array.isArray(value)) return undefined;
@@ -64,10 +52,11 @@ export function sanitizeAdContext(value: unknown): AdContext | undefined {
   }
 
   const granted = raw.adConsent === 'granted';
-  const sourceUrl = (granted ? raw.sourceUrl.trim() : stripOppref(raw.sourceUrl.trim())).slice(
-    0,
-    AD_CONTEXT_LIMITS.sourceUrl,
-  );
+  const requestedSource = raw.sourceUrl.trim();
+  const sourceUrl =
+    requestedSource === ANALYTICS_BASE_URL
+      ? ANALYTICS_BASE_URL
+      : sanitizeAnalyticsPageUrl(requestedSource) || ANALYTICS_BASE_URL;
   const context: AdContext = {
     adConsent: raw.adConsent,
     sourceUrl,

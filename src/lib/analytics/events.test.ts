@@ -8,10 +8,10 @@ describe('GA4 runtime event contract', () => {
     expect(sanitizeAnalyticsEventParams('sign_up', { sign_up_method: 'google' })).toBeNull();
     expect(
       sanitizeAnalyticsEventParams('purchase', {
-        transaction_id: 'order-1',
+        transaction_id: '00000000-0000-4000-8000-000000000001',
         currency: 'EUR',
         value: 10,
-        items: [{ item_id: 'credits-1' }],
+        items: [{ item_id: 'credit_package_starter' }],
       }),
     ).not.toBeNull();
   });
@@ -26,7 +26,7 @@ describe('GA4 runtime event contract', () => {
         gclid: 'raw-click-id',
         firstLandingPath: '/wrong-name',
       }),
-    ).toEqual({ landing_path: '/pt-PT/lp/example' });
+    ).toEqual({});
   });
 
   it('requires a valid story-share open contract', () => {

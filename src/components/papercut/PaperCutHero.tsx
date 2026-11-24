@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import MobileIdeaEntry from '@/components/product-experiments/MobileIdeaEntry';
 import { useScroll, useTransform } from 'motion/react';
 import { useAuth } from '@clerk/nextjs';
 import { useLocale, useTranslations } from 'next-intl';
@@ -244,6 +245,7 @@ export default function PaperCutHero() {
           >
             {tr('cta')}
           </Link>
+          <MobileIdeaEntry href={ctaHref} />
         </div>
       </div>
 

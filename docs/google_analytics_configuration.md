@@ -70,13 +70,4 @@ is directional only, because forwarding and repeat opens can exceed 100%.
 
 ## Privacy and validation
 
-- Keep Enhanced Measurement scroll enabled; do not add global custom scroll events.
-- Redact authentication, payment, session, token, code, and state query parameters while retaining allowlisted campaign attribution.
-- Validate Measurement Protocol payloads using `/debug/mp/collect` with `ENFORCE_RECOMMENDATIONS` before EU production delivery.
-- Treat a 2xx delivery response as transport acceptance, not schema validation.
-
-## Release checks
-
-Verify one server `sign_up`, one requested and one terminal event per generation run, one purchase per Stripe order, idempotent refunds, consent denial suppression, sanitized URLs, and the landing 50%-visible-for-one-second rule. Production validation must not perform a live card charge.
-
-See [analytics.md](analytics.md) for lifecycle and payload semantics.
+Inventory the actual property settings and release changes before enabling browser traffic, including Enhanced Measurement, cross-domain linking, connected destinations and Ads goals. Prior settings described above require verification in the property. Complete the isolated release checks and review the first daily export. [Analytics containment and verification](analytics/privacy-release.md)

@@ -130,7 +130,18 @@
         "charactersLabel": "Personagens detetadas",
         "noText": "Nenhum texto detetado.",
         "noCharacters": "Nenhuma pessoa ou animal detetado.",
-        "waitingHint": "Aguarde que todas as imagens terminem a análise antes de continuar."
+        "waitingHint": "Aguarde que todas as imagens terminem a análise antes de continuar.",
+        "errors": {
+          "invalid_response": "A análise ficou incompleta. Tenta novamente.",
+          "content_rejected": "Esta imagem não pôde ser aceite. Remove-a e escolhe outra.",
+          "provider_busy": "A análise está ocupada. Tenta novamente daqui a pouco.",
+          "timeout": "A análise demorou demasiado. Tenta novamente.",
+          "storage_failure": "Não conseguimos guardar a análise. Tenta novamente.",
+          "analysis_failed": "Não conseguimos analisar esta imagem. Tenta novamente.",
+          "unauthorized": "A tua sessão expirou. Entra novamente e regressa à tua história.",
+          "invalid_cache": "Não conseguimos ler a análise guardada. Remove esta imagem e escolhe-a novamente."
+        },
+        "reselect": "O carregamento foi interrompido. Remove esta imagem e escolhe-a novamente."
       },
       "photoTips": {
         "title": "📸 Dicas de Fotografia",

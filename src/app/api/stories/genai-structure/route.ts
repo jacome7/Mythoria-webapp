@@ -7,6 +7,8 @@ import { getCurrentAuthor } from '@/lib/auth';
 import { storyService } from '@/db/services';
 import { sgwFetch } from '@/lib/sgw-client';
 import { storyPreferencesSchema, characterReferenceSchema } from '@/lib/story-templates/journey';
+import { creationObservation } from '@/lib/growth/creation';
+import { requestAnalyticsReceipt, saveCreationObservation } from '@/lib/growth/measurement-server';
 
 const inputSchema = z.object({
   storyId: z.string().uuid(),
@@ -20,6 +22,7 @@ const inputSchema = z.object({
   factuality: z.literal('memory').optional(),
   structureRequestId: z.string().uuid().optional(),
   characterReferences: z.array(characterReferenceSchema).max(1).optional(),
+  creationObservation: z.unknown().optional(),
 });
 
 /**
@@ -143,6 +146,37 @@ export async function POST(request: NextRequest) {
         { error: 'Story-generation-workflow request failed' },
         { status: resp.status },
       );
+    }
+
+    const observation = creationObservation.safeParse(parsed.data.creationObservation);
+    const outlineId = z.object({ jobId: z.string().uuid() }).safeParse(data);
+    const receipt = requestAnalyticsReceipt(request);
+    if (observation.success && outlineId.success && receipt) {
+      await saveCreationObservation(
+        receipt,
+        outlineId.data.jobId,
+        storyId,
+        currentAuthor.authorId,
+        {
+          ...observation.data,
+          creationRoute: storyWhisperer
+            ? 'guide'
+            : observation.data.templateAnswerCount !== undefined
+              ? 'template'
+              : 'freeform',
+          inputKinds: [...new Set(observation.data.inputKinds)].filter((kind) =>
+            kind === 'photo'
+              ? hasImages
+              : kind === 'audio'
+                ? Boolean(audioObjectPath)
+                : kind === 'guide'
+                  ? Boolean(storyWhisperer)
+                  : kind === 'template_answer'
+                    ? Boolean(observation.data.templateAnswerCount)
+                    : true,
+          ),
+        },
+      ).catch(() => console.warn('Could not save accepted outline analytics'));
     }
 
     // Promote temporary -> draft now that structuring has started

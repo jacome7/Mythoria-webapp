@@ -635,6 +635,51 @@ export const envManifest: EnvVarDescriptor[] = [
     note: 'Comma-separated list; default falls back to internal constant.',
   },
   {
+    name: 'ANALYTICS_DELIVERY_TARGET',
+    required: false,
+    scopes: ['prod', 'runtime', 'dev'],
+    default: 'off',
+    note: 'GA4 server delivery destination: off, production or audit. Audit needs separate IDs.',
+  },
+  {
+    name: 'ANONYMOUS_ANALYTICS_ENABLED',
+    required: false,
+    scopes: ['prod', 'runtime'],
+    default: 'false',
+    note: 'Daily first-party aggregate counts on the canonical production deployment.',
+  },
+  {
+    name: 'NEXT_PUBLIC_ANALYTICS_AUDIT_ORIGIN',
+    required: false,
+    scopes: ['dev', 'build', 'public'],
+    note: 'Isolated origin for synthetic browser and Measurement Protocol audit fixtures.',
+  },
+  {
+    name: 'NEXT_PUBLIC_ANALYTICS_AUDIT_MEASUREMENT_ID',
+    required: false,
+    scopes: ['dev', 'build', 'public'],
+    note: 'GA4 measurement ID belonging to the isolated audit property.',
+  },
+  {
+    name: 'NEXT_PUBLIC_OPENAI_AUDIT_PIXEL_ID',
+    required: false,
+    scopes: ['dev', 'build', 'public'],
+    note: 'Optional distinct OpenAI Ads pixel for the isolated audit host.',
+  },
+  {
+    name: 'GA4_AUDIT_PROPERTY_ID',
+    required: false,
+    scopes: ['dev'],
+    note: 'GA4 property for the explicit synthetic delivery probe.',
+  },
+  {
+    name: 'ANALYTICS_AUDIT_API_SECRET',
+    required: false,
+    scopes: ['dev', 'runtime'],
+    secret: true,
+    note: 'Measurement Protocol secret issued by the isolated test property.',
+  },
+  {
     name: 'NEXT_PUBLIC_GA_MEASUREMENT_ID',
     required: true,
     scopes: ['prod', 'build', 'public'],
@@ -664,6 +709,12 @@ export const envManifest: EnvVarDescriptor[] = [
     note: 'OIDC identity allowed to invoke analytics outbox and reconciliation endpoints.',
   },
   {
+    name: 'GROWTH_MEASUREMENT_V2_ENABLED',
+    required: false,
+    scopes: ['dev', 'prod', 'runtime'],
+    note: 'Enables additive v2 creation and qualified share measurement after privacy and media gates.',
+  },
+  {
     name: 'NEXT_PUBLIC_GOOGLE_ADS_ID',
     required: true,
     scopes: ['prod', 'build', 'public'],
@@ -683,6 +734,13 @@ export const envManifest: EnvVarDescriptor[] = [
     default: 'false',
     source: 'substitution',
     note: "OpenAI pixel debug logging ('true'/'false'). true locally, false in production.",
+  },
+  {
+    name: 'OPENAI_ADS_CAPI_DELIVERY_ENABLED',
+    required: false,
+    scopes: ['prod', 'runtime'],
+    default: 'false',
+    note: 'Enables production OpenAI Ads server delivery after the privacy release gate.',
   },
   {
     name: 'OPENAI_ADS_CAPI_KEY',

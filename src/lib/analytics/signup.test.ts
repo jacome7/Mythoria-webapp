@@ -46,7 +46,7 @@ describe('signup acquisition belongs to the creation journey', () => {
       signUpAttributionMatchesCreation(created, { createdAt: new Date('2026-09-05T10:59:00Z') }),
     ).toBe(true);
   });
-  it('recovers late consent when the same GA session already covered creation', () => {
+  it('suppresses late consent even when the GA session covered creation', () => {
     const consentAt = new Date('2026-09-05T11:02:00Z');
     expect(
       signUpAttributionMatchesCreation(created, {
@@ -54,7 +54,7 @@ describe('signup acquisition belongs to the creation journey', () => {
         latestAttributionAt: consentAt,
         sessionId: new Date('2026-09-05T10:59:00Z').getTime() / 1000,
       }),
-    ).toBe(true);
+    ).toBe(false);
   });
   it('refuses a new session or unproved journey after creation', () => {
     const consentAt = new Date('2026-09-05T11:02:00Z');

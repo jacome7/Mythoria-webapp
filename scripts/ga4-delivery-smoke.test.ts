@@ -3,7 +3,7 @@
 import { runGa4DeliveryProbe } from './ga4-delivery-smoke';
 
 const baseOptions = {
-  propertyId: '490896080',
+  propertyId: '123456789',
   measurementId: 'G-test',
   apiSecret: 'secret',
   accessToken: 'token',
@@ -23,6 +23,7 @@ it('passes only after Realtime reports a new ingested probe', async () => {
         status: 200,
       });
     }
+    if (url.includes('/debug/mp/collect')) return Response.json({ validationMessages: [] });
     return new Response(null, { status: 204 });
   });
 
@@ -44,6 +45,7 @@ it('fails when Measurement Protocol returns 2xx but Realtime never ingests the e
     if (url.includes('analyticsdata.googleapis.com')) {
       return new Response(JSON.stringify({ rows: [] }), { status: 200 });
     }
+    if (url.includes('/debug/mp/collect')) return Response.json({ validationMessages: [] });
     return new Response(null, { status: 204 });
   });
 
@@ -66,4 +68,12 @@ it('fails immediately when the Realtime verifier cannot read the property', asyn
       fetchImpl: fetchMock as typeof fetch,
     }),
   ).rejects.toThrow('GA4 Realtime Data API returned HTTP 403');
+});
+
+it('rejects the production property before any payload is sent', async () => {
+  const fetchMock = jest.fn();
+  await expect(
+    runGa4DeliveryProbe({ ...baseOptions, propertyId: '490896080', fetchImpl: fetchMock }),
+  ).rejects.toThrow('isolated audit property');
+  expect(fetchMock).not.toHaveBeenCalled();
 });

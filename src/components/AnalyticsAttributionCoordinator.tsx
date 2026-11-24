@@ -3,177 +3,36 @@
 import { useUser } from '@clerk/nextjs';
 import { useEffect, useRef } from 'react';
 import { usePathname } from 'next/navigation';
+import { clearGoogleAnalyticsContextCache, getGoogleAnalyticsContext } from '@/lib/analytics';
+import { sanitizeAnalyticsPathname } from '@/lib/analytics/page-context';
 import {
-  clearGoogleAnalyticsContextCache,
-  getGoogleAnalyticsContext,
-  trackEvent,
-} from '@/lib/analytics';
-import { storyShareEventParams, type StoryShareContext } from '@/lib/analytics/story-share';
-import {
-  CAMPAIGN_QUERY_KEYS,
-  collectCampaignParams,
-  getValidatedIntent,
-  type CampaignParams,
-} from '@/lib/campaign-context';
+  captureAnalyticsAttribution,
+  clearAnalyticsAttributionReceipt,
+} from '@/lib/analytics/receipt-client';
+import { CAMPAIGN_QUERY_KEYS, collectCampaignParams } from '@/lib/campaign-context';
 import {
   CONSENT_UPDATED_EVENT,
   ensureConsentChoice,
   getStoredConsent,
   type ConsentUpdatedDetail,
 } from '@/lib/consent';
-import { extractLandingSlug, sanitizeInternalReturnPath } from '@/lib/auth-return';
-import { OAIQ_LOADED_EVENT, hasAdvertisingConsent } from '@/lib/openai-ads/pixel';
 
-const PERSISTED_CAMPAIGN_KEYS = [
-  'utm_source',
-  'utm_medium',
-  'utm_campaign',
-  'utm_id',
-  'utm_term',
-  'utm_content',
-  'gclid',
-  'gbraid',
-  'wbraid',
-  'oppref',
-] as const;
-
-const OPPREF_QUERY_KEY = 'oppref';
-/** Time the OpenAI Pixel SDK gets to read `oppref` from the URL after it loads. */
-const OPPREF_SDK_READ_DELAY_MS = 1_500;
-/** Upper bound on keeping `oppref` in the URL while waiting for the Pixel to load. */
-const OPPREF_STRIP_TIMEOUT_MS = 5_000;
-
-let transientCampaign: CampaignParams = {};
-let transientLandingPath: string | undefined;
-let transientLandingSlug: string | undefined;
-let transientPrimaryIntent: ReturnType<typeof getValidatedIntent> = null;
-let captureInFlight: Promise<boolean> | undefined;
-let linkInFlight: Promise<void> | undefined;
-let lastCaptureSignature: string | undefined;
-let linkedUserId: string | undefined;
-let currentAuthenticatedUserId: string | undefined;
-let linkedCampaignUserId: string | undefined;
-let campaignLinkInFlight: Promise<void> | undefined;
-let pendingOpprefStrip: (() => void) | undefined;
 const LINK_RETRY_DELAYS_MS = [0, 250, 500, 1_000, 2_000] as const;
-// Twelve attempts over 5m04s cover the worker's five-minute claim lease.
-// After exhaustion there is no timer loop; a later navigation/capture can try again.
-const SIGN_UP_LINK_RETRY_DELAYS_MS = [
+// GA signup may already be claimed while account linkage succeeds.
+const PENDING_SIGN_UP_RETRY_DELAYS_MS = [
   0, 250, 500, 1_000, 2_000, 5_000, 15_000, 30_000, 60_000, 60_000, 60_000, 70_000,
 ] as const;
 
-async function linkAuthenticatedEmailCampaign(userId: string): Promise<void> {
-  if (linkedCampaignUserId === userId) return;
-  if (campaignLinkInFlight) return campaignLinkInFlight;
-
-  campaignLinkInFlight = (async () => {
-    for (const delayMs of LINK_RETRY_DELAYS_MS) {
-      if (delayMs) await new Promise((resolve) => window.setTimeout(resolve, delayMs));
-      try {
-        const response = await fetch('/api/email-campaign-attribution/link', {
-          method: 'POST',
-          keepalive: true,
-        });
-        if (response.status === 401 || response.status >= 500) continue;
-        if (response.ok) linkedCampaignUserId = userId;
-        return;
-      } catch {
-        // Retry short authentication/network races without interrupting the user journey.
-      }
-    }
-  })().finally(() => {
-    campaignLinkInFlight = undefined;
-  });
-
-  return campaignLinkInFlight;
-}
-
-function mergeCampaignFromLocation(): void {
-  const search = new URLSearchParams(window.location.search);
-  transientCampaign = {
-    ...transientCampaign,
-    ...collectCampaignParams(search),
-  };
-  const isAuthPage = /\/(sign-in|sign-up)(?:\/|$)/.test(window.location.pathname);
-  const requestedLandingPath = search.get('landing_path') || search.get('landingPath');
-  if (requestedLandingPath) {
-    transientLandingPath = sanitizeInternalReturnPath(
-      requestedLandingPath,
-      window.location.pathname,
-    );
-  } else if (!transientLandingPath && !isAuthPage) {
-    transientLandingPath = window.location.pathname;
-  }
-  transientLandingSlug ||=
-    search.get('landing_slug') ||
-    search.get('landingSlug') ||
-    extractLandingSlug(transientLandingPath || window.location.pathname);
-  transientPrimaryIntent ||= getValidatedIntent(
-    search.get('primary_intent') || search.get('primaryIntent') || search.get('intent'),
-  );
-}
-
-function appendTransientReturnContext(url: URL): void {
-  for (const [key, value] of Object.entries(transientCampaign)) {
-    if (value && !url.searchParams.has(key)) url.searchParams.set(key, value);
-  }
-  if (transientLandingPath && !url.searchParams.has('landing_path')) {
-    url.searchParams.set('landing_path', transientLandingPath);
-  }
-  if (transientLandingSlug && !url.searchParams.has('landing_slug')) {
-    url.searchParams.set('landing_slug', transientLandingSlug);
-  }
-  if (transientPrimaryIntent && !url.searchParams.has('primary_intent')) {
-    url.searchParams.set('primary_intent', transientPrimaryIntent);
-  }
-}
-
-function removeQueryParams(keys: readonly string[]): void {
+function clearCampaignFromCurrentUrl(): void {
   const url = new URL(window.location.href);
-  if (!keys.some((key) => url.searchParams.has(key))) return;
-  for (const key of keys) url.searchParams.delete(key);
-  window.history.replaceState(window.history.state, '', `${url.pathname}${url.search}${url.hash}`);
-}
-
-function stripOpprefNow(): void {
-  pendingOpprefStrip?.();
-  removeQueryParams([OPPREF_QUERY_KEY]);
-}
-
-/**
- * The OpenAI Pixel reads `oppref` from the landing URL itself, so with Advertising consent the
- * parameter stays until the SDK has loaded (plus a short read delay), or until a timeout.
- */
-function scheduleOpprefStrip(): void {
-  if (pendingOpprefStrip) return;
-  const timers = new Set<number>();
-  const finish = () => {
-    for (const timer of timers) window.clearTimeout(timer);
-    window.removeEventListener(OAIQ_LOADED_EVENT, handleLoaded);
-    pendingOpprefStrip = undefined;
-    removeQueryParams([OPPREF_QUERY_KEY]);
-  };
-  const handleLoaded = () => {
-    for (const timer of timers) window.clearTimeout(timer);
-    timers.clear();
-    timers.add(window.setTimeout(finish, OPPREF_SDK_READ_DELAY_MS));
-  };
-  pendingOpprefStrip = finish;
-  if (window.__mythoriaOaiqLoaded) {
-    handleLoaded();
-  } else {
-    timers.add(window.setTimeout(finish, OPPREF_STRIP_TIMEOUT_MS));
-    window.addEventListener(OAIQ_LOADED_EVENT, handleLoaded, { once: true });
-  }
-}
-
-function stripCampaignFromCurrentUrl(): void {
-  const url = new URL(window.location.href);
-  const deferOppref = url.searchParams.has(OPPREF_QUERY_KEY) && hasAdvertisingConsent();
-  for (const key of CAMPAIGN_QUERY_KEYS) {
-    if (key !== OPPREF_QUERY_KEY || !deferOppref) url.searchParams.delete(key);
-  }
+  if (
+    /^\/[a-z]{2}-[A-Z]{2}\/(?:p|s|stories\/read)\//.test(url.pathname) &&
+    url.searchParams.get('utm_campaign') === 'story_share'
+  )
+    return;
+  const originalSearch = url.search;
   for (const key of [
+    ...CAMPAIGN_QUERY_KEYS,
     'landing_path',
     'landingPath',
     'landing_slug',
@@ -183,210 +42,138 @@ function stripCampaignFromCurrentUrl(): void {
   ]) {
     url.searchParams.delete(key);
   }
-  window.history.replaceState(window.history.state, '', `${url.pathname}${url.search}${url.hash}`);
-  if (deferOppref) scheduleOpprefStrip();
-  else pendingOpprefStrip?.();
+  if (url.search !== originalSearch) {
+    window.history.replaceState(window.history.state, '', url.pathname + url.search + url.hash);
+  }
 }
 
-async function linkAuthenticatedAttribution(userId: string): Promise<void> {
-  if (getStoredConsent()?.state.analytics_storage !== 'granted') return;
-  if (linkedUserId === userId) return;
-  if (linkInFlight) return linkInFlight;
-
-  linkInFlight = (async () => {
-    let retryDelays: readonly number[] = LINK_RETRY_DELAYS_MS;
-    const canLink = () =>
-      currentAuthenticatedUserId === userId &&
-      getStoredConsent()?.state.analytics_storage === 'granted';
-    for (let attempt = 0; attempt < retryDelays.length; attempt += 1) {
-      const delayMs = retryDelays[attempt];
-      if (delayMs) await new Promise((resolve) => window.setTimeout(resolve, delayMs));
-      if (!canLink()) return;
-      try {
-        const response = await fetch('/api/analytics/attribution/link', {
-          method: 'POST',
-          keepalive: true,
-        });
-        if (response.status === 401 || response.status >= 500) continue;
-        if (!response.ok) return;
-        const result = (await response.json().catch(() => null)) as {
-          linked?: boolean;
-          signUpPending?: boolean;
-        } | null;
-        if (!canLink()) return;
-        // General association succeeded; only a recoverable signup extends the budget.
-        if (result?.linked && result.signUpPending) {
-          retryDelays = SIGN_UP_LINK_RETRY_DELAYS_MS;
-          continue;
-        }
-        if (result?.linked) linkedUserId = userId;
-        return;
-      } catch {
-        // Retry short authentication/network races without interrupting the user journey.
-      }
-    }
-  })().finally(() => {
-    linkInFlight = undefined;
-  });
-
-  return linkInFlight;
-}
-
-async function captureConsentedAttribution(
-  pathname: string,
-  authenticatedUserId?: string,
-): Promise<void> {
-  if (/\/biographer\/(?:invite|resume|contribution)(?:\/|$)/.test(pathname)) return;
-  const consent = getStoredConsent()?.state;
-  if (consent?.analytics_storage !== 'granted') return;
-
-  const campaign = Object.fromEntries(
-    PERSISTED_CAMPAIGN_KEYS.flatMap((key) =>
-      transientCampaign[key] ? [[key, transientCampaign[key]]] : [],
-    ),
-  );
-  const primaryIntent = transientPrimaryIntent;
-  const landingPath = transientLandingPath || pathname;
-  const landingSlug = transientLandingSlug || extractLandingSlug(landingPath);
-  const signature = JSON.stringify({ pathname, landingPath, landingSlug, primaryIntent, campaign });
-  if (signature === lastCaptureSignature) {
-    if (authenticatedUserId) await linkAuthenticatedAttribution(authenticatedUserId);
-    return;
-  }
-
-  if (captureInFlight) {
-    await captureInFlight;
-    return captureConsentedAttribution(pathname, authenticatedUserId);
-  }
-
-  captureInFlight = (async () => {
-    const analyticsContext = await getGoogleAnalyticsContext({ timeoutMs: 5_000 });
-    if (!analyticsContext) {
-      console.warn('[Analytics] GA4 context was unavailable after consent');
+async function linkAttribution(
+  endpoint: string,
+  requireAnalytics: boolean,
+  isActive = () => true,
+): Promise<boolean> {
+  const delays = requireAnalytics ? PENDING_SIGN_UP_RETRY_DELAYS_MS : LINK_RETRY_DELAYS_MS;
+  let signupPending = false;
+  for (const [index, delayMs] of delays.entries()) {
+    if (index === LINK_RETRY_DELAYS_MS.length && !signupPending) return false;
+    if (delayMs) await new Promise((resolve) => window.setTimeout(resolve, delayMs));
+    if (
+      !isActive() ||
+      (requireAnalytics && getStoredConsent()?.state.analytics_storage !== 'granted')
+    ) {
       return false;
     }
-
-    const response = await fetch('/api/analytics/attribution', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        analyticsContext,
-        landingPath,
-        latestPath: pathname,
-        ...(landingSlug ? { landingSlug } : {}),
-        ...(primaryIntent ? { primaryIntent } : {}),
-        campaign,
-      }),
-      keepalive: true,
-    });
-    const result = (await response.json().catch(() => null)) as {
-      captured?: boolean;
-      storyShare?: StoryShareContext;
-    } | null;
-    if (!response.ok || !result?.captured) return false;
-
-    if (result.storyShare) {
-      trackEvent('story_share_open', {
-        content_type: 'story',
-        item_id: result.storyShare.itemId,
-        ...storyShareEventParams(result.storyShare),
-      });
+    try {
+      const response = await fetch(endpoint, { method: 'POST', keepalive: true });
+      if (response.status === 401 || response.status >= 500) continue;
+      if (!response.ok) return false;
+      const result = (await response.json().catch(() => null)) as {
+        linked?: boolean;
+        signUpPending?: boolean;
+      } | null;
+      signupPending = result?.signUpPending === true;
+      if (requireAnalytics && (result?.linked !== true || signupPending)) continue;
+      return true;
+    } catch {
+      // A short retry covers browser navigation and Clerk hydration races.
     }
-
-    lastCaptureSignature = signature;
-    linkedUserId = undefined;
-    transientCampaign = {};
-    transientLandingPath = undefined;
-    transientLandingSlug = undefined;
-    transientPrimaryIntent = null;
-    stripCampaignFromCurrentUrl();
-    return true;
-  })().finally(() => {
-    captureInFlight = undefined;
-  });
-
-  const captured = await captureInFlight;
-  if (captured && authenticatedUserId) {
-    await linkAuthenticatedAttribution(authenticatedUserId);
   }
+  return false;
 }
 
 export default function AnalyticsAttributionCoordinator() {
   const pathname = usePathname();
   const { isLoaded, isSignedIn, user } = useUser();
-  const authenticatedUserId = isLoaded && isSignedIn ? user?.id : undefined;
-  const authenticatedUserIdRef = useRef(authenticatedUserId);
-  authenticatedUserIdRef.current = authenticatedUserId;
+  const author = isLoaded && isSignedIn ? user?.id : undefined;
+  const currentAuthor = useRef(author);
+  currentAuthor.current = author;
+  const linkedAuthor = useRef<string | undefined>(undefined);
+  const linkedEmailAuthor = useRef<string | undefined>(undefined);
+  const lastCapture = useRef<string | undefined>(undefined);
 
   useEffect(() => {
-    currentAuthenticatedUserId = authenticatedUserId;
-    const consent = getStoredConsent()?.state;
-    if (consent?.analytics_storage === 'granted') {
-      mergeCampaignFromLocation();
-      void captureConsentedAttribution(pathname, authenticatedUserId);
-    } else if (!consent) {
-      mergeCampaignFromLocation();
-    } else {
-      transientCampaign = {};
-      transientLandingPath = undefined;
-      transientLandingSlug = undefined;
-      transientPrimaryIntent = null;
-      stripCampaignFromCurrentUrl();
+    if (!author) {
+      linkedEmailAuthor.current = undefined;
+      linkedAuthor.current = undefined;
+      return;
     }
-    if (/\/(sign-up)(?:\/|$)/.test(pathname) && !consent) {
-      void ensureConsentChoice();
+    if (linkedEmailAuthor.current !== author) {
+      linkedEmailAuthor.current = author;
+      void linkAttribution('/api/email-campaign-attribution/link', false);
     }
-    return () => {
-      if (currentAuthenticatedUserId === authenticatedUserId)
-        currentAuthenticatedUserId = undefined;
-    };
-  }, [authenticatedUserId, pathname]);
+  }, [author]);
 
   useEffect(() => {
-    if (authenticatedUserId) {
-      void linkAuthenticatedEmailCampaign(authenticatedUserId);
-    }
-    if (authenticatedUserId && getStoredConsent()?.state.analytics_storage === 'granted') {
-      void linkAuthenticatedAttribution(authenticatedUserId);
-    }
-  }, [authenticatedUserId]);
+    let disposed = false;
+    const capture = async (includeCurrentCampaign: boolean) => {
+      if (getStoredConsent()?.state.analytics_storage !== 'granted') return;
+      const url = new URL(window.location.href);
+      const safePath = sanitizeAnalyticsPathname(url.pathname);
+      const signature = safePath + (includeCurrentCampaign ? url.search : '');
+      const signedInAuthor = currentAuthor.current;
+      if (lastCapture.current === signature && signedInAuthor === linkedAuthor.current) return;
+      lastCapture.current = signature;
 
-  useEffect(() => {
-    const handleClick = (event: MouseEvent) => {
-      if (getStoredConsent()) return;
-      const anchor = (event.target as Element | null)?.closest<HTMLAnchorElement>('a[href]');
-      if (!anchor || anchor.target === '_blank' || anchor.hasAttribute('download')) return;
-      const url = new URL(anchor.href, window.location.href);
-      if (url.origin !== window.location.origin) return;
-      appendTransientReturnContext(url);
-      anchor.href = url.toString();
-    };
+      const campaign = includeCurrentCampaign ? collectCampaignParams(url.searchParams) : undefined;
+      const analyticsContext = await getGoogleAnalyticsContext({ timeoutMs: 500 });
+      if (disposed || getStoredConsent()?.state.analytics_storage !== 'granted') return;
 
-    const handleConsentUpdated = (event: Event) => {
-      clearGoogleAnalyticsContextCache();
-      const detail = (event as CustomEvent<ConsentUpdatedDetail>).detail;
-      if (detail.preferences?.advertising !== true) stripOpprefNow();
-      if (detail.state.analytics_storage !== 'granted') {
-        transientCampaign = {};
-        transientLandingPath = undefined;
-        transientLandingSlug = undefined;
-        transientPrimaryIntent = null;
-        lastCaptureSignature = undefined;
-        linkedUserId = undefined;
-        stripCampaignFromCurrentUrl();
+      // A raw share path is required only for the first-party legacy link validation.
+      const landingPath =
+        campaign?.utm_campaign === 'story_share' &&
+        /^\/[a-z]{2}-[A-Z]{2}\/(?:p|s)\//.test(url.pathname)
+          ? url.pathname
+          : safePath;
+      const captured = await captureAnalyticsAttribution({
+        analyticsContext,
+        landingPath,
+        campaign,
+      });
+      if (disposed) return;
+      if (!captured) {
+        lastCapture.current = undefined;
         return;
       }
-      mergeCampaignFromLocation();
-      void captureConsentedAttribution(window.location.pathname, authenticatedUserIdRef.current);
+      clearCampaignFromCurrentUrl();
+      if (signedInAuthor && linkedAuthor.current !== signedInAuthor) {
+        if (
+          await linkAttribution(
+            '/api/analytics/attribution/link',
+            true,
+            () => !disposed && currentAuthor.current === signedInAuthor,
+          )
+        ) {
+          linkedAuthor.current = signedInAuthor;
+        }
+      }
     };
 
-    document.addEventListener('click', handleClick, true);
-    window.addEventListener(CONSENT_UPDATED_EVENT, handleConsentUpdated);
-    return () => {
-      document.removeEventListener('click', handleClick, true);
-      window.removeEventListener(CONSENT_UPDATED_EVENT, handleConsentUpdated);
+    const onConsent = (event: Event) => {
+      const { state } = (event as CustomEvent<ConsentUpdatedDetail>).detail;
+      clearGoogleAnalyticsContextCache();
+      if (state.analytics_storage !== 'granted') {
+        clearAnalyticsAttributionReceipt();
+        linkedAuthor.current = undefined;
+        lastCapture.current = undefined;
+        clearCampaignFromCurrentUrl();
+        return;
+      }
+      // A grant starts a new observation window. Earlier navigation and campaign touches are discarded.
+      clearCampaignFromCurrentUrl();
+      void capture(false);
     };
-  }, []);
+
+    const consent = getStoredConsent()?.state;
+    if (consent?.analytics_storage === 'granted') void capture(true);
+    else if (consent) clearCampaignFromCurrentUrl();
+    else if (/\/sign-up(?:\/|$)/.test(pathname)) void ensureConsentChoice();
+
+    window.addEventListener(CONSENT_UPDATED_EVENT, onConsent);
+    return () => {
+      disposed = true;
+      window.removeEventListener(CONSENT_UPDATED_EVENT, onConsent);
+    };
+  }, [author, pathname]);
 
   return null;
 }

@@ -10,7 +10,7 @@
     "pricing": {
       "eyebrow": "Transparent pricing",
       "title": "See the cost before you create",
-      "body": "Every new account includes 5 free credits. The full pricing table shows the credits needed to create the ebook, generate the audiobook, download the PDF and order printing. The applicable cost is shown before every confirmation.",
+      "body": "The current credit cost is shown before each confirmation. Use the pricing table to compare the ebook, audiobook, PDF and print options.",
       "cta": "View pricing and credits"
     },
     "related": {

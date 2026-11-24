@@ -185,8 +185,10 @@ jest.mock('@/utils/biographer/drafts', () => ({
     mockSaveWhispererAnswer(...args),
 }));
 jest.mock('@/hooks/useStep2Session', () => ({
+  emptyDocumentProvenance: { retained: false, alsoTyped: false },
   useStep2Session: () => {
     const [storyText, setStoryText] = useState(mockInitialText);
+    const [documentSource, setDocumentSource] = useState({ retained: false, alsoTyped: false });
     const [uploadedImages, setUploadedImages] = useState(mockInitialImages);
     const [uploadedAudio, setUploadedAudio] = useState(mockInitialAudio);
     mockFinishImages = (failed = false) =>
@@ -204,6 +206,8 @@ jest.mock('@/hooks/useStep2Session', () => ({
     return {
       storyText,
       setStoryText,
+      documentSource,
+      setDocumentSource,
       resetInputs: () => {
         setStoryText('');
         setUploadedImages([]);
@@ -330,6 +334,43 @@ function clickContinue() {
   const guided = screen.queryByRole('button', { name: /^(Continue|Continuar)/ });
   fireEvent.click(guided ?? screen.getByTestId('next'));
 }
+
+it('reports a resumed draft with missing history as unknown after continuing to the editor', async () => {
+  mockInitialText = 'An unfinished older draft';
+  const consent = encodeURIComponent(
+    JSON.stringify({
+      state: {
+        analytics_storage: 'granted',
+        ad_storage: 'denied',
+        ad_user_data: 'denied',
+        ad_personalization: 'denied',
+      },
+      timestamp: Date.now(),
+    }),
+  );
+  document.cookie = `mythoria_consent=${consent}; path=/`;
+  try {
+    render(
+      <Step2Client growthMeasurement templatesEnabled templates={getStoryTemplates(mockLocale)} />,
+    );
+    fireEvent.click(
+      screen.getByRole('button', { name: /Continuar a minha história|Continue my story/ }),
+    );
+    clickContinue();
+    await waitFor(() => expect(mockPush).toHaveBeenCalled());
+    expect(payload(structureCalls()[0]).creationObservation).toEqual(
+      expect.objectContaining({
+        entryKind: 'legacy',
+        firstOption: 'unknown',
+        inputKinds: ['text'],
+        creationRoute: 'freeform',
+      }),
+    );
+  } finally {
+    document.cookie = 'mythoria_consent=; path=/; max-age=0';
+  }
+});
+
 const structureCalls = () =>
   mockFetch.mock.calls.filter(([url]) => url === '/api/stories/genai-structure');
 const payload = (call: unknown[]) => JSON.parse(String((call[1] as RequestInit).body));
@@ -600,7 +641,7 @@ describe('Step 2 template submission integration', () => {
     await waitFor(() => expect(mockPush).toHaveBeenCalled());
     expect(mockFetch.mock.calls[0][0]).toBe('/api/stories');
     expect(payload(structureCalls()[0]).storyPreferences).toBeUndefined();
-    expect(payload(structureCalls()[0]).structureRequestId).toBeUndefined();
+    expect(payload(structureCalls()[0]).structureRequestId).toMatch(/^[a-f0-9-]{36}$/);
   });
 
   it('pauses saved experimental work and ignores template deep links when access is disabled', async () => {

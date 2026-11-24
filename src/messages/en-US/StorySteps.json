@@ -130,7 +130,18 @@
         "charactersLabel": "Detected characters",
         "noText": "No text detected.",
         "noCharacters": "No people or animals detected.",
-        "waitingHint": "Please wait until all images finish analyzing before continuing."
+        "waitingHint": "Please wait until all images finish analyzing before continuing.",
+        "errors": {
+          "invalid_response": "The analysis was incomplete. Try again.",
+          "content_rejected": "This image could not be accepted. Remove it and choose another.",
+          "provider_busy": "Analysis is busy. Try again shortly.",
+          "timeout": "Analysis took too long. Try again.",
+          "storage_failure": "We could not save the analysis. Try again.",
+          "analysis_failed": "We could not analyze this image. Try again.",
+          "unauthorized": "Your session has expired. Sign in again, then return to your story.",
+          "invalid_cache": "The saved analysis could not be read. Remove this image and choose it again."
+        },
+        "reselect": "Upload was interrupted. Remove this image and choose it again."
       },
       "photoTips": {
         "title": "📸 Photo Tips",

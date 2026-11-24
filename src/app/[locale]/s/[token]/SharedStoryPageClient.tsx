@@ -59,7 +59,9 @@ export default function SharedStoryPageClient() {
 
     const accessSharedStory = async () => {
       try {
-        const response = await fetch(`/api/share/${token}`);
+        const response = await fetch(
+          `/api/share/${token}${searchParams.get('utm_campaign') === 'story_share' ? '?utm_campaign=story_share' : ''}`,
+        );
         const result: ApiResponse = await response.json();
 
         if (result.success && result.redirectUrl) {
@@ -91,7 +93,7 @@ export default function SharedStoryPageClient() {
     };
 
     accessSharedStory();
-  }, [token, router, locale, preservedSearch, tSharedStoryPage]);
+  }, [token, router, locale, preservedSearch, searchParams, tSharedStoryPage]);
 
   if (loading) {
     return (

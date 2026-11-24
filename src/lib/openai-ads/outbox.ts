@@ -301,6 +301,8 @@ async function resolveDeliveryContext(
   entry: AdConversionOutboxEntry,
   now: Date,
 ): Promise<ContextResolution> {
+  // Advertising context must have been captured with the event; a later grant cannot
+  // create consent for an earlier conversion.
   const stored = entry.adContext ? sanitizeAdContext(entry.adContext) : undefined;
   if (stored) return { kind: 'ready', context: stored };
   if (!entry.authorId) return { kind: 'ready', context: deniedContext(now) };
@@ -312,7 +314,8 @@ async function resolveDeliveryContext(
     .where(
       and(
         eq(analyticsAttributions.authorId, entry.authorId),
-        lte(analyticsAttributions.createdAt, new Date(occurredMs + ATTRIBUTION_LOOKAHEAD_MS)),
+        isNull(analyticsAttributions.revokedAt),
+        lte(analyticsAttributions.createdAt, entry.occurredAt),
         or(
           gt(analyticsAttributions.expiresAt, entry.occurredAt),
           and(
@@ -632,6 +635,21 @@ export async function deliverAdConversions(): Promise<{
         .where(claimWhere);
       logAdOutcome(claimed, 'deferred_context');
       counts.deferred += 1;
+      continue;
+    }
+
+    if (resolution.context.adConsent !== 'granted') {
+      await db
+        .update(adConversionOutbox)
+        .set({
+          skippedAt: new Date(),
+          claimToken: null,
+          claimedAt: null,
+          lastError: 'advertising_consent_missing',
+          adContext: null,
+        })
+        .where(claimWhere);
+      counts.skipped += 1;
       continue;
     }
 

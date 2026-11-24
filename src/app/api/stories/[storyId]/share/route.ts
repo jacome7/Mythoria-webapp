@@ -1,3 +1,5 @@
+import { readAnalyticsConsentCookie } from '@/lib/analytics/consent-server';
+import { CONSENT_COOKIE_NAME } from '@/lib/consent';
 import { NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
 import { db } from '@/db';
@@ -28,6 +30,14 @@ async function enqueueStoryShared(
 }
 
 // Helper function to get locale and translations
+function shareAnalyticsReference(request: Request, storyId: string) {
+  return readAnalyticsConsentCookie(
+    cookiesFromHeaders(request.headers).get(CONSENT_COOKIE_NAME)?.value,
+  )
+    ? { storyRef: analyticsReference(storyId) }
+    : {};
+}
+
 async function getTranslations(request: Request) {
   const acceptLanguage = request.headers.get('accept-language') || '';
   const locale =
@@ -153,7 +163,7 @@ export async function POST(request: Request, context: { params: Promise<{ storyI
         success: true,
         linkType: 'public',
         url: `/p/${published.slug}`,
-        storyRef: analyticsReference(storyId),
+        ...shareAnalyticsReference(request, storyId),
         message: t('sharing.publicAccessible'),
         adEventId: adConversion.eventId,
       });
@@ -173,7 +183,7 @@ export async function POST(request: Request, context: { params: Promise<{ storyI
         success: true,
         linkType: 'private',
         url: '',
-        storyRef: analyticsReference(storyId),
+        ...shareAnalyticsReference(request, storyId),
         message: t('sharing.nowPrivate'),
       });
     } // Handle private sharing
@@ -202,7 +212,7 @@ export async function POST(request: Request, context: { params: Promise<{ storyI
       success: true,
       linkType: 'private',
       url: shareUrl,
-      storyRef: analyticsReference(storyId),
+      ...shareAnalyticsReference(request, storyId),
       token: shareToken,
       accessLevel,
       expiresAt: expiresAt.toISOString(),
@@ -287,7 +297,7 @@ export async function GET(request: Request, context: { params: Promise<{ storyId
     return NextResponse.json({
       success: true,
       shareLinks: links,
-      storyRef: analyticsReference(storyId),
+      ...shareAnalyticsReference(request, storyId),
     });
   } catch (error) {
     console.error('Error fetching share links:', error);

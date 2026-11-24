@@ -10,12 +10,19 @@ import { db } from '@/db';
 import { analyticsAttributions, analyticsOutbox, storyGenerationRequests } from '@/db/schema';
 import { getCurrentAuthor } from '@/lib/auth';
 import { ANALYTICS_BASE_URL, sanitizeAnalyticsPageUrl } from '@/lib/analytics/page-context';
+import { CONSENT_COOKIE_NAME } from '@/lib/consent';
+import { readAnalyticsConsentCookie } from '@/lib/analytics/consent-server';
+import { isGaClientId } from '@/lib/analytics/destinations';
+import { linkGrowthRecipient } from '@/lib/growth/measurement-server';
 import { storyShareEventParams } from '@/lib/analytics/story-share';
 
 export const runtime = 'nodejs';
 
 export async function POST(request: NextRequest) {
   try {
+    if (!readAnalyticsConsentCookie(request.cookies.get(CONSENT_COOKIE_NAME)?.value)) {
+      return NextResponse.json({ linked: false });
+    }
     const author = await getCurrentAuthor();
     if (!author) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
@@ -29,6 +36,7 @@ export async function POST(request: NextRequest) {
         and(
           eq(analyticsAttributions.attributionId, attributionId),
           gt(analyticsAttributions.expiresAt, new Date()),
+          isNull(analyticsAttributions.revokedAt),
           or(
             isNull(analyticsAttributions.authorId),
             eq(analyticsAttributions.authorId, author.authorId),
@@ -47,10 +55,23 @@ export async function POST(request: NextRequest) {
       canRecoverSignUp(occurredAt, now) &&
       signUpAttributionMatchesCreation(occurredAt, attribution);
     const repaired = await db.transaction(async (tx) => {
-      await tx
+      const [linked] = await tx
         .update(analyticsAttributions)
         .set({ authorId: author.authorId, linkedAt: new Date() })
-        .where(eq(analyticsAttributions.attributionId, attributionId));
+        .where(
+          and(
+            eq(analyticsAttributions.attributionId, attributionId),
+            isNull(analyticsAttributions.revokedAt),
+            or(
+              isNull(analyticsAttributions.authorId),
+              eq(analyticsAttributions.authorId, author.authorId),
+            ),
+          ),
+        )
+        .returning({ id: analyticsAttributions.attributionId });
+      if (!linked) return null;
+      if (!isGaClientId(attribution.clientId))
+        return { outbox: 0, requests: 0, signUpPending: false };
 
       const attributionParams = {
         ...(attribution.firstLandingPath ? { landing_path: attribution.firstLandingPath } : {}),
@@ -242,6 +263,10 @@ export async function POST(request: NextRequest) {
         .returning({ runId: storyGenerationRequests.runId });
 
       return { outbox: enrichedOutbox.length, requests: enrichedRequests.length, signUpPending };
+    });
+    if (!repaired) return NextResponse.json({ linked: false });
+    await linkGrowthRecipient(attributionId, author.authorId).catch(() => {
+      console.warn('[Attribution] Recipient measurement unavailable');
     });
 
     console.info('[AnalyticsAttributionLink]', {

@@ -1,4 +1,7 @@
 import { NextResponse } from 'next/server';
+import { CONSENT_COOKIE_NAME } from '@/lib/consent';
+import { readAnalyticsConsentCookie } from '@/lib/analytics/consent-server';
+import { cookiesFromHeaders } from '@/lib/openai-ads/context';
 import { auth, currentUser } from '@clerk/nextjs/server';
 import { db } from '@/db';
 import { stories, shareLinks, storyCollaborators, authors } from '@/db/schema';
@@ -176,13 +179,29 @@ export async function GET(request: Request, context: { params: Promise<{ token: 
     }
 
     // Use the canonical read route so downstream code doesn't mis-route.
-    return NextResponse.json({
+    const response = NextResponse.json({
       success: true,
       story: link.story,
       author: link.author,
       accessLevel: link.accessLevel,
       redirectUrl: `/stories/read/${link.storyId}${link.accessLevel === 'edit' ? '?mode=edit' : ''}`,
     });
+    if (
+      currentAuthorId &&
+      new URL(request.url).searchParams.get('utm_campaign') === 'story_share' &&
+      readAnalyticsConsentCookie(
+        cookiesFromHeaders(request.headers).get(CONSENT_COOKIE_NAME)?.value,
+      )
+    ) {
+      response.cookies.set('mythoria_reader_link', token, {
+        maxAge: 120,
+        httpOnly: true,
+        sameSite: 'lax',
+        secure: process.env.NODE_ENV === 'production',
+        path: '/api/analytics/qualified-share',
+      });
+    }
+    return response;
   } catch (error) {
     console.error('Error accessing shared story:', error);
     return NextResponse.json({ error: 'Failed to access shared story' }, { status: 500 });

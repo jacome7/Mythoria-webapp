@@ -1,4 +1,5 @@
 import { db } from '@/db';
+import { initialAuthorGrant } from '@/constants/pricing';
 import {
   pricing,
   biographerBookVersions,
@@ -176,7 +177,7 @@ export class PricingService {
    */
   async getInitialAuthorCredits(): Promise<number> {
     const pricing = await this.getPricingByServiceCode('initialAuthorCredits');
-    return pricing?.credits || 5; // Default fallback to 5 if not found
+    return initialAuthorGrant(pricing?.credits);
   }
 }
 

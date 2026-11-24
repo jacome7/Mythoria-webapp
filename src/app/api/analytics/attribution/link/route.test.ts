@@ -10,8 +10,15 @@ const signUpReturningMock = jest.fn();
 const pendingSignUpMock = jest.fn();
 const now = new Date('2026-09-05T12:00:00Z');
 const creation = new Date('2026-09-05T11:00:00Z');
+const consent =
+  'mythoria_consent=' +
+  encodeURIComponent(JSON.stringify({ state: { analytics_storage: 'granted' } }));
 
 jest.mock('@clerk/nextjs/server', () => ({ currentUser: () => currentUserMock() }));
+
+jest.mock('@/lib/growth/measurement-server', () => ({
+  linkGrowthRecipient: jest.fn(async () => undefined),
+}));
 
 jest.mock('@/lib/auth', () => ({ getCurrentAuthor: () => getCurrentAuthorMock() }));
 jest.mock('@/db', () => ({
@@ -79,7 +86,9 @@ describe('POST /api/analytics/attribution/link', () => {
               where: (...args: unknown[]) => {
                 updateWhereMock(...args);
                 return {
-                  returning: jest.fn().mockResolvedValue([]),
+                  returning: jest
+                    .fn()
+                    .mockResolvedValue([{ id: '11111111-1111-4111-8111-111111111111' }]),
                 };
               },
             };
@@ -97,7 +106,9 @@ describe('POST /api/analytics/attribution/link', () => {
     const log = jest.spyOn(console, 'error').mockImplementation(() => {});
     try {
       const response = await POST(
-        new NextRequest('http://localhost/api/analytics/attribution/link'),
+        new NextRequest('http://localhost/api/analytics/attribution/link', {
+          headers: { cookie: consent },
+        }),
       );
 
       expect(response.status).toBe(500);
@@ -113,7 +124,7 @@ describe('POST /api/analytics/attribution/link', () => {
     const request = new NextRequest('https://mythoria.pt/api/analytics/attribution/link', {
       method: 'POST',
       headers: {
-        cookie: 'mythoria_attribution=11111111-1111-4111-8111-111111111111',
+        cookie: `${consent}; mythoria_attribution=11111111-1111-4111-8111-111111111111`,
       },
     });
     const response = await POST(request);
@@ -138,7 +149,7 @@ describe('POST /api/analytics/attribution/link', () => {
   const request = () =>
     new NextRequest('https://mythoria.pt/api/analytics/attribution/link', {
       method: 'POST',
-      headers: { cookie: 'mythoria_attribution=11111111-1111-4111-8111-111111111111' },
+      headers: { cookie: `${consent}; mythoria_attribution=11111111-1111-4111-8111-111111111111` },
     });
 
   it.each([
@@ -194,7 +205,7 @@ describe('POST /api/analytics/attribution/link', () => {
     expect(genericQuery.sql).toContain('"claim_token" is null');
   });
 
-  it('recovers consent in the creation session while keeping the original signup timestamp', async () => {
+  it('does not replay signup after consent is granted later in the same session', async () => {
     const [attribution] = await selectWhereMock();
     const consentAt = new Date('2026-09-05T11:02:00Z');
     selectWhereMock.mockResolvedValue([
@@ -206,13 +217,8 @@ describe('POST /api/analytics/attribution/link', () => {
       },
     ]);
     await POST(request());
-    expect(insertValuesMock).toHaveBeenCalledWith(
-      expect.objectContaining({
-        occurredAt: creation,
-        consent: expect.objectContaining({ analyticsStorage: 'granted' }),
-      }),
-    );
-    expect(conflictMock.mock.calls[0][0].set).not.toHaveProperty('occurredAt');
+    expect(insertValuesMock).not.toHaveBeenCalled();
+    expect(conflictMock).not.toHaveBeenCalled();
   });
 
   it('preserves account linking without associating a later campaign to the signup', async () => {

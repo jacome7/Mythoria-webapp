@@ -1,0 +1,12 @@
+{
+  "ProductExperiments": {
+    "ideaLabel": "Que história gostavas de contar?",
+    "ideaContinue": "Continuar com esta ideia",
+    "ideaSaveFailed": "A tua ideia continua aqui. Copia-a antes de continuares pelo botão habitual.",
+    "ebookCost": "Um eBook normal custa {credits, number} créditos.",
+    "signupCredits": "As novas contas começam com {credits, number} créditos.",
+    "balance": "Tens {credits, number} créditos na tua conta.",
+    "covered": "Este saldo cobre o eBook.",
+    "pack": "Um pacote de {credits, number} créditos custa {price}."
+  }
+}

@@ -1,6 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getCurrentAuthor } from '@/lib/auth';
 import { sgwFetch } from '@/lib/sgw-client';
+import {
+  isMediaAnalysisCode,
+  mediaRecovery,
+  type MediaAnalysisCode,
+} from '@/lib/media-analysis-errors';
 import { wizardMediaLogger, wizardMediaRequestId } from '@/lib/wizard-media-logging';
 
 /**
@@ -14,6 +19,9 @@ import { wizardMediaLogger, wizardMediaRequestId } from '@/lib/wizard-media-logg
 export async function POST(request: NextRequest) {
   const requestId = wizardMediaRequestId(request.headers);
   const operation = 'analysis';
+  const assetId = wizardMediaRequestId(
+    new Headers({ 'x-request-id': request.headers.get('x-media-id') || '' }),
+  );
   const headers = { 'x-request-id': requestId };
   let stage = 'identity';
   const respond = (body: unknown, status: number) => {
@@ -29,7 +37,8 @@ export async function POST(request: NextRequest) {
   };
   try {
     const author = await getCurrentAuthor();
-    if (!author) return respond({ error: 'Unauthorized' }, 401);
+    if (!author)
+      return respond({ error: 'Unauthorized', code: 'unauthorized', recovery: 'sign_in' }, 401);
 
     stage = 'validation';
     const body = await request.json().catch(() => null);
@@ -46,16 +55,32 @@ export async function POST(request: NextRequest) {
     stage = 'workflow_request';
     const resp = await sgwFetch('/ai/media/analyze-image', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', ...headers },
+      headers: { 'Content-Type': 'application/json', ...headers, 'x-media-id': assetId },
       body: JSON.stringify({ objectPath, locale, authorId: author.authorId }),
     });
     if (!resp.ok) {
       stage = 'workflow_response';
-      return respond({ error: 'Story media analysis failed' }, resp.status);
+      const data = await resp.json().catch(() => null);
+      const code: MediaAnalysisCode = isMediaAnalysisCode(data?.code)
+        ? data.code
+        : resp.status === 401
+          ? 'unauthorized'
+          : resp.status === 504
+            ? 'timeout'
+            : resp.status === 429 || resp.status === 503
+              ? 'provider_busy'
+              : 'analysis_failed';
+      return respond(
+        { error: 'Story media analysis failed', code, recovery: mediaRecovery(code) },
+        resp.status,
+      );
     }
     stage = 'workflow_response';
     return respond(await resp.json(), resp.status);
   } catch {
-    return respond({ error: 'Story media analysis failed' }, 500);
+    return respond(
+      { error: 'Story media analysis failed', code: 'analysis_failed', recovery: 'retry' },
+      500,
+    );
   }
 }

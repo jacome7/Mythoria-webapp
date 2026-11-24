@@ -378,31 +378,32 @@ describe('deliverAdConversions', () => {
     });
   });
 
-  it('sends no user data or oppref without advertising consent', async () => {
+  it('never dispatches a conversion without advertising consent', async () => {
     const row = outboxRow({ adContext: { ...grantedContext, adConsent: 'denied' } });
     queueSelects([row]);
-    mockUpdates([row]);
-
-    await expect(deliverAdConversions()).resolves.toMatchObject({ delivered: 1 });
-
-    const [event] = sentEvents();
-    expect(event).not.toHaveProperty('user');
-    expect(event).not.toHaveProperty('oppref');
-    expect(event.opt_out).toBe(true);
-    expect(event.source_url).toBe(grantedContext.sourceUrl);
-    // Only the pending-row query ran: the author was never loaded.
+    const updates = mockUpdates([row]);
+    await expect(deliverAdConversions()).resolves.toMatchObject({ delivered: 0, skipped: 1 });
+    expect(sendOpenAiEventsMock).not.toHaveBeenCalled();
+    expect(updates).toContainEqual(
+      expect.objectContaining({
+        lastError: 'advertising_consent_missing',
+        adContext: null,
+      }),
+    );
     expect(selectMock).toHaveBeenCalledTimes(1);
   });
 
   it('isolates the bad event when a batch is rejected with HTTP 400', async () => {
     const good = outboxRow({
       outboxId: 'ad-good',
-      adContext: { ...grantedContext, adConsent: 'denied' },
+      authorId: null,
+      adContext: grantedContext,
     });
     const bad = outboxRow({
       outboxId: 'ad-bad',
       eventId: 'story_run-2',
-      adContext: { ...grantedContext, adConsent: 'denied' },
+      authorId: null,
+      adContext: grantedContext,
     });
     queueSelects([good, bad]);
     const sets = mockUpdates([good, bad]);
@@ -436,12 +437,13 @@ describe('deliverAdConversions', () => {
   });
 
   it('backs off on retryable failures and gives up after the last attempt', async () => {
-    const fresh = outboxRow({ adContext: { ...grantedContext, adConsent: 'denied' } });
+    const fresh = outboxRow({ authorId: null, adContext: grantedContext });
     const exhausted = outboxRow({
       outboxId: 'ad-2',
       eventId: 'story_run-2',
       attempts: 7,
-      adContext: { ...grantedContext, adConsent: 'denied' },
+      authorId: null,
+      adContext: grantedContext,
     });
     queueSelects([fresh, exhausted]);
     const sets = mockUpdates([fresh, exhausted]);
@@ -511,18 +513,16 @@ describe('deliverAdConversions', () => {
     );
   });
 
-  it('sends without identifiers once the context grace period has passed', async () => {
+  it('suppresses a conversion without historical consent after the context grace period', async () => {
     const row = outboxRow({ adContext: null, occurredAt: new Date(Date.now() - 3 * HOUR) });
     queueSelects([row], []);
     mockUpdates([row]);
-
-    await expect(deliverAdConversions()).resolves.toMatchObject({ delivered: 1, deferred: 0 });
-
-    const [event] = sentEvents();
-    expect(event.source_url).toBe('https://mythoria.pt');
-    expect(event).not.toHaveProperty('user');
-    expect(event).not.toHaveProperty('oppref');
-    expect(event.opt_out).toBe(true);
+    await expect(deliverAdConversions()).resolves.toMatchObject({
+      delivered: 0,
+      deferred: 0,
+      skipped: 1,
+    });
+    expect(sendOpenAiEventsMock).not.toHaveBeenCalled();
   });
 
   it('enriches a context-less event from the author attribution', async () => {
@@ -585,7 +585,8 @@ describe('deliverAdConversions', () => {
       outboxRow({
         outboxId,
         eventId: `story_run-${index + 1}`,
-        adContext: { ...grantedContext, adConsent: 'denied' },
+        authorId: null,
+        adContext: grantedContext,
       }),
     );
     queueSelects(rows);

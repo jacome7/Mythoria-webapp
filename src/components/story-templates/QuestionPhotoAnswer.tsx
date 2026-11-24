@@ -1,9 +1,10 @@
 'use client';
 
 import Image from 'next/image';
-import { useEffect, useLayoutEffect, useRef } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
 import { LuCamera } from 'react-icons/lu';
+import { MediaAnalysisError, type MediaAnalysisCode } from '@/lib/media-analysis-errors';
 import { useMediaUpload } from '@/hooks/useMediaUpload';
 import type { QuestionPhoto } from '@/lib/story-templates/journey';
 
@@ -17,6 +18,8 @@ interface Props {
 export default function QuestionPhotoAnswer({ value, onChange, unavailable, disabled }: Props) {
   const t = useTranslations('StoryTemplates');
   const locale = useLocale();
+  const tMedia = useTranslations('StorySteps.step2');
+  const [errorCode, setErrorCode] = useState<MediaAnalysisCode>();
   const { uploadInput, analyzeImage } = useMediaUpload();
   const input = useRef<HTMLInputElement>(null);
   const latest = useRef({ value, onChange, disabled });
@@ -38,6 +41,7 @@ export default function QuestionPhotoAnswer({ value, onChange, unavailable, disa
   const analyze = async (photo: QuestionPhoto, token: number) => {
     const current = () => operation.current === token && latest.current.value?.id === photo.id;
     try {
+      setErrorCode(undefined);
       photo = { ...photo, attempts: (photo.attempts ?? 0) + 1 };
       update(photo);
       const metadata = await analyzeImage(photo.objectPath!, locale, photo.id);
@@ -52,12 +56,16 @@ export default function QuestionPhotoAnswer({ value, onChange, unavailable, disa
         },
         sourceCharacterIndex: subjects.length === 1 ? 0 : undefined,
       });
-    } catch {
-      if (current()) update({ ...photo, status: 'error' });
+    } catch (error) {
+      if (current()) {
+        setErrorCode(error instanceof MediaAnalysisError ? error.code : undefined);
+        update({ ...photo, status: 'error' });
+      }
     }
   };
   const upload = async (file: File) => {
     if (disabled || unavailable) return;
+    setErrorCode(undefined);
     const token = ++operation.current;
     const photo: QuestionPhoto = { id: crypto.randomUUID(), status: 'uploading' };
     update(photo);
@@ -105,7 +113,13 @@ export default function QuestionPhotoAnswer({ value, onChange, unavailable, disa
         </p>
       )}
       {value?.status === 'error' && (
-        <p role="alert">{value.metadata ? t('photoNoSubject') : t('photoError')}</p>
+        <p role="alert">
+          {value.metadata
+            ? t('photoNoSubject')
+            : errorCode
+              ? tMedia(`imageAnalysis.errors.${errorCode}`)
+              : t('photoError')}
+        </p>
       )}
       {value?.status === 'done' && (value.metadata?.characters?.length ?? 0) > 1 && (
         <fieldset className="space-y-2">
@@ -144,6 +158,9 @@ export default function QuestionPhotoAnswer({ value, onChange, unavailable, disa
         {value?.status === 'error' &&
           value.objectPath &&
           !value.metadata &&
+          errorCode !== 'content_rejected' &&
+          errorCode !== 'invalid_cache' &&
+          errorCode !== 'unauthorized' &&
           (value.attempts ?? 0) < 3 && (
             <button
               type="button"

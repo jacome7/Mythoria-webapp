@@ -1,5 +1,6 @@
 'use client';
 
+import { CONSENT_UPDATED_EVENT, getStoredConsent } from '@/lib/consent';
 import ModalPortal from '@/components/ModalPortal';
 import { useEffect, useState } from 'react';
 import { Check, Copy, Globe, Info, Lock, Mail, Share2, Users, X } from 'lucide-react';
@@ -30,7 +31,7 @@ interface ShareData {
   success: boolean;
   linkType: 'private' | 'public';
   url: string;
-  storyRef: string;
+  storyRef?: string;
   token?: string;
   accessLevel?: 'view' | 'edit';
   expiresAt?: string;
@@ -71,8 +72,25 @@ export default function ShareModal({
     setStoryRef(undefined);
   }, [storyId]);
 
+  const [analyticsGranted, setAnalyticsGranted] = useState(false);
   useEffect(() => {
-    if (!isOpen || !storyId || storyRef) return;
+    const update = () => {
+      const granted = getStoredConsent()?.state.analytics_storage === 'granted';
+      setAnalyticsGranted(granted);
+      if (!granted) {
+        setStoryRef(undefined);
+        setShareData((current) =>
+          current?.storyRef ? { ...current, storyRef: undefined } : current,
+        );
+      }
+    };
+    update();
+    window.addEventListener(CONSENT_UPDATED_EVENT, update);
+    return () => window.removeEventListener(CONSENT_UPDATED_EVENT, update);
+  }, []);
+
+  useEffect(() => {
+    if (!isOpen || !storyId || storyRef || !analyticsGranted) return;
 
     let active = true;
     void fetch(`/api/stories/${storyId}/share`)
@@ -84,7 +102,7 @@ export default function ShareModal({
     return () => {
       active = false;
     };
-  }, [isOpen, storyId, storyRef]);
+  }, [isOpen, storyId, storyRef, analyticsGranted]);
 
   if (!isOpen) return null;
 
@@ -95,10 +113,14 @@ export default function ShareModal({
 
   const getFullUrl = (path: string) => `${window.location.origin}/${locale}${path}`;
   const contextFor = (method: StoryShareMethod): StoryShareContext | undefined =>
-    currentStoryRef && scope ? { itemId: currentStoryRef, method, scope } : undefined;
+    getStoredConsent()?.state.analytics_storage === 'granted' && currentStoryRef && scope
+      ? { itemId: currentStoryRef, method, scope }
+      : undefined;
   const taggedUrl = (method: StoryShareMethod): string | undefined => {
     const context = contextFor(method);
-    return context && basePath ? buildStoryShareUrl(getFullUrl(basePath), context) : undefined;
+    if (!basePath) return;
+    const url = getFullUrl(basePath);
+    return context ? buildStoryShareUrl(url, context) : url;
   };
   const recordShare = (context: StoryShareContext) => {
     trackEvent('share', {
@@ -147,10 +169,10 @@ export default function ShareModal({
 
   const copyToClipboard = async (url: string | undefined) => {
     const context = contextFor('copy_link');
-    if (!url || !context) return;
+    if (!url) return;
     try {
       await navigator.clipboard.writeText(url);
-      recordShare(context);
+      if (context) recordShare(context);
       setCopied(true);
       window.setTimeout(() => setCopied(false), 2_000);
     } catch {
@@ -161,7 +183,7 @@ export default function ShareModal({
   const handleNativeShare = async () => {
     const url = taggedUrl('native_share');
     const context = contextFor('native_share');
-    if (!url || !context) return;
+    if (!url) return;
 
     if (!navigator.share) {
       await copyToClipboard(taggedUrl('copy_link'));
@@ -174,7 +196,7 @@ export default function ShareModal({
         text: tCommonShareModal('shareMessages.checkOut', { storyTitle }),
         url,
       });
-      recordShare(context);
+      if (context) recordShare(context);
     } catch {
       // Browsers expose cancellation and failure through the same rejection path.
     }
@@ -183,7 +205,7 @@ export default function ShareModal({
   const launchShare = (method: Exclude<StoryShareMethod, 'copy_link' | 'native_share'>) => {
     const url = taggedUrl(method);
     const context = contextFor(method);
-    if (!url || !context) return;
+    if (!url) return;
 
     const message = tCommonShareModal('shareMessages.checkOut', { storyTitle });
     const destination =
@@ -195,7 +217,7 @@ export default function ShareModal({
               tCommonShareModal('shareMessages.emailSubject', { storyTitle }),
             )}&body=${encodeURIComponent(tCommonShareModal('shareMessages.emailBody', { storyTitle, url }))}`;
     const target = method === 'email' ? '_self' : '_blank';
-    if (window.open(destination, target, 'noopener,noreferrer')) recordShare(context);
+    if (window.open(destination, target, 'noopener,noreferrer') && context) recordShare(context);
   };
 
   const reset = () => {
@@ -255,7 +277,10 @@ export default function ShareModal({
             readOnly
             className="flex-1 input input-bordered text-sm"
           />
-          <button onClick={() => void copyToClipboard(copyUrl)} className="btn btn-outline btn-sm">
+          <button
+            onClick={() => void copyToClipboard(taggedUrl('copy_link'))}
+            className="btn btn-outline btn-sm"
+          >
             {copied ? <Check className="text-green-600" /> : <Copy />}
             {copied ? tCommonShareModal('copied') : tCommonShareModal('copy')}
           </button>

@@ -4,6 +4,7 @@ import { enUS, ptPT, esES, frFR, deDE } from '@clerk/localizations';
 import GoogleAnalytics from '../components/GoogleAnalytics';
 import AnalyticsProvider from '../components/AnalyticsProvider';
 import OpenAIAdsPixel from '../components/OpenAIAdsPixel';
+import { Suspense } from 'react';
 import { headers } from 'next/headers';
 import { SUPPORTED_LOCALES } from '@/config/locales';
 import { getIntentContext } from '@/app/i/actions';
@@ -60,11 +61,6 @@ export default async function RootLayout({
         data-website-theme={resolveWebsiteTheme(initialIntentContext?.intent)}
       >
         <head>
-          <GoogleAnalytics
-            measurementId={process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID || 'G-86D0QFW197'}
-            googleAdsId={process.env.NEXT_PUBLIC_GOOGLE_ADS_ID}
-            googleTagId={process.env.NEXT_PUBLIC_GOOGLE_TAG_ID}
-          />
           {/* PWA Meta Tags */}
           <meta name="application-name" content="Mythoria" />
           <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -79,8 +75,10 @@ export default async function RootLayout({
           <link rel="mask-icon" href="/icon-192.png" />
         </head>
         <body suppressHydrationWarning={true}>
-          {/* OpenAI (ChatGPT Ads) Pixel: client-side, loads only with Advertising consent */}
-          <OpenAIAdsPixel />
+          <Suspense fallback={null}>
+            <GoogleAnalytics />
+            <OpenAIAdsPixel />
+          </Suspense>
           <div className="flex flex-col min-h-screen">
             <AnalyticsProvider>
               <HomepageThemeProvider initialIntentContext={initialIntentContext}>

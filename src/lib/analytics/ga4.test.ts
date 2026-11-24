@@ -4,6 +4,8 @@ import {
   type MeasurementProtocolEventParams,
 } from './ga4';
 
+const transaction = '00000000-0000-4000-8000-000000000001';
+
 const event: MeasurementProtocolEventParams = {
   eventName: 'purchase',
   clientId: '123456789.1712345678',
@@ -18,33 +20,35 @@ const event: MeasurementProtocolEventParams = {
     adPersonalization: 'denied',
   },
   params: {
-    transaction_id: 'order-123',
+    transaction_id: transaction,
     currency: 'EUR',
     value: 35.85,
     tax: 2.15,
     credits_purchased: 400,
-    items: [{ item_id: 'credits-400', item_name: '400 Mythoria Credits' }],
+    items: [{ item_id: 'credit_package_starter', item_name: '400 Mythoria Credits' }],
   },
 };
 
 describe('GA4 Measurement Protocol delivery', () => {
   beforeEach(() => {
-    process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID = 'G-TEST123';
-    process.env.GOOGLE_ANALYTICS_API_SECRET = 'test-secret';
+    process.env.ANALYTICS_DELIVERY_TARGET = 'audit';
+    process.env.NEXT_PUBLIC_BASE_URL = 'https://audit.example';
+    process.env.NEXT_PUBLIC_ANALYTICS_AUDIT_ORIGIN = 'https://audit.example';
+    process.env.NEXT_PUBLIC_ANALYTICS_AUDIT_MEASUREMENT_ID = 'G-TEST123';
+    process.env.ANALYTICS_AUDIT_API_SECRET = 'test-secret';
     global.fetch = jest.fn() as jest.MockedFunction<typeof fetch>;
   });
 
   it('builds a timestamped, consent-aware payload', () => {
     expect(buildMeasurementProtocolPayload(event)).toEqual({
       client_id: event.clientId,
-      user_id: event.userId,
       timestamp_micros: 1784289600000000,
       consent: { ad_user_data: 'DENIED', ad_personalization: 'DENIED' },
       events: [
         {
           name: 'purchase',
           params: expect.objectContaining({
-            transaction_id: 'order-123',
+            transaction_id: transaction,
             session_id: 1712345678,
             engagement_time_msec: 100,
           }),
@@ -65,6 +69,15 @@ describe('GA4 Measurement Protocol delivery', () => {
         gclid: 'raw-click-id',
         email: 'reader@example.com',
         prompt: 'private story prompt',
+        link_url:
+          'https://external.example/?share=https%3A%2F%2Fmythoria.pt%2Fen-US%2Fs%2Fprivate-sentinel',
+        items: [
+          {
+            item_id: 'credit_package_starter',
+            item_name: 'private-sentinel',
+            credentials: ['private-sentinel'],
+          },
+        ],
         page_location: 'https://attacker.example/private',
       },
     });
@@ -77,9 +90,20 @@ describe('GA4 Measurement Protocol delivery', () => {
     expect(payload?.events[0]?.params).not.toHaveProperty('gclid');
     expect(payload?.events[0]?.params).not.toHaveProperty('email');
     expect(payload?.events[0]?.params).not.toHaveProperty('prompt');
+    expect(JSON.stringify(payload)).not.toMatch(/private-sentinel|user_clerk_1|raw-click-id/);
+    expect(payload).not.toHaveProperty('user_id');
   });
 
-  it('uses the EU production endpoint', async () => {
+  it('rejects a production stream configured as an audit destination', async () => {
+    process.env.NEXT_PUBLIC_ANALYTICS_AUDIT_MEASUREMENT_ID = 'G-86D0QFW197';
+    await expect(ga4Service.sendEvent(event)).resolves.toEqual({
+      ok: false,
+      errors: ['GA4 destination is disabled'],
+    });
+    expect(fetch).not.toHaveBeenCalled();
+  });
+
+  it('sends the audit stream to the EU endpoint', async () => {
     jest.mocked(fetch).mockResolvedValue({ ok: true } as Response);
     await expect(ga4Service.sendEvent(event)).resolves.toEqual({ ok: true, errors: [] });
     expect(jest.mocked(fetch).mock.calls[0][0]).toBe(
