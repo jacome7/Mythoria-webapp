@@ -1,0 +1,146 @@
+:root {
+  background: #f6f0e5;
+  color: #292319;
+  font-family: system-ui, sans-serif;
+}
+
+body {
+  margin: 0;
+}
+
+.reader {
+  box-sizing: content-box;
+  margin-inline: auto;
+  max-width: 1080px;
+  padding: 1.5rem 12px 2rem;
+}
+
+h1 {
+  margin: 0 0 1.25rem;
+  font:
+    500 clamp(1.375rem, 4vw, 2.25rem) / 1.15 Georgia,
+    serif;
+  text-align: center;
+}
+
+.book {
+  margin-inline: auto;
+  min-width: 0 !important;
+  touch-action: pan-y pinch-zoom;
+  width: 100%;
+}
+
+.book:not(.stf__parent) {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+}
+
+.book:not(.stf__parent) .leaf-opening {
+  display: none;
+}
+
+.leaf {
+  aspect-ratio: 1;
+  background: #fffdf8;
+  overflow: hidden;
+}
+
+.leaf img {
+  display: block;
+  height: 100%;
+  object-fit: contain;
+  user-select: none;
+  width: 100%;
+}
+
+.leaf iframe {
+  border: 0;
+  display: block;
+  height: 100%;
+  width: 100%;
+}
+
+.leaf[inert] iframe {
+  pointer-events: none;
+}
+
+.page-controls:not([hidden]) {
+  align-items: center;
+  display: grid;
+  gap: 0.5rem;
+  grid-template-columns: 1fr auto 1fr;
+  margin: 1rem auto 1.5rem;
+  max-width: 25rem;
+  text-align: center;
+}
+
+.page-controls button {
+  appearance: none;
+  background: #fff9ef;
+  border: 1px solid #b9a98e;
+  border-radius: 0.5rem;
+  color: inherit;
+  cursor: pointer;
+  font: inherit;
+  font-weight: 600;
+  min-height: 44px;
+  padding: 0.5rem;
+}
+
+.page-controls button:hover:not([aria-disabled='true']) {
+  background: #eee1cc;
+}
+
+.page-controls button[aria-disabled='true'] {
+  cursor: default;
+  opacity: 0.5;
+}
+
+.page-controls button:focus-visible,
+.specification-link:focus-visible,
+.transcript summary:focus-visible {
+  outline: 2px solid #6a3b21;
+  outline-offset: 3px;
+}
+
+#position {
+  font-size: 0.875rem;
+}
+
+.specification-link:not([hidden]) {
+  color: #6a3b21;
+  display: block;
+  margin: 1rem auto;
+  text-align: center;
+  width: fit-content;
+}
+
+.transcript {
+  border-top: 1px solid #cbbda9;
+  margin: 1rem auto 0;
+  max-width: 42rem;
+}
+
+.transcript summary {
+  cursor: pointer;
+  font-weight: 600;
+  padding: 0.75rem 0;
+}
+
+.transcript h2 {
+  font-size: 1rem;
+  margin: 0.75rem 0 0.25rem;
+}
+
+.page-text {
+  font:
+    1.125rem / 1.6 Georgia,
+    serif;
+  white-space: pre-wrap;
+}
+
+@media (width < 624px) {
+  .book:not(.stf__parent) {
+    grid-template-columns: 1fr;
+  }
+}

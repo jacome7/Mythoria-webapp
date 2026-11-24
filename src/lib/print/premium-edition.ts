@@ -14,42 +14,48 @@ export const PREMIUM_SQUARE_PACKAGE = '0850X0850FCPRECW080CW444MXX';
 const squarePackageSchema = z.enum([PREMIUM_SQUARE_PACKAGE, '0850X0850.FC.PRE.CW.080CW444.MXX']);
 const profile = 'premium_square_casewrap';
 
-const editionSchema = z.object({
-  profile: z.literal(profile),
-  podPackageId: squarePackageSchema,
-  pageCount: z.literal([32, 33]),
-  luluEnvironment: z.enum(['sandbox', 'production']),
-  premiumBook: z.object({
-    version: z.literal(1),
-    type: z.literal(premiumBookType),
-    state: z.literal('published'),
-    revision: z.uuid(),
-    manifest: premiumBookAssetSchema,
-    ownerId: z.uuid().optional(),
-    audience: premiumAudienceSchema.optional(),
-  }),
-});
+const editionSchema = z
+  .object({
+    profile: z.literal(profile),
+    podPackageId: squarePackageSchema.optional(),
+    pageCount: z.literal([32, 33]),
+    luluEnvironment: z.enum(['sandbox', 'production']).optional(),
+    premiumBook: z.object({
+      version: z.literal(1),
+      type: z.literal(premiumBookType),
+      state: z.literal('published'),
+      revision: z.uuid(),
+      manifest: premiumBookAssetSchema,
+      ownerId: z.uuid().optional(),
+      audience: premiumAudienceSchema.optional(),
+    }),
+  })
+  .refine((edition) => Boolean(edition.podPackageId) === Boolean(edition.luluEnvironment));
 
 export type PremiumSquareEdition = z.infer<typeof editionSchema>;
 
-type SquareSupplier = Pick<PremiumSquareEdition, 'luluEnvironment' | 'podPackageId'>;
+type SquareSupplier = Required<Pick<PremiumSquareEdition, 'luluEnvironment' | 'podPackageId'>>;
 
-export function approvedSquareSupplier(): SquareSupplier | null {
+export function configuredSquareSupplier(): SquareSupplier | null {
   const mode = process.env.LULU_PRINT_ENVIRONMENT;
   if (mode !== 'sandbox' && mode !== 'production') return null;
-  const approval = process.env.PREMIUM_SQUARE_PRINT_APPROVAL?.trim();
   const podPackageId = squarePackageSchema.safeParse(
     process.env.LULU_PREMIUM_SQUARE_POD_PACKAGE_ID?.trim(),
   );
-  if (
-    !approval ||
-    !approval.startsWith(mode + ':') ||
-    !/^[\w./-]+$/.test(approval.slice(mode.length + 1)) ||
-    !podPackageId.success ||
-    !luluConfigured()
-  )
-    return null;
+  if (!podPackageId.success || !luluConfigured()) return null;
   return { luluEnvironment: mode, podPackageId: podPackageId.data };
+}
+
+export function squarePrintApproved(mode: 'manual' | SquareSupplier['luluEnvironment']) {
+  const [approvedMode, reference, extra] = (process.env.PREMIUM_SQUARE_PRINT_APPROVAL ?? '')
+    .trim()
+    .split(':');
+  return approvedMode === mode && extra === undefined && /^[\w./-]+$/.test(reference ?? '');
+}
+
+export function approvedSquareSupplier(): SquareSupplier | null {
+  const supplier = configuredSquareSupplier();
+  return supplier && squarePrintApproved(supplier.luluEnvironment) ? supplier : null;
 }
 
 export function readSquareEdition(options: unknown): PremiumSquareEdition | null {
@@ -65,7 +71,7 @@ export function readSquareEdition(options: unknown): PremiumSquareEdition | null
 
 export async function getPublishedSquareEdition(
   story: { storyId: string; authorId: string; features: unknown },
-  supplier: SquareSupplier,
+  supplier?: SquareSupplier | null,
 ) {
   try {
     if (!hasPremiumBookMarker(story.features)) return null;
@@ -89,7 +95,11 @@ export async function getPublishedSquareEdition(
 }
 
 export function requireSquareSupplier(edition: PremiumSquareEdition) {
-  if (process.env.LULU_PRINT_ENVIRONMENT !== edition.luluEnvironment)
+  if (
+    !edition.podPackageId ||
+    !edition.luluEnvironment ||
+    process.env.LULU_PRINT_ENVIRONMENT !== edition.luluEnvironment
+  )
     throw new PrintError(
       'square_supplier_changed',
       'Restore the Lulu environment pinned to this order.',

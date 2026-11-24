@@ -7,7 +7,7 @@ interface Story {
   storyId: string;
   title: string;
   synopsis: string;
-  authorId: string;
+  bookType?: string;
   frontCoverImageUrl?: string;
   chapterCount: number;
 }
@@ -31,10 +31,13 @@ export default function StoryStep({ story, onNext }: StoryStepProps) {
         {/* Front Cover Image - Desktop: right side, Mobile: below synopsis */}
         {story.frontCoverImageUrl && (
           <div className="flex justify-center md:justify-end">
-            <div className="relative w-64 h-80 rounded-lg overflow-hidden shadow-lg">
+            <div
+              className={`relative w-64 rounded-lg overflow-hidden shadow-lg ${story.bookType === 'premium_children' ? 'aspect-square' : 'h-80'}`}
+            >
               <Image
                 src={story.frontCoverImageUrl}
                 alt={`Front cover of ${story.title}`}
+                unoptimized={story.bookType === 'premium_children'}
                 fill
                 className="object-cover"
                 sizes="(max-width: 768px) 100vw, 256px"

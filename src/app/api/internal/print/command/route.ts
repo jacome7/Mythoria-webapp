@@ -1,4 +1,12 @@
 import { z } from 'zod';
+import { and, eq } from 'drizzle-orm';
+import { db } from '@/db';
+import { stories } from '@/db/schema';
+import { toPremiumBookReaderData } from '@/lib/premium-children-book/reader';
+import {
+  downloadPremiumReadingImage,
+  loadPublishedPremiumBook,
+} from '@/lib/premium-children-book/storage';
 import { getPrintSettings, setPrintSettings } from '@/lib/print/checkout';
 import { PrintError, providerSchema, shippingSchema } from '@/lib/print/contracts';
 import {
@@ -16,6 +24,7 @@ import {
   withPrintTicket,
 } from '@/lib/print/fulfillment';
 import { verifyPrintIdentity } from '@/lib/print/oidc';
+import { createStaffPrintProof } from '@/lib/print/staff-proof';
 
 export const dynamic = 'force-dynamic';
 
@@ -26,6 +35,9 @@ const commandSchema = z.object({
     'getConfig',
     'setConfig',
     'hasPaidOrderForStory',
+    'getPremiumEdition',
+    'getPremiumEditionImage',
+    'createStaffProof',
     'get',
     'select',
     'prepare',
@@ -43,8 +55,62 @@ const commandSchema = z.object({
 });
 const noStore = { 'cache-control': 'private, no-store' };
 
+async function readPremiumEdition(storyId: string) {
+  const [story] = await db
+    .select({ authorId: stories.authorId, features: stories.features })
+    .from(stories)
+    .where(and(eq(stories.storyId, storyId), eq(stories.status, 'published')));
+  const edition =
+    story && (await loadPublishedPremiumBook(storyId, story.authorId, story.features));
+  if (!edition)
+    throw new PrintError('edition_unavailable', 'Published premium edition not found.', 404);
+  return edition;
+}
+
 async function runCommand({ actor, operation, input }: z.infer<typeof commandSchema>) {
   if (operation === 'getConfig') return getPrintSettings();
+  if (operation === 'getPremiumEdition') {
+    const { storyId } = z.object({ storyId: z.uuid().toLowerCase() }).parse(input);
+    const book = await readPremiumEdition(storyId);
+    return { ...toPremiumBookReaderData(book), revision: book.revision };
+  }
+  if (operation === 'getPremiumEditionImage') {
+    const { storyId, revision, image } = z
+      .object({
+        storyId: z.uuid().toLowerCase(),
+        revision: z.uuid().toLowerCase(),
+        image: z.string().regex(/^(front|back|motif|[1-9]\d?)$/),
+      })
+      .parse(input);
+    const book = await readPremiumEdition(storyId);
+    if (book.revision !== revision)
+      throw new PrintError('edition_changed', 'The published edition changed.', 404);
+    const asset =
+      image === 'front' || image === 'back'
+        ? book.covers[image]
+        : image === 'motif'
+          ? book.motifArtwork
+          : book.pages[Number(image) - 1]?.reading;
+    if (!asset) throw new PrintError('edition_image_missing', 'Image not found.', 404);
+    const { bytes, contentType } = await downloadPremiumReadingImage(storyId, asset);
+    return new Response(new Uint8Array(bytes), {
+      headers: {
+        ...noStore,
+        'content-type': contentType,
+        'x-content-type-options': 'nosniff',
+      },
+    });
+  }
+  if (operation === 'createStaffProof') {
+    const values = z
+      .object({
+        storyId: z.uuid().toLowerCase(),
+        revision: z.uuid().toLowerCase(),
+        shippingAddress: shippingSchema.extend({ phone_number: z.string().trim().min(1).max(30) }),
+      })
+      .parse(input);
+    return createStaffPrintProof(values, actor.email);
+  }
   if (operation === 'hasPaidOrderForStory') {
     const { storyId, requestedThrough } = z
       .object({
@@ -140,6 +206,7 @@ export async function POST(request: Request) {
     await verifyPrintIdentity(request, 'admin');
     const command = commandSchema.parse(await request.json());
     const data = await runCommand(command);
+    if (data instanceof Response) return data;
     return Response.json({ data }, { headers: noStore });
   } catch (error) {
     if (error instanceof PrintError) {

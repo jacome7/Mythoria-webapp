@@ -1,5 +1,7 @@
 'use client';
 
+import { premiumCopyIntent } from '@/lib/premium-children-book/copy-intent';
+
 import ModalPortal from '@/components/ModalPortal';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
@@ -78,15 +80,18 @@ export default function MyStoriesTable() {
 
   const handleDuplicate = async (story: Story) => {
     try {
+      const intent =
+        story.bookType === 'premium_children' ? premiumCopyIntent(story.storyId) : undefined;
       const resp = await fetch(`/api/my-stories/${story.storyId}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'duplicate' }),
+        body: JSON.stringify({ action: 'duplicate', intentId: intent?.intentId }),
       });
       if (!resp.ok) {
         throw new Error(`Duplicate failed: ${resp.status}`);
       }
       const data = await resp.json();
+      intent?.complete();
       const newStory = data.story as Story;
       await fetchStories();
       const link = `/${locale}/stories/read/${newStory.storyId}`;

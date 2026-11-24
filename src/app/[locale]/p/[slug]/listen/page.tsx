@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
 import { useParams, useRouter } from 'next/navigation';
 import { AlertCircle, ArrowLeft, BookOpen, Loader2, Volume2 } from 'lucide-react';
@@ -10,6 +10,7 @@ import {
   hasAudiobook,
   getAudioChapters,
 } from '@/components/AudioPlayer';
+import type { PremiumAudioMetadata } from '@/lib/premium-children-book/audiobook';
 
 interface Chapter {
   id: string;
@@ -29,6 +30,8 @@ interface PublicStoryData {
   story: {
     storyId: string;
     title: string;
+    bookType?: 'premium_children';
+    premiumAudio?: PremiumAudioMetadata;
     authorName: string;
     synopsis?: string;
     audiobookUri?:
@@ -57,6 +60,7 @@ export default function PublicListenPage() {
   const locale = useLocale();
   const tPublicStoryPage = useTranslations('PublicStoryPage');
   const tActions = useTranslations('Actions');
+  const tListenStory = useTranslations('ListenStory');
   const slug = Array.isArray(params?.slug)
     ? (params?.slug[0] ?? '')
     : ((params?.slug as string | undefined) ?? '');
@@ -64,19 +68,34 @@ export default function PublicListenPage() {
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState<PublicStoryData | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const isPremium = data?.story.bookType === 'premium_children';
+  const premiumAudio = data?.story.premiumAudio;
+  const runId = premiumAudio?.runId;
+  const audioEndpoint = useCallback(
+    (index: number) =>
+      `/api/p/${encodeURIComponent(slug)}/audio/${index}${runId ? `?runId=${runId}` : ''}`,
+    [slug, runId],
+  );
 
   const audioChapters = useMemo(
     () =>
-      data && hasAudiobook(data.story.audiobookUri)
-        ? getAudioChapters(data.story.audiobookUri, data.chapters, (number) =>
-            tPublicStoryPage('listen.chapterFallback', { number }),
-          )
-        : [],
-    [data, tPublicStoryPage],
+      premiumAudio
+        ? premiumAudio.tracks.map(({ pageNumber, duration }, index) => ({
+            chapterTitle: tListenStory('pageTitle', { number: pageNumber }),
+            duration,
+            audioUri: audioEndpoint(index),
+          }))
+        : data && hasAudiobook(data.story.audiobookUri)
+          ? getAudioChapters(data.story.audiobookUri, data.chapters, (number) =>
+              tPublicStoryPage('listen.chapterFallback', { number }),
+            )
+          : [],
+    [audioEndpoint, data, premiumAudio, tListenStory, tPublicStoryPage],
   );
 
   const audioPlayer = useCastAudioPlayer({
-    audioEndpoint: `/api/p/${slug}/audio`,
+    audioEndpoint,
+    castEnabled: Boolean(data) && !isPremium,
     onError: (errorMessage) => setError(errorMessage),
     chapters: audioChapters,
     storyTitle: data?.story.title || '',
@@ -99,7 +118,6 @@ export default function PublicListenPage() {
         }
 
         const result = await response.json();
-        console.log('[Public Listen Page] Response data:', result);
 
         if (result.success) {
           setData(result);
@@ -167,7 +185,7 @@ export default function PublicListenPage() {
   }
 
   const { story } = data;
-  const hasAudio = hasAudiobook(story.audiobookUri);
+  const hasAudio = audioChapters.length > 0;
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -202,7 +220,12 @@ export default function PublicListenPage() {
           )}
 
           {hasAudio ? (
-            <AudioChapterList chapters={audioChapters} {...audioControls} castControls={cast} />
+            <AudioChapterList
+              chapters={audioChapters}
+              {...audioControls}
+              castControls={isPremium ? undefined : cast}
+              showTrackIndex={!isPremium}
+            />
           ) : (
             <div className="bg-white rounded-lg shadow-sm border p-8 text-center">
               <AlertCircle className="text-4xl text-gray-400 mx-auto mb-4" />

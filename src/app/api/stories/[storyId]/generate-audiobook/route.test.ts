@@ -17,6 +17,11 @@ const startProductGenerationMock = jest.fn();
 const markProductGenerationQueuedMock = jest.fn();
 const compensateProductGenerationMock = jest.fn();
 const resolveServerAnalyticsContextMock = jest.fn();
+const loadPublishedPremiumBookMock = jest.fn();
+
+jest.mock('@/lib/premium-children-book/storage', () => ({
+  loadPublishedPremiumBook: (...args: unknown[]) => loadPublishedPremiumBookMock(...args),
+}));
 
 jest.mock('@/lib/auth', () => ({
   getCurrentAuthor: () => getCurrentAuthorMock(),
@@ -125,6 +130,72 @@ describe('POST /api/stories/[storyId]/generate-audiobook', () => {
     expect(response.status).toBe(400);
     expect((await response.json()).error).toContain('Invalid voice');
     expect(startProductGenerationMock).not.toHaveBeenCalled();
+  });
+
+  it('verifies the premium edition before charging and pins the queued narration to it', async () => {
+    const revision = 'af14c317-c9c8-4922-87e2-67983cd2ae81';
+    const features = { premiumBook: { state: 'published' } };
+    getStoryByIdMock.mockResolvedValue({
+      storyId: 'story-1',
+      authorId: 'author-1',
+      status: 'published',
+      features,
+    });
+    loadPublishedPremiumBookMock.mockResolvedValue({ revision });
+    getPricingByServiceCodeMock.mockResolvedValue({ credits: 5 });
+    startProductGenerationMock.mockImplementation(async ({ idempotencyKey }) => ({
+      request: { runId: 'run-1', status: 'pending', idempotencyKey },
+      remainingCredits: 10,
+    }));
+    publishAudiobookRequestMock.mockResolvedValue('message-1');
+
+    const rejected = await POST(request({ premiumRevision: 'older' }), {
+      params: Promise.resolve({ storyId: 'story-1' }),
+    });
+    expect(rejected.status).toBe(409);
+    expect(startProductGenerationMock).not.toHaveBeenCalled();
+
+    const response = await POST(request({ premiumRevision: revision }), {
+      params: Promise.resolve({ storyId: 'story-1' }),
+    });
+    expect(response.status).toBe(202);
+    expect(loadPublishedPremiumBookMock).toHaveBeenCalledWith('story-1', 'author-1', features);
+    expect(startProductGenerationMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        creditsSpent: 5,
+        idempotencyKey: expect.stringMatching(`^premium-audiobook:${revision}:`),
+      }),
+    );
+    expect(publishAudiobookRequestMock).toHaveBeenCalledWith(
+      expect.objectContaining({ premiumRevision: revision }),
+    );
+    expect(updateStoryMock).not.toHaveBeenCalled();
+  });
+
+  it('does not enqueue or report success for another edition’s active request', async () => {
+    const revision = 'af14c317-c9c8-4922-87e2-67983cd2ae81';
+    getStoryByIdMock.mockResolvedValue({
+      storyId: 'story-1',
+      authorId: 'author-1',
+      status: 'published',
+      features: { premiumBook: {} },
+    });
+    loadPublishedPremiumBookMock.mockResolvedValue({ revision });
+    getPricingByServiceCodeMock.mockResolvedValue({ credits: 5 });
+    startProductGenerationMock.mockResolvedValue({
+      request: {
+        runId: 'old-run',
+        status: 'queued',
+        idempotencyKey: 'premium-audiobook:old:request',
+      },
+      remainingCredits: 10,
+      duplicate: true,
+    });
+    const response = await POST(request({ premiumRevision: revision }), {
+      params: Promise.resolve({ storyId: 'story-1' }),
+    });
+    expect(response.status).toBe(409);
+    expect(publishAudiobookRequestMock).not.toHaveBeenCalled();
   });
 
   it('falls back to the recommended voice for the story audience when voice is missing', async () => {

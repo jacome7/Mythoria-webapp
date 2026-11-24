@@ -27,7 +27,7 @@ export interface AudioPlayerActions {
 }
 
 export interface AudioPlayerHookProps {
-  audioEndpoint: string; // Base endpoint for audio proxy
+  audioEndpoint: string | ((index: number) => string); // Base endpoint or track URL builder
   onError?: (error: string) => void;
   /**
    * Total number of chapters available for playback. If not provided, will fall back to

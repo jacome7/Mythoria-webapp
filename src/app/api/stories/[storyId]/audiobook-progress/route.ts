@@ -4,6 +4,12 @@ import { getCurrentAuthor } from '@/lib/auth';
 import { storyService } from '@/db/services';
 import { db } from '@/db';
 import { productGenerationRequests } from '@/db/schema/analytics';
+import { hasPremiumBookMarker } from '@/lib/premium-children-book/contract';
+import {
+  getCurrentPremiumAudiobook,
+  getPendingPremiumAudiobook,
+  getPublishedPremiumRevision,
+} from '@/lib/premium-children-book/audiobook';
 
 export async function GET(
   _request: NextRequest,
@@ -17,7 +23,7 @@ export async function GET(
     if (!story || story.authorId !== author.authorId) {
       return NextResponse.json({ error: 'Story not found' }, { status: 404 });
     }
-    const [job] = await db
+    const [latest] = await db
       .select()
       .from(productGenerationRequests)
       .where(
@@ -29,13 +35,36 @@ export async function GET(
       )
       .orderBy(desc(productGenerationRequests.createdAt))
       .limit(1);
+    const premium = hasPremiumBookMarker(story.features);
+    const revision = premium ? getPublishedPremiumRevision(story.features) : undefined;
+    const pending = premium ? getPendingPremiumAudiobook(revision, story.audiobookUri) : undefined;
+    const currentAudio = premium
+      ? getCurrentPremiumAudiobook(storyId, story.features, story.audiobookUri)
+      : undefined;
+    const job =
+      latest &&
+      (!premium ||
+        (revision && latest.idempotencyKey?.startsWith(`premium-audiobook:${revision}:`)))
+        ? latest
+        : undefined;
+    const storyStatus = premium
+      ? pending
+        ? 'generating'
+        : story.audiobookStatus === 'failed' && job?.status === 'running'
+          ? 'failed'
+          : currentAudio
+            ? 'completed'
+            : null
+      : story.audiobookStatus;
     const active = job && ['pending', 'queued', 'running'].includes(job.status);
     // Story status is updated before request reconciliation on workflow termination.
-    const legacyActive = !active && story.audiobookStatus === 'generating';
+    const legacyActive = !active && storyStatus === 'generating';
     const status = active
-      ? story.audiobookStatus === 'failed' && job.status === 'running'
+      ? storyStatus === 'failed' && job.status === 'running'
         ? 'failed'
-        : story.audiobookStatus === 'completed' && job.status === 'running'
+        : storyStatus === 'completed' &&
+            job.status === 'running' &&
+            (!premium || currentAudio?.runId === job.runId)
           ? 'completed'
           : 'generating'
       : legacyActive
@@ -44,7 +73,7 @@ export async function GET(
           ? 'failed'
           : job?.status === 'completed'
             ? 'completed'
-            : story.audiobookStatus || 'not_started';
+            : storyStatus || 'not_started';
     const started = legacyActive ? null : (job?.queuedAt ?? job?.createdAt);
     const elapsed = started ? Math.max(0, (Date.now() - new Date(started).getTime()) / 1000) : null;
     const reliableElapsed = elapsed !== null && Number.isFinite(elapsed) ? elapsed : null;

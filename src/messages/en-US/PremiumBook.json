@@ -18,5 +18,13 @@
   "pageText": "Read the page text",
   "imageUnavailable": "Illustration unavailable",
   "generationProgress": "We’re planning the pages, creating the illustrations and getting your book ready to read.",
-  "generationInterrupted": "The book couldn’t be completed. You can check its status in My Stories."
+  "generationInterrupted": "The book couldn’t be completed. You can check its status in My Stories.",
+  "editSpread": "Edit pages {first}–{last}",
+  "editPrompt": "Describe the change to the illustration",
+  "editWarning": "A large change can affect how the picture lines up across the two facing pages.",
+  "editCost": "Cost: {count} credits",
+  "editBalance": "You need more credits for this edit.",
+  "editError": "The change could not be applied. Reopen the book or try again.",
+  "editBusy": "Updating the illustration…",
+  "editApply": "Apply change"
 }

@@ -17,7 +17,7 @@ interface Story {
   storyId: string;
   title: string;
   synopsis: string;
-  authorId: string;
+  authorId?: string;
   frontCoverImageUrl?: string;
   chapterCount: number;
 }
@@ -145,7 +145,7 @@ export default function PaymentStep({
         paperbackAvailable?: boolean;
         squareEditionRevision?: string;
       };
-      setRequiresCarrierContact(settings.luluDefault || Boolean(settings.squareEditionRevision));
+      setRequiresCarrierContact(settings.luluDefault);
       const isSquare = Boolean(settings.squareEditionRevision);
       const formats = [
         ...(settings.paperbackAvailable !== false ? ['printedSoftCover'] : []),

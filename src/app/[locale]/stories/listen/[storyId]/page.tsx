@@ -30,6 +30,9 @@ interface Story {
   storyId: string;
   title: string;
   status: 'draft' | 'writing' | 'published';
+  bookType?: 'standard' | 'premium_children';
+  premiumRevision?: string;
+  premiumAudio?: { runId: string; tracks: { pageNumber: number; duration: number }[] };
   audiobookUri?:
     | Array<{
         chapterTitle: string;
@@ -168,25 +171,41 @@ export default function ListenStoryPage() {
   const [includeBackgroundMusic, setIncludeBackgroundMusic] = useState(true);
   const audiobookIdempotencyKeyRef = useRef<string | null>(null);
   const { toasts, removeToast, successWithAction, error: toastError, info: toastInfo } = useToast();
+  const isPremium = story?.bookType === 'premium_children';
+  const premiumRunId = story?.premiumAudio?.runId;
+  const premiumTracks = story?.premiumAudio?.tracks;
+  const audioEndpoint = useCallback(
+    (index: number) =>
+      `/api/stories/${storyId}/audio/${index}${premiumRunId ? `?runId=${premiumRunId}` : ''}`,
+    [storyId, premiumRunId],
+  );
 
   // Initialize audio player hook
   const audioChapters = useMemo(
     () =>
-      story && hasAudiobook(story.audiobookUri)
-        ? getAudioChapters(story.audiobookUri, chapters, (number) =>
-            tListenStory('chapterTitle', { number }),
-          )
-        : [],
-    [chapters, story, tListenStory],
+      premiumTracks
+        ? premiumTracks.map(({ pageNumber, duration }, index) => ({
+            chapterTitle: tListenStory('pageTitle', { number: pageNumber }),
+            duration,
+            audioUri: audioEndpoint(index),
+          }))
+        : story && hasAudiobook(story.audiobookUri)
+          ? getAudioChapters(story.audiobookUri, chapters, (number) =>
+              tListenStory('chapterTitle', { number }),
+            )
+          : [],
+    [audioEndpoint, chapters, premiumTracks, story, tListenStory],
   );
+  const hasAudio = audioChapters.length > 0;
 
   const audioPlayer = useCastAudioPlayer({
-    audioEndpoint: `/api/stories/${storyId}/audio`,
+    audioEndpoint,
     onError: undefined,
-    totalChapters: chapters.length,
+    totalChapters: isPremium ? audioChapters.length : chapters.length,
+    castEnabled: Boolean(story) && !isPremium,
     trackingData: {
       story_id: storyId,
-      total_chapters: chapters.length,
+      total_chapters: isPremium ? audioChapters.length : chapters.length,
     },
     chapters: audioChapters,
     storyTitle: story?.title ?? '',
@@ -195,12 +214,12 @@ export default function ListenStoryPage() {
 
   const playAudioWithCastToast = useCallback(
     async (chapterIndex: number) => {
-      if (cast?.isCasting) {
+      if (!isPremium && cast?.isCasting) {
         toastInfo(tPublicStoryPage('listen.cast.delayHint'), 5000);
       }
       await audioControls.playAudio(chapterIndex);
     },
-    [audioControls, cast?.isCasting, tPublicStoryPage, toastInfo],
+    [audioControls, cast?.isCasting, isPremium, tPublicStoryPage, toastInfo],
   );
 
   const castAwareControls = useMemo(
@@ -243,13 +262,10 @@ export default function ListenStoryPage() {
         // Handle story
         if (storyResponse.ok) {
           const storyData = await storyResponse.json();
-          if (storyData.story.bookType === 'premium_children') {
-            router.replace(`/${locale}/stories/read/${storyId}`);
-            return;
-          }
-          console.log('Fetched story data:', storyData);
-
-          if (storyData.story.status !== 'published') {
+          if (
+            storyData.story.status !== 'published' ||
+            (storyData.story.bookType === 'premium_children' && !storyData.story.premiumRevision)
+          ) {
             setError(tErrors('storyNotAvailableYet'));
             return;
           }
@@ -296,7 +312,7 @@ export default function ListenStoryPage() {
     if (storyId) {
       fetchInitialData();
     }
-  }, [storyId, tErrors, locale, router]);
+  }, [storyId, tErrors]);
 
   useEffect(() => {
     const status = audiobookProgress?.audiobookGenerationStatus;
@@ -336,6 +352,7 @@ export default function ListenStoryPage() {
           voice: selectedVoice,
           includeBackgroundMusic,
           analyticsContext,
+          premiumRevision: story?.premiumRevision,
         }),
       });
 
@@ -365,6 +382,10 @@ export default function ListenStoryPage() {
           throw new Error(
             tListenStory('needMoreCreditsGenerate', { shortfall: errorData.shortfall }),
           );
+        } else if (errorData.error === 'premium_edition_unavailable') {
+          throw new Error(tErrors('storyNotAvailableYet'));
+        } else if (errorData.error === 'premium_audiobook_other_edition_running') {
+          throw new Error(tListenStory('tryAgainLater'));
         } else {
           throw new Error(errorData.error || tListenStory('generationFailed'));
         }
@@ -510,22 +531,29 @@ export default function ListenStoryPage() {
                     <span className="hidden sm:inline sm:ml-2">{tActions('listen')}</span>
                   </button>
 
-                  <button onClick={navigateToEdit} className="btn btn-ghost btn-sm">
-                    <Edit3 className="w-4 h-4" />
-                    <span className="hidden sm:inline sm:ml-2">{tActions('edit')}</span>
-                  </button>
+                  {!isPremium && (
+                    <>
+                      <button onClick={navigateToEdit} className="btn btn-ghost btn-sm">
+                        <Edit3 className="w-4 h-4" />
+                        <span className="hidden sm:inline sm:ml-2">{tActions('edit')}</span>
+                      </button>
 
-                  <StoryPrintActions onPrint={navigateToPrint} onDownload={handleDownload} />
+                      <StoryPrintActions onPrint={navigateToPrint} onDownload={handleDownload} />
 
-                  <button onClick={() => setShowShareModal(true)} className="btn btn-ghost btn-sm">
-                    <Share2 className="w-4 h-4" />
-                    <span className="hidden sm:inline sm:ml-2">{tActions('share')}</span>
-                  </button>
+                      <button
+                        onClick={() => setShowShareModal(true)}
+                        className="btn btn-ghost btn-sm"
+                      >
+                        <Share2 className="w-4 h-4" />
+                        <span className="hidden sm:inline sm:ml-2">{tActions('share')}</span>
+                      </button>
 
-                  <button onClick={handleDuplicate} className="btn btn-ghost btn-sm">
-                    <Copy className="w-4 h-4" />
-                    <span className="hidden sm:inline sm:ml-2">{tActions('duplicate')}</span>
-                  </button>
+                      <button onClick={handleDuplicate} className="btn btn-ghost btn-sm">
+                        <Copy className="w-4 h-4" />
+                        <span className="hidden sm:inline sm:ml-2">{tActions('duplicate')}</span>
+                      </button>
+                    </>
+                  )}
                 </div>
               </div>
             </div>
@@ -537,18 +565,19 @@ export default function ListenStoryPage() {
                   <div className="card-body">
                     <h2 className="card-title text-2xl mb-6">
                       <Volume2 className="w-6 h-6 mr-2" />
-                      {hasAudiobook(story.audiobookUri)
+                      {hasAudio
                         ? tListenStory('listenToStory', { title: story.title })
                         : tListenStory('bringToLife', { title: story.title })}
                     </h2>
 
-                    {hasAudiobook(story.audiobookUri) ? (
+                    {hasAudio ? (
                       <div className="space-y-6">
                         {/* Audiobook Chapters */}
                         <AudioChapterList
                           chapters={audioChapters}
                           {...castAwareControls}
-                          castControls={cast}
+                          castControls={isPremium ? undefined : cast}
+                          showTrackIndex={!isPremium}
                         />
 
                         {progressError && !isGeneratingAudio && (

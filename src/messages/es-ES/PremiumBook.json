@@ -18,5 +18,13 @@
   "pageText": "Leer el texto de la página",
   "imageUnavailable": "Ilustración no disponible",
   "generationProgress": "Estamos planificando las páginas, creando las ilustraciones y preparando el libro para su lectura.",
-  "generationInterrupted": "No se ha podido completar el libro. Puedes consultar su estado en Mis historias."
+  "generationInterrupted": "No se ha podido completar el libro. Puedes consultar su estado en Mis historias.",
+  "editSpread": "Editar las páginas {first}–{last}",
+  "editPrompt": "Describe el cambio en la ilustración",
+  "editWarning": "Un cambio grande puede afectar a la continuidad de la imagen entre las dos páginas.",
+  "editCost": "Coste: {count} créditos",
+  "editBalance": "Necesitas más créditos para este cambio.",
+  "editError": "No se ha podido aplicar el cambio. Vuelve a abrir el libro o inténtalo de nuevo.",
+  "editBusy": "Actualizando la ilustración…",
+  "editApply": "Aplicar cambio"
 }

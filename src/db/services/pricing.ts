@@ -49,8 +49,11 @@ export class PricingService {
   /**
    * Get pricing by service code
    */
-  async getPricingByServiceCode(serviceCode: string): Promise<Pricing | null> {
-    const result = await db
+  async getPricingByServiceCode(
+    serviceCode: string,
+    reader: Pick<typeof db, 'select'> = db,
+  ): Promise<Pricing | null> {
+    const result = await reader
       .select()
       .from(pricing)
       .where(and(eq(pricing.serviceCode, serviceCode), eq(pricing.isActive, true)))

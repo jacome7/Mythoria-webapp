@@ -13,7 +13,7 @@ export default function PublicPremiumBookPage({ slug }: { slug: string }) {
   const tActions = useTranslations('Actions');
   const [book, setBook] = useState<{
     premiumBook: PremiumBookReaderData;
-    story: { storyId: string };
+    story: { storyId: string; premiumAudio?: { tracks: unknown[] } };
     canPrint: boolean;
   } | null>();
 
@@ -51,11 +51,18 @@ export default function PublicPremiumBookPage({ slug }: { slug: string }) {
   }
   return (
     <main>
-      {book.canPrint && (
-        <div className="mx-auto flex max-w-6xl justify-end px-4 pt-4">
-          <Link href={`/stories/print/${book.story.storyId}`} className="btn btn-outline">
-            {tActions('print')}
-          </Link>
+      {(book.canPrint || book.story.premiumAudio?.tracks.length) && (
+        <div className="mx-auto flex max-w-6xl justify-end gap-2 px-4 pt-4">
+          {book.story.premiumAudio?.tracks.length ? (
+            <Link href={`/p/${slug}/listen`} className="btn btn-outline">
+              {tActions('listen')}
+            </Link>
+          ) : null}
+          {book.canPrint && (
+            <Link href={`/stories/print/${book.story.storyId}`} className="btn btn-outline">
+              {tActions('print')}
+            </Link>
+          )}
         </div>
       )}
       <PremiumBookReader book={book.premiumBook} />

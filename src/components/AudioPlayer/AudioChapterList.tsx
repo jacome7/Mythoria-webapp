@@ -20,6 +20,7 @@ interface AudioChapterListProps extends AudioPlayerState, AudioPlayerActions {
   chapters: AudioChapter[];
   formatDuration?: (seconds: number) => string;
   castControls?: CastControlsState;
+  showTrackIndex?: boolean;
 }
 
 const defaultFormatDuration = (seconds: number): string => {
@@ -59,6 +60,7 @@ export function AudioChapterList({
   skipForward,
   skipBackward,
   castControls,
+  showTrackIndex = true,
   formatDuration = defaultFormatDuration,
 }: AudioChapterListProps) {
   const tPublicStoryPage = useTranslations('PublicStoryPage');
@@ -120,7 +122,8 @@ export function AudioChapterList({
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-2">
                   <div className="text-center sm:text-left">
                     <h3 className="font-semibold text-lg text-gray-900">
-                      {index + 1}. {chapter.chapterTitle}
+                      {showTrackIndex && `${index + 1}. `}
+                      {chapter.chapterTitle}
                     </h3>
                     {duration > 0 && (
                       <p className="text-sm text-gray-600">

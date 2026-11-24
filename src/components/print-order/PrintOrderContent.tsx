@@ -23,7 +23,7 @@ interface Story {
   storyId: string;
   title: string;
   synopsis: string;
-  authorId: string;
+  bookType?: string;
   frontCoverImageUrl?: string;
   chapterCount: number;
 }
@@ -77,7 +77,7 @@ export default function PrintOrderContent({ storyId }: PrintOrderContentProps) {
 
   const loadStoryData = async () => {
     try {
-      const response = await fetch(`/api/stories/${storyId}`);
+      const response = await fetch(`/api/print-requests/story/${storyId}`);
       const data = await response.json();
 
       if (response.ok && data.story) {

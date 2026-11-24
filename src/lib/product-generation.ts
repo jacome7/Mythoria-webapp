@@ -17,6 +17,10 @@ import { analyticsReference } from '@/lib/analytics/reference';
 import { conversions, type OpenAiConversion } from '@/lib/openai-ads/events';
 import { enqueueAdConversion } from '@/lib/openai-ads/outbox';
 import { sanitizeAdContext, type AdContext } from '@/lib/openai-ads/types';
+import {
+  encodePremiumSelfPrintPin,
+  type PremiumSelfPrintPin,
+} from '@/lib/premium-children-book/self-print';
 
 type ProductCreditEvent = 'audioBookGeneration' | 'selfPrinting';
 
@@ -48,6 +52,7 @@ const REWARD_TYPE_FOR_ACTION: Record<ProductGenerationAction, 'pdf' | 'audiobook
 };
 
 const ACTIVE_REQUEST_STATUSES = ['pending', 'queued', 'running'] as const;
+const REWARD_REQUEST_KEY_PREFIX = 'survey_reward:';
 
 export interface StartProductGenerationInput {
   actionType: ProductGenerationAction;
@@ -57,6 +62,7 @@ export interface StartProductGenerationInput {
   idempotencyKey: string;
   creditsSpent: number;
   creditEventType: ProductCreditEvent;
+  premiumSelfPrint?: PremiumSelfPrintPin;
   attributionId?: string;
   analyticsContext?: ClientAnalyticsContext;
   analyticsConsent?: AnalyticsConsent;
@@ -161,6 +167,12 @@ export async function startProductGeneration(
   if (!input.idempotencyKey.trim() || input.idempotencyKey.length > 255) {
     throw new Error('Invalid idempotency key');
   }
+  if (!input.funding && input.idempotencyKey.startsWith(REWARD_REQUEST_KEY_PREFIX)) {
+    throw new Error('Reserved product generation idempotency key');
+  }
+  if (input.premiumSelfPrint && input.actionType !== 'self_print') {
+    throw new Error('Invalid premium self-print product');
+  }
   if (input.funding) {
     if (input.creditsSpent !== 0) throw new Error('Reward-funded requests cannot spend credits');
   } else if (!Number.isInteger(input.creditsSpent) || input.creditsSpent <= 0) {
@@ -254,6 +266,9 @@ export async function startProductGeneration(
         userId: input.userId,
         idempotencyKey: input.idempotencyKey,
         creditsSpent: input.creditsSpent,
+        ...(input.premiumSelfPrint && {
+          queueReference: encodePremiumSelfPrintPin(input.storyId, input.premiumSelfPrint),
+        }),
         attributionId: input.attributionId,
         clientId: input.analyticsContext?.clientId,
         sessionId: input.analyticsContext?.sessionId,
@@ -323,6 +338,8 @@ async function startRewardFundedGeneration(
       linked.authorId === input.authorId &&
       linked.storyId === input.storyId &&
       linked.actionType === input.actionType &&
+      linked.fundingSource === 'survey_reward' &&
+      linked.rewardEntitlementId === entitlement.entitlementId &&
       (ACTIVE_REQUEST_STATUSES as readonly string[]).includes(linked.status)
     ) {
       return {
@@ -341,12 +358,21 @@ async function startRewardFundedGeneration(
   }
 
   const attempt = entitlement.attempts + 1;
-  const rewardKey = `survey_reward:${entitlement.entitlementId}:${attempt}`;
+  const rewardKey = `${REWARD_REQUEST_KEY_PREFIX}${entitlement.entitlementId}:${attempt}`;
   const [existingByKey] = await tx
     .select()
     .from(productGenerationRequests)
     .where(eq(productGenerationRequests.idempotencyKey, rewardKey));
   if (existingByKey) {
+    if (
+      existingByKey.authorId !== input.authorId ||
+      existingByKey.storyId !== input.storyId ||
+      existingByKey.actionType !== input.actionType ||
+      existingByKey.fundingSource !== 'survey_reward' ||
+      existingByKey.rewardEntitlementId !== entitlement.entitlementId
+    ) {
+      throw new SurveyRewardFundingError('entitlement_mismatch');
+    }
     return {
       request: existingByKey,
       remainingCredits: await readCreditBalance(tx, input.authorId),
@@ -381,6 +407,9 @@ async function startRewardFundedGeneration(
       userId: input.userId,
       idempotencyKey: rewardKey,
       creditsSpent: 0,
+      ...(input.premiumSelfPrint && {
+        queueReference: encodePremiumSelfPrintPin(input.storyId, input.premiumSelfPrint),
+      }),
       fundingSource: 'survey_reward',
       rewardEntitlementId: entitlement.entitlementId,
       attributionId: input.attributionId,
@@ -426,18 +455,30 @@ export async function markProductGenerationQueued(
       .from(productGenerationRequests)
       .where(eq(productGenerationRequests.runId, runId));
     if (!request) throw new Error('Product generation request not found');
-    if (request.status !== 'pending') return request;
+    const printStartedBeforeReply =
+      request.status === 'running' &&
+      request.actionType === 'self_print' &&
+      queueReference &&
+      request.queueReference === queueReference &&
+      request.adContext;
+    if (request.status !== 'pending' && !printStartedBeforeReply) return request;
 
     const queuedAt = new Date();
     const [queued] = await tx
       .update(productGenerationRequests)
       // The captured ad context (raw IP / user agent) moves to the conversion outbox below and
       // is cleared here so it is not retained on the request.
-      .set({ status: 'queued', queueReference, queuedAt, updatedAt: queuedAt, adContext: null })
+      .set({
+        status: printStartedBeforeReply ? 'running' : 'queued',
+        queueReference,
+        queuedAt: request.queuedAt ?? queuedAt,
+        updatedAt: queuedAt,
+        adContext: null,
+      })
       .where(
         and(
           eq(productGenerationRequests.runId, runId),
-          eq(productGenerationRequests.status, 'pending'),
+          eq(productGenerationRequests.status, request.status),
         ),
       )
       .returning();

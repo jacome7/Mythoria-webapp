@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { db } from '@/db';
 import { stories, authors } from '@/db/schema';
 import { eq, and } from 'drizzle-orm';
+import { hasPremiumBookMarker } from '@/lib/premium-children-book/contract';
 
 export async function GET(
   request: Request,
@@ -19,6 +20,7 @@ export async function GET(
         title: stories.title,
         synopsis: stories.synopsis,
         audiobookUri: stories.audiobookUri,
+        features: stories.features,
         targetAudience: stories.targetAudience,
         graphicalStyle: stories.graphicalStyle,
         novelStyle: stories.novelStyle,
@@ -39,18 +41,16 @@ export async function GET(
       )
       .limit(1);
 
-    console.log('[Public API] Query result:', story);
     if (!story.length) {
       console.log('[Public API] No story found for slug:', slug);
       return NextResponse.json({ error: 'Public story not found' }, { status: 404 });
     }
 
-    const storyData = story[0];
-    console.log('[Public API] Returning story data:', storyData);
+    const { features, audiobookUri, ...storyData } = story[0];
 
     return NextResponse.json({
       success: true,
-      story: storyData,
+      story: { ...storyData, audiobookUri: hasPremiumBookMarker(features) ? undefined : audiobookUri },
       accessLevel: 'public'
     });
 

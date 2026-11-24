@@ -68,6 +68,14 @@ export function readPremiumBookMarker(features: unknown): PremiumBookMarker | nu
 }
 
 const unit = z.number().min(0).max(1);
+const publicationField = z.object({ label: z.string().min(1), value: z.string().min(1) });
+const publicationDetails = z.object({
+  title: publicationField,
+  details: z.array(publicationField).length(4),
+  copyright: z.string().min(1),
+  rights: z.string().min(1),
+  promotion: z.string().min(1),
+});
 const pageSchema = z.object({
   number: z.number().int().min(1).max(33),
   kind: z.enum([
@@ -90,6 +98,8 @@ const pageSchema = z.object({
 
 export const premiumBookManifestSchema = z.object({
   ...markerBase,
+  editionLayout: z.literal('embedded-lettering-v2').optional(),
+  specification: publicationDetails.optional(),
   storyId: z.string().uuid(),
   ownerId: z.string().uuid(),
   revision: z.string().uuid(),

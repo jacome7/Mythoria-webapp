@@ -13,6 +13,7 @@ import {
 const storage = new Storage({ timeout: 15_000 });
 const maxManifestBytes = 1024 * 1024;
 const maxImageBytes = 24 * 1024 * 1024;
+const maxAudioBytes = 16 * 1024 * 1024;
 const openingKinds = ['title', 'copyright', 'dedication', 'synopsis', 'opener'];
 
 async function downloadVerifiedAsset(asset: PremiumBookAsset, maxBytes: number): Promise<Buffer> {
@@ -83,8 +84,28 @@ export async function loadPublishedPremiumBook(
   if (book.storyId !== storyId || book.ownerId !== ownerId || book.revision !== marker.revision) {
     throw new PremiumBookContractError('Premium book manifest identity mismatch');
   }
-  if (book.pages.length !== book.format.pageCount) {
+  const integrated = book.editionLayout === 'embedded-lettering-v2';
+  if (book.pages.length !== book.format.pageCount || (integrated && book.pages.length !== 33)) {
     throw new PremiumBookContractError('Premium book page count mismatch');
+  }
+  if (integrated) {
+    const spec = book.specification;
+    if (
+      !spec ||
+      spec.title.value !== book.opening.title ||
+      spec.details[0].value !== book.opening.author
+    ) {
+      throw new PremiumBookContractError('Missing or inconsistent premium publication details');
+    }
+    const canonical = [
+      ...[spec.title, ...spec.details].map(({ label, value }) => `${label}: ${value}`),
+      spec.copyright,
+      spec.rights,
+      spec.promotion,
+    ].join('\n');
+    if (canonical !== book.pages[1].text) {
+      throw new PremiumBookContractError('Premium publication details differ from the saved text');
+    }
   }
 
   for (const [index, page] of book.pages.entries()) {
@@ -99,33 +120,37 @@ export async function loadPublishedPremiumBook(
         page.link?.href !== `https://mythoria.pt${premiumInvitationPath(book.opening.locale)}` ||
         !title?.trim() ||
         !body?.trim() ||
-        page.reading ||
         page.artwork ||
         page.textBox
       ) {
         throw new PremiumBookContractError('Invalid premium book invitation');
       }
+      if (page.reading) assertStoryImage(storyId, page.reading, 'png');
       continue;
     }
     if (page.link) throw new PremiumBookContractError('Unexpected premium book page link');
-    if (index < 4) continue;
+    if (index < 4) {
+      if (integrated && (page.artwork || page.textBox)) {
+        throw new PremiumBookContractError('Unexpected artwork on a premium opening text page');
+      }
+      if (page.reading) assertStoryImage(storyId, page.reading, 'png');
+      continue;
+    }
     const box = page.textBox;
     const isSilentLeft =
       page.kind === 'spread' &&
       page.number % 2 === 0 &&
       book.spreads[(page.number - 6) / 2]?.textLayout === 'right_only';
-    if (
-      !page.reading ||
-      !page.artwork ||
-      (isSilentLeft
-        ? page.text !== '' || box !== undefined
-        : !page.text.trim() ||
-          !box ||
-          box.width <= 0 ||
-          box.height <= 0 ||
-          box.x + box.width > 1 ||
-          box.y + box.height > 1)
-    ) {
+    const hasValidText = isSilentLeft ? page.text === '' : Boolean(page.text.trim());
+    const hasValidBox =
+      integrated || isSilentLeft
+        ? box === undefined
+        : box &&
+          box.width > 0 &&
+          box.height > 0 &&
+          box.x + box.width <= 1 &&
+          box.y + box.height <= 1;
+    if (!page.reading || !page.artwork || !hasValidText || !hasValidBox) {
       throw new PremiumBookContractError('Incomplete premium book illustrated page');
     }
     assertStoryImage(storyId, page.reading, 'png');
@@ -163,4 +188,8 @@ export async function downloadPremiumReadingImage(storyId: string, asset: Premiu
     bytes: await downloadVerifiedAsset(asset, maxImageBytes),
     contentType: extension === 'png' ? 'image/png' : 'image/jpeg',
   };
+}
+
+export function downloadPremiumPageAudio(asset: PremiumBookAsset) {
+  return downloadVerifiedAsset(asset, maxAudioBytes);
 }

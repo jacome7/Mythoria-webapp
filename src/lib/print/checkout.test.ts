@@ -1,5 +1,5 @@
 /** @jest-environment node */
-import { creditLedger, printRequests } from '@/db/schema';
+import { creditLedger, printFulfillments, printRequests } from '@/db/schema';
 import { LULU_SKUS } from '@/lib/lulu/products';
 import { PREMIUM_SQUARE_PACKAGE } from './premium-edition';
 
@@ -30,6 +30,7 @@ jest.mock('@/db', () => ({
   db: {
     transaction: (...args: unknown[]) => mockTransaction(...args),
     select: () => mockBuilder(),
+    update: () => mockBuilder(),
   },
 }));
 jest.mock('@/lib/premium-children-book/storage', () => ({
@@ -44,6 +45,7 @@ jest.mock('@/config/environment', () => ({
 }));
 
 import { getPublicPrintOptions, startPrintCheckout } from './checkout';
+import { createStaffPrintProof } from './staff-proof';
 
 const storyId = '32c3cb83-00c2-4933-972b-916ec8065f18';
 const shippingId = '8d9f18f9-6a1f-4acd-ac13-a4da2b998cee';
@@ -108,13 +110,13 @@ describe('paid print checkout recovery', () => {
 
   afterEach(() => jest.restoreAllMocks());
 
-  function configureSquare(approved = true) {
+  function configureSquare(approved = true, mode = 'manual') {
     process.env.LULU_PREMIUM_SQUARE_POD_PACKAGE_ID = PREMIUM_SQUARE_PACKAGE;
     process.env.LULU_PRINT_ENVIRONMENT = 'sandbox';
     process.env.LULU_PRINT_CLIENT_KEY = 'fixture';
     process.env.LULU_PRINT_SECRET_VERSION = 'projects/test/secrets/test/versions/1';
     process.env.LULU_PRINT_CONTACT_EMAIL = 'test@example.test';
-    if (approved) process.env.PREMIUM_SQUARE_PRINT_APPROVAL = 'sandbox:physical-proof-1';
+    if (approved) process.env.PREMIUM_SQUARE_PRINT_APPROVAL = `${mode}:physical-proof-1`;
     else delete process.env.PREMIUM_SQUARE_PRINT_APPROVAL;
   }
 
@@ -126,9 +128,9 @@ describe('paid print checkout recovery', () => {
   ] as const)(
     'resolves square options with default %s and physical approval %s',
     async (defaultProvider, approved) => {
-      configureSquare(approved);
+      configureSquare(approved, defaultProvider === 'none' ? 'manual' : 'sandbox');
       mockStatements.push(
-        [{ defaultProvider, maxEurPerCopy: '25' }],
+        [{ defaultProvider, maxEurPerCopy: defaultProvider === 'none' ? '0' : '25' }],
         [{ credits: 12, active: true }],
         [squareStory],
         fees,
@@ -140,6 +142,39 @@ describe('paid print checkout recovery', () => {
         squareEditionRevision: approved ? revision : undefined,
       });
       expect(mockLoadManifest).toHaveBeenCalledTimes(Number(approved));
+    },
+  );
+
+  it('keeps a matching Lulu approval valid when only the default changes to manual', async () => {
+    configureSquare(true, 'sandbox');
+    for (const defaultProvider of ['lulu', 'none']) {
+      mockStatements.push(
+        [{ defaultProvider, maxEurPerCopy: '25' }],
+        [{ credits: 12, active: true }],
+        [squareStory],
+        fees,
+      );
+      await expect(getPublicPrintOptions({ storyId, authorId: 'author' })).resolves.toMatchObject({
+        luluDefault: defaultProvider === 'lulu',
+        hardcoverAvailable: true,
+        squareEditionRevision: revision,
+      });
+    }
+  });
+
+  it.each(['manual', 'production'])(
+    'does not allow Lulu checkout in sandbox with a %s approval',
+    async (approval) => {
+      configureSquare(true, approval);
+      mockStatements.push(
+        [{ defaultProvider: 'lulu', maxEurPerCopy: '25' }],
+        [{ credits: 12, active: true }],
+        [squareStory],
+      );
+      await expect(getPublicPrintOptions({ storyId, authorId: 'author' })).resolves.toMatchObject({
+        hardcoverAvailable: false,
+      });
+      expect(mockLoadManifest).not.toHaveBeenCalled();
     },
   );
 
@@ -183,9 +218,9 @@ describe('paid print checkout recovery', () => {
   }
 
   it.each([32, 33])(
-    'freezes the %i-page edition at the existing hardcover price with None selected',
+    'freezes the %i-page manual edition at the existing hardcover price with None selected',
     async (pageCount) => {
-      configureSquare();
+      configureSquare(true, pageCount === 32 ? 'sandbox' : 'manual');
       mockLoadManifest.mockResolvedValue({ format: { pageCount } });
       stageSquareCheckout();
       const request = { id: orderId, storyId, shippingId, requestedAt: new Date() };
@@ -211,12 +246,18 @@ describe('paid print checkout recovery', () => {
             extraChapters: 0,
             premiumEdition: {
               profile: 'premium_square_casewrap',
-              podPackageId: PREMIUM_SQUARE_PACKAGE,
               pageCount,
-              luluEnvironment: 'sandbox',
               premiumBook,
             },
           }),
+        }),
+      );
+      expect(mockValues).toHaveBeenCalledWith(
+        expect.anything(),
+        expect.objectContaining({
+          provider: 'manual',
+          binding: 'hardcover',
+          creditsSpent: 19,
         }),
       );
       expect(mockValues).toHaveBeenCalledWith(
@@ -388,5 +429,69 @@ describe('paid print checkout recovery', () => {
     await expect(startPrintCheckout(form, author)).resolves.toMatchObject({ duplicate: true });
     expect(mockFetch).toHaveBeenCalledTimes(3);
     expect(mockInserts.mock.calls.flat().filter((table) => table === creditLedger)).toHaveLength(1);
+  });
+
+  it('links exactly one staff copy while checkout is disabled and reuses the reservation after a lost ticket response', async () => {
+    delete process.env.PREMIUM_SQUARE_PRINT_APPROVAL;
+    const actor = 'operator@example.test';
+    const shippingAddress = {
+      name: 'Staff',
+      street1: 'Example 1',
+      city: 'Lisbon',
+      postcode: '1000-001',
+      country_code: 'PT',
+      phone_number: '+351210000000',
+      email: actor,
+    };
+    const input = { storyId, revision, shippingAddress };
+    const request = {
+      id: orderId,
+      storyId,
+      requestedAt: new Date(),
+      printingOptions: { staffProofRevision: revision, requestedBy: actor },
+    };
+    const fulfillment = {
+      authorId: squareStory.authorId,
+      binding: 'hardcover',
+      copies: 1,
+      creditsSpent: 0,
+      provider: 'manual',
+    };
+    mockStatements.push(
+      [],
+      [squareStory],
+      [{ id: 'provider', availableCountries: ['PT'] }],
+      [request],
+      [fulfillment],
+    );
+    mockFetch.mockRejectedValueOnce(new Error('connection dropped after ticket creation'));
+    await expect(createStaffPrintProof(input, actor)).rejects.toMatchObject({
+      code: 'print_ticket_pending',
+    });
+
+    mockStatements.push([{ request, fulfillment }], undefined);
+    mockFetch.mockResolvedValueOnce(
+      Response.json({
+        id: ticketId,
+        metadata: { printRequestId: orderId, staffProofRevision: revision },
+      }),
+    );
+    await expect(createStaffPrintProof(input, actor)).resolves.toEqual({ ticketId });
+
+    mockStatements.push([{ request, fulfillment: { ...fulfillment, ticketId } }]);
+    await expect(createStaffPrintProof(input, actor)).resolves.toEqual({ ticketId });
+    expect(mockInserts.mock.calls.flat()).toEqual([printRequests, printFulfillments]);
+    expect(mockValues).toHaveBeenCalledWith(
+      printFulfillments,
+      expect.objectContaining({ ...fulfillment, shippingSnapshot: shippingAddress }),
+    );
+    expect(mockFetch.mock.calls).toHaveLength(2);
+    for (const [url, options] of mockFetch.mock.calls) {
+      expect(String(url)).toBe('https://admin.test/api/tickets/staff-print');
+      expect(JSON.parse(options.body)).toMatchObject({
+        numberOfCopies: 1,
+        orderDetails: { printRequestId: orderId, proofOnly: { revision, requestedBy: actor } },
+      });
+    }
   });
 });

@@ -5,6 +5,11 @@ import { chapterService } from '@/db/services'; // storyService accessed through
 import { getStoryImagesFromStorage } from '@/utils/storageUtils';
 import { hasPremiumBookMarker, premiumBookType } from '@/lib/premium-children-book/contract';
 import { premiumBookImagePath } from '@/lib/premium-children-book/reader';
+import {
+  getCurrentPremiumAudiobook,
+  getPremiumAudioMetadata,
+  getPublishedPremiumRevision,
+} from '@/lib/premium-children-book/audiobook';
 
 // Transform audiobookUri from database format to frontend format
 function transformAudiobookUri(audiobookUri: unknown):
@@ -117,6 +122,11 @@ export async function GET(
     }
 
     if (hasPremiumBookMarker(story.features)) {
+      const premiumRevision =
+        story.status === 'published' ? getPublishedPremiumRevision(story.features) : undefined;
+      const audiobook = premiumRevision
+        ? getCurrentPremiumAudiobook(storyId, story.features, story.audiobookUri)
+        : null;
       return NextResponse.json(
         {
           story: {
@@ -126,7 +136,10 @@ export async function GET(
             isPublic: story.isPublic,
             slug: story.slug,
             bookType: premiumBookType,
-            coverUri: story.status === 'published' ? premiumBookImagePath(storyId, 'front') : null,
+            coverUri: premiumRevision ? premiumBookImagePath(storyId, 'front') : null,
+            targetAudience: story.targetAudience,
+            premiumRevision,
+            premiumAudio: getPremiumAudioMetadata(audiobook),
             chapterCount: 0,
           },
           chapters: [],

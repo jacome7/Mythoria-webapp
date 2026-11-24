@@ -74,6 +74,7 @@ jest.mock('@/db', () => ({
   },
 }));
 jest.mock('@/lib/lulu/client', () => ({
+  luluConfigured: () => true,
   submitLuluJob: (...args: unknown[]) => mockSubmit(...args),
   LuluHttpError: class extends Error {
     constructor(public status: number) {
@@ -266,10 +267,10 @@ describe('Lulu release safety', () => {
     expect(mockSubmit).not.toHaveBeenCalled();
   });
 
-  it('forces square orders through Lulu and requires a hold for edition corrections', async () => {
+  it('prepares a new version for manual square dispatch and requires a hold for edition corrections', async () => {
     const actor = 'operator@example.test';
-    await expect(revisePrintProof(squareOrder(), 'manual')).rejects.toMatchObject({
-      code: 'square_provider_required',
+    await expect(revisePrintProof(squareOrder(), 'manual')).resolves.toMatchObject({
+      fulfillment: { provider: 'manual', proofVersion: 2, proof: null, quote: null },
     });
     await expect(
       reserveManualPrint(
@@ -277,7 +278,7 @@ describe('Lulu release safety', () => {
         { partnerId: id, proofVersion: 1, checkedInbox: true },
         actor,
       ),
-    ).rejects.toMatchObject({ code: 'square_provider_required' });
+    ).rejects.toMatchObject({ code: 'manual_print_not_ready' });
     await expect(
       correctSquareEdition(
         squareOrder(),
@@ -289,7 +290,68 @@ describe('Lulu release safety', () => {
         actor,
       ),
     ).rejects.toMatchObject({ code: 'square_correction_not_ready' });
-    expect(mockWrite).not.toHaveBeenCalled();
+    expect(mockWrite).toHaveBeenCalledTimes(1);
+    expect(mockSubmit).not.toHaveBeenCalled();
+  });
+
+  it('requires emailed proof for paid square manual release and skips customer email for a staff proof', async () => {
+    const actor = 'operator@example.test';
+    const approval = { partnerId: id, proofVersion: 1, checkedInbox: true as const };
+    const paid = squareOrder({ provider: 'manual', proofSentAt: null as never });
+    await expect(reserveManualPrint(paid, approval, actor)).rejects.toMatchObject({
+      code: 'manual_print_not_ready',
+    });
+
+    const staff = squareOrder({ provider: 'manual', proofSentAt: null as never, copies: 1 });
+    staff.request.printingOptions = {
+      ...(staff.request.printingOptions as object),
+      staffProofRevision: id,
+    };
+    staff.fulfillment = {
+      ...staff.fulfillment,
+      status: 'pending',
+      ticketId: id,
+      proof: null,
+      quote: null,
+    };
+    mockCurrentOrder = staff;
+    mockRender.mockResolvedValue({ ...proof, pageCount: 32 });
+    const email = jest.spyOn(global, 'fetch');
+    const prepared = await processPrintProof(id);
+    expect(mockRender).toHaveBeenCalledWith(
+      expect.objectContaining({ provider: 'manual', binding: 'hardcover', premiumPageCount: 32 }),
+    );
+    expect(prepared.fulfillment).toMatchObject({ status: 'proof_ready', proofSentAt: null });
+    expect(email).not.toHaveBeenCalled();
+    expect(mockQuote).not.toHaveBeenCalled();
+    await expect(reserveManualPrint(prepared, approval, actor)).resolves.toMatchObject({
+      squareOrder: { proofOnly: true, copies: 1 },
+    });
+    expect(mockEnsureAvailable).toHaveBeenCalledTimes(2);
+    expect(mockSubmit).not.toHaveBeenCalled();
+  });
+
+  it('prepares Lulu for an existing manual order even when public square checkout is closed', async () => {
+    process.env.LULU_PRINT_ENVIRONMENT = 'sandbox';
+    process.env.LULU_PREMIUM_SQUARE_POD_PACKAGE_ID = PREMIUM_SQUARE_PACKAGE;
+    delete process.env.PREMIUM_SQUARE_PRINT_APPROVAL;
+    const paid = squareOrder({ provider: 'manual' });
+    const options = paid.request.printingOptions as { premiumEdition: Record<string, unknown> };
+    delete options.premiumEdition.luluEnvironment;
+    delete options.premiumEdition.podPackageId;
+    mockCurrentOrder = paid;
+    await expect(revisePrintProof(paid, 'lulu')).resolves.toMatchObject({
+      fulfillment: { provider: 'lulu', status: 'pending', proofVersion: 2 },
+      request: {
+        printingOptions: {
+          premiumEdition: {
+            luluEnvironment: 'sandbox',
+            podPackageId: PREMIUM_SQUARE_PACKAGE,
+            premiumBook: { revision: id },
+          },
+        },
+      },
+    });
     expect(mockSubmit).not.toHaveBeenCalled();
   });
 
