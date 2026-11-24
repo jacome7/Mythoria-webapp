@@ -1,5 +1,5 @@
 // AUTO-GENERATED FILE. Run: npm run i18n:keys
-// Total keys: 3261
+// Total keys: 3271
 export type TranslationKey =
   | 'AIImageEditor.buttons.applyPhoto'
   | 'AIImageEditor.cancelButton'
@@ -1436,7 +1436,9 @@ export type TranslationKey =
   | 'PrintOrder.errors.storyNotFound'
   | 'PrintOrder.errors.storyNotPublished'
   | 'PrintOrder.formats.paperback'
+  | 'PrintOrder.payment.addressTooLong'
   | 'PrintOrder.payment.basePrice'
+  | 'PrintOrder.payment.binding'
   | 'PrintOrder.payment.confirmOrder'
   | 'PrintOrder.payment.confirmOrderDescription'
   | 'PrintOrder.payment.copiesLabel'
@@ -1446,6 +1448,7 @@ export type TranslationKey =
   | 'PrintOrder.payment.extraBookCopies'
   | 'PrintOrder.payment.extraChapters'
   | 'PrintOrder.payment.getMoreCredits'
+  | 'PrintOrder.payment.hardcoverTitle'
   | 'PrintOrder.payment.included'
   | 'PrintOrder.payment.includesFourChapters'
   | 'PrintOrder.payment.insufficientCreditsTitle'
@@ -1454,11 +1457,18 @@ export type TranslationKey =
   | 'PrintOrder.payment.numberOfCopies'
   | 'PrintOrder.payment.orderSummary'
   | 'PrintOrder.payment.paperbackDescriptionWithChapters'
+  | 'PrintOrder.payment.postalCodeRequired'
   | 'PrintOrder.payment.printOrderFee'
+  | 'PrintOrder.payment.recipient'
+  | 'PrintOrder.payment.recipientEmail'
+  | 'PrintOrder.payment.recipientName'
+  | 'PrintOrder.payment.recipientPhone'
   | 'PrintOrder.payment.shipping'
   | 'PrintOrder.payment.shippingCost'
   | 'PrintOrder.payment.softcoverDescription'
   | 'PrintOrder.payment.softcoverTitle'
+  | 'PrintOrder.payment.subdivisionRequired'
+  | 'PrintOrder.payment.taxId'
   | 'PrintOrder.payment.total'
   | 'PrintOrder.payment.yourCredits'
   | 'PrintOrder.signIn'

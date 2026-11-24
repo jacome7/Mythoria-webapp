@@ -1,0 +1,40 @@
+# Paid print orders and customer proofs
+
+## Staff workflow
+
+Open **Tickets → Print fulfillment settings** in Admin to set the default provider, maximum landed EUR per copy, and hardcover credit price. The initial provider is **None (manual fulfillment)**. The default selects the production profile for new orders. A physical print purchase pays Mythoria with credits. A Lulu job can incur a separate supplier charge, depending on the payment settings in Mythoria’s Lulu account.
+
+1. The paid order appears on a print-request ticket. Wait for the current proof version to show successful email delivery. The purchaser receives the existing print-order confirmation with the interior PDF and wraparound cover. For oversized pairs the email includes private download links. The configured Reply-To mailbox receives customer replies.
+2. Check that mailbox using the order reference before dispatch. Staff choose the review period. Place the ticket on hold if there is a concern. Record the correction, prepare a revised proof, and check that the new version has been sent. For a proposed shipping-address correction, obtain customer confirmation and record the corrected details on the held ticket.
+3. For a manual order, dispatch the reviewed pair to the printer from the linked ticket. For an individual Lulu order choose **Prepare for Lulu**, even when the default is None. The different print profile needs its own cover and interior. Review the replacement proof, binding, copy count, shipping service, and total supplier quote.
+4. **Submit to Lulu** releases the current version. Check the inbox and confirm the displayed amount. A hold, changed quote, excessive cost per copy, failed QA, or missing proof delivery prevents release. Ticket resolution is a separate staff action.
+5. If a supplier call times out, reconcile the existing job and line references. Check the Developer Portal before considering any replacement. An unpaid supplier order can still exist. A manufacturing error or carrier delay needs investigation. Retain identifiers, actual costs, dates, tracking details and photos for supplier claims. Confirm cancellation and refund status separately with Lulu. Track the claims deadline from the shipment date.
+
+## Configuration and deployment order
+
+- Provision a dedicated private Cloud Storage bucket, separate from public story assets. Configure the same `PRINT_PROOF_BUCKET` on SGW and WebApp. Give SGW object creation and read access, and WebApp and Notification Engine read access. Configure WebApp’s signing identity with the ability to sign GCS download URLs. Restrict support access and apply the organization’s retention policy to both proof files and attachment snapshots in the email delivery ledger.
+- Deploy Notification Engine’s proof endpoint, SGW’s authenticated order-proof renderer and its native print dependencies, and the ticket-aware Admin service before switching paid checkout to the new code. Apply the WebApp-owned additive Drizzle migration using its normal reviewed migration procedure. Keep unrelated working-tree changes out of release artifacts.
+- Stage the Admin revision first. Existing WebApp traffic continues using the legacy ticket endpoint. The new WebApp posts to `/api/tickets/paid-print` with `fulfillmentVersion: 1` and verifies the returned print request reference before charging credits. Set Admin’s `PRINT_INTERNAL_AUDIENCE` at the WebApp cutover when the command API is available.
+- Configure `PRINT_INTERNAL_AUDIENCE` identically on Admin and WebApp. Set WebApp’s `PRINT_ADMIN_SERVICE_ACCOUNT` and `PRINT_SCHEDULER_SERVICE_ACCOUNT` to the respective caller identities. The WebApp, SGW, Admin and Notification Engine service URLs and service API keys must match the target environment. Configure the print variables on the target Cloud Run services. WebApp Cloud Build preserves those runtime values.
+- Checkout requires the private proof bucket, both service accounts, the internal audience and service API keys before it can accept payment. Configure the services, apply migration `0052_print_fulfillment` and enable the proof worker before directing purchases to the new revision.
+- Create the proof worker schedule using WebApp’s `scripts/setup-print-scheduler.ps1` with project, region, WebApp URL, audience, and scheduler identity. Use `-WhatIf` to preview. It posts to `/api/internal/print/jobs/reconcile` every five minutes. Allow the scheduler identity to invoke the endpoint. Verify one synthetic manual checkout produces one ticket, one debit and one confirmation. The worker never authorizes supplier purchases.
+- For Lulu, set `LULU_PRINT_ENVIRONMENT` to `sandbox` or `production`, the matching `LULU_PRINT_CLIENT_KEY`, `LULU_PRINT_CONTACT_EMAIL` and `LULU_PRINT_SECRET_VERSION`. Grant the WebApp runtime identity Secret Accessor on that secret alone. Production’s resource is `projects/803421888801/secrets/LULU_PRINT_CLIENT_SECRET/versions/latest`. Sandbox requires its own key and separate secret. Configure one environment per deployment/database to keep jobs, proof URLs and webhook signatures isolated.
+- Set `LULU_PAPERBACK_POD_PACKAGE_ID` to `0583X0827.FC.PRE.PB.080CW444.MXX` (32–800 interior pages) and `LULU_HARDCOVER_POD_PACKAGE_ID` to `0583X0827.FC.PRE.CW.080CW444.MXX` (24–800). Both are A5, Premium Color, matte, coated white stock. Set a positive inclusive EUR-per-copy ceiling. Activate `printedHardCover` in credit pricing only after setting the customer price. Keep the default **None** until operations chooses Lulu.
+- Register the environment’s HTTPS WebApp callback at `/api/print/lulu/webhook` for `PRINT_JOB_STATUS_CHANGED` in Lulu. Verify a signed sandbox test event. Check webhook activity, failed submissions, overdue proofs, email delivery outcomes, rejected files, pending supplier payments and uncertain orders. Reconcile missed updates against the supplier job details.
+- Before enabling production release, exercise the synthetic sandbox lifecycle. Obtain approval to order a physical paperback and casewrap proof. Check pagination, gutters, bleed, color, spine and hinges, packing slip, return address, tracked shipping, landed cost and delivery time. Confirm supplier payment mode, billing, privacy terms and retention with operations.
+
+## Rollback and existing orders
+
+Switch the default to None to prepare new orders for manual production. Continue processing paid proofs, monitoring the reply inbox and reconciling submitted or uncertain jobs. Keep the immutable file pair available while a supplier may still fetch it. Legacy tickets lacking a verified paid-order link require the original manual workflow. Never attach the latest story-level PDFs to a new-format paid order.
+
+Keep the WebApp command API and proof worker available for paid tickets through rollback. An older checkout tab receives a reload prompt on the new server. A new checkout tab sends a versioned request body that the previous server rejects before charging credits.
+
+## Verification
+
+Run each service's tests, typecheck, lint and build from that service directory. Run WebApp locale parity as well. The five-language Notification Engine tests render the confirmation and revised-proof subjects and check both attachment and link delivery.
+
+The WebApp PostgreSQL concurrency test opts in through `PRINT_TEST_DATABASE_URL`. Use a disposable loopback database named `print_test` on a non-default port, initialized with the existing core schema and the WebApp print migration. The test exercises duplicate checkout and simultaneous release. Historical core migrations assume pre-existing schema objects when starting with an empty database.
+
+See the [sandbox smoke instructions](lulu-sandbox.md) for synthetic supplier verification, including recovery of an uncertain sandbox create. Mocked checks cover dispatch control and request boundaries. Use physical proofs and the intended Lulu account to verify print output and supplier payment settings.
+
+[Official Lulu API and environment contracts](https://api.lulu.com/docs/)

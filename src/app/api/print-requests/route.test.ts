@@ -1,114 +1,71 @@
 /** @jest-environment node */
 import { NextRequest } from 'next/server';
+import { PrintError } from '@/lib/print/contracts';
 
-const mockResults: unknown[] = [];
+const mockStartPrintCheckout = jest.fn();
 const mockGetCurrentAuthor = jest.fn();
 const mockEnqueueAdConversion = jest.fn();
-const mockTriggerPrintGeneration = jest.fn();
-const mockAdContext = {
-  adConsent: 'denied',
-  sourceUrl: 'https://mythoria.pt',
-  capturedAt: '2026-11-16T00:00:00.000Z',
-};
+const storyId = '32c3cb83-00c2-4933-972b-916ec8065f18';
+const shippingId = '8d9f18f9-6a1f-4acd-ac13-a4da2b998cee';
+const intentId = 'bac88002-1d44-4451-9285-d4bd2485a4ec';
 
-/** Chainable Drizzle stand-in: builder calls return itself; awaiting yields the next result. */
-function mockChain(): unknown {
-  const proxy: unknown = new Proxy(
-    {},
-    {
-      get(_target, prop) {
-        if (prop === 'then') {
-          const result = mockResults.shift();
-          return (resolve: (value: unknown) => unknown, reject: (reason: unknown) => unknown) =>
-            Promise.resolve(result).then(resolve, reject);
-        }
-        return () => proxy;
-      },
-    },
-  );
-  return proxy;
-}
-
-const mockDb = {
-  select: () => mockChain(),
-  insert: () => mockChain(),
-  delete: () => mockChain(),
-};
-
-jest.mock('@/db', () => ({
-  get db() {
-    return mockDb;
-  },
-}));
+jest.mock('@/db', () => ({ db: {} }));
 jest.mock('@/lib/auth', () => ({ getCurrentAuthor: () => mockGetCurrentAuthor() }));
-jest.mock('@/db/services', () => ({
-  creditService: {
-    getAuthorCreditBalance: jest.fn(async () => 100),
-    deductCredits: jest.fn(async () => undefined),
-  },
-}));
-jest.mock('@/config/environment', () => ({
-  getEnvironmentConfig: () => ({
-    admin: { apiUrl: 'https://admin.test', apiKey: 'key' },
-    notification: {},
-  }),
-}));
-jest.mock('@/lib/print-pubsub', () => ({
-  PrintPubSubService: jest.fn(() => ({ triggerPrintGeneration: mockTriggerPrintGeneration })),
+jest.mock('@/lib/print/checkout', () => ({
+  ...jest.requireActual('@/lib/print/checkout'),
+  startPrintCheckout: (...args: unknown[]) => mockStartPrintCheckout(...args),
 }));
 jest.mock('@/lib/analytics/server-context', () => ({
   resolveServerAnalyticsContext: jest.fn(async () => ({})),
 }));
-jest.mock('@/lib/product-generation', () => ({
-  printOrderRequestedOutboxEntry: () => undefined,
-}));
+jest.mock('@/lib/product-generation', () => ({ printOrderRequestedOutboxEntry: () => undefined }));
 jest.mock('@/lib/openai-ads/outbox', () => ({
   enqueueAdConversion: (...args: unknown[]) => mockEnqueueAdConversion(...args),
 }));
 jest.mock('@/lib/openai-ads/context', () => ({
-  resolveAdContextSafely: jest.fn(async () => mockAdContext),
+  resolveAdContextSafely: jest.fn(async () => ({ adConsent: 'denied' })),
 }));
 
 import { POST } from './route';
 
-describe('POST /api/print-requests (OpenAI Ads)', () => {
-  const fetchMock = jest.fn();
-  const requestedAt = new Date('2026-11-16T10:00:00.000Z');
-
-  beforeEach(() => {
-    jest.clearAllMocks();
-    mockResults.length = 0;
-    global.fetch = fetchMock as unknown as typeof fetch;
-    jest.spyOn(console, 'log').mockImplementation(() => undefined);
-    jest.spyOn(console, 'warn').mockImplementation(() => undefined);
-    mockGetCurrentAuthor.mockResolvedValue({
-      authorId: 'author-1',
-      clerkUserId: 'clerk-1',
-      email: 'a@example.com',
-      displayName: 'A',
-    });
+const validBody = {
+  storyId,
+  shippingId,
+  intentId,
+  totalCost: 30,
+  numberOfCopies: 3,
+  printingOption: { serviceCode: 'printedSoftCover' },
+};
+const request = (input: unknown, legacy = false) =>
+  new NextRequest('https://mythoria.pt/api/print-requests', {
+    method: 'POST',
+    body: JSON.stringify(legacy ? input : { checkout: input }),
   });
 
-  afterEach(() => jest.restoreAllMocks());
+describe('POST /api/print-requests', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+    mockGetCurrentAuthor.mockResolvedValue({ authorId: 'author-1', clerkUserId: 'clerk-1' });
+  });
 
-  it('enqueues print_order_requested with the copies and returns its event id', async () => {
-    mockResults.push(
-      [{ storyId: 'story-1', title: 'Story' }],
-      [{ id: 'provider-1', availableCountries: ['PT'], isActive: true }],
-      [{ id: 'print-1', requestedAt }],
-      [{ id: 'print-1', status: 'requested' }],
-    );
-    fetchMock.mockResolvedValue({ ok: true, json: async () => ({ id: 'ticket-1' }) });
+  it('uses the same conversion ID on idempotent checkout replay', async () => {
+    const requestedAt = new Date('2026-11-16T10:00:00.000Z');
+    const order = {
+      request: { id: 'print-1', storyId, status: 'requested', requestedAt },
+      fulfillment: { creditsSpent: 30, copies: 3 },
+    };
+    mockStartPrintCheckout
+      .mockResolvedValueOnce({ ...order, duplicate: false })
+      .mockResolvedValueOnce({ ...order, duplicate: true });
 
-    const response = await POST(
-      new NextRequest('https://mythoria.pt/api/print-requests', {
-        method: 'POST',
-        body: JSON.stringify({ storyId: 'story-1', totalCost: 30, numberOfCopies: 3 }),
-      }),
-    );
-
-    expect(await response.json()).toMatchObject({ success: true, adEventId: 'print_print-1' });
-    expect(mockEnqueueAdConversion).toHaveBeenCalledWith(mockDb, {
+    for (let attempt = 0; attempt < 2; attempt++) {
+      const response = await POST(request(validBody));
+      expect(await response.json()).toMatchObject({ success: true, adEventId: 'print_print-1' });
+    }
+    expect(mockStartPrintCheckout).toHaveBeenCalledTimes(2);
+    expect(mockStartPrintCheckout.mock.calls[0][0]).toEqual(validBody);
+    expect(mockStartPrintCheckout.mock.calls[1][0]).toEqual(validBody);
+    expect(mockEnqueueAdConversion).toHaveBeenCalledWith(expect.anything(), {
       conversion: expect.objectContaining({
         customEventName: 'print_order_requested',
         eventId: 'print_print-1',
@@ -117,30 +74,36 @@ describe('POST /api/print-requests (OpenAI Ads)', () => {
         }),
       }),
       authorId: 'author-1',
-      adContext: mockAdContext,
+      adContext: { adConsent: 'denied' },
       occurredAt: requestedAt,
     });
   });
 
-  it('enqueues nothing when the ticket fails and the request is rolled back', async () => {
-    mockResults.push(
-      [{ storyId: 'story-1' }],
-      [{ id: 'provider-1', availableCountries: ['PT'], isActive: true }],
-      [{ id: 'print-1', requestedAt }],
-      [{ id: 'print-1' }],
-      undefined,
-    );
-    jest.spyOn(console, 'error').mockImplementation(() => undefined);
-    fetchMock.mockResolvedValue({ ok: false, status: 500 });
+  it.each([
+    { totalCost: -30 },
+    { numberOfCopies: 11 },
+    { shippingId: undefined },
+    { intentId: undefined },
+  ])('rejects invalid checkout before accessing the order service (%j)', async (change) => {
+    const response = await POST(request({ ...validBody, ...change }));
+    expect(response.status).toBe(400);
+    expect(mockStartPrintCheckout).not.toHaveBeenCalled();
+    expect(mockEnqueueAdConversion).not.toHaveBeenCalled();
+  });
 
-    const response = await POST(
-      new NextRequest('https://mythoria.pt/api/print-requests', {
-        method: 'POST',
-        body: JSON.stringify({ storyId: 'story-1', totalCost: 30 }),
-      }),
+  it('does not emit a conversion when the order was not paid', async () => {
+    mockStartPrintCheckout.mockRejectedValue(
+      new PrintError('insufficient_credits', 'Insufficient credits.', 402),
     );
+    expect((await POST(request(validBody))).status).toBe(402);
+    expect(mockEnqueueAdConversion).not.toHaveBeenCalled();
+  });
 
-    expect(response.status).toBe(500);
+  it('tells a stale checkout tab to reload before accessing the order service', async () => {
+    const response = await POST(request({ ...validBody, intentId: undefined }, true));
+    expect(response.status).toBe(409);
+    expect(await response.json()).toMatchObject({ error: expect.stringMatching(/reload/i) });
+    expect(mockStartPrintCheckout).not.toHaveBeenCalled();
     expect(mockEnqueueAdConversion).not.toHaveBeenCalled();
   });
 });

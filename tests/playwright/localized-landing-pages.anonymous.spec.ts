@@ -143,7 +143,10 @@ for (const landing of localizedLandings) {
         ),
       ).toBeVisible();
 
-      const primaryCta = page.locator('a[data-cta-placement="hero_primary"]');
+      const primaryCta = page
+        .locator('#landing-page-hero')
+        .getByRole('link')
+        .and(page.locator('[data-cta-placement="hero_primary"]'));
       await expect(primaryCta).toHaveAttribute(
         'href',
         new RegExp(`^/${landing.locale}/sign-up\\?redirect=`),

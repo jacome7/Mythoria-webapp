@@ -40,11 +40,13 @@ Both flows use Mythoria credits, require a **published** story, and are availabl
   - **Shipping cost**: flat shipping service credit value.
 - If your credits are insufficient, a warning appears with a link to buy more credits.
 
-**Order confirmation**
+**Order confirmation and print proofs**
 
-- You confirm the order in a modal before submission.
-- On success, you are returned to **My Stories** while printing continues in the background.
-- You receive an email confirmation with your order details.
+Checkout shows payment confirmation and a link back to My Stories. Once the order-specific files pass QA, the purchaser receives the existing confirmation email with the exact interior and cover PDFs. Oversized files use private download links. Customers can reply with their order reference if the pagination or cover needs correction.
+
+The default production provider is None. An administrator may prepare a Lulu-specific edition on an individual ticket. Preparing files and sending proofs never places a supplier order. Staff check the reply inbox and release a reviewed edition from its ticket. Hardcover requires Lulu as the default and an active hardcover price.
+
+See the [paid print operations runbook](../PRINT_FULFILLMENT.md) for provider settings, secure file storage, scheduler setup, supplier payment, and recovery. See [sandbox verification](../lulu-sandbox.md) for a synthetic supplier smoke test.
 
 ### Self-print (PDF download)
 
@@ -88,14 +90,10 @@ Both flows use Mythoria credits, require a **published** story, and are availabl
 
 **`POST /api/print-requests`** – Create a print & ship order
 
-1. Authenticates the author and validates the story is **published** and accessible.
-2. Resolves the shipping country and selects the first active print provider that supports it.
-3. Validates credit sufficiency **before** creating the order.
-4. Creates a `print_requests` row with pricing metadata (service code, extra chapters, copies).
-5. Creates a support ticket in the admin system; on failure the print request is rolled back.
-6. Deducts credits **after** the ticket succeeds; on failure the print request is rolled back.
-7. Sends a confirmation email (best-effort, non-blocking).
-8. Triggers print PDF generation asynchronously through Pub/Sub.
+1. Validate the published story, purchaser-owned address, supported market, active binding price and server-calculated credits.
+2. Stage the checkout intent and create its linked Admin ticket idempotently.
+3. Debit credits and accept the order once. The fulfillment row is durable work for the authenticated reconciliation endpoint.
+4. Render and QA the exact order-specific files, then deliver the order confirmation. A ticket action is required for supplier release.
 
 **`GET /api/print-requests`** – List print requests
 
@@ -118,18 +116,16 @@ Both flows use Mythoria credits, require a **published** story, and are availabl
 5. Calls SGW `/print/self-service` with the stable workflow ID and records `self_print_requested` only after queue success.
 6. Compensates once if queueing fails and returns workflow identifiers and updated credit balance on success.
 
-### Pub/Sub integration
+### Physical-order processing
 
-- `src/lib/print-pubsub.ts` publishes print-generation messages to the topic `mythoria-print-requests` with `{ storyId, runId }`.
-- Print generation is intentionally **non-blocking**; order success does not depend on the Pub/Sub trigger.
-- An accepted physical-book order records the server-authoritative `print_order_requested` event using the existing print request ID as its deduplication source.
+The scheduled WebApp reconciliation endpoint processes paid orders. SGW renders their PDFs under immutable order/run paths in the private proof bucket. Self-print continues to use the separate workflow described below.
 
 ### Credit events and pricing seeds
 
 - `selfPrinting` is a dedicated credit event type and pricing seed.
 - Local/dev pricing seed: `drizzle/0022_self_print_pricing.sql`.
 
-## Print-generation pipeline (SGW service)
+## Self-print generation pipeline (SGW service)
 
 > The print-generation pipeline runs in the Story Generation Workflow (SGW) service, not inside the web app. The web app only enqueues jobs and reads back URLs.
 

@@ -1,4 +1,15 @@
-import { pgTable, uuid, varchar, timestamp, text, jsonb, boolean } from 'drizzle-orm/pg-core';
+import {
+  pgTable,
+  uuid,
+  varchar,
+  timestamp,
+  text,
+  jsonb,
+  boolean,
+  integer,
+  numeric,
+  uniqueIndex,
+} from 'drizzle-orm/pg-core';
 import { addresses } from './authors';
 import { printRequestStatusEnum, printProviderIntegrationEnum } from './enums';
 
@@ -51,3 +62,49 @@ export type NewPrintProvider = typeof printProviders.$inferInsert;
 
 export type PrintRequest = typeof printRequests.$inferSelect;
 export type NewPrintRequest = typeof printRequests.$inferInsert;
+
+export const printFulfillmentSettings = pgTable('print_fulfillment_settings', {
+  id: varchar('id', { length: 20 }).primaryKey(),
+  defaultProvider: varchar('default_provider', { length: 12 }).notNull().default('none'),
+  maxEurPerCopy: numeric('max_eur_per_copy', { precision: 10, scale: 2 }).notNull().default('0'),
+  updatedBy: varchar('updated_by', { length: 255 }).notNull(),
+  updatedAt: timestamp('updated_at', { withTimezone: true }).defaultNow().notNull(),
+});
+
+export const printFulfillments = pgTable(
+  'print_fulfillments',
+  {
+    printRequestId: uuid('print_request_id')
+      .primaryKey()
+      .references(() => printRequests.id),
+    authorId: uuid('author_id').notNull(),
+    intentId: uuid('intent_id').notNull(),
+    ticketId: uuid('ticket_id'),
+    provider: varchar('provider', { length: 12 }).notNull(),
+    binding: varchar('binding', { length: 12 }).notNull(),
+    status: varchar('status', { length: 24 }).notNull().default('pending'),
+    proofVersion: integer('proof_version').notNull().default(1),
+    runId: uuid('run_id').notNull(),
+    copies: integer('copies').notNull(),
+    creditsSpent: integer('credits_spent').notNull(),
+    shippingSnapshot: jsonb('shipping_snapshot').notNull(),
+    emailVariables: jsonb('email_variables').notNull(),
+    proof: jsonb('proof'),
+    proofSentAt: timestamp('proof_sent_at', { withTimezone: true }),
+    quote: jsonb('quote'),
+    vendor: jsonb('vendor'),
+    holdReason: text('hold_reason'),
+    lastError: text('last_error'),
+    approvedBy: varchar('approved_by', { length: 255 }),
+    approvedAt: timestamp('approved_at', { withTimezone: true }),
+    leaseId: uuid('lease_id'),
+    leaseUntil: timestamp('lease_until', { withTimezone: true }),
+    updatedAt: timestamp('updated_at', { withTimezone: true }).defaultNow().notNull(),
+  },
+  (table) => [
+    uniqueIndex('print_fulfillment_intent_idx').on(table.authorId, table.intentId),
+    uniqueIndex('print_fulfillment_ticket_idx').on(table.ticketId),
+  ],
+);
+
+export type PrintFulfillment = typeof printFulfillments.$inferSelect;
