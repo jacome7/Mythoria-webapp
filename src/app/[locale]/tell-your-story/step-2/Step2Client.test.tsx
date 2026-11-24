@@ -57,6 +57,7 @@ let mockProfileIntent: StoryIntent | undefined;
 let mockPreviousWizardPath: string | null = null;
 let mockInitialImages: UploadedImage[] = [];
 let mockInitialAudio: UploadedAudio | null = null;
+let mockSelectedCharacterIds: string[] = [];
 let mockFinishImages: (failed?: boolean) => void;
 let mockFinishAudio: () => void;
 const owner = 'clerk-owner';
@@ -214,7 +215,7 @@ jest.mock('@/hooks/useStep2Session', () => ({
       setUploadedAudio,
       isSaving: false,
       saveToSession: jest.fn(),
-      selectedCharacterIds: [],
+      selectedCharacterIds: mockSelectedCharacterIds,
       setSelectedCharacterIds: jest.fn(),
     };
   },
@@ -344,6 +345,7 @@ beforeEach(() => {
   mockPreviousWizardPath = null;
   mockInitialImages = [];
   mockInitialAudio = null;
+  mockSelectedCharacterIds = [];
   mockPush.mockReset();
   mockReplace.mockReset();
   mockPoll.mockReset();
@@ -409,6 +411,9 @@ describe('Step 2 template submission integration', () => {
     seedJourney(createTemplateJourney(getStoryTemplate('grandparent-memory', 'en-US')));
     const first = renderStep();
     expect(screen.getByRole('button', { name: /^Continue/ })).toBeDisabled();
+    clickContinue();
+    expect(mockFetch).not.toHaveBeenCalled();
+    expect(readStep2Submission(owner, true)).toBeNull();
     first.unmount();
     mockInitialText = 'Grandpa baked bread on Sundays.';
     renderStep();
@@ -418,6 +423,81 @@ describe('Step 2 template submission integration', () => {
     const structure = payload(structureCalls()[0]);
     expect(structure.factuality).toBe('memory');
     expect(structure.userDescription).toContain('Grandpa baked bread on Sundays.');
+  });
+
+  it.each([
+    { templatesEnabled: true, endpoint: '/api/story-guide/draft' },
+    { templatesEnabled: false, endpoint: '/api/stories' },
+  ])(
+    'stops after draft failure and allows retry through $endpoint',
+    async ({ templatesEnabled, endpoint }) => {
+      mockInitialText = 'A fox meets a sailor';
+      mockFetch.mockResolvedValueOnce({ ok: false });
+      renderStep(templatesEnabled);
+
+      clickContinue();
+      const error = await screen.findByRole('alert');
+      expect(error).toHaveTextContent('structureError');
+      expect(mockFetch.mock.calls.map(([url]) => url)).toEqual([endpoint]);
+      expect(mockPoll).not.toHaveBeenCalled();
+      expect(mockPush).not.toHaveBeenCalled();
+      expect(localStorage.getItem('currentStoryId')).toBeNull();
+      const retained = readStep2Submission(owner, templatesEnabled);
+      if (templatesEnabled) {
+        expect(retained).toMatchObject({
+          storyId: payload(mockFetch.mock.calls[0]).draftId,
+          completed: false,
+        });
+      } else {
+        expect(retained).toBeNull();
+      }
+
+      clickContinue();
+      await waitFor(() => expect(mockPush).toHaveBeenCalledWith('/tell-your-story/step-3'));
+      expect(mockFetch.mock.calls[1][0]).toBe(endpoint);
+      expect(payload(mockFetch.mock.calls[1])).toEqual(payload(mockFetch.mock.calls[0]));
+      const submission = readStep2Submission(owner, templatesEnabled);
+      expect(submission).toMatchObject({
+        storyId: templatesEnabled ? retained?.storyId : draftId,
+        completed: true,
+      });
+      expect(localStorage.getItem('currentStoryId')).toBe(submission?.storyId);
+    },
+  );
+
+  it('removes obsolete character links and links selected characters before structuring', async () => {
+    seedJourney();
+    saveStep2Submission(saved({ completed: false }), true);
+    mockSelectedCharacterIds = ['selected-character', 'selected-character'];
+    const charactersEndpoint = `/api/stories/${draftId}/characters`;
+    const fallback = mockFetch.getMockImplementation()!;
+    mockFetch.mockImplementation(async (url: string, init?: RequestInit) => {
+      if (url === charactersEndpoint && !init) {
+        return {
+          ok: true,
+          json: async () => ({
+            characters: [
+              { characterId: 'selected-character' },
+              { characterId: 'obsolete-character' },
+            ],
+          }),
+        };
+      }
+      return fallback(url, init);
+    });
+    renderStep();
+
+    clickContinue();
+    await waitFor(() => expect(mockPush).toHaveBeenCalledWith('/tell-your-story/step-3'));
+    expect(mockFetch.mock.calls.map(([url, init]) => [url, init?.method ?? 'GET'])).toEqual([
+      ['/api/story-guide/draft', 'POST'],
+      [charactersEndpoint, 'GET'],
+      [`${charactersEndpoint}/obsolete-character`, 'DELETE'],
+      [charactersEndpoint, 'POST'],
+      ['/api/stories/genai-structure', 'POST'],
+    ]);
+    expect(payload(mockFetch.mock.calls[3])).toEqual({ characterId: 'selected-character' });
+    expect(payload(structureCalls()[0]).characterIds).toEqual(['selected-character']);
   });
 
   it('continues with accepted input while excluding a pending guide suggestion', async () => {
@@ -1841,6 +1921,12 @@ describe('Story Whisperer in Step 2', () => {
       expect(mockPoll).toHaveBeenCalledWith('job-new');
       expect(readStep2Submission(owner, true)).toMatchObject({
         storyId: boundDraftId,
+        completed: true,
+      });
+      expect(JSON.parse(localStorage.getItem('step2RelocatedInputs')!)).toEqual({
+        storyId: boundDraftId,
+        paths: ['author/inputs/dog.webp'],
+        audioPath: null,
         completed: true,
       });
     },

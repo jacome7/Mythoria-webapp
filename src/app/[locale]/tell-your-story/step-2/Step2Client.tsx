@@ -46,6 +46,12 @@ import { useJobPolling } from '@/hooks/useJobPolling';
 import styles from './Step2Page.module.css';
 import StoryTemplatePicker from '@/components/story-templates/StoryTemplatePicker';
 import type { StoryTemplate } from '@/types/story-template';
+import {
+  prepareStructureRequest,
+  queueStructureRequest,
+  syncStoryCharacters,
+  type OutlineInputs,
+} from './step2-structure';
 import { useIntentContext } from '@/hooks/useIntentContext';
 import { useStoryTemplateJourney } from '@/hooks/useStoryTemplateJourney';
 import {
@@ -621,6 +627,268 @@ function Step2Content({
     (replayOutline || pendingOutline.whispererRetryOf)
   );
 
+  const structureError = () => new Error(tTemplates('structureError'));
+
+  const collectOutlineInputs = (recoveredInputs?: Partial<WhispererContext>): OutlineInputs => {
+    const brief = compileStoryBrief(journey, storyText) || recoveredInputs?.brief || '';
+    const characterIds = [
+      ...new Set([...selectedCharacterIds, ...(recoveredInputs?.characterIds ?? [])]),
+    ];
+    const imageObjectPaths = [
+      ...new Set([
+        ...uploadedImages.flatMap((image) =>
+          image.status === 'done' && image.objectPath ? [image.objectPath] : [],
+        ),
+        ...(recoveredInputs?.imageObjectPaths ?? []),
+      ]),
+    ];
+    for (const reference of questionReferences) {
+      if (!imageObjectPaths.includes(reference.imageObjectPath))
+        imageObjectPaths.push(reference.imageObjectPath);
+    }
+    const audioObjectPath =
+      (uploadedAudio?.status === 'done' ? uploadedAudio.objectPath : undefined) ??
+      recoveredInputs?.audioObjectPath;
+    return { brief, characterIds, imageObjectPaths, audioObjectPath };
+  };
+
+  const fingerprintOutlineInputs = (
+    { brief, characterIds, audioObjectPath }: OutlineInputs,
+    whisperer?: WhispererDraft,
+    recoveredInputs?: Partial<WhispererContext>,
+  ) => {
+    return storyInputFingerprint({
+      brief,
+      ...(whisperer ? { whisperer } : {}),
+      imageIds: uploadedImages.filter((img) => img.status === 'done').map((img) => img.id),
+      audio: originalAudioPath(audioObjectPath),
+      characters: [...characterIds].sort(),
+      ...(recoveredInputs?.imageObjectPaths?.length
+        ? { recoveredPhotos: recoveredInputs.imageObjectPaths }
+        : {}),
+      locale,
+      preferences: journey?.preferences,
+      ...(questionReferences.length
+        ? {
+            characterReferences: journey?.answers
+              .filter((answer) => answer.photo)
+              .map((answer) => ({
+                questionId: answer.questionId,
+                imageId: answer.photo!.id,
+                sourceCharacterIndex: answer.photo!.sourceCharacterIndex,
+              })),
+          }
+        : {}),
+    });
+  };
+
+  const reconcilePreviousOutline = async (saved: Step2Submission) => {
+    setIsCreatingStory(true);
+    setShowLoadingModal(true);
+    if (!saved.jobId && saved.structurePayload) {
+      saved = await queueStructureRequest(saved, templatesEnabled, structureError);
+    }
+    const previous = await pollJob(saved.jobId!);
+    if (previous.status === 'unconfirmed') {
+      setSubmissionError(tTemplates('structureUnconfirmed'));
+      return null;
+    }
+    // A failed job can have saved partial details, so ask before replacing them.
+    saved =
+      previous.status === 'completed'
+        ? { ...saved, completed: true }
+        : {
+            ...saved,
+            outlineFailure: previous.error === 'STORY_CONTENT_DECLINED' ? 'declined' : 'technical',
+          };
+    saveStep2Submission(saved, templatesEnabled);
+    return saved;
+  };
+
+  const ensureStoryDraft = async (
+    saved: Step2Submission | null,
+    fingerprint: string,
+    brief: string,
+    resumingStructure: boolean,
+    whisperer?: WhispererDraft,
+  ) => {
+    // Persist the id before the request: retrying a lost response cannot create another draft.
+    if (!saved && templatesEnabled && userId) {
+      saved = {
+        owner: userId,
+        storyId:
+          whisperer?.draftId ??
+          (whispererEnabled ? sessionStorage.getItem(whispererDraftKey(userId)) : null) ??
+          crypto.randomUUID(),
+        fingerprint,
+        completed: false,
+        whisperer,
+      };
+      saveStep2Submission(saved, templatesEnabled);
+    }
+    if (whisperer && saved?.storyId !== whisperer.draftId)
+      throw new Error('Interview draft mismatch');
+    let storyId = saved?.storyId;
+    if (templatesEnabled && saved && !resumingStructure) {
+      const response = await fetch(
+        '/api/story-guide/draft',
+        jsonRequest(
+          'POST',
+          {
+            draftId: saved.storyId,
+            title: templates.find((item) => item.id === journey?.templateId)?.title ?? 'My Story',
+            plotDescription: brief,
+            storyLanguage: locale,
+            ...(whisperer ? { storyWhisperer: true } : {}),
+          },
+          whisperer?.projectId,
+        ),
+      );
+      if (!response.ok) throw new Error(tTemplates('structureError'));
+      trackStoryCreationStarted(saved.storyId, await readAdEventId(response));
+    } else if (!storyId) {
+      const response = await fetch('/api/stories', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          title: 'My Story',
+          plotDescription: brief || null,
+          storyLanguage: locale,
+          status: 'temporary',
+        }),
+      });
+      if (!response.ok) throw new Error(tStoryStepsStep2('errors.failedCreate'));
+      const data = await response.json();
+      storyId = data.story.storyId;
+      if (storyId) trackStoryCreationStarted(storyId, data?.adEventId);
+      if (userId && storyId) {
+        saved = { owner: userId, storyId, fingerprint, completed: false };
+        saveStep2Submission(saved, templatesEnabled);
+      }
+    }
+    if (!storyId || !saved) throw new Error(tTemplates('structureError'));
+    return saved;
+  };
+
+  const generateOutline = async (
+    submission: Step2Submission,
+    inputs: OutlineInputs,
+    resumingStructure: boolean,
+    whisperer?: WhispererDraft,
+  ) => {
+    const storyId = submission.storyId;
+    let resolvedInputs = inputs;
+    if (whisperer && resumingStructure && submission.structurePayload) {
+      const payload = JSON.parse(submission.structurePayload) as {
+        imageObjectPaths?: string[];
+        audioObjectPath?: string;
+      };
+      resolvedInputs = {
+        ...inputs,
+        imageObjectPaths: [...(payload.imageObjectPaths ?? [])],
+        audioObjectPath: payload.audioObjectPath,
+      };
+    }
+    if (!submission.jobId) {
+      if (!submission.structurePayload) {
+        const prepared = await prepareStructureRequest({
+          submission,
+          inputs: resolvedInputs,
+          templatesEnabled,
+          whisperer,
+          locale,
+          journey,
+          questionReferences,
+        });
+        submission = prepared.submission;
+        resolvedInputs = prepared.inputs;
+      }
+      submission = await queueStructureRequest(submission, templatesEnabled, structureError);
+      const { imageObjectPaths, audioObjectPath } = resolvedInputs;
+      if (imageObjectPaths.length || audioObjectPath)
+        localStorage.setItem(
+          'step2RelocatedInputs',
+          JSON.stringify({
+            storyId,
+            paths: imageObjectPaths,
+            audioPath: audioObjectPath ?? null,
+          }),
+        );
+    }
+    const outcome = await pollJob<{ story?: unknown; characters?: unknown }>(submission.jobId!);
+    if (outcome.status === 'unconfirmed') {
+      // The next attempt resumes this job while its durable outcome is unknown.
+      setSubmissionError(tTemplates('structureUnconfirmed'));
+      return null;
+    }
+    if (outcome.status === 'failed') {
+      const declined = outcome.error === 'STORY_CONTENT_DECLINED';
+      saveStep2Submission(
+        declined
+          ? { ...submission, outlineFailure: 'declined' }
+          : {
+              ...submission,
+              outlineFailure: 'technical',
+              jobId: undefined,
+              structureRequestId: undefined,
+              structurePayload: undefined,
+              whispererRetryOf: whisperer ? submission.structureRequestId : undefined,
+            },
+        templatesEnabled,
+      );
+      setSubmissionError(tTemplates(declined ? 'structureDeclined' : 'structureError'));
+      return null;
+    }
+    localStorage.setItem('genaiResults', JSON.stringify({ ...outcome.result, processed: true }));
+    return { submission, inputs: resolvedInputs };
+  };
+
+  const completeOutline = (
+    submission: Step2Submission,
+    { brief, imageObjectPaths, audioObjectPath }: OutlineInputs,
+    whisperer?: WhispererDraft,
+  ) => {
+    const storyId = submission.storyId;
+    saveStep2Submission(
+      { ...submission, completed: true, outlineFailure: undefined },
+      templatesEnabled,
+    );
+    if (imageObjectPaths.length || audioObjectPath)
+      localStorage.setItem(
+        'step2RelocatedInputs',
+        JSON.stringify({
+          storyId,
+          paths: imageObjectPaths,
+          audioPath: audioObjectPath ?? null,
+          completed: true,
+        }),
+      );
+    trackStoryCreation.stepCompleted({
+      step: 2,
+      story_id: storyId,
+      content_type: journey?.templateId
+        ? 'template'
+        : uploadedImages.length
+          ? 'image'
+          : uploadedAudio
+            ? 'audio'
+            : 'text',
+      has_text: !!brief.trim(),
+      has_image: imageObjectPaths.length > 0,
+      has_audio: !!audioObjectPath,
+      template_id: journey?.templateId ?? undefined,
+      question_depth: journey?.answers.length ?? 0,
+      time_to_continue_ms: Date.now() - startTime.current,
+      processed_with_genai: !!(
+        whisperer ||
+        brief.trim() ||
+        imageObjectPaths.length ||
+        audioObjectPath
+      ),
+    });
+    router.push('/tell-your-story/step-3');
+  };
+
   const handleNextStep = async (confirmed = false, whisperer?: WhispererDraft, replay = false) => {
     if (submitting.current) return;
     if (!replay && preview && (mediaBusy || mediaError)) {
@@ -634,53 +902,13 @@ function Step2Content({
     try {
       saveToSession();
       const recoveredInputs = whisperer ? recoveredWhispererInputs : undefined;
-      const brief = compileStoryBrief(journey, storyText) || recoveredInputs?.brief || '';
-      const characterIds = [
-        ...new Set([...selectedCharacterIds, ...(recoveredInputs?.characterIds ?? [])]),
-      ];
-      const imageObjectPaths = [
-        ...new Set([
-          ...uploadedImages.flatMap((image) =>
-            image.status === 'done' && image.objectPath ? [image.objectPath] : [],
-          ),
-          ...(recoveredInputs?.imageObjectPaths ?? []),
-        ]),
-      ];
-      for (const reference of questionReferences) {
-        if (!imageObjectPaths.includes(reference.imageObjectPath))
-          imageObjectPaths.push(reference.imageObjectPath);
-      }
-      let audioObjectPath =
-        (uploadedAudio?.status === 'done' ? uploadedAudio.objectPath : undefined) ??
-        recoveredInputs?.audioObjectPath;
+      const inputs = collectOutlineInputs(recoveredInputs);
       let saved = userId ? readStep2Submission(userId, templatesEnabled) : null;
       if (replay && (!saved?.whisperer || (!saved.structurePayload && !saved.jobId))) return;
       const fingerprint =
         replay && saved
           ? saved.fingerprint
-          : await storyInputFingerprint({
-              brief,
-              ...(whisperer ? { whisperer } : {}),
-              imageIds: uploadedImages.filter((img) => img.status === 'done').map((img) => img.id),
-              audio: originalAudioPath(audioObjectPath),
-              characters: [...characterIds].sort(),
-              ...(recoveredInputs?.imageObjectPaths?.length
-                ? { recoveredPhotos: recoveredInputs.imageObjectPaths }
-                : {}),
-              locale,
-              preferences: journey?.preferences,
-              ...(questionReferences.length
-                ? {
-                    characterReferences: journey?.answers
-                      .filter((answer) => answer.photo)
-                      .map((answer) => ({
-                        questionId: answer.questionId,
-                        imageId: answer.photo!.id,
-                        sourceCharacterIndex: answer.photo!.sourceCharacterIndex,
-                      })),
-                  }
-                : {}),
-            });
+          : await fingerprintOutlineInputs(inputs, whisperer, recoveredInputs);
       if (saved?.outlineFailure === 'declined' && saved.fingerprint === fingerprint) {
         setSubmissionError(tTemplates('structureDeclined'));
         return;
@@ -694,35 +922,8 @@ function Step2Content({
         saved.fingerprint !== fingerprint &&
         (saved.jobId || saved.structurePayload)
       ) {
-        setIsCreatingStory(true);
-        setShowLoadingModal(true);
-        if (!saved.jobId && saved.structurePayload) {
-          const pendingResponse = await fetch('/api/stories/genai-structure', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: saved.structurePayload,
-          });
-          const pendingResult = await pendingResponse.json();
-          if (!pendingResponse.ok || !pendingResult.jobId)
-            throw new Error(tTemplates('structureError'));
-          saved = { ...saved, jobId: pendingResult.jobId };
-          saveStep2Submission(saved, templatesEnabled);
-        }
-        const previous = await pollJob(saved.jobId!);
-        if (previous.status === 'unconfirmed') {
-          setSubmissionError(tTemplates('structureUnconfirmed'));
-          return;
-        }
-        // A failed job can have saved partial details, so ask before replacing them.
-        saved =
-          previous.status === 'completed'
-            ? { ...saved, completed: true }
-            : {
-                ...saved,
-                outlineFailure:
-                  previous.error === 'STORY_CONTENT_DECLINED' ? 'declined' : 'technical',
-              };
-        saveStep2Submission(saved, templatesEnabled);
+        saved = await reconcilePreviousOutline(saved);
+        if (!saved) return;
       }
       if (
         (saved?.completed || saved?.outlineFailure) &&
@@ -742,65 +943,18 @@ function Step2Content({
         return;
       }
 
-      // Persist the id before the request: retrying a lost response cannot create another draft.
-      if (!saved && templatesEnabled && userId) {
-        saved = {
-          owner: userId,
-          storyId:
-            whisperer?.draftId ??
-            (whispererEnabled ? sessionStorage.getItem(whispererDraftKey(userId)) : null) ??
-            crypto.randomUUID(),
-          fingerprint,
-          completed: false,
-          whisperer,
-        };
-        saveStep2Submission(saved, templatesEnabled);
-      }
-      if (whisperer && saved?.storyId !== whisperer.draftId)
-        throw new Error('Interview draft mismatch');
-      let storyId = saved?.storyId;
       const resumingStructure =
         saved?.fingerprint === fingerprint && !!(saved.jobId || saved.structurePayload);
-      if (templatesEnabled && saved && !resumingStructure) {
-        const response = await fetch(
-          '/api/story-guide/draft',
-          jsonRequest(
-            'POST',
-            {
-              draftId: saved.storyId,
-              title: templates.find((item) => item.id === journey?.templateId)?.title ?? 'My Story',
-              plotDescription: brief,
-              storyLanguage: locale,
-              ...(whisperer ? { storyWhisperer: true } : {}),
-            },
-            whisperer?.projectId,
-          ),
-        );
-        if (!response.ok) throw new Error(tTemplates('structureError'));
-        trackStoryCreationStarted(saved.storyId, await readAdEventId(response));
-      } else if (!storyId) {
-        const response = await fetch('/api/stories', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            title: 'My Story',
-            plotDescription: brief || null,
-            storyLanguage: locale,
-            status: 'temporary',
-          }),
-        });
-        if (!response.ok) throw new Error(tStoryStepsStep2('errors.failedCreate'));
-        const data = await response.json();
-        storyId = data.story.storyId;
-        if (storyId) trackStoryCreationStarted(storyId, data?.adEventId);
-        if (userId && storyId) {
-          saved = { owner: userId, storyId, fingerprint, completed: false };
-          saveStep2Submission(saved, templatesEnabled);
-        }
-      }
-      if (!storyId || !saved) throw new Error(tTemplates('structureError'));
+      saved = await ensureStoryDraft(
+        saved,
+        fingerprint,
+        inputs.brief,
+        resumingStructure,
+        whisperer,
+      );
+      const storyId = saved.storyId;
       localStorage.setItem('currentStoryId', storyId);
-      let submission: Step2Submission =
+      const submission: Step2Submission =
         saved.fingerprint === fingerprint
           ? saved
           : {
@@ -815,187 +969,21 @@ function Step2Content({
               whisperer,
             };
       saveStep2Submission(submission, templatesEnabled);
-      if (preview && !resumingStructure) {
-        const response = await fetch(`/api/stories/${storyId}/characters`);
-        if (!response.ok) throw new Error(tTemplates('structureError'));
-        const result = await response.json();
-        for (const character of result.characters ?? []) {
-          if (character.characterId && !characterIds.includes(character.characterId)) {
-            const removed = await fetch(
-              `/api/stories/${storyId}/characters/${character.characterId}`,
-              { method: 'DELETE' },
-            );
-            if (!removed.ok) throw new Error(tTemplates('structureError'));
-          }
-        }
+      if (!resumingStructure)
+        await syncStoryCharacters(storyId, inputs.characterIds, preview, structureError);
+
+      if (
+        whisperer ||
+        inputs.brief.trim() ||
+        inputs.imageObjectPaths.length ||
+        inputs.audioObjectPath
+      ) {
+        const outline = await generateOutline(submission, inputs, resumingStructure, whisperer);
+        if (!outline) return;
+        completeOutline(outline.submission, outline.inputs, whisperer);
+      } else {
+        completeOutline(submission, inputs, whisperer);
       }
-      for (const characterId of resumingStructure ? [] : characterIds) {
-        const linked = await fetch(`/api/stories/${storyId}/characters`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ characterId }),
-        });
-        if (!linked.ok) throw new Error(tTemplates('structureError'));
-      }
-      if (whisperer || brief.trim() || imageObjectPaths.length || audioObjectPath) {
-        if (whisperer && resumingStructure && submission.structurePayload) {
-          const payload = JSON.parse(submission.structurePayload) as {
-            imageObjectPaths?: string[];
-            audioObjectPath?: string;
-          };
-          imageObjectPaths.splice(0, imageObjectPaths.length, ...(payload.imageObjectPaths ?? []));
-          audioObjectPath = payload.audioObjectPath;
-        }
-        if (!submission.jobId) {
-          if (!submission.structurePayload) {
-            let structureRequestId = templatesEnabled ? crypto.randomUUID() : undefined;
-            let whispererDescription: string | undefined;
-            if (whisperer) {
-              const handoff = await fetch(
-                `${whispererPath(storyId)}/handoff`,
-                jsonRequest(
-                  'POST',
-                  {
-                    revision: whisperer.revision,
-                    ...(submission.whispererRetryOf
-                      ? { retryOf: submission.whispererRetryOf }
-                      : {}),
-                    brief,
-                    imageObjectPaths,
-                    audioObjectPath,
-                    characterIds: characterIds.length ? characterIds : undefined,
-                    storyPreferences: journey?.preferences,
-                    factuality: journey?.mode === 'memory' ? 'memory' : undefined,
-                    ...(questionReferences.length
-                      ? { characterReferences: questionReferences }
-                      : {}),
-                  },
-                  whisperer.projectId,
-                ),
-              );
-              if (!handoff.ok) throw new Error('Interview handoff failed');
-              const result = (await handoff.json()) as {
-                draftId: string;
-                structureRequestId: string;
-                userDescription: string;
-                imageObjectPaths: string[];
-              };
-              if (result.draftId !== storyId) throw new Error('Interview draft mismatch');
-              structureRequestId = result.structureRequestId;
-              whispererDescription = result.userDescription;
-              imageObjectPaths.splice(0, imageObjectPaths.length, ...result.imageObjectPaths);
-            }
-            submission = {
-              ...submission,
-              outlineFailure: undefined,
-              structureRequestId,
-              structurePayload: JSON.stringify({
-                storyId,
-                userDescription:
-                  whispererDescription ||
-                  brief ||
-                  (imageObjectPaths.length
-                    ? 'Analyze the images to create a story'
-                    : 'Analyze the audio to create a story'),
-                imageObjectPaths,
-                audioObjectPath,
-                characterIds: characterIds.length ? characterIds : undefined,
-                locale,
-                storyPreferences: journey?.preferences,
-                factuality: journey?.mode === 'memory' ? 'memory' : undefined,
-                structureRequestId,
-                ...(whisperer ? { storyWhisperer: true } : {}),
-                ...(questionReferences.length ? { characterReferences: questionReferences } : {}),
-              }),
-            };
-            saveStep2Submission(submission, templatesEnabled);
-          }
-          const response = await fetch('/api/stories/genai-structure', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: submission.structurePayload,
-          });
-          const data = await response.json();
-          if (!response.ok || !data.jobId) throw new Error(tTemplates('structureError'));
-          submission = { ...submission, jobId: data.jobId };
-          saveStep2Submission(submission, templatesEnabled);
-          if (imageObjectPaths.length || audioObjectPath)
-            localStorage.setItem(
-              'step2RelocatedInputs',
-              JSON.stringify({
-                storyId,
-                paths: imageObjectPaths,
-                audioPath: audioObjectPath ?? null,
-              }),
-            );
-        }
-        const outcome = await pollJob<{ story?: unknown; characters?: unknown }>(submission.jobId!);
-        if (outcome.status === 'unconfirmed') {
-          // The next attempt resumes this job while its durable outcome is unknown.
-          setSubmissionError(tTemplates('structureUnconfirmed'));
-          return;
-        }
-        if (outcome.status === 'failed') {
-          const declined = outcome.error === 'STORY_CONTENT_DECLINED';
-          saveStep2Submission(
-            declined
-              ? { ...submission, outlineFailure: 'declined' }
-              : {
-                  ...submission,
-                  outlineFailure: 'technical',
-                  jobId: undefined,
-                  structureRequestId: undefined,
-                  structurePayload: undefined,
-                  whispererRetryOf: whisperer ? submission.structureRequestId : undefined,
-                },
-            templatesEnabled,
-          );
-          setSubmissionError(tTemplates(declined ? 'structureDeclined' : 'structureError'));
-          return;
-        }
-        localStorage.setItem(
-          'genaiResults',
-          JSON.stringify({ ...outcome.result, processed: true }),
-        );
-      }
-      saveStep2Submission(
-        { ...submission, completed: true, outlineFailure: undefined },
-        templatesEnabled,
-      );
-      if (imageObjectPaths.length || audioObjectPath)
-        localStorage.setItem(
-          'step2RelocatedInputs',
-          JSON.stringify({
-            storyId,
-            paths: imageObjectPaths,
-            audioPath: audioObjectPath ?? null,
-            completed: true,
-          }),
-        );
-      trackStoryCreation.stepCompleted({
-        step: 2,
-        story_id: storyId,
-        content_type: journey?.templateId
-          ? 'template'
-          : uploadedImages.length
-            ? 'image'
-            : uploadedAudio
-              ? 'audio'
-              : 'text',
-        has_text: !!brief.trim(),
-        has_image: imageObjectPaths.length > 0,
-        has_audio: !!audioObjectPath,
-        template_id: journey?.templateId ?? undefined,
-        question_depth: journey?.answers.length ?? 0,
-        time_to_continue_ms: Date.now() - startTime.current,
-        processed_with_genai: !!(
-          whisperer ||
-          brief.trim() ||
-          imageObjectPaths.length ||
-          audioObjectPath
-        ),
-      });
-      router.push('/tell-your-story/step-3');
     } catch {
       setSubmissionError(tTemplates('structureError'));
     } finally {
