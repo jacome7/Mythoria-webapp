@@ -4,7 +4,17 @@ const mockSubmit = jest.fn();
 const mockQuote = jest.fn();
 const mockWrite = jest.fn();
 const mockFind = jest.fn();
+const mockReadOrder = jest.fn();
+const mockRender = jest.fn();
+const mockDimensions = jest.fn();
+const mockValidate = jest.fn();
+const mockVerifyProof = jest.fn();
+const mockEnsureAvailable = jest.fn();
+const mockReadBookManifest = jest.fn();
 let mockCeiling = '20';
+let mockCurrentOrder: ReturnType<typeof order> | undefined;
+let mockPublishedStory: unknown;
+let mockDispatchOptions: unknown;
 
 function mockWriter() {
   return {
@@ -12,7 +22,11 @@ function mockWriter() {
       mockWrite(values);
       return {
         where: () => ({
-          returning: async () => [{ ...fulfillment, ...values }],
+          returning: async () => {
+            if (mockCurrentOrder)
+              mockCurrentOrder.fulfillment = { ...mockCurrentOrder.fulfillment, ...values };
+            return [mockCurrentOrder?.fulfillment ?? { ...fulfillment, ...values }];
+          },
         }),
       };
     },
@@ -22,11 +36,39 @@ function mockWriter() {
 jest.mock('@/db', () => ({
   db: {
     update: () => mockWriter(),
+    select: (selection?: { countries?: unknown }) => ({
+      from: () => ({
+        where: async () => [{ countries: ['PT'] }],
+        innerJoin: () => ({
+          where: () => {
+            if (selection?.countries) throw new Error('Unexpected order lookup');
+            mockReadOrder();
+            return [mockCurrentOrder];
+          },
+        }),
+      }),
+    }),
     transaction: async (callback: (tx: unknown) => unknown) =>
       callback({
-        update: () => mockWriter(),
+        update: (table: object) =>
+          table === printRequests
+            ? {
+                set: (values: { printingOptions: unknown }) => {
+                  mockDispatchOptions = values.printingOptions;
+                  return {
+                    where: () => ({
+                      returning: async () => [{ ...mockCurrentOrder?.request, ...values }],
+                    }),
+                  };
+                },
+              }
+            : mockWriter(),
         select: () => ({
-          from: () => ({ where: () => ({ for: async () => [{ max: mockCeiling }] }) }),
+          from: (table: object) => ({
+            where: () => ({
+              for: async () => (table === stories ? [mockPublishedStory] : [{ max: mockCeiling }]),
+            }),
+          }),
         }),
       }),
   },
@@ -40,14 +82,37 @@ jest.mock('@/lib/lulu/client', () => ({
   },
   quoteLuluOrder: (...args: unknown[]) => mockQuote(...args),
   findLuluJob: (...args: unknown[]) => mockFind(...args),
+  getLuluCoverDimensions: (...args: unknown[]) => mockDimensions(...args),
+  validateLuluFile: (...args: unknown[]) => mockValidate(...args),
 }));
 jest.mock('./proof', () => ({
+  assetFile: jest.fn(),
+  renderOrderProof: (...args: unknown[]) => mockRender(...args),
+  verifyProofFile: (...args: unknown[]) => mockVerifyProof(...args),
+  ensureProofFileAvailable: (...args: unknown[]) => mockEnsureAvailable(...args),
   signedProofLink: jest.fn(async () => 'https://storage.test/signed'),
 }));
+jest.mock('@/config/environment', () => ({
+  getEnvironmentConfig: () => ({
+    notification: { engineUrl: 'https://notify.test', apiKey: 'notification-key' },
+  }),
+}));
+jest.mock('@/lib/premium-children-book/storage', () => ({
+  loadPublishedPremiumBook: (...args: unknown[]) => mockReadBookManifest(...args),
+}));
 
+import { printRequests, stories } from '@/db/schema';
 import { LuluHttpError } from '@/lib/lulu/client';
 import { LULU_SKUS } from '@/lib/lulu/products';
-import { reconcilePrintOrder, submitPrintOrder } from './fulfillment';
+import { PREMIUM_SQUARE_PACKAGE } from './premium-edition';
+import {
+  correctSquareEdition,
+  processPrintProof,
+  reconcilePrintOrder,
+  reserveManualPrint,
+  revisePrintProof,
+  submitPrintOrder,
+} from './fulfillment';
 
 const id = '32c3cb83-00c2-4933-972b-916ec8065f18';
 const confirmationId = 'b53517fe-a406-493b-bda7-9cad123bd371';
@@ -84,8 +149,8 @@ const emailVariables = {
   postalCode: '',
   country: '',
   phone: '',
-  listenURL: '',
-  contactURL: '',
+  listenURL: 'https://mythoria.test/stories/listen',
+  contactURL: 'https://mythoria.test/contact',
   language: 'en-US',
 };
 const fulfillment = {
@@ -102,7 +167,7 @@ const fulfillment = {
   vendor: null,
   quote: {
     confirmationId,
-    podPackageId: LULU_SKUS.paperback,
+    podPackageId: LULU_SKUS.paperback as string,
     shippingLevel: 'EXPRESS',
     totalEur: 30,
     perCopyEur: 15,
@@ -118,10 +183,53 @@ function order(overrides: Partial<typeof fulfillment> = {}) {
   } as unknown as Parameters<typeof submitPrintOrder>[0];
 }
 
+function squareOrder(overrides: Partial<typeof fulfillment> = {}, pageCount = 32) {
+  const value = order({
+    binding: 'hardcover',
+    proof: {
+      ...proof,
+      pageCount,
+      ...{
+        podPackageId: PREMIUM_SQUARE_PACKAGE,
+        interiorValidationId: '111',
+        coverValidationId: '222',
+      },
+    },
+    quote: { ...fulfillment.quote, podPackageId: PREMIUM_SQUARE_PACKAGE },
+    ...overrides,
+  });
+  value.request.printingOptions = {
+    premiumEdition: {
+      profile: 'premium_square_casewrap',
+      podPackageId: PREMIUM_SQUARE_PACKAGE,
+      pageCount,
+      luluEnvironment: 'sandbox',
+      premiumBook: {
+        version: 1,
+        type: 'premium_children',
+        state: 'published',
+        revision: id,
+        manifest: {
+          key: `${id}/premium/revisions/${id}/manifest.json`,
+          generation: '1',
+          sha256: 'a'.repeat(64),
+          bytes: 250,
+        },
+      },
+    },
+  };
+  return value;
+}
+
 describe('Lulu release safety', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    mockRender.mockReset();
+    mockReadBookManifest.mockReset();
     mockCeiling = '20';
+    mockCurrentOrder = undefined;
+    mockPublishedStory = undefined;
+    mockDispatchOptions = undefined;
     mockQuote.mockResolvedValue({ shippingLevel: 'EXPRESS', totalEur: 30 });
     jest.replaceProperty(process, 'env', {
       ...process.env,
@@ -129,6 +237,261 @@ describe('Lulu release safety', () => {
     });
   });
   afterEach(() => jest.restoreAllMocks());
+
+  it('rejects square release for the wrong proof version, missing validation, or a changed supplier environment', async () => {
+    process.env.LULU_PRINT_ENVIRONMENT = 'production';
+    const actor = 'operator@example.test';
+    const approval = { confirmationId, confirmedTotalEur: 30, checkedInbox: true, proofVersion: 1 };
+    await expect(
+      submitPrintOrder(squareOrder(), { ...approval, proofVersion: 2 }, actor),
+    ).rejects.toMatchObject({ code: 'print_not_approved' });
+    await expect(
+      submitPrintOrder(squareOrder(), { ...approval, checkedInbox: false }, actor),
+    ).rejects.toMatchObject({ code: 'print_not_approved' });
+    await expect(
+      submitPrintOrder(squareOrder({ proof: { ...proof, pageCount: 32 } }), approval, actor),
+    ).rejects.toMatchObject({ code: 'print_not_approved' });
+    const wrongCount = squareOrder();
+    wrongCount.fulfillment.proof = {
+      ...(wrongCount.fulfillment.proof as typeof proof),
+      pageCount: 33,
+    };
+    await expect(submitPrintOrder(wrongCount, approval, actor)).rejects.toMatchObject({
+      code: 'print_not_approved',
+    });
+    await expect(submitPrintOrder(squareOrder(), approval, actor)).rejects.toMatchObject({
+      code: 'square_supplier_changed',
+    });
+    expect(mockQuote).not.toHaveBeenCalled();
+    expect(mockSubmit).not.toHaveBeenCalled();
+  });
+
+  it('forces square orders through Lulu and requires a hold for edition corrections', async () => {
+    const actor = 'operator@example.test';
+    await expect(revisePrintProof(squareOrder(), 'manual')).rejects.toMatchObject({
+      code: 'square_provider_required',
+    });
+    await expect(
+      reserveManualPrint(
+        squareOrder(),
+        { partnerId: id, proofVersion: 1, checkedInbox: true },
+        actor,
+      ),
+    ).rejects.toMatchObject({ code: 'square_provider_required' });
+    await expect(
+      correctSquareEdition(
+        squareOrder(),
+        {
+          expectedRevision: id,
+          correctedRevision: confirmationId,
+          reason: 'Correct a spelling mistake',
+        },
+        actor,
+      ),
+    ).rejects.toMatchObject({ code: 'square_correction_not_ready' });
+    expect(mockWrite).not.toHaveBeenCalled();
+    expect(mockSubmit).not.toHaveBeenCalled();
+  });
+
+  it.each([32, 33])(
+    'renders, emails and validates a paid %i-page edition without reading the current story or submitting a job',
+    async (pageCount) => {
+      process.env.LULU_PRINT_ENVIRONMENT = 'sandbox';
+      const pending = squareOrder({}, pageCount);
+      pending.fulfillment = {
+        ...pending.fulfillment,
+        status: 'pending',
+        ticketId: id,
+        proof: null,
+        proofSentAt: null,
+        quote: null,
+      };
+      mockCurrentOrder = pending;
+      const request = pending.request.printingOptions as {
+        premiumEdition: { premiumBook: unknown };
+      };
+      mockRender.mockResolvedValue({ ...proof, pageCount });
+      mockDimensions.mockResolvedValue({ width: 1368, height: 738 });
+      mockValidate.mockImplementation(async (kind, _options, _existing, remember) => {
+        await remember(kind);
+        return kind;
+      });
+      const sent = jest
+        .spyOn(global, 'fetch')
+        .mockResolvedValueOnce(
+          Response.json({ success: false, data: { deliveryStatus: 'pending' } }, { status: 202 }),
+        )
+        .mockResolvedValueOnce(Response.json({ success: true, data: { deliveryStatus: 'sent' } }));
+
+      const waitingForMail = await processPrintProof(id);
+      expect(waitingForMail.fulfillment).toMatchObject({ status: 'pending', proofSentAt: null });
+      expect(mockValidate).not.toHaveBeenCalled();
+      const ready = await processPrintProof(id);
+      expect(ready.fulfillment).toMatchObject({
+        status: 'proof_ready',
+        proofSentAt: expect.any(Date),
+        quote: { podPackageId: PREMIUM_SQUARE_PACKAGE, totalEur: 30 },
+        proof: { interiorValidationId: 'interior', coverValidationId: 'cover', pageCount },
+      });
+      expect(mockRender).toHaveBeenCalledTimes(2);
+      expect(mockRender).toHaveBeenLastCalledWith(
+        expect.objectContaining({
+          premiumBook: request.premiumEdition.premiumBook,
+          premiumPageCount: pageCount,
+          podPackageId: PREMIUM_SQUARE_PACKAGE,
+        }),
+        { width: 1368, height: 738 },
+      );
+      expect(mockDimensions).toHaveBeenCalledWith({
+        podPackageId: PREMIUM_SQUARE_PACKAGE,
+        pageCount,
+      });
+      expect(mockValidate.mock.calls.map(([kind]) => kind)).toEqual(['interior', 'cover']);
+      for (const [, options] of mockValidate.mock.calls) {
+        expect(options).toMatchObject({
+          pageCount,
+          podPackageId: PREMIUM_SQUARE_PACKAGE,
+          requirePackageMatch: true,
+        });
+      }
+      expect(mockQuote).toHaveBeenCalledWith(expect.objectContaining({ pageCount }));
+      expect(mockReadBookManifest).not.toHaveBeenCalled();
+      expect(mockVerifyProof).toHaveBeenCalledTimes(2);
+      expect(mockSubmit).not.toHaveBeenCalled();
+      expect(sent).toHaveBeenCalledTimes(2);
+      for (const [, init] of sent.mock.calls) {
+        expect(JSON.parse(String(init?.body))).toMatchObject({
+          recipient: { email: 'owner@example.test' },
+          proofVersion: 1,
+          interiorGeneration: '1',
+          coverGeneration: '1',
+        });
+      }
+    },
+  );
+
+  it.each(['a stored proof', 'the preliminary render', 'the completed render'])(
+    'stops before emailing or validating %s with the wrong page count',
+    async (mismatch) => {
+      process.env.LULU_PRINT_ENVIRONMENT = 'sandbox';
+      const pending = squareOrder({}, 33);
+      const wrongProof = { ...proof, pageCount: 32 };
+      pending.fulfillment = {
+        ...pending.fulfillment,
+        status: 'pending',
+        ticketId: id,
+        proof: mismatch === 'a stored proof' ? wrongProof : null,
+        proofSentAt: null,
+        quote: null,
+      };
+      mockCurrentOrder = pending;
+      mockRender
+        .mockResolvedValueOnce(
+          mismatch === 'the preliminary render' ? wrongProof : { ...proof, pageCount: 33 },
+        )
+        .mockResolvedValueOnce(wrongProof);
+      mockDimensions.mockResolvedValue({ width: 1368, height: 738 });
+      const send = jest.spyOn(global, 'fetch');
+
+      await expect(processPrintProof(id)).resolves.toMatchObject({
+        fulfillment: { status: 'manual_review', proofSentAt: null, quote: null },
+      });
+      expect(mockDimensions).toHaveBeenCalledTimes(Number(mismatch === 'the completed render'));
+      expect(mockValidate).not.toHaveBeenCalled();
+      expect(mockQuote).not.toHaveBeenCalled();
+      expect(send).not.toHaveBeenCalled();
+    },
+  );
+
+  it('binds the direct published successor under a hold and archives the previous emailed pair', async () => {
+    const held = squareOrder({ status: 'held', holdReason: 'Customer reply' as never });
+    mockCurrentOrder = held;
+    const options = held.request.printingOptions as {
+      premiumEdition: { premiumBook: Record<string, unknown> };
+    };
+    const replacement = {
+      ...options.premiumEdition.premiumBook,
+      revision: confirmationId,
+      manifest: {
+        key: `${id}/premium/revisions/${confirmationId}/manifest.json`,
+        generation: '2',
+        sha256: 'b'.repeat(64),
+        bytes: 260,
+      },
+    };
+    mockPublishedStory = { storyId: id, authorId: id, features: { premiumBook: replacement } };
+    mockReadBookManifest
+      .mockResolvedValueOnce({ previousRevision: 'different', format: { pageCount: 32 } })
+      .mockResolvedValueOnce({ previousRevision: id, format: { pageCount: 33 } })
+      .mockResolvedValueOnce({ previousRevision: id, format: { pageCount: 32 } });
+    const correction = {
+      expectedRevision: id,
+      correctedRevision: confirmationId,
+      reason: 'Spelling correction',
+    };
+    const actor = 'operator@example.test';
+    await expect(correctSquareEdition(held, correction, actor)).rejects.toMatchObject({
+      code: 'square_correction_stale',
+    });
+    await expect(correctSquareEdition(held, correction, actor)).rejects.toMatchObject({
+      code: 'square_correction_page_count_changed',
+    });
+    expect(mockWrite).not.toHaveBeenCalled();
+    const corrected = await correctSquareEdition(held, correction, actor);
+    expect(corrected.fulfillment).toMatchObject({
+      status: 'held',
+      holdReason: 'Customer reply',
+      proofVersion: 2,
+      proof: null,
+      proofSentAt: null,
+      quote: null,
+    });
+    expect(mockDispatchOptions).toMatchObject({
+      premiumEdition: { premiumBook: replacement },
+      premiumRevisionHistory: [
+        {
+          previousEdition: { premiumBook: options.premiumEdition.premiumBook },
+          replacementRevision: confirmationId,
+          previousProofVersion: 1,
+          previousProof: { interior: proofFile, cover: proofFile },
+          actor,
+          reason: correction.reason,
+        },
+      ],
+    });
+    expect(mockSubmit).not.toHaveBeenCalled();
+  });
+
+  it.each([32, 33])(
+    'releases a verified %i-page proof once and reconciles an uncertain create before retrying',
+    async (pageCount) => {
+      process.env.LULU_PRINT_ENVIRONMENT = 'sandbox';
+      mockSubmit.mockRejectedValueOnce(new Error('Lulu connection lost'));
+      const actor = 'operator@example.test';
+      const approval = {
+        confirmationId,
+        confirmedTotalEur: 30,
+        checkedInbox: true,
+        proofVersion: 1,
+      };
+      const uncertain = await submitPrintOrder(squareOrder({}, pageCount), approval, actor);
+      expect(uncertain.fulfillment.status).toBe('uncertain');
+      expect(mockEnsureAvailable).toHaveBeenCalledTimes(2);
+      expect(mockQuote).toHaveBeenCalledWith(expect.objectContaining({ pageCount }));
+      expect(mockSubmit).toHaveBeenCalledWith(
+        expect.objectContaining({
+          externalId: id,
+          podPackageId: PREMIUM_SQUARE_PACKAGE,
+          copies: 2,
+          shippingLevel: 'EXPRESS',
+          interiorUrl: 'https://storage.test/signed',
+          coverUrl: 'https://storage.test/signed',
+        }),
+      );
+      await submitPrintOrder(uncertain, approval, actor);
+      expect(mockSubmit).toHaveBeenCalledTimes(1);
+    },
+  );
 
   it('rejects wrong product profiles and oversized carrier addresses before contacting Lulu', async () => {
     const actor = 'operator@example.test';

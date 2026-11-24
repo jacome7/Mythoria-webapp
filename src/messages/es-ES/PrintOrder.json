@@ -13,6 +13,8 @@
       "confirmation": "Confirmación"
     },
     "errors": {
+      "squareUnavailable": "La impresión en tapa dura cuadrada no está disponible en este momento.",
+      "editionChanged": "La edición impresa ha cambiado. Vuelve atrás y revisa la edición actual antes de hacer el pedido.",
       "storyNotFound": "Historia no encontrada",
       "storyNotPublished": "Solo las historias publicadas se pueden imprimir",
       "loadingFailed": "Error al cargar los datos de la historia",
@@ -31,6 +33,7 @@
       "paperback": "Tapa blanda"
     },
     "payment": {
+      "squareHardcoverTitle": "Tapa dura cuadrada (21,6 × 21,6 cm)",
       "softcoverTitle": "📖 Tapa blanda",
       "softcoverDescription": "Cubierta flexible con acabado brillante. Ideal para lectura frecuente y fácil manejo.",
       "paperbackDescriptionWithChapters": "Libro en tapa blanda bellamente impreso y de alta calidad con {chapters} capítulos.",

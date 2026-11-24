@@ -26,6 +26,7 @@ import { getStep1Data } from '@/lib/story-session';
 import { fetchStoryData } from '@/lib/story';
 import { useStorySessionGuard } from '@/hooks/useStorySessionGuard';
 import type { StoryData } from '@/types/story';
+import { isPremiumBookAudience, premiumBookType } from '@/lib/premium-children-book/contract';
 import styles from './Confirmation.module.css';
 
 const creationStages = [
@@ -77,6 +78,7 @@ function Step5Page() {
   const editStoryId = searchParams?.get('edit');
   const locale = useLocale();
   const tStoryStepsStep5 = useTranslations('StorySteps.step5');
+  const tBook = useTranslations('PremiumBook');
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [storyGenerationStarted, setStoryGenerationStarted] = useState(false);
@@ -88,6 +90,11 @@ function Step5Page() {
   const [ebookPricing, setEbookPricing] = useState<EbookPricing | null>(null);
   const hasTrackedStepView = useRef(false);
   const generationIdempotencyKey = useRef<string | null>(null);
+  const isPremiumBook = storyData?.bookType === premiumBookType;
+  const needsFormatCorrection =
+    isPremiumBook &&
+    storyData.bookFormatEditable &&
+    (!storyData.premiumBookPilot || !isPremiumBookAudience(storyData.targetAudience));
   const creditShortfall =
     ebookPricing && userCredits !== null ? Math.max(ebookPricing.cost - userCredits, 0) : 0;
   const hasInsufficientCredits = creditShortfall > 0;
@@ -97,6 +104,12 @@ function Step5Page() {
     try {
       const data = await fetchStoryData(storyId);
       setStoryData(data);
+      if (
+        data.bookType === premiumBookType &&
+        (data.status === 'writing' || data.status === 'published')
+      ) {
+        setStoryGenerationStarted(true);
+      }
     } catch (error) {
       console.error('Error fetching story data:', error);
       setError(tStoryStepsStep5('alerts.failedToFetchStoryData'));
@@ -197,6 +210,10 @@ function Step5Page() {
       setError(tStoryStepsStep5('storyDataNotAvailable'));
       return;
     }
+    if (needsFormatCorrection) {
+      setError(tBook('correctFormat'));
+      return;
+    }
 
     if (hasInsufficientCredits) {
       setError(tStoryStepsStep5('alerts.insufficientCreditsError'));
@@ -228,6 +245,7 @@ function Step5Page() {
           storyId: currentStoryId,
           idempotencyKey: generationIdempotencyKey.current,
           features: { ebook: true, printed: false, audiobook: false },
+          expectedBookType: storyData.bookType,
           dedicationMessage: dedicationMessage,
           customAuthor: customAuthor,
           analyticsContext,
@@ -261,9 +279,15 @@ function Step5Page() {
         setError(
           fieldMessages.length
             ? [...new Set(fieldMessages)].join(' ')
-            : response.status === 409
-              ? tStoryStepsStep5('alerts.insufficientCreditsError')
-              : tStoryStepsStep5('alerts.failedToCompleteStory'),
+            : response.status === 422 &&
+                typeof errorData?.error === 'string' &&
+                (errorData.error.startsWith('book_type_') ||
+                  errorData.error === 'invalid_book_format' ||
+                  errorData.error === 'incompatible_book_features')
+              ? tBook('reviewFormat')
+              : response.status === 409
+                ? tStoryStepsStep5('alerts.insufficientCreditsError')
+                : tStoryStepsStep5('alerts.failedToCompleteStory'),
         );
         return;
       }
@@ -309,7 +333,11 @@ function Step5Page() {
       <Show when="signed-in">
         {storyGenerationStarted ? (
           <div data-wizard-step="5" className={styles.generation}>
-            <StoryGenerationProgress storyId={currentStoryId!} storyTitle={storyData?.title} />
+            <StoryGenerationProgress
+              storyId={currentStoryId!}
+              storyTitle={storyData?.title}
+              premiumBook={isPremiumBook}
+            />
           </div>
         ) : (
           <div data-wizard-step="5" className={styles.confirmation}>
@@ -340,7 +368,9 @@ function Step5Page() {
                     <span className={styles.flourish} aria-hidden="true">
                       <PiSparkleFill />
                     </span>
-                    <h1 className={styles.title}>{tStoryStepsStep5('confirmation.title')}</h1>
+                    <h1 className={styles.title}>
+                      {isPremiumBook ? tBook('title') : tStoryStepsStep5('confirmation.title')}
+                    </h1>
                     <p className={styles.storyTitle}>{storyData.title}</p>
                   </header>
 
@@ -417,6 +447,12 @@ function Step5Page() {
                     </div>
                   )}
 
+                  {needsFormatCorrection && (
+                    <div role="alert" className="alert alert-warning mt-4">
+                      {tBook('correctFormat')}
+                    </div>
+                  )}
+
                   {hasInsufficientCredits && (
                     <div className="alert alert-warning mt-4" role="status">
                       <div className="flex flex-col items-center">
@@ -454,7 +490,7 @@ function Step5Page() {
                       ? `/tell-your-story/step-4?edit=${editStoryId}`
                       : '/tell-your-story/step-4'
                   }
-                  nextDisabled={!storyData || submitting || !canGenerate}
+                  nextDisabled={!storyData || submitting || !canGenerate || needsFormatCorrection}
                   busy={submitting}
                   onNext={storyData ? handleCompleteStory : undefined}
                   prevLabel={tStoryStepsStep5('confirmation.back')}

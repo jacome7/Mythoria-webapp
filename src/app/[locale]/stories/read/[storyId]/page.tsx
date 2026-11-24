@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
-import { ArrowLeft, BookOpen, Copy, Edit3, Share2, Volume2 } from 'lucide-react';
+import { ArrowLeft, BookOpen, Copy, Edit3, Printer, Share2, Volume2 } from 'lucide-react';
 import { Show } from '@clerk/nextjs';
 import { useRouter } from 'next/navigation';
 import { useParams } from 'next/navigation';
@@ -12,6 +12,7 @@ import ShareModal from '../../../../../components/ShareModal';
 import { useToast } from '@/hooks/useToast';
 import ToastContainer from '../../../../../components/ToastContainer';
 import { SelfPrintModal } from '../../../../../components/self-print/SelfPrintModal';
+import type { PremiumBookReaderData } from '@/lib/premium-children-book/reader';
 
 interface Chapter {
   id: string;
@@ -35,6 +36,8 @@ interface Story {
   coverUri?: string;
   backcoverUri?: string;
   status?: 'draft' | 'writing' | 'published';
+  isPublic?: boolean;
+  slug?: string;
 }
 
 export default function ReadStoryPage() {
@@ -49,6 +52,9 @@ export default function ReadStoryPage() {
   const storyId = (params?.storyId as string | undefined) ?? '';
   const [story, setStory] = useState<Story | null>(null);
   const [chapters, setChapters] = useState<Chapter[]>([]);
+  const [premiumBook, setPremiumBook] = useState<PremiumBookReaderData | undefined>(undefined);
+  const [canSharePremiumBook, setCanSharePremiumBook] = useState(false);
+  const [canPrintPremiumBook, setCanPrintPremiumBook] = useState(false);
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [showShareModal, setShowShareModal] = useState(false);
@@ -58,11 +64,14 @@ export default function ReadStoryPage() {
   useEffect(() => {
     const fetchStory = async () => {
       try {
-        const response = await fetch(`/api/stories/${storyId}/chapters`);
+        const response = await fetch(`/api/stories/${storyId}/chapters`, { cache: 'no-store' });
         if (response.ok) {
           const data = await response.json();
           setStory(data.story);
           setChapters(data.chapters);
+          setPremiumBook(data.premiumBook);
+          setCanSharePremiumBook(Boolean(data.canShare));
+          setCanPrintPremiumBook(Boolean(data.canPrint));
         } else if (response.status === 401) {
           setLoadError(tErrors('storySignInRequired'));
         } else if (response.status === 403) {
@@ -155,7 +164,7 @@ export default function ReadStoryPage() {
     );
   }
 
-  if (!story || chapters.length === 0) {
+  if (!story || (!premiumBook && chapters.length === 0)) {
     return (
       <div className="min-h-screen bg-base-100 flex items-center justify-center">
         <div className="text-center">
@@ -203,27 +212,49 @@ export default function ReadStoryPage() {
                 <span className="hidden sm:inline sm:ml-2">{tActions('read')}</span>
               </button>
 
-              <button onClick={navigateToListen} className="btn btn-ghost btn-sm">
-                <Volume2 className="w-4 h-4" />
-                <span className="hidden sm:inline sm:ml-2">{tActions('listen')}</span>
-              </button>
+              {!premiumBook && (
+                <>
+                  <button onClick={navigateToListen} className="btn btn-ghost btn-sm">
+                    <Volume2 className="w-4 h-4" />
+                    <span className="hidden sm:inline sm:ml-2">{tActions('listen')}</span>
+                  </button>
 
-              <button onClick={navigateToEdit} className="btn btn-ghost btn-sm">
-                <Edit3 className="w-4 h-4" />
-                <span className="hidden sm:inline sm:ml-2">{tActions('edit')}</span>
-              </button>
+                  <button onClick={navigateToEdit} className="btn btn-ghost btn-sm">
+                    <Edit3 className="w-4 h-4" />
+                    <span className="hidden sm:inline sm:ml-2">{tActions('edit')}</span>
+                  </button>
 
-              <StoryPrintActions onPrint={handlePrint} onDownload={handleDownload} />
+                  <StoryPrintActions onPrint={handlePrint} onDownload={handleDownload} />
+                </>
+              )}
+              {premiumBook && canPrintPremiumBook && (
+                <button
+                  onClick={handlePrint}
+                  aria-label={tActions('print')}
+                  className="btn btn-ghost btn-sm"
+                >
+                  <Printer aria-hidden="true" className="w-4 h-4" />
+                  <span className="hidden sm:inline sm:ml-2">{tActions('print')}</span>
+                </button>
+              )}
 
-              <button onClick={handleShare} className="btn btn-ghost btn-sm">
-                <Share2 className="w-4 h-4" />
-                <span className="hidden sm:inline sm:ml-2">{tActions('share')}</span>
-              </button>
+              {(!premiumBook || canSharePremiumBook) && (
+                <button
+                  onClick={handleShare}
+                  aria-label={tActions('share')}
+                  className="btn btn-ghost btn-sm"
+                >
+                  <Share2 className="w-4 h-4" />
+                  <span className="hidden sm:inline sm:ml-2">{tActions('share')}</span>
+                </button>
+              )}
 
-              <button onClick={handleDuplicate} className="btn btn-ghost btn-sm">
-                <Copy className="w-4 h-4" />
-                <span className="hidden sm:inline sm:ml-2">{tActions('duplicate')}</span>
-              </button>
+              {!premiumBook && (
+                <button onClick={handleDuplicate} className="btn btn-ghost btn-sm">
+                  <Copy className="w-4 h-4" />
+                  <span className="hidden sm:inline sm:ml-2">{tActions('duplicate')}</span>
+                </button>
+              )}
             </div>
           </div>
         </div>
@@ -233,6 +264,7 @@ export default function ReadStoryPage() {
           storyId={storyId}
           story={story}
           chapters={chapters}
+          premiumBook={premiumBook}
           currentChapter={0} // 0 = first page
         />
 
@@ -242,6 +274,9 @@ export default function ReadStoryPage() {
           storyTitle={story.title}
           isOpen={showShareModal}
           onClose={() => setShowShareModal(false)}
+          isPublic={story.isPublic}
+          slug={story.slug}
+          viewOnly={Boolean(premiumBook)}
         />
 
         <SelfPrintModal

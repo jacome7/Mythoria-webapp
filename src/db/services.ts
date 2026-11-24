@@ -35,6 +35,13 @@ import {
   type SearchIndexableStory,
 } from '@/lib/story-seo';
 import { GraphicalStyle } from '@/types/story-enums';
+import {
+  assertEditableStoryCharacters,
+  assertReusableCharacterReadyForUpdate,
+  PremiumBookSelectionError,
+} from '@/lib/premium-children-book/selection';
+import { hasPremiumBookMarker } from '@/lib/premium-children-book/contract';
+import { loadPublishedPremiumBook } from '@/lib/premium-children-book/storage';
 
 // Export payment service
 export { paymentService } from './services/payment';
@@ -43,7 +50,15 @@ export { creditPackagesService } from './services/credit-packages';
 export { blogService } from './services/blog';
 export { faqService } from './services/faq';
 
-const meaningfulStoryContent = sql<boolean>`exists (
+const publishedPremiumBook = sql<boolean>`(
+  "stories"."features"->'premiumBook'->>'type' = 'premium_children' and
+  "stories"."features"->'premiumBook'->>'version' = '1' and
+  "stories"."features"->'premiumBook'->>'state' = 'published'
+)`;
+const publicStoryCover = sql<string | null>`case when ${publishedPremiumBook}
+  then '/api/stories/' || "stories"."story_id" || '/premium/front'
+  else "stories"."cover_uri" end`;
+const meaningfulStoryContent = sql<boolean>`coalesce(${publishedPremiumBook}, false) or exists (
   select 1 from "chapters" as "seo_chapters"
   where "seo_chapters"."story_id" = "stories"."story_id"
     and length(trim(regexp_replace("seo_chapters"."html_content", '<[^>]+>', ' ', 'g'))) >= 200
@@ -53,7 +68,7 @@ const publicStorySeoSelection = {
   storyId: stories.storyId,
   title: stories.title,
   synopsis: stories.synopsis,
-  coverUri: stories.coverUri,
+  coverUri: publicStoryCover,
   storyLanguage: stories.storyLanguage,
   slug: stories.slug,
   isPublic: stories.isPublic,
@@ -88,6 +103,15 @@ async function assertPublicStoryIndexability(
 ): Promise<void> {
   const current = await loadStoryIndexabilityData(storyId);
   if (!current) throw new PublicStoryValidationError(['not_public']);
+  if (current.coverUri === `/api/stories/${storyId}/premium/front`) {
+    const [story] = await db
+      .select({ features: stories.features, ownerId: stories.authorId })
+      .from(stories)
+      .where(eq(stories.storyId, storyId));
+    if (!story || !(await loadPublishedPremiumBook(storyId, story.ownerId, story.features))) {
+      throw new PublicStoryValidationError(['missing_cover']);
+    }
+  }
   const validation = validatePublicStoryIndexability({ ...current, ...overrides });
   if (!validation.valid) throw new PublicStoryValidationError(validation.missing);
 }
@@ -426,7 +450,8 @@ export const storyService = {
     }));
   },
   async getPublishedStories() {
-    return await db.select().from(stories).where(eq(stories.status, 'published'));
+    const result = await db.select().from(stories).where(eq(stories.status, 'published'));
+    return result.filter((story) => !hasPremiumBookMarker(story.features));
   },
   async getFeaturedPublicStories(filters?: {
     targetAudience?: string;
@@ -483,7 +508,7 @@ export const storyService = {
         graphicalStyle: stories.graphicalStyle,
         storyLanguage: stories.storyLanguage,
         synopsis: stories.synopsis,
-        coverUri: stories.coverUri,
+        coverUri: publicStoryCover,
         status: stories.status,
         isPublic: stories.isPublic,
         isFeatured: stories.isFeatured,
@@ -567,8 +592,17 @@ export const storyService = {
     const [story] = await db
       .update(stories)
       .set(processedUpdates)
-      .where(eq(stories.storyId, storyId))
+      .where(
+        and(
+          eq(stories.storyId, storyId),
+          sql`(not coalesce(${stories.features} ? 'premiumBook', false) or
+            (${stories.features}->'premiumBook'->>'state' = 'draft'
+              and ${stories.features}->'premiumBook'->>'version' = '1'
+              and ${stories.features}->'premiumBook'->>'type' = 'premium_children'))`,
+        ),
+      )
       .returning();
+    if (!story) throw new PremiumBookSelectionError('book_type_locked');
 
     return {
       ...story,
@@ -592,6 +626,8 @@ export const storyService = {
         slug: stories.slug,
         isPublic: stories.isPublic,
         updatedAt: stories.updatedAt,
+        features: stories.features,
+        status: stories.status,
       })
       .from(stories)
       .leftJoin(storyCollaborators, eq(storyCollaborators.storyId, stories.storyId))
@@ -612,6 +648,9 @@ export const storyService = {
     if (!story) {
       return null;
     }
+    const { features, status, ...shareableStory } = story;
+    const premium = hasPremiumBookMarker(features);
+    if (premium && (story.authorId !== actorAuthorId || status !== 'published')) return null;
 
     const rawLinks = await db
       .select({
@@ -638,7 +677,8 @@ export const storyService = {
     });
 
     return {
-      story,
+      story: shareableStory,
+      ...(premium ? { viewOnly: true } : {}),
       links,
     };
   },
@@ -655,7 +695,7 @@ export const storyService = {
       includeRevoked: true,
       includeExpired: true,
     });
-    if (!access) {
+    if (!access || (access.viewOnly && options.accessLevel === 'edit')) {
       return null;
     }
 
@@ -870,14 +910,17 @@ export const characterService = {
     photoUrl: string | null,
     photoGcsUri: string | null,
   ) {
-    const [updated] = await db
-      .update(characters)
-      .set({
-        photoUrl: photoUrl ? toRelativeImagePath(photoUrl) : null,
-        photoGcsUri: photoGcsUri,
-      })
-      .where(eq(characters.characterId, characterId))
-      .returning();
+    const [updated] = await db.transaction(async (tx) => {
+      await assertReusableCharacterReadyForUpdate(tx, characterId);
+      return tx
+        .update(characters)
+        .set({
+          photoUrl: photoUrl ? toRelativeImagePath(photoUrl) : null,
+          photoGcsUri: photoGcsUri,
+        })
+        .where(eq(characters.characterId, characterId))
+        .returning();
+    });
 
     if (!updated) return null;
 
@@ -905,23 +948,22 @@ export const storyCharacterService = {
       | 'other'
       | null,
   ) {
-    const [relation] = await db
-      .insert(storyCharacters)
-      .values({
-        storyId,
-        characterId,
-        role,
-      })
-      .onConflictDoNothing({ target: [storyCharacters.storyId, storyCharacters.characterId] })
-      .returning();
-    if (relation) return relation;
-    const [existing] = await db
-      .select()
-      .from(storyCharacters)
-      .where(
-        and(eq(storyCharacters.storyId, storyId), eq(storyCharacters.characterId, characterId)),
-      );
-    return existing;
+    return db.transaction(async (tx) => {
+      await assertEditableStoryCharacters(tx, storyId);
+      const [relation] = await tx
+        .insert(storyCharacters)
+        .values({ storyId, characterId, role })
+        .onConflictDoNothing({ target: [storyCharacters.storyId, storyCharacters.characterId] })
+        .returning();
+      if (relation) return relation;
+      const [existing] = await tx
+        .select()
+        .from(storyCharacters)
+        .where(
+          and(eq(storyCharacters.storyId, storyId), eq(storyCharacters.characterId, characterId)),
+        );
+      return existing;
+    });
   },
 
   async getCharactersByStory(storyId: string) {
@@ -962,11 +1004,14 @@ export const storyCharacterService = {
     }));
   },
   async removeCharacterFromStory(storyId: string, characterId: string) {
-    await db
-      .delete(storyCharacters)
-      .where(
-        and(eq(storyCharacters.storyId, storyId), eq(storyCharacters.characterId, characterId)),
-      );
+    await db.transaction(async (tx) => {
+      await assertEditableStoryCharacters(tx, storyId);
+      await tx
+        .delete(storyCharacters)
+        .where(
+          and(eq(storyCharacters.storyId, storyId), eq(storyCharacters.characterId, characterId)),
+        );
+    });
   },
 };
 

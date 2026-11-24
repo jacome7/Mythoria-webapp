@@ -19,7 +19,12 @@ const originalFetch = global.fetch;
 afterEach(() => {
   global.fetch = originalFetch;
 });
-type Settings = { luluDefault: boolean; hardcoverAvailable: boolean };
+type Settings = {
+  luluDefault: boolean;
+  hardcoverAvailable: boolean;
+  paperbackAvailable?: boolean;
+  squareEditionRevision?: string;
+};
 async function show(
   settings: Settings,
   hardPriceActive: boolean,
@@ -28,11 +33,13 @@ async function show(
 ) {
   const onPlaceOrder = jest.fn();
   const payloads: Record<string, unknown> = {
-    '/api/print-requests/options': settings,
+    '/api/print-requests/options?storyId=story': settings,
     '/api/pricing/services': {
       services: [
         { serviceCode: 'printedSoftCover', cost: 5, isActive: true },
         { serviceCode: 'printedHardCover', cost: 12, isActive: hardPriceActive },
+        { serviceCode: 'extraBookCopy', cost: 4, isActive: true },
+        { serviceCode: 'extraChapterCost', cost: 7, isActive: true },
         { serviceCode: 'shippingCost', cost: 2, isActive: true },
       ],
     },
@@ -52,7 +59,7 @@ async function show(
           title: 'Fixture',
           authorId: 'author',
           synopsis: '',
-          chapterCount: 3,
+          chapterCount: settings.squareEditionRevision ? 9 : 3,
         }}
         address={{
           country,
@@ -88,6 +95,34 @@ it.each([
     expect(screen.getByText('payment.softcoverTitle')).toBeInTheDocument();
   },
 );
+
+it('offers only square hardcover and includes the carrier contact with the global default at None', async () => {
+  const { place, onPlaceOrder } = await show(
+    {
+      luluDefault: false,
+      hardcoverAvailable: true,
+      paperbackAvailable: false,
+      squareEditionRevision: 'revision-1',
+    },
+    true,
+  );
+  expect(screen.getByText('payment.squareHardcoverTitle')).toBeInTheDocument();
+  expect(screen.queryByText('payment.softcoverTitle')).not.toBeInTheDocument();
+  expect(screen.queryByText(/payment.includesFourChapters/)).not.toBeInTheDocument();
+  fireEvent.click(screen.getByRole('button', { name: '+' }));
+  fireEvent.click(place);
+  fireEvent.click(screen.getByRole('button', { name: 'buttons.confirm' }));
+  expect(onPlaceOrder).toHaveBeenCalledWith({
+    numberOfCopies: 2,
+    totalCost: 18,
+    breakdown: { basePrice: 12, extraChaptersCost: 0, extraCopiesCost: 4, shippingCost: 2 },
+    recipient: {
+      name: 'Test Recipient',
+      email: 'reader@example.org',
+      phone_number: '+351210000000',
+    },
+  });
+});
 it('allows a priced, available hardcover to be confirmed at its own credit price', async () => {
   const { place, onPlaceOrder } = await show({ luluDefault: true, hardcoverAvailable: true }, true);
   const select = screen.getByRole('combobox', { name: /payment.binding/ });

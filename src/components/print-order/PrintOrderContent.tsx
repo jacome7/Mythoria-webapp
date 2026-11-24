@@ -9,7 +9,10 @@ import { type Address as AddressType } from '@/components/AddressCard';
 import { getGoogleAnalyticsContext, trackPaidAction } from '@/lib/analytics';
 import { conversions } from '@/lib/openai-ads/events';
 import { trackOpenAiAdsEvent } from '@/lib/openai-ads/pixel';
-import type { PaymentOrderDetails } from '@/components/print-order/steps/PaymentStep';
+import type {
+  PaymentOrderDetails,
+  PrintingOption,
+} from '@/components/print-order/steps/PaymentStep';
 
 // Lazy load step components
 const StoryStep = dynamic(() => import('@/components/print-order/steps/StoryStep'));
@@ -37,14 +40,6 @@ interface Address {
   phone?: string;
   // Added for ordering & auto-selection UX improvements
   createdAt?: string; // ISO 8601 string (timestamptz); may be absent on legacy rows
-}
-
-interface PrintingOption {
-  serviceCode: string;
-  credits: number;
-  isActive: boolean;
-  title: string;
-  description: string;
 }
 
 type Step = 'story' | 'address' | 'payment';
@@ -149,6 +144,7 @@ export default function PrintOrderContent({ storyId }: PrintOrderContentProps) {
         numberOfCopies,
         totalCost,
         recipient,
+        ...(selectedPrintingOption.editionRevision ? [selectedPrintingOption.editionRevision] : []),
       ]);
       const hash = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(key));
       const fingerprint = Array.from(new Uint8Array(hash), (byte) =>
@@ -172,7 +168,10 @@ export default function PrintOrderContent({ storyId }: PrintOrderContentProps) {
             shippingId: selectedAddress.addressId,
             recipient,
             intentId: intent.current.id,
-            printingOption: { serviceCode: selectedPrintingOption.serviceCode },
+            printingOption: {
+              serviceCode: selectedPrintingOption.serviceCode,
+              editionRevision: selectedPrintingOption.editionRevision,
+            },
             totalCost,
             numberOfCopies,
             analyticsContext,
@@ -201,6 +200,13 @@ export default function PrintOrderContent({ storyId }: PrintOrderContentProps) {
         // Handle insufficient credits error specifically
         if (response.status === 402) {
           setError(tPrintOrder('errors.insufficientCredits'));
+        } else if (data.code === 'print_edition_changed') {
+          setError(tPrintOrder('errors.editionChanged'));
+        } else if (
+          data.code === 'square_print_unavailable' ||
+          data.code === 'square_edition_unavailable'
+        ) {
+          setError(tPrintOrder('errors.squareUnavailable'));
         } else {
           setError(data.error || tPrintOrder('errors.orderFailed'));
         }

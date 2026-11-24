@@ -84,6 +84,10 @@ export default function EditChapterPage() {
     try {
       setLoading(true);
       const response = await fetch(`/api/stories/${storyId}/edit`);
+      if (response.status === 422) {
+        router.replace(`/${locale}/stories/read/${storyId}`);
+        return;
+      }
 
       if (!response.ok) {
         throw new Error('Failed to load story data');
@@ -106,7 +110,7 @@ export default function EditChapterPage() {
     } finally {
       setLoading(false);
     }
-  }, [storyId, userId, addToast, chapterNumber, tChapterEditor, tEditor]);
+  }, [storyId, userId, addToast, chapterNumber, tChapterEditor, tEditor, locale, router]);
 
   // Save chapter content and create new version
   const saveChapterContent = async (content: string, title: string) => {

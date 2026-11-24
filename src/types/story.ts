@@ -1,5 +1,6 @@
 import { TargetAudience, NovelStyle, GraphicalStyle, LiteraryPersona } from '@/types/story-enums';
 import type { WritingPersonaSettings } from '@/types/writing-persona';
+import type { BookType } from '@/lib/premium-children-book/contract';
 
 export interface StoryData {
   storyId: string;
@@ -15,6 +16,10 @@ export interface StoryData {
   imageGenerationInstructions: string | null;
   chapterCount?: number | null;
   storyLanguage?: string | null;
+  bookType?: BookType;
+  bookFormatEditable?: boolean;
+  premiumBookPilot?: boolean;
+  status?: 'temporary' | 'draft' | 'writing' | 'published';
 }
 
 export interface Story {
@@ -25,6 +30,9 @@ export interface Story {
   storyGenerationCompletedPercentage?: number;
   isPublic?: boolean;
   slug?: string;
+  bookType?: BookType;
+  premiumPrintAvailable?: boolean;
+  coverUri?: string | null;
   createdAt: string;
   updatedAt: string;
 }

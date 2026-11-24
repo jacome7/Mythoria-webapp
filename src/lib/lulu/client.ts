@@ -146,7 +146,12 @@ const validation = z.object({
 });
 export async function validateLuluFile(
   kind: 'interior' | 'cover',
-  input: { sourceUrl: string; podPackageId: string; pageCount: number },
+  input: {
+    sourceUrl: string;
+    podPackageId: string;
+    pageCount: number;
+    requirePackageMatch?: boolean;
+  },
   savedId?: string,
   remember?: (id: string) => Promise<void>,
 ) {
@@ -170,7 +175,12 @@ export async function validateLuluFile(
       if (
         kind === 'interior' &&
         (r.page_count !== input.pageCount ||
-          (r.valid_pod_package_ids && !r.valid_pod_package_ids.includes(input.podPackageId)))
+          (input.requirePackageMatch
+            ? !r.valid_pod_package_ids?.some(
+                (packageId) =>
+                  packageId.replaceAll('.', '') === input.podPackageId.replaceAll('.', ''),
+              )
+            : r.valid_pod_package_ids && !r.valid_pod_package_ids.includes(input.podPackageId)))
       )
         throw new Error('LULU_INTERIOR_MISMATCH');
       return validationId;

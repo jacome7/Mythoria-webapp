@@ -1,4 +1,5 @@
 import { Storage } from '@google-cloud/storage';
+import { createHash } from 'node:crypto';
 import { getEnvironmentConfig } from '@/config/environment';
 import { z } from 'zod';
 import {
@@ -9,6 +10,7 @@ import {
   type PrintBinding,
   type PrintProvider,
 } from './contracts';
+import type { PremiumSquareEdition } from './premium-edition';
 
 const storage = new Storage();
 type RenderInput = {
@@ -17,6 +19,9 @@ type RenderInput = {
   runId: string;
   provider: PrintProvider;
   binding: PrintBinding;
+  premiumBook?: PremiumSquareEdition['premiumBook'];
+  premiumPageCount?: PremiumSquareEdition['pageCount'];
+  podPackageId?: PremiumSquareEdition['podPackageId'];
 };
 
 export async function renderOrderProof(
@@ -57,6 +62,33 @@ export function assetFile(asset: PrintAsset, input: RenderInput, kind: 'interior
     );
   }
   return storage.bucket(asset.bucket).file(asset.object, { generation: asset.generation });
+}
+
+export async function verifyProofFile(
+  asset: PrintAsset,
+  input: RenderInput,
+  kind: 'interior' | 'cover',
+) {
+  const file = assetFile(asset, input, kind);
+  const hash = createHash('sha256');
+  let size = 0;
+  for await (const bytes of file.createReadStream()) {
+    size += bytes.length;
+    if (size > asset.size) break;
+    hash.update(bytes);
+  }
+  if (size !== asset.size || hash.digest('hex') !== asset.sha256)
+    throw new PrintError('invalid_proof_asset', 'The square proof PDF failed its integrity check.');
+}
+
+export async function ensureProofFileAvailable(
+  asset: PrintAsset,
+  input: RenderInput,
+  kind: 'interior' | 'cover',
+) {
+  const [metadata] = await assetFile(asset, input, kind).getMetadata();
+  if (String(metadata.generation) !== asset.generation || Number(metadata.size) !== asset.size)
+    throw new PrintError('invalid_proof_asset', 'The current square proof PDF is unavailable.');
 }
 
 export async function signedProofLink(

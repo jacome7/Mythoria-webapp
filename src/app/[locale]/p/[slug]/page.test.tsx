@@ -145,3 +145,4 @@ describe('public story page', () => {
     });
   });
 });
+jest.mock('./PublicPremiumBookPage', () => ({ __esModule: true, default: () => null }));

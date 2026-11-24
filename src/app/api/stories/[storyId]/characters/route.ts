@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getCurrentAuthor } from '../../../../../lib/auth';
 import { storyCharacterService, storyService } from '../../../../../db/services';
+import { PremiumBookSelectionError } from '@/lib/premium-children-book/selection';
 
 export async function POST(
   request: NextRequest,
@@ -52,6 +53,9 @@ export async function POST(
       relation,
     });
   } catch (error) {
+    if (error instanceof PremiumBookSelectionError) {
+      return NextResponse.json({ error: error.code }, { status: 409 });
+    }
     console.error('Error adding character to story:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }

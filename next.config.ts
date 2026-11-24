@@ -1,6 +1,6 @@
 import type { NextConfig } from 'next';
 import createNextIntlPlugin from 'next-intl/plugin';
-import withPWAInit from '@ducanh2912/next-pwa';
+import withPWAInit, { runtimeCaching } from '@ducanh2912/next-pwa';
 
 const withNextIntl = createNextIntlPlugin('./src/i18n/request.ts');
 
@@ -14,6 +14,18 @@ const withPWA = withPWAInit({
   disable: process.env.NODE_ENV === 'development',
   workboxOptions: {
     disableDevLogs: true,
+    runtimeCaching: [
+      {
+        // Authorization must run again after a share is revoked or a story is made private.
+        urlPattern: ({ sameOrigin, url }) =>
+          sameOrigin &&
+          (/^\/api\/stories\/[^/]+\/(premium\/|chapters$)/.test(url.pathname) ||
+            url.pathname.startsWith('/api/share/') ||
+            /^\/api\/p\/[^/]+$/.test(url.pathname)),
+        handler: 'NetworkOnly',
+      },
+      ...runtimeCaching,
+    ],
     // Ensure offline route is always precached (avoids bad-precaching-response if auto detection fails)
     additionalManifestEntries: [
       { url: '/offline', revision: process.env.npm_package_version || '1' },

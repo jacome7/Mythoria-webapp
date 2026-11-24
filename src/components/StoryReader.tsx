@@ -10,6 +10,8 @@ import ReadingToolbar, { ReadingSettings } from './ReadingToolbar';
 import { loadStoryCSS, removeStoryCSS } from '../lib/story-css';
 import { getLogoForGraphicalStyle } from '../utils/logo-mapping';
 import { toAbsoluteImageUrl } from '../utils/image-url';
+import PremiumBookReader from './PremiumBookReader';
+import type { PremiumBookReaderData } from '@/lib/premium-children-book/reader';
 
 interface Chapter {
   id: string;
@@ -38,14 +40,15 @@ interface StoryReaderProps {
   };
   chapters: Chapter[];
   currentChapter?: number;
+  premiumBook?: PremiumBookReaderData;
 }
 
-export default function StoryReader({
-  storyId,
-  story,
-  chapters,
-  currentChapter,
-}: StoryReaderProps) {
+export default function StoryReader(props: StoryReaderProps) {
+  if (props.premiumBook) return <PremiumBookReader book={props.premiumBook} />;
+  return <ChapterStoryReader {...props} />;
+}
+
+function ChapterStoryReader({ storyId, story, chapters, currentChapter }: StoryReaderProps) {
   const tStoryReader = useTranslations('StoryReader');
   const tActions = useTranslations('Actions');
   const tAltTexts = useTranslations('AltTexts');

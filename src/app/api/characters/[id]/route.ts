@@ -4,6 +4,10 @@ import { characterService } from '../../../../db/services';
 import { db } from '../../../../db';
 import { characters } from '../../../../db/schema';
 import { eq } from 'drizzle-orm';
+import {
+  assertReusableCharacterReadyForUpdate,
+  PremiumBookSelectionError,
+} from '@/lib/premium-children-book/selection';
 
 export async function PATCH(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
@@ -35,26 +39,32 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
     if (!characterData.name?.trim()) {
       return NextResponse.json({ error: 'Character name is required' }, { status: 400 });
     } // Update the character
-    const [updatedCharacter] = await db
-      .update(characters)
-      .set({
-        name: characterData.name.trim(),
-        type: characterData.type?.trim() || null,
-        role: characterData.role?.trim() || null,
-        age: characterData.age?.trim() || null,
-        traits: characterData.traits || [],
-        characteristics: characterData.characteristics?.trim() || null,
-        physicalDescription: characterData.physicalDescription?.trim() || null,
-        photoUrl: characterData.photoUrl?.trim() || null,
-      })
-      .where(eq(characters.characterId, characterId))
-      .returning();
+    const [updatedCharacter] = await db.transaction(async (tx) => {
+      await assertReusableCharacterReadyForUpdate(tx, characterId);
+      return tx
+        .update(characters)
+        .set({
+          name: characterData.name.trim(),
+          type: characterData.type?.trim() || null,
+          role: characterData.role?.trim() || null,
+          age: characterData.age?.trim() || null,
+          traits: characterData.traits || [],
+          characteristics: characterData.characteristics?.trim() || null,
+          physicalDescription: characterData.physicalDescription?.trim() || null,
+          photoUrl: characterData.photoUrl?.trim() || null,
+        })
+        .where(eq(characters.characterId, characterId))
+        .returning();
+    });
 
     return NextResponse.json({
       success: true,
       character: updatedCharacter,
     });
   } catch (error) {
+    if (error instanceof PremiumBookSelectionError) {
+      return NextResponse.json({ error: error.code }, { status: 409 });
+    }
     console.error('Error updating character:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
@@ -87,13 +97,19 @@ export async function DELETE(
     }
 
     // Delete the character
-    await db.delete(characters).where(eq(characters.characterId, characterId));
+    await db.transaction(async (tx) => {
+      await assertReusableCharacterReadyForUpdate(tx, characterId);
+      await tx.delete(characters).where(eq(characters.characterId, characterId));
+    });
 
     return NextResponse.json({
       success: true,
       message: 'Character deleted successfully',
     });
   } catch (error) {
+    if (error instanceof PremiumBookSelectionError) {
+      return NextResponse.json({ error: error.code }, { status: 409 });
+    }
     console.error('Error deleting character:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }

@@ -17,6 +17,7 @@ import {
   stories,
 } from '@/db/schema';
 import { normalizeLocale } from '@/utils/locale-utils';
+import { hasPremiumBookMarker } from '@/lib/premium-children-book/contract';
 import {
   luluPackageConfigured,
   luluPackageId,
@@ -24,6 +25,11 @@ import {
   shippingSchema,
   validateLuluShipping,
 } from './contracts';
+import {
+  approvedSquareSupplier,
+  getPublishedSquareEdition,
+  readSquareEdition,
+} from './premium-edition';
 
 export const checkoutSchema = z.object({
   storyId: z.string().uuid(),
@@ -31,6 +37,7 @@ export const checkoutSchema = z.object({
   intentId: z.string().uuid(),
   printingOption: z.object({
     serviceCode: z.enum(['printedSoftCover', 'printedHardCover']),
+    editionRevision: z.uuid().optional(),
   }),
   totalCost: z.number().int().positive(),
   numberOfCopies: z.number().int().min(1).max(10).default(1),
@@ -45,9 +52,61 @@ export const checkoutSchema = z.object({
     .optional(),
 });
 
-export async function getPublicPrintOptions() {
-  const { defaultProvider, hardcoverCredits } = await getPrintSettings();
+function purchasableStory(storyId: string, authorId: string) {
+  return and(
+    eq(stories.storyId, storyId),
+    eq(stories.status, 'published'),
+    or(eq(stories.isPublic, true), eq(stories.authorId, authorId)),
+  );
+}
+
+const squarePriceLines = ['shippingCost', 'extraBookCopy'] as const;
+
+export async function getPurchasableSquareSupplier(
+  settings?: Awaited<ReturnType<typeof getPrintSettings>>,
+) {
+  const supplier = approvedSquareSupplier();
+  if (!supplier) return null;
+  const { hardcoverCredits, maxEurPerCopy } = settings ?? (await getPrintSettings());
+  if (hardcoverCredits === null || !(maxEurPerCopy > 0)) return null;
+  const feeLines = await db
+    .select({ serviceCode: pricing.serviceCode })
+    .from(pricing)
+    .where(
+      and(
+        eq(pricing.isActive, true),
+        inArray(pricing.serviceCode, squarePriceLines),
+        gte(pricing.credits, 0),
+      ),
+    );
+  return feeLines.length === squarePriceLines.length ? supplier : null;
+}
+
+export async function getPublicPrintOptions(selection?: { storyId: string; authorId: string }) {
+  const settings = await getPrintSettings();
+  const { defaultProvider, hardcoverCredits } = settings;
+  if (selection) {
+    const [story] = await db
+      .select({ storyId: stories.storyId, authorId: stories.authorId, features: stories.features })
+      .from(stories)
+      .where(purchasableStory(selection.storyId, selection.authorId));
+    if (!story)
+      throw new PrintError('story_unavailable', 'The published story is unavailable.', 404);
+    if (hasPremiumBookMarker(story.features)) {
+      const supplier = await getPurchasableSquareSupplier(settings);
+      const squareEditionRevision = supplier
+        ? (await getPublishedSquareEdition(story, supplier))?.edition.premiumBook.revision
+        : undefined;
+      return {
+        paperbackAvailable: false,
+        hardcoverAvailable: Boolean(squareEditionRevision),
+        luluDefault: defaultProvider === 'lulu',
+        squareEditionRevision,
+      };
+    }
+  }
   return {
+    paperbackAvailable: true,
     luluDefault: defaultProvider === 'lulu',
     hardcoverAvailable:
       defaultProvider === 'lulu' && hardcoverCredits !== null && luluPackageConfigured('hardcover'),
@@ -141,6 +200,7 @@ async function reservePrintCheckout(
         ),
       );
     if (previous) {
+      const edition = readSquareEdition(previous.request.printingOptions);
       if (
         previous.request.storyId !== input.storyId ||
         (previous.fulfillment.shippingSnapshot as { addressId?: string }).addressId !==
@@ -152,6 +212,10 @@ async function reservePrintCheckout(
         ) ||
         previous.fulfillment.copies !== input.numberOfCopies ||
         previous.fulfillment.creditsSpent !== input.totalCost ||
+        (edition
+          ? ((previous.request.printingOptions as { originalEditionRevision?: string })
+              .originalEditionRevision ?? edition.premiumBook.revision)
+          : undefined) !== input.printingOption.editionRevision ||
         previous.fulfillment.binding !==
           (input.printingOption.serviceCode === 'printedHardCover' ? 'hardcover' : 'paperback')
       ) {
@@ -166,13 +230,8 @@ async function reservePrintCheckout(
     const [story] = await tx
       .select()
       .from(stories)
-      .where(
-        and(
-          eq(stories.storyId, input.storyId),
-          eq(stories.status, 'published'),
-          or(eq(stories.isPublic, true), eq(stories.authorId, author.authorId)),
-        ),
-      );
+      .where(purchasableStory(input.storyId, author.authorId))
+      .for('share');
     if (!story)
       throw new PrintError('story_unavailable', 'The published story is unavailable.', 404);
     const [address] = await tx
@@ -197,17 +256,40 @@ async function reservePrintCheckout(
     if (!provider)
       throw new PrintError('country_unsupported', 'Printing is unavailable for this country.', 404);
     const serviceCode = input.printingOption.serviceCode;
+    const binding = serviceCode === 'printedHardCover' ? 'hardcover' : 'paperback';
     const [setting] = await tx
       .select()
       .from(printFulfillmentSettings)
       .where(eq(printFulfillmentSettings.id, settingsId));
-    const providerMode = setting?.defaultProvider === 'lulu' ? 'lulu' : 'manual';
-    const binding = serviceCode === 'printedHardCover' ? 'hardcover' : 'paperback';
+    const wantsSquare = hasPremiumBookMarker(story.features);
+    const squareSupplier = wantsSquare ? approvedSquareSupplier() : null;
+    if (
+      wantsSquare &&
+      (!squareSupplier || binding !== 'hardcover' || Number(setting?.maxEurPerCopy ?? 0) <= 0)
+    ) {
+      throw new PrintError(
+        'square_print_unavailable',
+        'Square hardcover printing is unavailable.',
+        400,
+      );
+    }
+    const premiumEdition =
+      squareSupplier && (await getPublishedSquareEdition(story, squareSupplier))?.edition;
+    if (
+      (wantsSquare && !premiumEdition) ||
+      premiumEdition?.premiumBook.revision !== input.printingOption.editionRevision
+    ) {
+      throw new PrintError(
+        'print_edition_changed',
+        'Refresh the checkout to confirm the current print edition.',
+      );
+    }
+    const providerMode = premiumEdition || setting?.defaultProvider === 'lulu' ? 'lulu' : 'manual';
     if (binding === 'hardcover' && providerMode !== 'lulu') {
       throw new PrintError('hardcover_unavailable', 'Hardcover printing is unavailable.', 400);
     }
     if (providerMode === 'lulu') {
-      luluPackageId(binding);
+      if (!premiumEdition) luluPackageId(binding);
       if (!luluConfigured())
         throw new PrintError(
           'lulu_not_configured',
@@ -231,9 +313,13 @@ async function reservePrintCheckout(
       );
     const costs = new Map(services.map((service) => [service.serviceCode, service.credits]));
     const base = costs.get(serviceCode);
-    if (!base || base < 0)
+    if (
+      !base ||
+      base < 0 ||
+      (premiumEdition && squarePriceLines.some((line) => (costs.get(line) ?? -1) < 0))
+    )
       throw new PrintError('printing_option_unavailable', 'This print option is unavailable.', 400);
-    const extraChapters = Math.max(0, story.chapterCount - 4);
+    const extraChapters = premiumEdition ? 0 : Math.max(0, story.chapterCount - 4);
     const totalCost =
       base +
       (costs.get('extraBookCopy') ?? 0) * (input.numberOfCopies - 1) +
@@ -292,6 +378,9 @@ async function reservePrintCheckout(
           totalCost,
           extraChapters,
           numberOfCopies: input.numberOfCopies,
+          ...(premiumEdition
+            ? { premiumEdition, originalEditionRevision: premiumEdition.premiumBook.revision }
+            : {}),
         },
       })
       .returning();

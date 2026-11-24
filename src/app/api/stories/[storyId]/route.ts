@@ -3,6 +3,8 @@ import { getCurrentAuthor } from '@/lib/auth';
 import { ensureStoryIdAccess, AccessDeniedError } from '@/lib/authorization';
 import { chapterService } from '@/db/services'; // storyService accessed through ensureStoryIdAccess
 import { getStoryImagesFromStorage } from '@/utils/storageUtils';
+import { hasPremiumBookMarker, premiumBookType } from '@/lib/premium-children-book/contract';
+import { premiumBookImagePath } from '@/lib/premium-children-book/reader';
 
 // Transform audiobookUri from database format to frontend format
 function transformAudiobookUri(audiobookUri: unknown):
@@ -112,6 +114,26 @@ export async function GET(
         return NextResponse.json({ error: 'Not found' }, { status: 404 });
       }
       throw e;
+    }
+
+    if (hasPremiumBookMarker(story.features)) {
+      return NextResponse.json(
+        {
+          story: {
+            storyId: story.storyId,
+            title: story.title,
+            status: story.status,
+            isPublic: story.isPublic,
+            slug: story.slug,
+            bookType: premiumBookType,
+            coverUri: story.status === 'published' ? premiumBookImagePath(storyId, 'front') : null,
+            chapterCount: 0,
+          },
+          chapters: [],
+          mediaLinks: [],
+        },
+        { headers: { 'Cache-Control': 'private, no-store' } },
+      );
     }
 
     // Transform audiobookUri from database format to frontend format

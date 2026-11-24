@@ -31,6 +31,11 @@ import {
 } from '@/types/story-enums';
 import type { StoryData } from '@/types/story';
 import type { SavedWritingPersona, WritingPersonaSettings } from '@/types/writing-persona';
+import {
+  isPremiumBookAudience,
+  premiumBookType,
+  type BookType,
+} from '@/lib/premium-children-book/contract';
 
 const DEFAULT_GRAPHIC_TEMPLATE_AUDIENCE = TargetAudience.CHILDREN_3_6;
 
@@ -120,6 +125,13 @@ function Step4Page() {
   const [additionalRequests, setAdditionalRequests] = useState('');
   const [imageGenerationInstructions, setImageGenerationInstructions] = useState('');
   const [chapterCount, setChapterCount] = useState<number>(4); // Default matches CHILDREN_3_6
+  const tBook = useTranslations('PremiumBook');
+  const [bookType, setBookType] = useState<BookType>('standard');
+  const [premiumBookPilot, setPremiumBookPilot] = useState(false);
+  const [bookFormatEditable, setBookFormatEditable] = useState(false);
+  const [savingBookFormat, setSavingBookFormat] = useState(false);
+  const premiumAvailable = premiumBookPilot && isPremiumBookAudience(targetAudience);
+  const bookTypeNeedsCorrection = bookType === premiumBookType && !premiumAvailable;
   const [isChapterCountManual, setIsChapterCountManual] = useState(false);
   const [storyLanguage, setStoryLanguage] = useState<string>(locale);
 
@@ -413,6 +425,9 @@ function Step4Page() {
         setTitle(story.title || '');
         setPlace(story.place || '');
         setTargetAudience(story.targetAudience || '');
+        setBookType(story.bookType || 'standard');
+        setPremiumBookPilot(Boolean(story.premiumBookPilot));
+        setBookFormatEditable(Boolean(story.bookFormatEditable));
         setNovelStyle(story.novelStyle || '');
         setGraphicalStyle(story.graphicalStyle || '');
         setLiteraryPersona((story.literaryPersona as LiteraryPersona | null) || defaultPersona);
@@ -449,6 +464,25 @@ function Step4Page() {
 
     loadStoryData(currentStoryId);
   }, [currentStoryId, loadStoryData]);
+  const handleBookTypeChange = async (value: BookType) => {
+    if (!currentStoryId || value === bookType || savingBookFormat) return;
+    setSavingBookFormat(true);
+    setError(null);
+    try {
+      const response = await fetch(`/api/my-stories/${currentStoryId}/book-type`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ bookType: value, targetAudience: targetAudience || null }),
+      });
+      if (!response.ok) throw new Error('Book format could not be saved');
+      setBookType(value);
+    } catch {
+      setError(tBook('saveFailed'));
+    } finally {
+      setSavingBookFormat(false);
+    }
+  };
+
   const handleNext = async () => {
     // Auto-save before navigating
     if (!title.trim()) {
@@ -458,6 +492,10 @@ function Step4Page() {
 
     if (!targetAudience) {
       setError(tStoryStepsStep4('errors.audienceRequired'));
+      return;
+    }
+    if (bookTypeNeedsCorrection) {
+      setError(tBook('correctFormat'));
       return;
     }
 
@@ -498,7 +536,7 @@ function Step4Page() {
           plotDescription: plotDescription.trim() || null,
           additionalRequests: additionalRequests.trim() || null,
           imageGenerationInstructions: imageGenerationInstructions.trim() || null,
-          chapterCount: chapterCount,
+          ...(bookType === 'standard' ? { chapterCount } : {}),
           storyLanguage: storyLanguage,
         }),
       });
@@ -518,7 +556,7 @@ function Step4Page() {
         literary_persona: customWritingPersona
           ? 'custom-writing-persona'
           : literaryPersona || defaultPersona,
-        chapter_count: chapterCount,
+        chapter_count: bookType === 'standard' ? chapterCount : undefined,
         has_plot_description: !!plotDescription.trim(),
         has_additional_requests: !!additionalRequests.trim(),
         has_image_generation_instructions: !!imageGenerationInstructions.trim(),
@@ -625,13 +663,15 @@ function Step4Page() {
 
                           {/* Target Audience Field */}
                           <div className="form-control">
-                            <label className="label">
+                            <label className="label" htmlFor="book-target-audience">
                               <span className="label-text font-semibold">
                                 {tStoryStepsStep4('fields.audience')} *
                               </span>
                             </label>
                             <select
+                              id="book-target-audience"
                               value={targetAudience}
+                              disabled={savingBookFormat}
                               onChange={(e) => {
                                 const newAudience = e.target.value as TargetAudience | '';
                                 setTargetAudience(newAudience);
@@ -654,36 +694,85 @@ function Step4Page() {
                             </label>
                           </div>
 
-                          {/* Book Size Field */}
-                          <div className="form-control">
-                            <label className="label">
-                              <span className="label-text font-semibold">
-                                {tStoryStepsStep4('fields.bookSize')}
-                              </span>
-                            </label>
-                            <select
-                              value={chapterCount}
-                              onChange={(e) => {
-                                setChapterCount(Number(e.target.value));
-                                setIsChapterCountManual(true);
-                              }}
-                              className="select select-bordered w-full"
-                            >
-                              {[2, 4, 6, 8, 10].map((count) => (
-                                <option key={count} value={count}>
-                                  {count}{' '}
-                                  {count === 1
-                                    ? tStoryStepsStep4('plurals.chapter')
-                                    : tStoryStepsStep4('plurals.chapters')}
-                                </option>
-                              ))}
-                            </select>
-                            <label className="label">
-                              <span className="label-text-alt break-words max-w-full whitespace-normal">
-                                {tStoryStepsStep4('fields.bookSizeHelp')}
-                              </span>
-                            </label>
-                          </div>
+                          {bookFormatEditable &&
+                            (premiumAvailable || bookType === premiumBookType) && (
+                              <fieldset
+                                className="form-control"
+                                disabled={savingBookFormat || saving}
+                              >
+                                <legend className="label">
+                                  <span className="label-text font-semibold">
+                                    {tBook('format')}
+                                  </span>
+                                </legend>
+                                <div className="flex flex-col gap-2">
+                                  <label className="flex items-center gap-2">
+                                    <input
+                                      type="radio"
+                                      name="book-format"
+                                      className="radio radio-primary radio-sm"
+                                      checked={bookType === 'standard'}
+                                      onChange={() => void handleBookTypeChange('standard')}
+                                    />
+                                    {tBook('standard')}
+                                  </label>
+                                  {premiumAvailable && (
+                                    <label className="flex items-center gap-2">
+                                      <input
+                                        type="radio"
+                                        name="book-format"
+                                        className="radio radio-primary radio-sm"
+                                        checked={bookType === premiumBookType}
+                                        onChange={() => void handleBookTypeChange(premiumBookType)}
+                                      />
+                                      {tBook('title')}
+                                    </label>
+                                  )}
+                                </div>
+                                <p className="mt-2 text-sm text-base-content/70" aria-live="polite">
+                                  {savingBookFormat
+                                    ? tStoryStepsStep4('saving')
+                                    : tBook(
+                                        bookTypeNeedsCorrection
+                                          ? 'correctFormat'
+                                          : 'formatDescription',
+                                      )}
+                                </p>
+                              </fieldset>
+                            )}
+
+                          {bookType === 'standard' && (
+                            <div className="form-control">
+                              <label className="label" htmlFor="book-chapter-count">
+                                <span className="label-text font-semibold">
+                                  {tStoryStepsStep4('fields.bookSize')}
+                                </span>
+                              </label>
+                              <select
+                                id="book-chapter-count"
+                                value={chapterCount}
+                                onChange={(e) => {
+                                  setChapterCount(Number(e.target.value));
+                                  setIsChapterCountManual(true);
+                                }}
+                                className="select select-bordered w-full"
+                              >
+                                {[2, 4, 6, 8, 10].map((count) => (
+                                  <option key={count} value={count}>
+                                    {count}{' '}
+                                    {count === 1
+                                      ? tStoryStepsStep4('plurals.chapter')
+                                      : tStoryStepsStep4('plurals.chapters')}
+                                  </option>
+                                ))}
+                              </select>
+                              <label className="label">
+                                <span className="label-text-alt break-words max-w-full whitespace-normal">
+                                  {tStoryStepsStep4('fields.bookSizeHelp')}
+                                </span>
+                              </label>
+                            </div>
+                          )}
 
                           {/* Story Language Field */}
                           <div className="form-control md:col-span-2">
@@ -1393,6 +1482,8 @@ function Step4Page() {
                     nextDisabled={
                       loading ||
                       saving ||
+                      savingBookFormat ||
+                      bookTypeNeedsCorrection ||
                       !title.trim() ||
                       !targetAudience ||
                       !novelStyle ||

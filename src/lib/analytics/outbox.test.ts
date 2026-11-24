@@ -77,6 +77,11 @@ function mockUpdateSequence(returningRows: unknown[][]) {
   return set;
 }
 
+function compensationSelect(request: Record<string, unknown>) {
+  const locked = { where: () => ({ for: async () => [request] }) };
+  return jest.fn(() => ({ from: () => ({ ...locked, innerJoin: () => locked }) }));
+}
+
 describe('durable outbox drains', () => {
   beforeEach(() => {
     jest.clearAllMocks();
@@ -255,6 +260,29 @@ describe('durable outbox drains', () => {
     expect(publishStoryRequestMock).toHaveBeenCalledWith({ storyId: 'story-1', runId: 'run-1' });
   });
 
+  it('leaves the claim recoverable when Pub/Sub accepts but its acknowledgement cannot be saved', async () => {
+    const request = { runId: 'run-1', storyId: 'story-1', publishAttempts: 7 };
+    mockPendingRows([request]);
+    updateMock
+      .mockReturnValueOnce({ set: () => ({ where: () => ({ returning: async () => [request] }) }) })
+      .mockReturnValueOnce({
+        set: () => ({
+          where: async () => {
+            throw new Error('database unavailable');
+          },
+        }),
+      });
+    publishStoryRequestMock.mockResolvedValue('acknowledged');
+    const logged = jest.spyOn(console, 'error').mockImplementation(() => undefined);
+    try {
+      await expect(publishGenerations()).resolves.toEqual({ published: 0, failed: 1 });
+      expect(transactionMock).not.toHaveBeenCalled();
+      expect(updateMock).toHaveBeenCalledTimes(2);
+    } finally {
+      logged.mockRestore();
+    }
+  });
+
   it('issues one idempotent compensation after permanent delivery failure', async () => {
     mockPendingRows([
       {
@@ -283,22 +311,17 @@ describe('durable outbox drains', () => {
       })),
     }));
     const tx = {
-      select: jest.fn(() => ({
-        from: jest.fn(() => ({
-          where: jest.fn().mockResolvedValue([
-            {
-              runId: 'run-1',
-              authorId: 'author-1',
-              storyId: 'story-1',
-              creditsSpent: 3,
-              compensatedAt: null,
-            },
-          ]),
-        })),
-      })),
+      select: compensationSelect({
+        runId: 'run-1',
+        authorId: 'author-1',
+        storyId: 'story-1',
+        creditsSpent: 3,
+      }),
       insert: jest.fn(() => ({ values: insertValues })),
       update: jest.fn(() => ({
-        set: jest.fn(() => ({ where: jest.fn().mockResolvedValue(undefined) })),
+        set: jest.fn(() => ({
+          where: () => ({ returning: async () => [{ storyId: 'story-1' }] }),
+        })),
       })),
     };
     transactionMock.mockImplementation(async (callback) => callback(tx));
@@ -330,19 +353,12 @@ describe('durable outbox drains', () => {
       where: jest.fn().mockResolvedValue(undefined),
     }));
     const tx = {
-      select: jest.fn(() => ({
-        from: jest.fn(() => ({
-          where: jest.fn().mockResolvedValue([
-            {
-              runId: 'admin-run-1',
-              authorId: 'author-1',
-              storyId: 'story-1',
-              creditsSpent: 0,
-              compensatedAt: null,
-            },
-          ]),
-        })),
-      })),
+      select: compensationSelect({
+        runId: 'admin-run-1',
+        authorId: 'author-1',
+        storyId: 'story-1',
+        creditsSpent: 0,
+      }),
       insert: jest.fn(),
       update: jest.fn(() => ({ set })),
     };

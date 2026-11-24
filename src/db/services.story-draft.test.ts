@@ -5,18 +5,10 @@ const activeReferralMock = jest.fn();
 const characterReturningMock = jest.fn();
 const characterSelectMock = jest.fn();
 const characterConflictMock = jest.fn();
+const characterLockMock = jest.fn();
 jest.mock('./index', () => ({
   db: {
     transaction: (...args: unknown[]) => transactionMock(...args),
-    insert: () => ({
-      values: () => ({
-        onConflictDoNothing: (options: unknown) => {
-          characterConflictMock(options);
-          return { returning: characterReturningMock };
-        },
-      }),
-    }),
-    select: () => ({ from: () => ({ where: characterSelectMock }) }),
   },
 }));
 jest.mock('./services/pricing', () => ({ pricingService: {} }));
@@ -109,7 +101,27 @@ describe('idempotent story draft creation', () => {
 });
 
 describe('retrying a character association', () => {
-  beforeEach(() => jest.clearAllMocks());
+  beforeEach(() => {
+    jest.clearAllMocks();
+    transactionMock.mockImplementation(async (callback) =>
+      callback({
+        insert: () => ({
+          values: () => ({
+            onConflictDoNothing: (options: unknown) => {
+              characterConflictMock(options);
+              return { returning: characterReturningMock };
+            },
+          }),
+        }),
+        select: (fields?: unknown) => ({
+          from: () => ({
+            where: fields ? () => ({ for: characterLockMock }) : characterSelectMock,
+          }),
+        }),
+      }),
+    );
+    characterLockMock.mockResolvedValue([{ features: null, status: 'draft' }]);
+  });
   it('returns the original relation on retry without replacing an edited role', async () => {
     const relation = { storyId: 'story-1', characterId: 'character-1', role: 'mentor' };
     characterReturningMock.mockResolvedValueOnce([relation]).mockResolvedValueOnce([]);
