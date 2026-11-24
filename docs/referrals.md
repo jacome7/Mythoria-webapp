@@ -195,6 +195,8 @@ At checkout creation, the WebApp checks the account assignment, owner/code statu
 
 Payment completion uses the final Stripe total and atomically commits credit delivery, one commission per payment order, and durable follow-up work. Stable checkout-attempt IDs and database uniqueness prevent duplicate commissions when payment callbacks/webhooks retry. Missing final totals produce blocked/unvalued records rather than guessed amounts.
 
+Stripe webhook deliveries and reconciliation share a five-minute inbox lease. When a retry claims an expired lease, only the new attempt can record success or failure. The superseded attempt returns a retryable failure. A delivery for an already processed event succeeds without dispatching it again.
+
 | State                    | Operational interpretation                                                      |
 | ------------------------ | ------------------------------------------------------------------------------- |
 | `pending`                | Accrued but waiting for hold/review/reconciliation eligibility                  |
@@ -270,6 +272,8 @@ The partner FAQ contains 14 localized answers covering sharing, consent, the 90-
 ### Payment and resilience coverage
 
 Use isolated data and Stripe test mode for checkout success/cancel/retry, duplicate or out-of-order webhooks, first/repeat purchases, negotiated rates, partial/full refunds, disputes, post-payout adjustments, fiscal failures and notification retries. Verify authoritative totals, one commission per order and immutable snapshots. Test the EUR 20 boundary, the 30-day hold, Lisbon month boundaries, suspended owners and omitted allowlist IDs. Do not change shared production timestamps to accelerate these tests.
+
+To run the inbox concurrency regression tests, create a `mythoria_stripe_inbox_test` database on a disposable PostgreSQL cluster bound to `127.0.0.1`. Set `STRIPE_INBOX_TEST_DATABASE_URL` to its PostgreSQL URL with an explicit port and use a database role with permission to create schemas. Run `npm test -- --runInBand src/lib/referrals/inbox.test.ts`. Each run creates and drops its own schema, uses the inbox migration to create its table, and simulates Stripe deliveries. You can run the suite repeatedly against the same disposable database.
 
 Developer checks from this repository:
 

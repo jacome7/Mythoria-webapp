@@ -757,9 +757,11 @@ export const paymentService = {
 
   async processStripeWebhook(event: Stripe.Event): Promise<{ success: boolean; message: string }> {
     try {
-      if (!(await claimPaymentEvent(event))) return { success: true, message: 'Already processed' };
+      const attempt = await claimPaymentEvent(event);
+      if (attempt === null) return { success: true, message: 'Already processed' };
       const result = await this.dispatchStripeWebhook(event);
-      await finishPaymentEvent(event.id, result.success);
+      if (!(await finishPaymentEvent(event.id, attempt, result.success)))
+        return { success: false, message: 'Payment event processing failed' };
       return result;
     } catch {
       return { success: false, message: 'Payment event processing failed' };
