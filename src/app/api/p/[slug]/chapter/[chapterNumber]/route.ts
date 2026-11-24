@@ -3,6 +3,7 @@ import { chapterService, authorService } from '@/db/services';
 import { eq } from 'drizzle-orm';
 import { db } from '@/db';
 import { stories } from '@/db/schema';
+import { hasPremiumBookMarker } from '@/lib/premium-children-book/contract';
 
 export async function GET(
   request: NextRequest,
@@ -33,6 +34,12 @@ export async function GET(
     // Check if story is public
     if (!story.isPublic) {
       return NextResponse.json({ error: 'Story not available' }, { status: 403 });
+    }
+
+    if (hasPremiumBookMarker(story.features)) {
+      return story.status === 'published'
+        ? NextResponse.json({ redirectToReader: true })
+        : NextResponse.json({ error: 'Story not found' }, { status: 404 });
     }
 
     // Get the specific chapter

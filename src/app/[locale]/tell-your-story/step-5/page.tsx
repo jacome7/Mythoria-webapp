@@ -18,6 +18,7 @@ import { getStep1Data } from '@/lib/story-session';
 import { fetchStoryData } from '@/lib/story';
 import { useStorySessionGuard } from '@/hooks/useStorySessionGuard';
 import type { StoryData } from '@/types/story';
+import { isPremiumBookAudience, premiumBookType } from '@/lib/premium-children-book/contract';
 
 interface EbookPricing {
   id: string;
@@ -47,6 +48,7 @@ function Step5Page() {
   const editStoryId = searchParams?.get('edit');
   const locale = useLocale();
   const tStoryStepsStep5 = useTranslations('StorySteps.step5');
+  const tBook = useTranslations('PremiumBook');
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [storyGenerationStarted, setStoryGenerationStarted] = useState(false);
@@ -58,11 +60,22 @@ function Step5Page() {
   const [ebookPricing, setEbookPricing] = useState<EbookPricing | null>(null);
   const hasTrackedStepView = useRef(false);
   const generationIdempotencyKey = useRef<string | null>(null);
+  const isPremiumBook = storyData?.bookType === premiumBookType;
+  const needsFormatCorrection =
+    isPremiumBook &&
+    storyData.bookFormatEditable &&
+    (!storyData.premiumBookPilot || !isPremiumBookAudience(storyData.targetAudience));
 
   const loadStoryData = async (storyId: string) => {
     try {
       const data = await fetchStoryData(storyId);
       setStoryData(data);
+      if (
+        data.bookType === premiumBookType &&
+        (data.status === 'writing' || data.status === 'published')
+      ) {
+        setStoryGenerationStarted(true);
+      }
     } catch (error) {
       console.error('Error fetching story data:', error);
       setError(tStoryStepsStep5('alerts.failedToFetchStoryData'));
@@ -161,6 +174,10 @@ function Step5Page() {
       setError(tStoryStepsStep5('storyDataNotAvailable'));
       return;
     }
+    if (needsFormatCorrection) {
+      setError(tBook('correctFormat'));
+      return;
+    }
 
     if (hasInsufficientCredits()) {
       setError(tStoryStepsStep5('alerts.insufficientCreditsError'));
@@ -192,6 +209,7 @@ function Step5Page() {
           storyId: currentStoryId,
           idempotencyKey: generationIdempotencyKey.current,
           features: { ebook: true, printed: false, audiobook: false },
+          expectedBookType: storyData.bookType,
           dedicationMessage: dedicationMessage,
           customAuthor: customAuthor,
           analyticsContext,
@@ -225,9 +243,15 @@ function Step5Page() {
         setError(
           fieldMessages.length
             ? [...new Set(fieldMessages)].join(' ')
-            : response.status === 409
-              ? tStoryStepsStep5('alerts.insufficientCreditsError')
-              : tStoryStepsStep5('alerts.failedToCompleteStory'),
+            : response.status === 422 &&
+                typeof errorData?.error === 'string' &&
+                (errorData.error.startsWith('book_type_') ||
+                  errorData.error === 'invalid_book_format' ||
+                  errorData.error === 'incompatible_book_features')
+              ? tBook('reviewFormat')
+              : response.status === 409
+                ? tStoryStepsStep5('alerts.insufficientCreditsError')
+                : tStoryStepsStep5('alerts.failedToCompleteStory'),
         );
         return;
       }
@@ -275,7 +299,7 @@ function Step5Page() {
           <div className="max-w-4xl mx-auto">
             {/* Show progress component if story generation has started */}
             {storyGenerationStarted ? (
-              <StoryGenerationProgress storyId={currentStoryId!} />
+              <StoryGenerationProgress storyId={currentStoryId!} premiumBook={isPremiumBook} />
             ) : (
               <>
                 <ProgressIndicator currentStep={5} totalSteps={5} />
@@ -328,7 +352,9 @@ function Step5Page() {
                             {ebookPricing && (
                               <div className="card bg-base-200 p-6">
                                 <h3 className="text-lg font-semibold mb-4 text-gray-800">
-                                  {tStoryStepsStep5('ebookGeneration')}
+                                  {isPremiumBook
+                                    ? tBook('title')
+                                    : tStoryStepsStep5('ebookGeneration')}
                                 </h3>
                                 <div className="flex justify-center items-center gap-6">
                                   <div className="text-center">
@@ -350,6 +376,11 @@ function Step5Page() {
                                     </div>
                                   </div>
                                 </div>
+                              </div>
+                            )}
+                            {needsFormatCorrection && (
+                              <div role="alert" className="alert alert-warning">
+                                {tBook('correctFormat')}
                               </div>
                             )}
 
@@ -393,7 +424,12 @@ function Step5Page() {
                           ? `/tell-your-story/step-4?edit=${editStoryId}`
                           : '/tell-your-story/step-4'
                       }
-                      nextDisabled={!storyData || submitting || hasInsufficientCredits()}
+                      nextDisabled={
+                        !storyData ||
+                        submitting ||
+                        needsFormatCorrection ||
+                        hasInsufficientCredits()
+                      }
                       busy={submitting}
                       onNext={storyData ? handleCompleteStory : undefined}
                       nextLabel={

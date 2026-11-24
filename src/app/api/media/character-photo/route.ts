@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getCurrentAuthor } from '@/lib/auth';
 import { characterService } from '@/db/services';
 import { sgwFetch } from '@/lib/sgw-client';
+import { PremiumBookSelectionError } from '@/lib/premium-children-book/selection';
 
 /**
  * POST /api/media/character-photo
@@ -85,6 +86,9 @@ export async function POST(request: NextRequest) {
       character: updatedCharacter,
     });
   } catch (error) {
+    if (error instanceof PremiumBookSelectionError) {
+      return NextResponse.json({ success: false, error: error.code }, { status: 409 });
+    }
     console.error('Error uploading character photo:', error);
     return NextResponse.json(
       { success: false, error: error instanceof Error ? error.message : 'Internal error' },
@@ -125,6 +129,9 @@ export async function DELETE(request: NextRequest) {
       return NextResponse.json({ success: false, error: 'Access denied' }, { status: 403 });
     }
 
+    // Clear the database reference first, including the check for an active premium book.
+    const updatedCharacter = await characterService.updateCharacterPhoto(characterId, null, null);
+
     // Delete the photo from GCS via SGW if it exists
     if (character.photoGcsUri) {
       try {
@@ -144,14 +151,14 @@ export async function DELETE(request: NextRequest) {
       }
     }
 
-    // Clear the photo URL and GCS URI in the database
-    const updatedCharacter = await characterService.updateCharacterPhoto(characterId, null, null);
-
     return NextResponse.json({
       success: true,
       character: updatedCharacter,
     });
   } catch (error) {
+    if (error instanceof PremiumBookSelectionError) {
+      return NextResponse.json({ success: false, error: error.code }, { status: 409 });
+    }
     console.error('Error deleting character photo:', error);
     return NextResponse.json(
       { success: false, error: error instanceof Error ? error.message : 'Internal error' },

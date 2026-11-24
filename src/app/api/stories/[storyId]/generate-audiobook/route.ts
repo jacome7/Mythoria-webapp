@@ -8,6 +8,7 @@ import { InsufficientProductCreditsError, startProductGeneration } from '@/lib/p
 import { launchAudiobookWorkflow } from '@/lib/product-launch';
 import { resolveAdContextSafely } from '@/lib/openai-ads/context';
 import { adEventId } from '@/lib/openai-ads/events';
+import { hasPremiumBookMarker } from '@/lib/premium-children-book/contract';
 
 export async function POST(
   request: NextRequest,
@@ -36,6 +37,10 @@ export async function POST(
         { error: 'Story must be completed to generate audiobook' },
         { status: 400 },
       );
+    }
+
+    if (hasPremiumBookMarker(story.features)) {
+      return NextResponse.json({ error: 'incompatible_book_features' }, { status: 422 });
     }
 
     const ttsProvider = getTTSProvider();

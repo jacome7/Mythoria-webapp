@@ -70,6 +70,10 @@ export default function PublicChapterPage() {
       try {
         const response = await fetch(`/api/p/${slug}/chapter/${chapterNumber}`);
         const result = await response.json();
+        if (result.redirectToReader) {
+          window.location.replace(`/${locale}/p/${slug}`);
+          return;
+        }
 
         if (result.success) {
           setData(result);
@@ -87,7 +91,7 @@ export default function PublicChapterPage() {
     if (slug && chapterNumber) {
       fetchPublicChapter();
     }
-  }, [slug, chapterNumber, tPublicStoryChapter]);
+  }, [slug, chapterNumber, tPublicStoryChapter, locale]);
 
   // Set page title when data is loaded
   useEffect(() => {

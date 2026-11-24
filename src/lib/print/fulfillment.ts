@@ -7,6 +7,7 @@ import {
   printRequests,
   printProviders,
   printFulfillmentSettings,
+  stories,
 } from '@/db/schema';
 import { getEnvironmentConfig } from '@/config/environment';
 import {
@@ -37,7 +38,19 @@ import {
   type PrintProvider,
   type PrintVendor,
 } from './contracts';
-import { assetFile, renderOrderProof, signedProofLink } from './proof';
+import {
+  assetFile,
+  ensureProofFileAvailable,
+  renderOrderProof,
+  signedProofLink,
+  verifyProofFile,
+} from './proof';
+import {
+  getPublishedSquareEdition,
+  readSquareEdition,
+  requireSquareSupplier,
+  type PremiumSquareEdition,
+} from './premium-edition';
 
 const duration = {
   preview: 20 * 60_000,
@@ -63,12 +76,24 @@ type Order = Awaited<ReturnType<typeof readOrder>>;
 type Changes = Partial<typeof printFulfillments.$inferInsert>;
 
 function renderInput(order: Order) {
+  const edition = readSquareEdition(order.request.printingOptions);
+  const provider = providerSchema.parse(order.fulfillment.provider);
+  const binding = bindingSchema.parse(order.fulfillment.binding);
+  if (edition && (provider !== 'lulu' || binding !== 'hardcover'))
+    throw new PrintError('square_provider_required', 'Square hardcover orders require Lulu.');
   return {
     storyId: order.request.storyId,
     orderId: order.request.id,
     runId: order.fulfillment.runId,
-    provider: providerSchema.parse(order.fulfillment.provider),
-    binding: bindingSchema.parse(order.fulfillment.binding),
+    provider,
+    binding,
+    ...(edition
+      ? {
+          premiumBook: edition.premiumBook,
+          premiumPageCount: edition.pageCount,
+          podPackageId: edition.podPackageId,
+        }
+      : {}),
   };
 }
 
@@ -77,6 +102,14 @@ const validationSchema = proofSchema.extend({
   interiorValidationId: z.string().optional(),
   coverValidationId: z.string().optional(),
 });
+
+function requireSquareProofPageCount(edition: PremiumSquareEdition | null, pageCount: number) {
+  if (edition && pageCount !== edition.pageCount)
+    throw new PrintError(
+      'square_page_count_mismatch',
+      `The square hardcover proof must match the order’s ${edition.pageCount}-page edition.`,
+    );
+}
 
 function proofLinks(order: Order, proof: PrintProof, expires: number) {
   const input = renderInput(order);
@@ -175,15 +208,24 @@ async function notifyProof(order: Order, proof: PrintProof) {
     }),
     signal: AbortSignal.timeout(45_000),
   });
-  if (response.status !== 200)
+  if (
+    response.status !== 200 ||
+    (readSquareEdition(order.request.printingOptions) &&
+      !z
+        .object({ success: z.literal(true), data: z.object({ deliveryStatus: z.literal('sent') }) })
+        .safeParse(await response.json().catch(() => null)).success)
+  )
     throw new PrintError('print_proof_email_pending', 'Proof email delivery is pending.', 502);
 }
 
 async function generateProof(order: Order, leaseId: string) {
+  const edition = readSquareEdition(order.request.printingOptions);
   const input = renderInput(order);
   if (input.provider === 'manual')
     return { order, proof: proofSchema.parse(await renderOrderProof(input)) };
+  const podPackageId = edition ? requireSquareSupplier(edition) : luluPackageId(input.binding);
   const preliminary = await renderOrderProof(input);
+  requireSquareProofPageCount(edition, preliminary.pageCount);
   assetFile(preliminary.interior, input, 'interior');
   if (!luluPageCountSupported(input.binding, preliminary.pageCount)) {
     if (input.binding === 'hardcover')
@@ -201,7 +243,6 @@ async function generateProof(order: Order, leaseId: string) {
       proof: proofSchema.parse(await renderOrderProof(renderInput(fallback))),
     };
   }
-  const podPackageId = luluPackageId(input.binding);
   const dimensions = await getLuluCoverDimensions({
     podPackageId,
     pageCount: preliminary.pageCount,
@@ -209,7 +250,10 @@ async function generateProof(order: Order, leaseId: string) {
   const proof = proofSchema.parse(await renderOrderProof(input, dimensions));
   if (
     proof.pageCount !== preliminary.pageCount ||
-    proof.interior.sha256 !== preliminary.interior.sha256
+    proof.interior.sha256 !== preliminary.interior.sha256 ||
+    (edition &&
+      (proof.interior.generation !== preliminary.interior.generation ||
+        proof.interior.size !== preliminary.interior.size))
   ) {
     throw new PrintError('print_proof_mismatch', 'The interior changed while preparing the cover.');
   }
@@ -239,6 +283,9 @@ export async function processPrintProof(id: string) {
   if (!claimed) return order;
   order = { ...order, fulfillment: claimed };
   try {
+    // A held order may have been rebound between the initial read and the worker claim.
+    order = await readOrder(id);
+    if (order.fulfillment.leaseId !== leaseId) return order;
     if (!order.fulfillment.ticketId)
       throw new PrintError('missing_print_ticket', 'Paid print ticket is unavailable.', 500);
     let proof = proofSchema.nullable().parse(order.fulfillment.proof);
@@ -249,8 +296,15 @@ export async function processPrintProof(id: string) {
       const input = renderInput(order);
       assetFile(proof.interior, input, 'interior');
       assetFile(proof.cover, input, 'cover');
+      if (input.premiumBook) {
+        await Promise.all([
+          verifyProofFile(proof.interior, input, 'interior'),
+          verifyProofFile(proof.cover, input, 'cover'),
+        ]);
+      }
       order = await leaseUpdate(order, leaseId, { proof });
     }
+    requireSquareProofPageCount(readSquareEdition(order.request.printingOptions), proof.pageCount);
     if (!proof.qaPassed || proof.qaCriticalCount > 0) {
       return leaseUpdate(order, leaseId, {
         status: 'manual_review',
@@ -356,16 +410,22 @@ export async function processPrintProof(id: string) {
 
 async function quoteForOrder(order: Order, leaseId: string) {
   const proof = validationSchema.parse(order.fulfillment.proof);
+  const edition = readSquareEdition(order.request.printingOptions);
+  requireSquareProofPageCount(edition, proof.pageCount);
   const input = renderInput(order);
-  const [interiorUrl, coverUrl] = await proofLinks(order, proof, duration.supplier);
-  const podPackageId = luluPackageId(input.binding);
+  const podPackageId = edition ? requireSquareSupplier(edition) : luluPackageId(input.binding);
   if (proof.podPackageId && proof.podPackageId !== podPackageId) {
     throw new PrintError(
       'lulu_print_profile_changed',
       'Prepare a new proof for the configured Lulu product.',
     );
   }
-  const options = { podPackageId, pageCount: proof.pageCount };
+  const [interiorUrl, coverUrl] = await proofLinks(order, proof, duration.supplier);
+  const options = {
+    podPackageId,
+    pageCount: proof.pageCount,
+    requirePackageMatch: Boolean(edition),
+  };
   const shippingAddress = validateLuluShipping(
     shippingSchema.parse(order.fulfillment.shippingSnapshot),
   );
@@ -433,7 +493,8 @@ export async function hasPaidOrderForStory(storyId: string, requestedThrough?: D
 
 export async function printOrderView(order: Order) {
   const row = order.fulfillment;
-  const proof = proofSchema.nullable().parse(row.proof);
+  const proof = validationSchema.nullable().parse(row.proof);
+  const edition = readSquareEdition(order.request.printingOptions);
   const [interiorUrl, coverUrl] = proof
     ? await proofLinks(order, proof, duration.preview)
     : [null, null];
@@ -451,11 +512,25 @@ export async function printOrderView(order: Order) {
     binding: row.binding,
     copies: row.copies,
     proofVersion: row.proofVersion,
+    ...(edition
+      ? {
+          squareEdition: {
+            revision: edition.premiumBook.revision,
+            manifest: edition.premiumBook.manifest,
+            pageCount: edition.pageCount,
+            podPackageId: edition.podPackageId,
+            luluEnvironment: edition.luluEnvironment,
+          },
+        }
+      : {}),
     proof: proof && {
       pageCount: proof.pageCount,
       qaPassed: proof.qaPassed && !proof.qaCriticalCount,
       issues: proof.issues,
       sentAt: row.proofSentAt,
+      supplierValidated:
+        row.provider === 'lulu' &&
+        Boolean(row.quote && proof.interiorValidationId && proof.coverValidationId),
       interiorUrl,
       coverUrl,
     },
@@ -472,6 +547,14 @@ export async function queuePrintPreparation(order: Order) {
     return order;
   requireEditable(order);
   if (order.fulfillment.holdReason || order.fulfillment.status === 'proof_ready') return order;
+  if (
+    readSquareEdition(order.request.printingOptions) &&
+    order.fulfillment.status === 'manual_review'
+  ) {
+    // Retry supplier validation for the same bytes with fresh links and a new quote.
+    const proof = proofSchema.nullable().parse(order.fulfillment.proof);
+    return editableUpdate(order, { status: 'pending', lastError: null, proof, quote: null });
+  }
   return editableUpdate(order, { status: 'pending', lastError: null });
 }
 
@@ -488,17 +571,10 @@ export async function setPrintHold(order: Order, reason: string | null) {
   });
 }
 
-export async function revisePrintProof(order: Order, provider?: PrintProvider) {
-  requireEditable(order);
+function proofRevisionChanges(order: Order): Changes {
   const row = order.fulfillment;
-  const chosen = provider ?? providerSchema.parse(row.provider);
-  if (provider && chosen === row.provider) return order;
-  if (chosen === 'lulu') {
-    luluPackageId(bindingSchema.parse(row.binding));
-    validateLuluShipping(shippingSchema.parse(row.shippingSnapshot));
-  }
   const variables = emailVariablesSchema.parse(row.emailVariables);
-  return editableUpdate(order, {
+  return {
     emailVariables: {
       ...variables,
       previousProofMayHaveSent:
@@ -507,27 +583,134 @@ export async function revisePrintProof(order: Order, provider?: PrintProvider) {
         Boolean(row.proofSentAt),
       proofEmailAttempted: false,
     },
-    provider: chosen,
     proofVersion: row.proofVersion + 1,
     runId: randomUUID(),
     proof: null,
     proofSentAt: null,
     quote: null,
+    approvedAt: null,
+    approvedBy: null,
     lastError: null,
     status: row.holdReason ? 'held' : 'pending',
+  };
+}
+
+export async function revisePrintProof(order: Order, provider?: PrintProvider) {
+  requireEditable(order);
+  const row = order.fulfillment;
+  const chosen = provider ?? providerSchema.parse(row.provider);
+  const edition = readSquareEdition(order.request.printingOptions);
+  if (edition) {
+    if (chosen !== 'lulu')
+      throw new PrintError('square_provider_required', 'Square hardcover orders require Lulu.');
+    if (provider && provider === row.provider) return order;
+    throw new PrintError(
+      'square_revision_required',
+      'Bind a published correction to this square order while it is on hold.',
+    );
+  }
+  if (provider && chosen === row.provider) return order;
+  if (chosen === 'lulu') {
+    luluPackageId(bindingSchema.parse(row.binding));
+    validateLuluShipping(shippingSchema.parse(row.shippingSnapshot));
+  }
+  return editableUpdate(order, { ...proofRevisionChanges(order), provider: chosen });
+}
+
+export async function correctSquareEdition(
+  order: Order,
+  input: { expectedRevision: string; correctedRevision: string; reason: string },
+  actor: string,
+) {
+  requireEditable(order);
+  const row = order.fulfillment;
+  const edition = readSquareEdition(order.request.printingOptions);
+  if (!edition || row.status !== 'held' || !row.holdReason || row.vendor)
+    throw new PrintError(
+      'square_correction_not_ready',
+      'Place the square order on hold before binding a correction.',
+    );
+  if (
+    input.expectedRevision !== edition.premiumBook.revision ||
+    input.correctedRevision === input.expectedRevision
+  )
+    throw new PrintError(
+      'square_correction_stale',
+      'Select a new correction for this order’s current edition.',
+    );
+
+  return db.transaction(async (tx) => {
+    const [story] = await tx
+      .select({ storyId: stories.storyId, authorId: stories.authorId, features: stories.features })
+      .from(stories)
+      .where(and(eq(stories.storyId, order.request.storyId), eq(stories.status, 'published')))
+      .for('share');
+    const corrected = story && (await getPublishedSquareEdition(story, edition));
+    if (
+      !corrected ||
+      corrected.edition.premiumBook.revision !== input.correctedRevision ||
+      corrected.manifest.previousRevision !== input.expectedRevision
+    )
+      throw new PrintError(
+        'square_correction_stale',
+        'The published correction does not follow this order’s current edition.',
+      );
+    if (corrected.edition.pageCount !== edition.pageCount)
+      throw new PrintError(
+        'square_correction_page_count_changed',
+        `The correction must keep the order’s ${edition.pageCount}-page format.`,
+      );
+
+    const printingOptions = order.request.printingOptions as {
+      premiumEdition: typeof edition;
+      premiumRevisionHistory?: unknown[];
+    };
+    const next = await editableUpdate(order, proofRevisionChanges(order), tx);
+    const [request] = await tx
+      .update(printRequests)
+      .set({
+        printingOptions: {
+          ...printingOptions,
+          premiumEdition: corrected.edition,
+          premiumRevisionHistory: [
+            ...(printingOptions.premiumRevisionHistory ?? []),
+            {
+              previousEdition: edition,
+              replacementRevision: corrected.edition.premiumBook.revision,
+              previousProofVersion: row.proofVersion,
+              previousProof: row.proof,
+              previousProofSentAt: row.proofSentAt?.toISOString() ?? null,
+              previousQuote: row.quote,
+              actor,
+              reason: input.reason,
+              correctedAt: next.fulfillment.updatedAt.toISOString(),
+            },
+          ],
+        },
+        updatedAt: next.fulfillment.updatedAt,
+      })
+      .where(eq(printRequests.id, order.request.id))
+      .returning();
+    return { ...next, request };
   });
 }
 
 export async function submitPrintOrder(
   order: Order,
-  input: { confirmationId: string; confirmedTotalEur: number },
+  input: {
+    confirmationId: string;
+    confirmedTotalEur: number;
+    proofVersion?: number;
+    checkedInbox?: boolean;
+  },
   actor: string,
 ) {
   const row = order.fulfillment;
   if (row.status === 'submitted' || row.status === 'submitting' || row.status === 'uncertain')
     return order;
-  const proof = proofSchema.nullable().parse(row.proof);
+  const proof = validationSchema.nullable().parse(row.proof);
   const quote = quoteSchema.nullable().parse(row.quote);
+  const edition = readSquareEdition(order.request.printingOptions);
   if (
     row.provider !== 'lulu' ||
     row.status !== 'proof_ready' ||
@@ -536,6 +719,14 @@ export async function submitPrintOrder(
     !proof?.qaPassed ||
     proof.qaCriticalCount > 0 ||
     !quote ||
+    (edition &&
+      (row.binding !== 'hardcover' ||
+        input.checkedInbox !== true ||
+        row.proofVersion !== input.proofVersion ||
+        proof.pageCount !== edition.pageCount ||
+        proof.podPackageId !== edition.podPackageId ||
+        !proof.interiorValidationId ||
+        !proof.coverValidationId)) ||
     quote.confirmationId !== input.confirmationId ||
     quote.totalEur !== input.confirmedTotalEur
   ) {
@@ -544,13 +735,24 @@ export async function submitPrintOrder(
       'Confirm the current emailed proof and landed price first.',
     );
   }
-  if (quote.podPackageId !== luluPackageId(bindingSchema.parse(row.binding))) {
+  if (
+    quote.podPackageId !==
+    (edition ? requireSquareSupplier(edition) : luluPackageId(bindingSchema.parse(row.binding)))
+  ) {
     throw new PrintError(
       'lulu_print_profile_changed',
       'Prepare a new proof for the configured Lulu product.',
     );
   }
   const shippingAddress = validateLuluShipping(shippingSchema.parse(row.shippingSnapshot));
+  if (edition) {
+    const context = renderInput(order);
+    await Promise.all([
+      requireAvailablePrintCountry(shippingAddress.country_code),
+      ensureProofFileAvailable(proof.interior, context, 'interior'),
+      ensureProofFileAvailable(proof.cover, context, 'cover'),
+    ]);
+  }
   const fresh = await quoteLuluOrder({
     shippingAddress,
     copies: row.copies,
@@ -719,6 +921,8 @@ export async function reconcilePrintOrder(order: Order) {
     });
   }
   if (!['submitting', 'uncertain', 'submitted'].includes(row.status)) return order;
+  const edition = readSquareEdition(order.request.printingOptions);
+  if (edition) requireSquareSupplier(edition);
   const vendor = priorVendor(order);
   const result = vendor ? await getLuluJob(vendor.id) : await findLuluJob(order.request.id);
   if (result) return recordVendor(order, vendorSchema.parse(result));
@@ -791,6 +995,8 @@ export async function reconcileLuluWebhook(id: string, externalId?: string) {
   if (externalId) {
     const [order] = await views().where(eq(printFulfillments.printRequestId, externalId));
     if (order && ['submitting', 'uncertain', 'submitted'].includes(order.fulfillment.status)) {
+      const edition = readSquareEdition(order.request.printingOptions);
+      if (edition) requireSquareSupplier(edition);
       const existing = vendorSchema.nullable().parse(order.fulfillment.vendor);
       if (existing && existing.id !== id) return;
       const result = existing ? await getLuluJob(id) : await findLuluJob(externalId);
@@ -804,6 +1010,8 @@ export async function reserveManualPrint(
   input: { partnerId: string; proofVersion: number; checkedInbox: true },
   actor: string,
 ) {
+  if (readSquareEdition(order.request.printingOptions))
+    throw new PrintError('square_provider_required', 'Square hardcover orders require Lulu.');
   const row = order.fulfillment;
   const proof = proofSchema.nullable().parse(row.proof);
   if (
@@ -899,20 +1107,11 @@ export async function correctPrintShipping(
     correction.recipient_tax_id ??
     (correction.country_code === previous.country_code ? previous.recipient_tax_id : undefined);
   const shipping = shippingSchema.parse({ ...correction, recipient_tax_id: recipientTaxId });
-  const providers = await db
-    .select({ countries: printProviders.availableCountries })
-    .from(printProviders)
-    .where(eq(printProviders.isActive, true));
-  if (
-    !providers.some(
-      ({ countries }) => Array.isArray(countries) && countries.includes(shipping.country_code),
-    )
-  ) {
-    throw new PrintError('country_unsupported', 'Printing is unavailable for this country.', 404);
-  }
+  await requireAvailablePrintCountry(shipping.country_code);
   if (row.provider === 'lulu') validateLuluShipping(shipping);
-  const variables = emailVariablesSchema.parse(row.emailVariables);
+  const changes = proofRevisionChanges(order);
   return editableUpdate(order, {
+    ...changes,
     shippingSnapshot: {
       addressId: (row.shippingSnapshot as { addressId?: string }).addressId,
       buyerRecipient: (row.shippingSnapshot as { buyerRecipient?: unknown }).buyerRecipient,
@@ -921,12 +1120,7 @@ export async function correctPrintShipping(
       correctedAt: new Date().toISOString(),
     },
     emailVariables: {
-      ...variables,
-      previousProofMayHaveSent:
-        variables.previousProofMayHaveSent ||
-        variables.proofEmailAttempted ||
-        Boolean(row.proofSentAt),
-      proofEmailAttempted: false,
+      ...emailVariablesSchema.parse(changes.emailVariables),
       line1: shipping.street1,
       line2: shipping.street2 ?? '',
       city: shipping.city,
@@ -935,11 +1129,15 @@ export async function correctPrintShipping(
       country: shipping.country_code,
       phone: shipping.phone_number,
     },
-    proof: null,
-    proofSentAt: null,
-    quote: null,
-    proofVersion: row.proofVersion + 1,
-    runId: randomUUID(),
-    lastError: null,
   });
+}
+
+async function requireAvailablePrintCountry(country: string) {
+  const providers = await db
+    .select({ countries: printProviders.availableCountries })
+    .from(printProviders)
+    .where(eq(printProviders.isActive, true));
+  if (!providers.some(({ countries }) => Array.isArray(countries) && countries.includes(country))) {
+    throw new PrintError('country_unsupported', 'Printing is unavailable for this country.', 404);
+  }
 }

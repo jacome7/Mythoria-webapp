@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
 import { sgwFetch } from '@/lib/sgw-client';
-import { authorService, aiEditService } from '@/db/services';
+import { authorService, aiEditService, storyService } from '@/db/services';
 import { setPendingImageJob } from '../image-edit-store';
+import { hasPremiumBookMarker } from '@/lib/premium-children-book/contract';
 
 // (Store moved to ../image-edit-store to avoid exporting non-route values from route module.)
 
@@ -32,6 +33,13 @@ export async function POST(request: NextRequest) {
 
     if (!storyId) {
       return NextResponse.json({ success: false, error: 'Story ID is required' }, { status: 400 });
+    }
+    const story = await storyService.getStoryById(storyId);
+    if (hasPremiumBookMarker(story?.features)) {
+      return NextResponse.json(
+        { success: false, error: 'incompatible_book_features' },
+        { status: 422 },
+      );
     }
     if (!imageUrl) {
       return NextResponse.json({ success: false, error: 'Image URL is required' }, { status: 400 });

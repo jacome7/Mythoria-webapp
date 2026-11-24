@@ -4,8 +4,11 @@ import { db } from '@/db';
 import {
   analyticsOutbox,
   authorCreditBalances,
+  authors,
+  characters,
   creditLedger,
   stories,
+  storyCharacters,
   storyGenerationRequests,
   type AnalyticsConsent,
 } from '@/db/schema';
@@ -16,6 +19,18 @@ import { analyticsReference } from '@/lib/analytics/reference';
 import { conversions } from '@/lib/openai-ads/events';
 import { enqueueAdConversion } from '@/lib/openai-ads/outbox';
 import type { AdContext } from '@/lib/openai-ads/types';
+import {
+  premiumAudienceSchema,
+  premiumBookType,
+  readPremiumBookMarker,
+  storyFeatureRecord,
+  type BookType,
+} from '@/lib/premium-children-book/contract';
+import {
+  isBookFormatEditable,
+  premiumGenerationEnabled,
+  PremiumBookSelectionError,
+} from '@/lib/premium-children-book/selection';
 
 export interface StartStoryGenerationInput {
   authorId: string;
@@ -23,6 +38,7 @@ export interface StartStoryGenerationInput {
   storyId: string;
   idempotencyKey: string;
   features: { ebook: boolean; printed: boolean; audiobook: boolean };
+  expectedBookType?: BookType;
   deliveryAddress?: Record<string, unknown> | null;
   dedicationMessage?: string | null;
   customAuthor?: string | null;
@@ -80,7 +96,12 @@ export async function startStoryGeneration(
         and(
           eq(storyGenerationRequests.storyId, input.storyId),
           eq(storyGenerationRequests.authorId, input.authorId),
-          inArray(storyGenerationRequests.status, ['queued', 'retrying', 'published']),
+          inArray(storyGenerationRequests.status, [
+            'queued',
+            'retrying',
+            'publishing',
+            'published',
+          ]),
         ),
       );
     if (activeRequest) {
@@ -103,9 +124,16 @@ export async function startStoryGeneration(
       );
     }
     const [story] = await tx
-      .select({ storyId: stories.storyId, additionalRequests: stories.additionalRequests })
+      .select({
+        storyId: stories.storyId,
+        additionalRequests: stories.additionalRequests,
+        features: stories.features,
+        status: stories.status,
+        targetAudience: stories.targetAudience,
+      })
       .from(stories)
-      .where(and(eq(stories.storyId, input.storyId), eq(stories.authorId, input.authorId)));
+      .where(and(eq(stories.storyId, input.storyId), eq(stories.authorId, input.authorId)))
+      .for('update');
     if (!story) throw new Error('Story not found');
     if (
       story.additionalRequests?.includes('[MYTHORIA_BIOGRAPHER_V1]') &&
@@ -115,7 +143,49 @@ export async function startStoryGeneration(
 
     const profile =
       input.productProfile || (await pricingService.getStoryProductProfile(input.storyId));
-    const pricing = await pricingService.calculateCreditsForFeatures(input.features, profile);
+    const marker = readPremiumBookMarker(story.features);
+    const bookType = marker ? premiumBookType : 'standard';
+    if (input.expectedBookType && input.expectedBookType !== bookType) {
+      throw new PremiumBookSelectionError('book_type_changed');
+    }
+    const { ebook, printed, audiobook } = input.features;
+    const billable = { ebook, printed, audiobook };
+    const runId = randomUUID();
+    const features: Record<string, unknown> = {
+      ...storyFeatureRecord(story.features),
+      ...billable,
+    };
+    if (marker) {
+      if (marker.state !== 'draft' || !isBookFormatEditable(story.status)) {
+        throw new PremiumBookSelectionError('book_type_locked');
+      }
+      const [author] = await tx
+        .select({ experimental: authors.experimentalFeaturesEnabled })
+        .from(authors)
+        .where(eq(authors.authorId, input.authorId))
+        .for('share');
+      const audience = premiumAudienceSchema.safeParse(story.targetAudience);
+      if (!premiumGenerationEnabled() || !author?.experimental || !audience.success) {
+        throw new PremiumBookSelectionError('book_type_not_available');
+      }
+      if (!ebook || printed || audiobook || profile !== 'standard') {
+        throw new PremiumBookSelectionError('incompatible_book_features');
+      }
+      await tx
+        .select({ characterId: characters.characterId })
+        .from(storyCharacters)
+        .innerJoin(characters, eq(storyCharacters.characterId, characters.characterId))
+        .where(eq(storyCharacters.storyId, input.storyId))
+        .for('share', { of: characters });
+      features.premiumBook = {
+        ...marker,
+        state: 'queued',
+        revision: runId,
+        ownerId: input.authorId,
+        audience: audience.data,
+      };
+    }
+    const pricing = await pricingService.calculateCreditsForFeatures(billable, profile);
     if (pricing.total <= 0) throw new Error('No active pricing exists for the selected features');
 
     const [balance] = await tx
@@ -125,7 +195,6 @@ export async function startStoryGeneration(
     const currentBalance = balance?.totalCredits ?? 0;
     if (currentBalance < pricing.total) throw new Error('Insufficient credits');
 
-    const runId = randomUUID();
     for (const item of pricing.breakdown) {
       const creditEventType = ['printOrder', 'biographerPrintOrder'].includes(item.serviceCode)
         ? 'printOrder'
@@ -153,7 +222,7 @@ export async function startStoryGeneration(
       .set({
         status: 'writing',
         storyGenerationStatus: 'queued',
-        features: input.features,
+        features,
         deliveryAddress: input.deliveryAddress || undefined,
         dedicationMessage: input.dedicationMessage || undefined,
         customAuthor: input.customAuthor || undefined,

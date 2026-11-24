@@ -2,6 +2,10 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getCurrentAuthor } from '@/lib/auth';
 import { ensureStoryIdAccess, AccessDeniedError } from '@/lib/authorization';
 import { chapterService, authorService } from '@/db/services'; // storyService not needed directly
+import { hasPremiumBookMarker } from '@/lib/premium-children-book/contract';
+import { toPremiumBookReaderData } from '@/lib/premium-children-book/reader';
+import { loadPublishedPremiumBook } from '@/lib/premium-children-book/storage';
+import { getPurchasableSquareSupplier } from '@/lib/print/checkout';
 
 export async function GET(
   request: NextRequest,
@@ -29,6 +33,35 @@ export async function GET(
         return NextResponse.json({ error: 'Access denied' }, { status: 403 });
       }
       throw e;
+    }
+
+    if (hasPremiumBookMarker(story.features)) {
+      if (story.status !== 'published') {
+        return NextResponse.json({ error: 'Story is still in progress' }, { status: 404 });
+      }
+      const premium = await loadPublishedPremiumBook(storyId, story.authorId, story.features);
+      if (!premium) {
+        return NextResponse.json({ error: 'Premium story unavailable' }, { status: 503 });
+      }
+      const owned = story.authorId === currentAuthor.authorId;
+      const canPrint =
+        (owned || story.isPublic === true) &&
+        Boolean(await getPurchasableSquareSupplier().catch(() => null));
+      return NextResponse.json(
+        {
+          story: {
+            title: premium.opening.title,
+            authorName: premium.opening.author,
+            isPublic: story.isPublic,
+            slug: story.slug,
+          },
+          chapters: [],
+          premiumBook: toPremiumBookReaderData(premium),
+          canShare: owned,
+          canPrint,
+        },
+        { headers: { 'Cache-Control': 'private, no-store' } },
+      );
     }
 
     // Get author information

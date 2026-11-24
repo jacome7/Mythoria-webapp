@@ -4,6 +4,7 @@ import { db } from '@/db';
 import { stories, storyCollaborators, chapters } from '@/db/schema';
 import { eq, and, or, asc, max } from 'drizzle-orm';
 import { authorService } from '@/db/services';
+import { hasPremiumBookMarker } from '@/lib/premium-children-book/contract';
 
 export async function GET(request: Request, context: { params: Promise<{ storyId: string }> }) {
   console.log('[Story Content API] GET request received');
@@ -30,6 +31,7 @@ export async function GET(request: Request, context: { params: Promise<{ storyId
           authorId: stories.authorId,
           title: stories.title,
           isPublic: stories.isPublic,
+          features: stories.features,
         })
         .from(stories)
         .leftJoin(storyCollaborators, eq(storyCollaborators.storyId, stories.storyId))
@@ -58,6 +60,7 @@ export async function GET(request: Request, context: { params: Promise<{ storyId
           authorId: stories.authorId,
           title: stories.title,
           isPublic: stories.isPublic,
+          features: stories.features,
         })
         .from(stories)
         .where(and(eq(stories.storyId, storyId), eq(stories.isPublic, true)))
@@ -70,6 +73,9 @@ export async function GET(request: Request, context: { params: Promise<{ storyId
     }
 
     const storyData = story[0];
+    if (hasPremiumBookMarker(storyData.features)) {
+      return NextResponse.json({ error: 'incompatible_book_features' }, { status: 422 });
+    }
     console.log('[Story Content API] Story data:', {
       storyId: storyData.storyId,
       title: storyData.title,

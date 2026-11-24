@@ -1,0 +1,22 @@
+{
+  "format": "Buchformat",
+  "standard": "Standard",
+  "title": "Premium-Kinderbuch",
+  "formatDescription": "Ein quadratisches Bilderbuch für Kinder von 0 bis 6 Jahren mit Illustrationen, die sich über zwei Seiten erstrecken.",
+  "correctFormat": "Wählen Sie in den Bucheinstellungen das Standardformat oder eine passende Altersgruppe aus, um fortzufahren.",
+  "saveFailed": "Das Buchformat konnte nicht gespeichert werden. Versuchen Sie es erneut.",
+  "reviewFormat": "Kehren Sie zu den Bucheinstellungen zurück und prüfen Sie das Format, bevor Sie beginnen.",
+  "readerLabel": "Bilderbuch-Leseansicht",
+  "frontCover": "Vorderseite des Einbands",
+  "backCover": "Rückseite des Einbands",
+  "pageNavigation": "Seitennavigation",
+  "goToPage": "Zur Seite springen",
+  "pageNumber": "Seite {number}",
+  "pagePair": "Seiten {first} und {last}",
+  "previous": "Zurück",
+  "next": "Weiter",
+  "pageText": "Seitentext lesen",
+  "imageUnavailable": "Illustration nicht verfügbar",
+  "generationProgress": "Wir planen die Seiten, erstellen die Illustrationen und bereiten Ihr Buch zum Lesen vor.",
+  "generationInterrupted": "Das Buch konnte nicht fertiggestellt werden. Sie können den Status unter Meine Geschichten prüfen."
+}

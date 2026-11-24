@@ -8,6 +8,8 @@ import { buildLocalizedPath, buildLocalizedUrl } from '@/lib/seo';
 import { isSearchIndexableStory } from '@/lib/story-seo';
 import { hasFeaturedStoryPdfDownloads } from '@/lib/public-story-pdf';
 import { buildPublicRedirectSearch } from '@/lib/campaign-context';
+import PublicPremiumBookPage from './PublicPremiumBookPage';
+import { hasPremiumBookMarker } from '@/lib/premium-children-book/contract';
 
 const toAbsoluteOgUrl = (url: string | null | undefined): string | undefined => {
   if (!url) return undefined;
@@ -121,12 +123,15 @@ export default async function PublicStoryPage({
     permanentRedirect(`${redirectPath}${redirectSearch.size ? `?${redirectSearch}` : ''}`);
   }
 
-  const [fullStory, chapters] = await Promise.all([
-    storyService.getStoryBySlug(story.slug),
-    chapterService.getStoryChapters(story.storyId),
-  ]);
+  const fullStory = await storyService.getStoryBySlug(story.slug);
   if (!fullStory?.isPublic) notFound();
 
+  if (hasPremiumBookMarker(fullStory.features)) {
+    if (fullStory.status !== 'published') notFound();
+    return <PublicPremiumBookPage key={story.slug} slug={story.slug} />;
+  }
+
+  const chapters = await chapterService.getStoryChapters(story.storyId);
   const author = await authorService.getAuthorById(fullStory.authorId);
   if (!author) notFound();
 

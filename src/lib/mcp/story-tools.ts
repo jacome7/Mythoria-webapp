@@ -10,6 +10,7 @@ import {
   storyService,
 } from '@/db/services';
 import { startStoryGeneration } from '@/lib/story-generation';
+import { hasPremiumBookMarker, premiumBookType } from '@/lib/premium-children-book/contract';
 import { CHARACTER_AGES, CHARACTER_ROLES } from '@/types/character-enums';
 import { GraphicalStyle, LiteraryPersona, NovelStyle, TargetAudience } from '@/types/story-enums';
 import {
@@ -21,7 +22,12 @@ import {
 } from './app-links';
 import { type McpAuthContext, McpAuthError, requireAuthor } from './auth';
 import { createTrackedJobDescriptor } from './job-tracking';
-import { ensureStoryOwnership, type StoryChapterRecord, type StoryRecord } from './story-access';
+import {
+  ensureChapterBook,
+  ensureStoryOwnership,
+  type StoryChapterRecord,
+  type StoryRecord,
+} from './story-access';
 import {
   getCreditServiceLabel,
   hasAnyGenerationFeature,
@@ -589,6 +595,7 @@ function buildStoryLibraryActions(
       reasonCode: 'story_published',
       url: readUrl,
     });
+    if (hasPremiumBookMarker(story.features)) return actions;
     actions.push({
       id: 'listen',
       label: copy.actionLabels.listen,
@@ -689,6 +696,7 @@ function buildStoryLibraryEntry(story: AuthorStoryRecord, locale: string, copy: 
     story.storyId,
     story.status as StoryStatusValue,
   );
+  const isPremiumBook = hasPremiumBookMarker(story.features);
 
   return {
     id: story.storyId,
@@ -700,8 +708,9 @@ function buildStoryLibraryEntry(story: AuthorStoryRecord, locale: string, copy: 
     targetAudience: story.targetAudience,
     novelStyle: story.novelStyle,
     graphicalStyle: story.graphicalStyle,
-    chapterCount: story.chapterCount ?? null,
-    hasAudio: Boolean(story.hasAudio),
+    chapterCount: isPremiumBook ? 0 : (story.chapterCount ?? null),
+    ...(isPremiumBook ? { bookType: premiumBookType } : {}),
+    hasAudio: !isPremiumBook && Boolean(story.hasAudio),
     storyGenerationStatus: story.storyGenerationStatus ?? null,
     storyGenerationCompletedPercentage: story.storyGenerationCompletedPercentage ?? 0,
     isPublic: story.isPublic,
@@ -709,8 +718,8 @@ function buildStoryLibraryEntry(story: AuthorStoryRecord, locale: string, copy: 
     slug: story.slug,
     urls: {
       readUrl,
-      listenUrl: story.hasAudio ? listenUrl : null,
-      editUrl,
+      listenUrl: !isPremiumBook && story.hasAudio ? listenUrl : null,
+      editUrl: isPremiumBook && story.status === 'published' ? null : editUrl,
       publicReadUrl: story.slug ? resolveStoryWebUrl(locale, story.slug) : null,
       publicApiUrl: story.slug ? resolveStoryApiUrl(story.slug) : null,
     },
@@ -1483,6 +1492,21 @@ export function registerStoryTools(server: McpServer, authContext: McpAuthContex
         }
 
         const accessLevel = resolveStoryReadAccess(story, authContext, copy);
+        if (hasPremiumBookMarker(story.features) && story.status === 'published') {
+          const url =
+            accessLevel === 'owner'
+              ? resolveAuthorStoryReadUrl(resolvedLocale, story.storyId)
+              : story.slug
+                ? resolveStoryWebUrl(resolvedLocale, story.slug)
+                : null;
+          return toStructuredToolResult('Open the illustrated book in the Mythoria web reader.', {
+            locale: resolvedLocale,
+            status: 'web_reader',
+            accessLevel,
+            story: { id: story.storyId, title: story.title, bookType: premiumBookType },
+            readUrl: url,
+          });
+        }
         const chapters = await chapterService.getStoryChapters(story.storyId);
         const chapterItems = chapters.map((chapter) => ({
           chapterNumber: chapter.chapterNumber,
@@ -1612,6 +1636,7 @@ export function registerStoryTools(server: McpServer, authContext: McpAuthContex
         }
 
         const accessLevel = resolveStoryReadAccess(story, authContext, copy);
+        ensureChapterBook(story);
         const chapters = await chapterService.getStoryChapters(story.storyId);
         if (chapters.length === 0) {
           return toStructuredToolResult(copy.noChaptersAvailable, {
@@ -1696,6 +1721,7 @@ export function registerStoryTools(server: McpServer, authContext: McpAuthContex
         }
 
         const accessLevel = resolveStoryReadAccess(story, authContext, copy);
+        ensureChapterBook(story);
         const chapters = await chapterService.getStoryChapters(story.storyId);
         if (chapters.length === 0) {
           return toStructuredToolResult(copy.noChaptersAvailable, {
@@ -2186,6 +2212,11 @@ export function registerStoryTools(server: McpServer, authContext: McpAuthContex
         }
 
         const features = normalizeGenerationFeatures(input.features);
+        if (hasPremiumBookMarker(story.features)) {
+          throw new McpToolUserError(
+            'Review and start this illustrated book in the Mythoria web wizard.',
+          );
+        }
         if (!hasAnyGenerationFeature(features)) {
           throw new McpToolUserError(
             'At least one generation feature must be enabled (ebook, printed, or audiobook).',
@@ -2253,6 +2284,7 @@ export function registerStoryTools(server: McpServer, authContext: McpAuthContex
           storyId: story.storyId,
           idempotencyKey: crypto.randomUUID(),
           features,
+          expectedBookType: 'standard',
           deliveryAddress: input.deliveryAddress,
           customAuthor: sanitizeOptionalText(input.customAuthor),
           dedicationMessage: sanitizeOptionalText(input.dedicationMessage),

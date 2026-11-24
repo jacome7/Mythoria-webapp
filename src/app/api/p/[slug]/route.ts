@@ -5,6 +5,10 @@ import { eq } from 'drizzle-orm';
 import { db } from '@/db';
 import { authors, stories } from '@/db/schema';
 import { hasFeaturedStoryPdfDownloads } from '@/lib/public-story-pdf';
+import { hasPremiumBookMarker } from '@/lib/premium-children-book/contract';
+import { toPremiumBookReaderData } from '@/lib/premium-children-book/reader';
+import { loadPublishedPremiumBook } from '@/lib/premium-children-book/storage';
+import { getPurchasableSquareSupplier } from '@/lib/print/checkout';
 
 export async function GET(request: NextRequest, { params }: { params: Promise<{ slug: string }> }) {
   try {
@@ -24,6 +28,29 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
     // Check if story is public
     if (!story.isPublic) {
       return NextResponse.json({ error: 'Story not available' }, { status: 403 });
+    }
+
+    if (hasPremiumBookMarker(story.features)) {
+      if (story.status !== 'published') {
+        return NextResponse.json({ error: 'Story not found' }, { status: 404 });
+      }
+      const book = await loadPublishedPremiumBook(story.storyId, story.authorId, story.features);
+      if (!book) return NextResponse.json({ error: 'Story unavailable' }, { status: 503 });
+      return NextResponse.json(
+        {
+          success: true,
+          story: {
+            storyId: story.storyId,
+            title: book.opening.title,
+            authorName: book.opening.author,
+          },
+          chapters: [],
+          premiumBook: toPremiumBookReaderData(book),
+          accessLevel: 'public',
+          canPrint: Boolean(await getPurchasableSquareSupplier().catch(() => null)),
+        },
+        { headers: { 'Cache-Control': 'private, no-store' } },
+      );
     }
 
     // Get author information

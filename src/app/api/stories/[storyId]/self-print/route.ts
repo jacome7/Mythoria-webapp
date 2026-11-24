@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { hasPremiumBookMarker } from '@/lib/premium-children-book/contract';
 import { randomUUID } from 'crypto';
 import { getTranslations } from 'next-intl/server';
 import { getCurrentAuthor } from '@/lib/auth';
@@ -100,6 +101,13 @@ export async function POST(
           error: 'You do not have access to download this story.',
         },
         { status: 403 },
+      );
+    }
+
+    if (hasPremiumBookMarker(story.features)) {
+      return NextResponse.json(
+        { success: false, error: 'incompatible_book_features' },
+        { status: 422 },
       );
     }
 

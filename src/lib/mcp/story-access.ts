@@ -1,5 +1,6 @@
 import { chapterService, storyService } from '@/db/services';
 import { McpToolUserError } from './tool-result';
+import { hasPremiumBookMarker } from '@/lib/premium-children-book/contract';
 
 export type StoryRecord = NonNullable<Awaited<ReturnType<typeof storyService.getStoryById>>>;
 
@@ -13,6 +14,15 @@ export function ensureStoryOwnership(
 ): StoryRecord {
   if (!story || story.authorId !== authorId) {
     throw new McpToolUserError('Story not found or access denied.');
+  }
+  return story;
+}
+
+export function ensureChapterBook(story: StoryRecord): StoryRecord {
+  if (hasPremiumBookMarker(story.features)) {
+    throw new McpToolUserError(
+      'This illustrated book uses the Mythoria web reader and its available actions.',
+    );
   }
   return story;
 }

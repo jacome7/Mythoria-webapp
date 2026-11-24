@@ -1,6 +1,8 @@
 BEGIN;
 INSERT INTO authors (author_id, clerk_user_id, display_name, email)
 VALUES ('00000000-0000-4000-8000-000000000001', 'user_isolated_fixture', 'Browser Fixture', 'author@fixture.invalid');
+UPDATE authors SET experimental_features_enabled = true
+WHERE author_id = '00000000-0000-4000-8000-000000000001';
 INSERT INTO stories (story_id, author_id, title, slug, synopsis, story_language, status, is_public, is_featured, chapter_count, published_at) VALUES
   ('00000000-0000-4000-8000-000000000002', '00000000-0000-4000-8000-000000000001', 'Mateus e o Léo', 'mateus-e-o-leo', 'A história de uma amizade.', 'pt-PT', 'published', true, true, 1, now()),
   ('00000000-0000-4000-8000-000000000003', '00000000-0000-4000-8000-000000000001', 'How I Met Your Mother', 'how-i-met-your-mother', 'A story about friendship.', 'en-US', 'published', true, true, 1, now());

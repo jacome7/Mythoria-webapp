@@ -9,11 +9,12 @@ import { useParams } from 'next/navigation';
 interface StoryGenerationProgressProps {
   storyId: string;
   onComplete?: () => void;
+  premiumBook?: boolean;
 }
 
 interface StoryProgress {
   storyGenerationCompletedPercentage: number;
-  storyGenerationStatus: 'draft' | 'running' | 'completed' | 'failed';
+  storyGenerationStatus: 'draft' | 'running' | 'completed' | 'failed' | 'cancelled';
   status: 'draft' | 'writing' | 'published';
   currentStep?: string;
 }
@@ -52,8 +53,10 @@ const calculateEstimatedTime = (
 export default function StoryGenerationProgress({
   storyId,
   onComplete,
+  premiumBook = false,
 }: StoryGenerationProgressProps) {
   const tCommonStoryGenerationProgress = useTranslations('StoryGenerationProgress');
+  const tBook = useTranslations('PremiumBook');
   const router = useRouter();
   const params = useParams() as { locale?: string } | null;
   const locale = params?.locale && typeof params.locale === 'string' ? params.locale : 'en-US';
@@ -68,7 +71,7 @@ export default function StoryGenerationProgress({
   // Update funny message periodically
   useEffect(() => {
     // Don't update messages if story is completed
-    if (progress.status === 'published') {
+    if (premiumBook || progress.status === 'published') {
       return;
     }
 
@@ -91,7 +94,7 @@ export default function StoryGenerationProgress({
     // Update message every 8 seconds
     const messageInterval = setInterval(updateMessage, 8000);
     return () => clearInterval(messageInterval);
-  }, [progress.currentStep, progress.status, tCommonStoryGenerationProgress]); // Poll for progress updates
+  }, [premiumBook, progress.currentStep, progress.status, tCommonStoryGenerationProgress]); // Poll for progress updates
   useEffect(() => {
     let intervalId: NodeJS.Timeout;
 
@@ -113,7 +116,10 @@ export default function StoryGenerationProgress({
           }
 
           // Also stop polling if story is published
-          if (story.status === 'published') {
+          if (
+            story.status === 'published' ||
+            (premiumBook && ['failed', 'cancelled'].includes(story.storyGenerationStatus))
+          ) {
             clearInterval(intervalId);
           }
         }
@@ -129,10 +135,29 @@ export default function StoryGenerationProgress({
     intervalId = setInterval(fetchProgress, 15000);
 
     return () => clearInterval(intervalId);
-  }, [storyId, onComplete]);
+  }, [storyId, onComplete, premiumBook]);
   const percentage = progress.storyGenerationCompletedPercentage;
   const estimatedTime = calculateEstimatedTime(percentage, tCommonStoryGenerationProgress);
   const isCompleted = progress.status === 'published';
+  const interrupted =
+    premiumBook && ['failed', 'cancelled'].includes(progress.storyGenerationStatus);
+
+  if (interrupted) {
+    return (
+      <div className="space-y-4 text-center">
+        <div role="alert" className="alert alert-warning">
+          {tBook('generationInterrupted')}
+        </div>
+        <button
+          type="button"
+          className="btn btn-outline"
+          onClick={() => router.push(`/${locale}/my-stories`)}
+        >
+          {tCommonStoryGenerationProgress('completion.buttons.myStories')}
+        </button>
+      </div>
+    );
+  }
 
   // Show completion state when story is published
   if (isCompleted) {
@@ -194,7 +219,9 @@ export default function StoryGenerationProgress({
           {tCommonStoryGenerationProgress('progress.title')}
         </h2>
         <p className="text-base-content/70">
-          {tCommonStoryGenerationProgress('progress.description')}
+          {premiumBook
+            ? tBook('generationProgress')
+            : tCommonStoryGenerationProgress('progress.description')}
         </p>
       </div>
 
@@ -217,18 +244,22 @@ export default function StoryGenerationProgress({
         </div>
       </div>
 
-      {/* Estimated Time */}
-      <div className="mb-6 p-4 bg-base-100 rounded-lg border border-base-300">
-        <div className="flex items-center justify-center space-x-2">
-          <span className="text-2xl">⏱️</span>
-          <div>
-            <p className="text-sm text-base-content/70">
-              {tCommonStoryGenerationProgress('progress.estimatedTimeLabel')}
-            </p>
-            <p className="text-lg font-bold text-primary">{estimatedTime}</p>
+      {!premiumBook && (
+        <>
+          {/* Estimated Time */}
+          <div className="mb-6 p-4 bg-base-100 rounded-lg border border-base-300">
+            <div className="flex items-center justify-center space-x-2">
+              <span className="text-2xl">⏱️</span>
+              <div>
+                <p className="text-sm text-base-content/70">
+                  {tCommonStoryGenerationProgress('progress.estimatedTimeLabel')}
+                </p>
+                <p className="text-lg font-bold text-primary">{estimatedTime}</p>
+              </div>
+            </div>
           </div>
-        </div>
-      </div>
+        </>
+      )}
 
       {/* Animated Message */}
       <div className="mb-6 min-h-[80px] flex items-center justify-center">
@@ -266,7 +297,7 @@ export default function StoryGenerationProgress({
       </div>
 
       {/* Current Step Info */}
-      {progress.currentStep && (
+      {!premiumBook && progress.currentStep && (
         <div className="text-sm text-base-content/70">
           <p>
             {tCommonStoryGenerationProgress('progress.currentlyLabel')}{' '}

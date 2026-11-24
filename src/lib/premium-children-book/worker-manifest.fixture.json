@@ -1,0 +1,940 @@
+{
+  "version": 1,
+  "type": "premium_children",
+  "storyId": "e6ef0522-676b-4fa4-92d1-03fd3fc8c917",
+  "ownerId": "c9b56b72-df63-4596-8cea-2ebf603642b4",
+  "revision": "25107e7f-4528-4105-bd25-3b795cc1c6df",
+  "format": { "trimPoints": 612, "bleedPoints": 9, "pageCount": 33 },
+  "opening": {
+    "title": "Inês e o Barquinho",
+    "author": "João Freitas",
+    "locale": "pt-PT",
+    "dedication": "",
+    "synopsis": "Inês segue a água até ao mar.",
+    "createdAt": "2026-11-24T22:00:00.000Z"
+  },
+  "config": {
+    "provider": "openai",
+    "model": "gpt-image-2.6-sunburst",
+    "quality": "high",
+    "spreadSize": "3840x1952",
+    "squareSize": "1536x1536"
+  },
+  "textConfig": { "provider": "google-genai", "model": "gemini-4-hydrogen" },
+  "inputHash": "c96c6d5be8d08a12e7b5cdc1b207fa6b2430974c86803d8891675e76fd992c20",
+  "visualGuide": "Watercolor kingfisher blue.",
+  "reference": {
+    "key": "e6ef0522-676b-4fa4-92d1-03fd3fc8c917/premium/revisions/25107e7f-4528-4105-bd25-3b795cc1c6df/assets/52367a6622b19f08825e915fad80c542ad4f4c34dbcebad9f5007994b3e39208.jpg",
+    "generation": "101",
+    "sha256": "52367a6622b19f08825e915fad80c542ad4f4c34dbcebad9f5007994b3e39208",
+    "bytes": 9
+  },
+  "covers": {
+    "front": {
+      "key": "e6ef0522-676b-4fa4-92d1-03fd3fc8c917/premium/revisions/25107e7f-4528-4105-bd25-3b795cc1c6df/assets/2d8d693177ac44895fc02c009ec3f6af32e51eb00783c17000d7051d1662b93a.jpg",
+      "generation": "101",
+      "sha256": "2d8d693177ac44895fc02c009ec3f6af32e51eb00783c17000d7051d1662b93a",
+      "bytes": 5
+    },
+    "back": {
+      "key": "e6ef0522-676b-4fa4-92d1-03fd3fc8c917/premium/revisions/25107e7f-4528-4105-bd25-3b795cc1c6df/assets/3c482346f375027677fa8a0d6830a32714d4f13f9e94c2d9e215e0ac205ad4e5.jpg",
+      "generation": "101",
+      "sha256": "3c482346f375027677fa8a0d6830a32714d4f13f9e94c2d9e215e0ac205ad4e5",
+      "bytes": 4
+    }
+  },
+  "natives": {},
+  "pages": [
+    { "number": 1, "kind": "title", "text": "Inês e o Barquinho" },
+    {
+      "number": 2,
+      "kind": "copyright",
+      "text": "Título: Inês e o Barquinho\nAutor: João Freitas\nData de Publicação: novembro de 2026\nEditora: Mythoria\nWebsite: mythoria.pt\nDireitos de Autor © 2026 João Freitas\nTodos os direitos reservados. Nenhuma parte desta publicação pode ser reproduzida, distribuída ou transmitida de qualquer forma ou por qualquer meio sem a permissão prévia por escrito do autor.\nCrie a sua própria história no Mythoria"
+    },
+    { "number": 3, "kind": "dedication", "text": "Inês e o Barquinho\n\n– João Freitas" },
+    { "number": 4, "kind": "synopsis", "text": "Sinopse\n\nInês segue a água até ao mar." },
+    {
+      "number": 5,
+      "kind": "opener",
+      "text": "A Inês ouviu a maré.",
+      "artwork": {
+        "key": "e6ef0522-676b-4fa4-92d1-03fd3fc8c917/premium/revisions/25107e7f-4528-4105-bd25-3b795cc1c6df/assets/d517182c868ca8edb1a76425481bc337cf453a22b31c89976acf30f8aff29d98.jpg",
+        "generation": "101",
+        "sha256": "d517182c868ca8edb1a76425481bc337cf453a22b31c89976acf30f8aff29d98",
+        "bytes": 7
+      },
+      "reading": {
+        "key": "e6ef0522-676b-4fa4-92d1-03fd3fc8c917/premium/revisions/25107e7f-4528-4105-bd25-3b795cc1c6df/assets/a971abf3b26bcec0ad08b1be0248dad0b21d875e9c743467e463c4fc7bb3e072.png",
+        "generation": "101",
+        "sha256": "a971abf3b26bcec0ad08b1be0248dad0b21d875e9c743467e463c4fc7bb3e072",
+        "bytes": 9
+      },
+      "textBox": { "x": 0.1, "y": 0.09, "width": 0.8, "height": 0.2 },
+      "digitalCrop": { "x": 12, "y": 12, "width": 816, "height": 816 },
+      "printCrop": { "x": 0, "y": 0, "width": 2660, "height": 2660 }
+    },
+    {
+      "number": 6,
+      "kind": "spread",
+      "text": "Inês caminhou junto à água.",
+      "spreadId": "spread-1",
+      "artwork": {
+        "key": "e6ef0522-676b-4fa4-92d1-03fd3fc8c917/premium/revisions/25107e7f-4528-4105-bd25-3b795cc1c6df/assets/80634982763eeb2eeaca1c6be78d009c056033f4a4862744a917ca9da7cd7541.jpg",
+        "generation": "101",
+        "sha256": "80634982763eeb2eeaca1c6be78d009c056033f4a4862744a917ca9da7cd7541",
+        "bytes": 7
+      },
+      "reading": {
+        "key": "e6ef0522-676b-4fa4-92d1-03fd3fc8c917/premium/revisions/25107e7f-4528-4105-bd25-3b795cc1c6df/assets/f69430993a90f97864cc375b1dbf8ae6584802c14e1a020a1b3f986275bb89a9.png",
+        "generation": "101",
+        "sha256": "f69430993a90f97864cc375b1dbf8ae6584802c14e1a020a1b3f986275bb89a9",
+        "bytes": 9
+      },
+      "textBox": { "x": 0.1, "y": 0.09, "width": 0.8, "height": 0.2 },
+      "digitalCrop": { "x": 12, "y": 12, "width": 816, "height": 816 },
+      "printCrop": { "x": 0, "y": 0, "width": 2660, "height": 2660 }
+    },
+    {
+      "number": 7,
+      "kind": "spread",
+      "text": "O barquinho ia à frente, feliz.",
+      "spreadId": "spread-1",
+      "artwork": {
+        "key": "e6ef0522-676b-4fa4-92d1-03fd3fc8c917/premium/revisions/25107e7f-4528-4105-bd25-3b795cc1c6df/assets/928687d081f4ccae30a198574a82fc00a82c806aac4b4974c54e508d8cdbdfea.jpg",
+        "generation": "101",
+        "sha256": "928687d081f4ccae30a198574a82fc00a82c806aac4b4974c54e508d8cdbdfea",
+        "bytes": 7
+      },
+      "reading": {
+        "key": "e6ef0522-676b-4fa4-92d1-03fd3fc8c917/premium/revisions/25107e7f-4528-4105-bd25-3b795cc1c6df/assets/e1b797f6ca53826d9b6d72d06606e8b158ea98f1629364281cd0c55bbef3e94d.png",
+        "generation": "101",
+        "sha256": "e1b797f6ca53826d9b6d72d06606e8b158ea98f1629364281cd0c55bbef3e94d",
+        "bytes": 9
+      },
+      "textBox": { "x": 0.1, "y": 0.09, "width": 0.8, "height": 0.2 },
+      "digitalCrop": { "x": 828, "y": 12, "width": 816, "height": 816 },
+      "printCrop": { "x": 2584, "y": 0, "width": 2660, "height": 2660 }
+    },
+    {
+      "number": 8,
+      "kind": "spread",
+      "text": "Inês caminhou junto à água.",
+      "spreadId": "spread-2",
+      "artwork": {
+        "key": "e6ef0522-676b-4fa4-92d1-03fd3fc8c917/premium/revisions/25107e7f-4528-4105-bd25-3b795cc1c6df/assets/a6cd14314bbbfbb9d0f4227a433abf7a789885adedb07e3e9f5a7a5248f1662f.jpg",
+        "generation": "101",
+        "sha256": "a6cd14314bbbfbb9d0f4227a433abf7a789885adedb07e3e9f5a7a5248f1662f",
+        "bytes": 7
+      },
+      "reading": {
+        "key": "e6ef0522-676b-4fa4-92d1-03fd3fc8c917/premium/revisions/25107e7f-4528-4105-bd25-3b795cc1c6df/assets/061c766b14836a477dc352c46da77ffccb79ee6b100927cfbb23a92aef251245.png",
+        "generation": "101",
+        "sha256": "061c766b14836a477dc352c46da77ffccb79ee6b100927cfbb23a92aef251245",
+        "bytes": 9
+      },
+      "textBox": { "x": 0.1, "y": 0.09, "width": 0.8, "height": 0.2 },
+      "digitalCrop": { "x": 12, "y": 12, "width": 816, "height": 816 },
+      "printCrop": { "x": 0, "y": 0, "width": 2660, "height": 2660 }
+    },
+    {
+      "number": 9,
+      "kind": "spread",
+      "text": "O barquinho ia à frente, feliz.",
+      "spreadId": "spread-2",
+      "artwork": {
+        "key": "e6ef0522-676b-4fa4-92d1-03fd3fc8c917/premium/revisions/25107e7f-4528-4105-bd25-3b795cc1c6df/assets/d8ff0fa7d236c0e8b6811ae58272f16b4cb7ec39d77300bdfe7a41c1131f7683.jpg",
+        "generation": "101",
+        "sha256": "d8ff0fa7d236c0e8b6811ae58272f16b4cb7ec39d77300bdfe7a41c1131f7683",
+        "bytes": 7
+      },
+      "reading": {
+        "key": "e6ef0522-676b-4fa4-92d1-03fd3fc8c917/premium/revisions/25107e7f-4528-4105-bd25-3b795cc1c6df/assets/a2794b70bd357464f2a0ccc395ad499630a2b8a42edf638f8eb9afa8745e947a.png",
+        "generation": "101",
+        "sha256": "a2794b70bd357464f2a0ccc395ad499630a2b8a42edf638f8eb9afa8745e947a",
+        "bytes": 9
+      },
+      "textBox": { "x": 0.1, "y": 0.09, "width": 0.8, "height": 0.2 },
+      "digitalCrop": { "x": 828, "y": 12, "width": 816, "height": 816 },
+      "printCrop": { "x": 2584, "y": 0, "width": 2660, "height": 2660 }
+    },
+    {
+      "number": 10,
+      "kind": "spread",
+      "text": "",
+      "spreadId": "spread-3",
+      "artwork": {
+        "key": "e6ef0522-676b-4fa4-92d1-03fd3fc8c917/premium/revisions/25107e7f-4528-4105-bd25-3b795cc1c6df/assets/dafeab99efd4a231bde68347fc4daf7e56d31cb23877b5163b7b9e9974c612a0.jpg",
+        "generation": "101",
+        "sha256": "dafeab99efd4a231bde68347fc4daf7e56d31cb23877b5163b7b9e9974c612a0",
+        "bytes": 8
+      },
+      "reading": {
+        "key": "e6ef0522-676b-4fa4-92d1-03fd3fc8c917/premium/revisions/25107e7f-4528-4105-bd25-3b795cc1c6df/assets/90b95272857daf2dee8c1de93eb1aa3aea81cfb1b33dc3170b0d7419d85e1822.png",
+        "generation": "101",
+        "sha256": "90b95272857daf2dee8c1de93eb1aa3aea81cfb1b33dc3170b0d7419d85e1822",
+        "bytes": 10
+      },
+      "digitalCrop": { "x": 12, "y": 12, "width": 816, "height": 816 },
+      "printCrop": { "x": 0, "y": 0, "width": 2660, "height": 2660 }
+    },
+    {
+      "number": 11,
+      "kind": "spread",
+      "text": "O barquinho ia à frente, feliz.",
+      "spreadId": "spread-3",
+      "artwork": {
+        "key": "e6ef0522-676b-4fa4-92d1-03fd3fc8c917/premium/revisions/25107e7f-4528-4105-bd25-3b795cc1c6df/assets/cd66621393908e82d08e89351920e504a098cd6483f83e6ceac5eca0f65c950b.jpg",
+        "generation": "101",
+        "sha256": "cd66621393908e82d08e89351920e504a098cd6483f83e6ceac5eca0f65c950b",
+        "bytes": 8
+      },
+      "reading": {
+        "key": "e6ef0522-676b-4fa4-92d1-03fd3fc8c917/premium/revisions/25107e7f-4528-4105-bd25-3b795cc1c6df/assets/97be8159ec5825df0565db02bdb7f658662d1769d470fdad8aed11f0d4b0050a.png",
+        "generation": "101",
+        "sha256": "97be8159ec5825df0565db02bdb7f658662d1769d470fdad8aed11f0d4b0050a",
+        "bytes": 10
+      },
+      "textBox": { "x": 0.1, "y": 0.09, "width": 0.8, "height": 0.2 },
+      "digitalCrop": { "x": 828, "y": 12, "width": 816, "height": 816 },
+      "printCrop": { "x": 2584, "y": 0, "width": 2660, "height": 2660 }
+    },
+    {
+      "number": 12,
+      "kind": "spread",
+      "text": "Inês caminhou junto à água.",
+      "spreadId": "spread-4",
+      "artwork": {
+        "key": "e6ef0522-676b-4fa4-92d1-03fd3fc8c917/premium/revisions/25107e7f-4528-4105-bd25-3b795cc1c6df/assets/b245720a780dfe98b525d1bc5314b871f0f46f4a2c4aaeff670b455eea2e88fd.jpg",
+        "generation": "101",
+        "sha256": "b245720a780dfe98b525d1bc5314b871f0f46f4a2c4aaeff670b455eea2e88fd",
+        "bytes": 8
+      },
+      "reading": {
+        "key": "e6ef0522-676b-4fa4-92d1-03fd3fc8c917/premium/revisions/25107e7f-4528-4105-bd25-3b795cc1c6df/assets/7c6c45437ae3eb27e85d0d7f31fec75bdd26178357debde6bf1e405a5e6e7a36.png",
+        "generation": "101",
+        "sha256": "7c6c45437ae3eb27e85d0d7f31fec75bdd26178357debde6bf1e405a5e6e7a36",
+        "bytes": 10
+      },
+      "textBox": { "x": 0.1, "y": 0.09, "width": 0.8, "height": 0.2 },
+      "digitalCrop": { "x": 12, "y": 12, "width": 816, "height": 816 },
+      "printCrop": { "x": 0, "y": 0, "width": 2660, "height": 2660 }
+    },
+    {
+      "number": 13,
+      "kind": "spread",
+      "text": "O barquinho ia à frente, feliz.",
+      "spreadId": "spread-4",
+      "artwork": {
+        "key": "e6ef0522-676b-4fa4-92d1-03fd3fc8c917/premium/revisions/25107e7f-4528-4105-bd25-3b795cc1c6df/assets/0daa0540668a30d8bd62e04253a2c4036d86bf44d4c374b4f3aa0f993d9411ba.jpg",
+        "generation": "101",
+        "sha256": "0daa0540668a30d8bd62e04253a2c4036d86bf44d4c374b4f3aa0f993d9411ba",
+        "bytes": 8
+      },
+      "reading": {
+        "key": "e6ef0522-676b-4fa4-92d1-03fd3fc8c917/premium/revisions/25107e7f-4528-4105-bd25-3b795cc1c6df/assets/e7c266625d3f1b40c8ca5c64c72f12eb3873c31c7088c1615fb75e079f96e6e0.png",
+        "generation": "101",
+        "sha256": "e7c266625d3f1b40c8ca5c64c72f12eb3873c31c7088c1615fb75e079f96e6e0",
+        "bytes": 10
+      },
+      "textBox": { "x": 0.1, "y": 0.09, "width": 0.8, "height": 0.2 },
+      "digitalCrop": { "x": 828, "y": 12, "width": 816, "height": 816 },
+      "printCrop": { "x": 2584, "y": 0, "width": 2660, "height": 2660 }
+    },
+    {
+      "number": 14,
+      "kind": "spread",
+      "text": "Inês caminhou junto à água.",
+      "spreadId": "spread-5",
+      "artwork": {
+        "key": "e6ef0522-676b-4fa4-92d1-03fd3fc8c917/premium/revisions/25107e7f-4528-4105-bd25-3b795cc1c6df/assets/820b9069e08f5de8922e657cf3000bedf2f92e2ed3395ba70a8488641bad6d59.jpg",
+        "generation": "101",
+        "sha256": "820b9069e08f5de8922e657cf3000bedf2f92e2ed3395ba70a8488641bad6d59",
+        "bytes": 8
+      },
+      "reading": {
+        "key": "e6ef0522-676b-4fa4-92d1-03fd3fc8c917/premium/revisions/25107e7f-4528-4105-bd25-3b795cc1c6df/assets/e7c7e030564d5f21a909c8f731adb6259953780b8f07caa38d289c8baad2377c.png",
+        "generation": "101",
+        "sha256": "e7c7e030564d5f21a909c8f731adb6259953780b8f07caa38d289c8baad2377c",
+        "bytes": 10
+      },
+      "textBox": { "x": 0.1, "y": 0.09, "width": 0.8, "height": 0.2 },
+      "digitalCrop": { "x": 12, "y": 12, "width": 816, "height": 816 },
+      "printCrop": { "x": 0, "y": 0, "width": 2660, "height": 2660 }
+    },
+    {
+      "number": 15,
+      "kind": "spread",
+      "text": "O barquinho ia à frente, feliz.",
+      "spreadId": "spread-5",
+      "artwork": {
+        "key": "e6ef0522-676b-4fa4-92d1-03fd3fc8c917/premium/revisions/25107e7f-4528-4105-bd25-3b795cc1c6df/assets/b98aa8b25db18eb7c203d61f9c7c3554984bee3717a07829e69643b18df038af.jpg",
+        "generation": "101",
+        "sha256": "b98aa8b25db18eb7c203d61f9c7c3554984bee3717a07829e69643b18df038af",
+        "bytes": 8
+      },
+      "reading": {
+        "key": "e6ef0522-676b-4fa4-92d1-03fd3fc8c917/premium/revisions/25107e7f-4528-4105-bd25-3b795cc1c6df/assets/810bf4394444575d42abd3b3fe8137e67a43852bf2c5516387ed11bb22a4acf3.png",
+        "generation": "101",
+        "sha256": "810bf4394444575d42abd3b3fe8137e67a43852bf2c5516387ed11bb22a4acf3",
+        "bytes": 10
+      },
+      "textBox": { "x": 0.1, "y": 0.09, "width": 0.8, "height": 0.2 },
+      "digitalCrop": { "x": 828, "y": 12, "width": 816, "height": 816 },
+      "printCrop": { "x": 2584, "y": 0, "width": 2660, "height": 2660 }
+    },
+    {
+      "number": 16,
+      "kind": "spread",
+      "text": "",
+      "spreadId": "spread-6",
+      "artwork": {
+        "key": "e6ef0522-676b-4fa4-92d1-03fd3fc8c917/premium/revisions/25107e7f-4528-4105-bd25-3b795cc1c6df/assets/7091e9c868f585152903672e2ab1fe4d49eec9f9a0470f400ab3a80d1b853e3e.jpg",
+        "generation": "101",
+        "sha256": "7091e9c868f585152903672e2ab1fe4d49eec9f9a0470f400ab3a80d1b853e3e",
+        "bytes": 8
+      },
+      "reading": {
+        "key": "e6ef0522-676b-4fa4-92d1-03fd3fc8c917/premium/revisions/25107e7f-4528-4105-bd25-3b795cc1c6df/assets/acf5f0afbd42aaceab24b82849508d641b1da05a1b3ac70f63a281969aeef2ac.png",
+        "generation": "101",
+        "sha256": "acf5f0afbd42aaceab24b82849508d641b1da05a1b3ac70f63a281969aeef2ac",
+        "bytes": 10
+      },
+      "digitalCrop": { "x": 12, "y": 12, "width": 816, "height": 816 },
+      "printCrop": { "x": 0, "y": 0, "width": 2660, "height": 2660 }
+    },
+    {
+      "number": 17,
+      "kind": "spread",
+      "text": "O barquinho ia à frente, feliz.",
+      "spreadId": "spread-6",
+      "artwork": {
+        "key": "e6ef0522-676b-4fa4-92d1-03fd3fc8c917/premium/revisions/25107e7f-4528-4105-bd25-3b795cc1c6df/assets/2c409e09d07b57d33ac0d73607ea6a0764d65dcc173774ad0de91f73b5d85513.jpg",
+        "generation": "101",
+        "sha256": "2c409e09d07b57d33ac0d73607ea6a0764d65dcc173774ad0de91f73b5d85513",
+        "bytes": 8
+      },
+      "reading": {
+        "key": "e6ef0522-676b-4fa4-92d1-03fd3fc8c917/premium/revisions/25107e7f-4528-4105-bd25-3b795cc1c6df/assets/6ec0eac5d1776c0053cb6c4d7c528b6b09116300701aecb878ad8e0a0f455b10.png",
+        "generation": "101",
+        "sha256": "6ec0eac5d1776c0053cb6c4d7c528b6b09116300701aecb878ad8e0a0f455b10",
+        "bytes": 10
+      },
+      "textBox": { "x": 0.1, "y": 0.09, "width": 0.8, "height": 0.2 },
+      "digitalCrop": { "x": 828, "y": 12, "width": 816, "height": 816 },
+      "printCrop": { "x": 2584, "y": 0, "width": 2660, "height": 2660 }
+    },
+    {
+      "number": 18,
+      "kind": "spread",
+      "text": "Inês caminhou junto à água.",
+      "spreadId": "spread-7",
+      "artwork": {
+        "key": "e6ef0522-676b-4fa4-92d1-03fd3fc8c917/premium/revisions/25107e7f-4528-4105-bd25-3b795cc1c6df/assets/019ef34f6bec37ff2a91d49317c0b664be2def04bc6ea8959e7062690f107b82.jpg",
+        "generation": "101",
+        "sha256": "019ef34f6bec37ff2a91d49317c0b664be2def04bc6ea8959e7062690f107b82",
+        "bytes": 8
+      },
+      "reading": {
+        "key": "e6ef0522-676b-4fa4-92d1-03fd3fc8c917/premium/revisions/25107e7f-4528-4105-bd25-3b795cc1c6df/assets/2a66074f915cce192d55633afc373a79bf166e17b56b367c90e046ec6e68e1fe.png",
+        "generation": "101",
+        "sha256": "2a66074f915cce192d55633afc373a79bf166e17b56b367c90e046ec6e68e1fe",
+        "bytes": 10
+      },
+      "textBox": { "x": 0.1, "y": 0.09, "width": 0.8, "height": 0.2 },
+      "digitalCrop": { "x": 12, "y": 12, "width": 816, "height": 816 },
+      "printCrop": { "x": 0, "y": 0, "width": 2660, "height": 2660 }
+    },
+    {
+      "number": 19,
+      "kind": "spread",
+      "text": "O barquinho ia à frente, feliz.",
+      "spreadId": "spread-7",
+      "artwork": {
+        "key": "e6ef0522-676b-4fa4-92d1-03fd3fc8c917/premium/revisions/25107e7f-4528-4105-bd25-3b795cc1c6df/assets/e96266be2dc4f72c30102e115af743d807a1be397995a5e89c33f9bcfed00f2f.jpg",
+        "generation": "101",
+        "sha256": "e96266be2dc4f72c30102e115af743d807a1be397995a5e89c33f9bcfed00f2f",
+        "bytes": 8
+      },
+      "reading": {
+        "key": "e6ef0522-676b-4fa4-92d1-03fd3fc8c917/premium/revisions/25107e7f-4528-4105-bd25-3b795cc1c6df/assets/b5300a1410a10d69b9245e5c7c9cce74313ca8d0e5ee791b9ba7cacf8c35c74c.png",
+        "generation": "101",
+        "sha256": "b5300a1410a10d69b9245e5c7c9cce74313ca8d0e5ee791b9ba7cacf8c35c74c",
+        "bytes": 10
+      },
+      "textBox": { "x": 0.1, "y": 0.09, "width": 0.8, "height": 0.2 },
+      "digitalCrop": { "x": 828, "y": 12, "width": 816, "height": 816 },
+      "printCrop": { "x": 2584, "y": 0, "width": 2660, "height": 2660 }
+    },
+    {
+      "number": 20,
+      "kind": "spread",
+      "text": "Inês caminhou junto à água.",
+      "spreadId": "spread-8",
+      "artwork": {
+        "key": "e6ef0522-676b-4fa4-92d1-03fd3fc8c917/premium/revisions/25107e7f-4528-4105-bd25-3b795cc1c6df/assets/21c7d985dfc9462c732189068da9533404ee0fbf0a1d4c740d1757914ec7627c.jpg",
+        "generation": "101",
+        "sha256": "21c7d985dfc9462c732189068da9533404ee0fbf0a1d4c740d1757914ec7627c",
+        "bytes": 8
+      },
+      "reading": {
+        "key": "e6ef0522-676b-4fa4-92d1-03fd3fc8c917/premium/revisions/25107e7f-4528-4105-bd25-3b795cc1c6df/assets/4186d33eca2833da4eed6d9b0a3ffadd53122f50bf84c56637d18f892f5586f8.png",
+        "generation": "101",
+        "sha256": "4186d33eca2833da4eed6d9b0a3ffadd53122f50bf84c56637d18f892f5586f8",
+        "bytes": 10
+      },
+      "textBox": { "x": 0.1, "y": 0.09, "width": 0.8, "height": 0.2 },
+      "digitalCrop": { "x": 12, "y": 12, "width": 816, "height": 816 },
+      "printCrop": { "x": 0, "y": 0, "width": 2660, "height": 2660 }
+    },
+    {
+      "number": 21,
+      "kind": "spread",
+      "text": "O barquinho ia à frente, feliz.",
+      "spreadId": "spread-8",
+      "artwork": {
+        "key": "e6ef0522-676b-4fa4-92d1-03fd3fc8c917/premium/revisions/25107e7f-4528-4105-bd25-3b795cc1c6df/assets/e2e5de70ae2466df425ada76bceb6a87d725e0e37ffa5905094122d4fa35ea13.jpg",
+        "generation": "101",
+        "sha256": "e2e5de70ae2466df425ada76bceb6a87d725e0e37ffa5905094122d4fa35ea13",
+        "bytes": 8
+      },
+      "reading": {
+        "key": "e6ef0522-676b-4fa4-92d1-03fd3fc8c917/premium/revisions/25107e7f-4528-4105-bd25-3b795cc1c6df/assets/a6f218e359aaf08f34bf9b2ac85d841c12e909ad01cfe5e5debe6c2ee5940062.png",
+        "generation": "101",
+        "sha256": "a6f218e359aaf08f34bf9b2ac85d841c12e909ad01cfe5e5debe6c2ee5940062",
+        "bytes": 10
+      },
+      "textBox": { "x": 0.1, "y": 0.09, "width": 0.8, "height": 0.2 },
+      "digitalCrop": { "x": 828, "y": 12, "width": 816, "height": 816 },
+      "printCrop": { "x": 2584, "y": 0, "width": 2660, "height": 2660 }
+    },
+    {
+      "number": 22,
+      "kind": "spread",
+      "text": "Inês caminhou junto à água.",
+      "spreadId": "spread-9",
+      "artwork": {
+        "key": "e6ef0522-676b-4fa4-92d1-03fd3fc8c917/premium/revisions/25107e7f-4528-4105-bd25-3b795cc1c6df/assets/445ffa6ed891ed09ddbbfbf1b7ce16292a4a938cb6f05e57a8c1c677cce2d924.jpg",
+        "generation": "101",
+        "sha256": "445ffa6ed891ed09ddbbfbf1b7ce16292a4a938cb6f05e57a8c1c677cce2d924",
+        "bytes": 8
+      },
+      "reading": {
+        "key": "e6ef0522-676b-4fa4-92d1-03fd3fc8c917/premium/revisions/25107e7f-4528-4105-bd25-3b795cc1c6df/assets/43c30cba9f042806bee8ae2f1b5ecda8136587cce2c512047021000893487431.png",
+        "generation": "101",
+        "sha256": "43c30cba9f042806bee8ae2f1b5ecda8136587cce2c512047021000893487431",
+        "bytes": 10
+      },
+      "textBox": { "x": 0.1, "y": 0.09, "width": 0.8, "height": 0.2 },
+      "digitalCrop": { "x": 12, "y": 12, "width": 816, "height": 816 },
+      "printCrop": { "x": 0, "y": 0, "width": 2660, "height": 2660 }
+    },
+    {
+      "number": 23,
+      "kind": "spread",
+      "text": "O barquinho ia à frente, feliz.",
+      "spreadId": "spread-9",
+      "artwork": {
+        "key": "e6ef0522-676b-4fa4-92d1-03fd3fc8c917/premium/revisions/25107e7f-4528-4105-bd25-3b795cc1c6df/assets/90454ef17436116cedfad07ceddc446f036a0195a1c704f30e7a682af76a367e.jpg",
+        "generation": "101",
+        "sha256": "90454ef17436116cedfad07ceddc446f036a0195a1c704f30e7a682af76a367e",
+        "bytes": 8
+      },
+      "reading": {
+        "key": "e6ef0522-676b-4fa4-92d1-03fd3fc8c917/premium/revisions/25107e7f-4528-4105-bd25-3b795cc1c6df/assets/07b11e0fb45735848fd583a6965f587ebdaabfa97a9015f87651de9a1b78d959.png",
+        "generation": "101",
+        "sha256": "07b11e0fb45735848fd583a6965f587ebdaabfa97a9015f87651de9a1b78d959",
+        "bytes": 10
+      },
+      "textBox": { "x": 0.1, "y": 0.09, "width": 0.8, "height": 0.2 },
+      "digitalCrop": { "x": 828, "y": 12, "width": 816, "height": 816 },
+      "printCrop": { "x": 2584, "y": 0, "width": 2660, "height": 2660 }
+    },
+    {
+      "number": 24,
+      "kind": "spread",
+      "text": "Inês caminhou junto à água.",
+      "spreadId": "spread-10",
+      "artwork": {
+        "key": "e6ef0522-676b-4fa4-92d1-03fd3fc8c917/premium/revisions/25107e7f-4528-4105-bd25-3b795cc1c6df/assets/2bd39e20a32c6b9b30bc604903e6d82d5bb94f6d4fb3df46e0db3b5a2d46e94c.jpg",
+        "generation": "101",
+        "sha256": "2bd39e20a32c6b9b30bc604903e6d82d5bb94f6d4fb3df46e0db3b5a2d46e94c",
+        "bytes": 8
+      },
+      "reading": {
+        "key": "e6ef0522-676b-4fa4-92d1-03fd3fc8c917/premium/revisions/25107e7f-4528-4105-bd25-3b795cc1c6df/assets/b52ada6b84b5a0b64b3f5d266f1f71226b5b0834ea12cde28ece86c116011ff7.png",
+        "generation": "101",
+        "sha256": "b52ada6b84b5a0b64b3f5d266f1f71226b5b0834ea12cde28ece86c116011ff7",
+        "bytes": 10
+      },
+      "textBox": { "x": 0.1, "y": 0.09, "width": 0.8, "height": 0.2 },
+      "digitalCrop": { "x": 12, "y": 12, "width": 816, "height": 816 },
+      "printCrop": { "x": 0, "y": 0, "width": 2660, "height": 2660 }
+    },
+    {
+      "number": 25,
+      "kind": "spread",
+      "text": "O barquinho ia à frente, feliz.",
+      "spreadId": "spread-10",
+      "artwork": {
+        "key": "e6ef0522-676b-4fa4-92d1-03fd3fc8c917/premium/revisions/25107e7f-4528-4105-bd25-3b795cc1c6df/assets/0902a7906eee77f349148ee6bca48be6c08d84848eeb7426001b57417c1fbd50.jpg",
+        "generation": "101",
+        "sha256": "0902a7906eee77f349148ee6bca48be6c08d84848eeb7426001b57417c1fbd50",
+        "bytes": 8
+      },
+      "reading": {
+        "key": "e6ef0522-676b-4fa4-92d1-03fd3fc8c917/premium/revisions/25107e7f-4528-4105-bd25-3b795cc1c6df/assets/eac33c858be02f047c95227396938356bd97729b75d6792b1c64b0bb62fa7682.png",
+        "generation": "101",
+        "sha256": "eac33c858be02f047c95227396938356bd97729b75d6792b1c64b0bb62fa7682",
+        "bytes": 10
+      },
+      "textBox": { "x": 0.1, "y": 0.09, "width": 0.8, "height": 0.2 },
+      "digitalCrop": { "x": 828, "y": 12, "width": 816, "height": 816 },
+      "printCrop": { "x": 2584, "y": 0, "width": 2660, "height": 2660 }
+    },
+    {
+      "number": 26,
+      "kind": "spread",
+      "text": "Inês caminhou junto à água.",
+      "spreadId": "spread-11",
+      "artwork": {
+        "key": "e6ef0522-676b-4fa4-92d1-03fd3fc8c917/premium/revisions/25107e7f-4528-4105-bd25-3b795cc1c6df/assets/343781a1cda684eba038a0fe4a662f2754334ae4af440fbfb9578aa33cb728cc.jpg",
+        "generation": "101",
+        "sha256": "343781a1cda684eba038a0fe4a662f2754334ae4af440fbfb9578aa33cb728cc",
+        "bytes": 8
+      },
+      "reading": {
+        "key": "e6ef0522-676b-4fa4-92d1-03fd3fc8c917/premium/revisions/25107e7f-4528-4105-bd25-3b795cc1c6df/assets/c628683860a800d81d15a78623f3693e8013df6328992e6d4e2d88bbf5445613.png",
+        "generation": "101",
+        "sha256": "c628683860a800d81d15a78623f3693e8013df6328992e6d4e2d88bbf5445613",
+        "bytes": 10
+      },
+      "textBox": { "x": 0.1, "y": 0.09, "width": 0.8, "height": 0.2 },
+      "digitalCrop": { "x": 12, "y": 12, "width": 816, "height": 816 },
+      "printCrop": { "x": 0, "y": 0, "width": 2660, "height": 2660 }
+    },
+    {
+      "number": 27,
+      "kind": "spread",
+      "text": "O barquinho ia à frente, feliz.",
+      "spreadId": "spread-11",
+      "artwork": {
+        "key": "e6ef0522-676b-4fa4-92d1-03fd3fc8c917/premium/revisions/25107e7f-4528-4105-bd25-3b795cc1c6df/assets/11c4b6d62ca69baa4ca1fbb3d514d01683b83d435c32326d5b9b452396c794d8.jpg",
+        "generation": "101",
+        "sha256": "11c4b6d62ca69baa4ca1fbb3d514d01683b83d435c32326d5b9b452396c794d8",
+        "bytes": 8
+      },
+      "reading": {
+        "key": "e6ef0522-676b-4fa4-92d1-03fd3fc8c917/premium/revisions/25107e7f-4528-4105-bd25-3b795cc1c6df/assets/b038ba679eb6701fe10591cdaf4c7652fdb6ab944be8e20a80a8cdd388ffec9c.png",
+        "generation": "101",
+        "sha256": "b038ba679eb6701fe10591cdaf4c7652fdb6ab944be8e20a80a8cdd388ffec9c",
+        "bytes": 10
+      },
+      "textBox": { "x": 0.1, "y": 0.09, "width": 0.8, "height": 0.2 },
+      "digitalCrop": { "x": 828, "y": 12, "width": 816, "height": 816 },
+      "printCrop": { "x": 2584, "y": 0, "width": 2660, "height": 2660 }
+    },
+    {
+      "number": 28,
+      "kind": "spread",
+      "text": "",
+      "spreadId": "spread-12",
+      "artwork": {
+        "key": "e6ef0522-676b-4fa4-92d1-03fd3fc8c917/premium/revisions/25107e7f-4528-4105-bd25-3b795cc1c6df/assets/852b1446f94b059159caca39a1e0afe5473ec29680ee658cecae863ed41383b4.jpg",
+        "generation": "101",
+        "sha256": "852b1446f94b059159caca39a1e0afe5473ec29680ee658cecae863ed41383b4",
+        "bytes": 8
+      },
+      "reading": {
+        "key": "e6ef0522-676b-4fa4-92d1-03fd3fc8c917/premium/revisions/25107e7f-4528-4105-bd25-3b795cc1c6df/assets/2e2a4205a75836041900f715e7ef5923f372506d4b4c0db74135d6d5d6fba4ff.png",
+        "generation": "101",
+        "sha256": "2e2a4205a75836041900f715e7ef5923f372506d4b4c0db74135d6d5d6fba4ff",
+        "bytes": 10
+      },
+      "digitalCrop": { "x": 12, "y": 12, "width": 816, "height": 816 },
+      "printCrop": { "x": 0, "y": 0, "width": 2660, "height": 2660 }
+    },
+    {
+      "number": 29,
+      "kind": "spread",
+      "text": "O barquinho ia à frente, feliz.",
+      "spreadId": "spread-12",
+      "artwork": {
+        "key": "e6ef0522-676b-4fa4-92d1-03fd3fc8c917/premium/revisions/25107e7f-4528-4105-bd25-3b795cc1c6df/assets/10d29452806ab6bf1b3d85713b7d22b85f7f7fd3eae5e599b4639b4f02500f8e.jpg",
+        "generation": "101",
+        "sha256": "10d29452806ab6bf1b3d85713b7d22b85f7f7fd3eae5e599b4639b4f02500f8e",
+        "bytes": 8
+      },
+      "reading": {
+        "key": "e6ef0522-676b-4fa4-92d1-03fd3fc8c917/premium/revisions/25107e7f-4528-4105-bd25-3b795cc1c6df/assets/bf38fc3d1d83ad7dabe9d7af7132bf3717b820e7fbf027f9cfb562ff4437b066.png",
+        "generation": "101",
+        "sha256": "bf38fc3d1d83ad7dabe9d7af7132bf3717b820e7fbf027f9cfb562ff4437b066",
+        "bytes": 10
+      },
+      "textBox": { "x": 0.1, "y": 0.09, "width": 0.8, "height": 0.2 },
+      "digitalCrop": { "x": 828, "y": 12, "width": 816, "height": 816 },
+      "printCrop": { "x": 2584, "y": 0, "width": 2660, "height": 2660 }
+    },
+    {
+      "number": 30,
+      "kind": "spread",
+      "text": "Inês caminhou junto à água.",
+      "spreadId": "spread-13",
+      "artwork": {
+        "key": "e6ef0522-676b-4fa4-92d1-03fd3fc8c917/premium/revisions/25107e7f-4528-4105-bd25-3b795cc1c6df/assets/2df6388f564595dfe6363003a99930331bd16c1fad75b5f807aadef0acb4dd35.jpg",
+        "generation": "101",
+        "sha256": "2df6388f564595dfe6363003a99930331bd16c1fad75b5f807aadef0acb4dd35",
+        "bytes": 8
+      },
+      "reading": {
+        "key": "e6ef0522-676b-4fa4-92d1-03fd3fc8c917/premium/revisions/25107e7f-4528-4105-bd25-3b795cc1c6df/assets/7d7a361465a61287426f9c3c717c4f4c78599daf46e157b2856c4afa3d4c98a4.png",
+        "generation": "101",
+        "sha256": "7d7a361465a61287426f9c3c717c4f4c78599daf46e157b2856c4afa3d4c98a4",
+        "bytes": 10
+      },
+      "textBox": { "x": 0.1, "y": 0.09, "width": 0.8, "height": 0.2 },
+      "digitalCrop": { "x": 12, "y": 12, "width": 816, "height": 816 },
+      "printCrop": { "x": 0, "y": 0, "width": 2660, "height": 2660 }
+    },
+    {
+      "number": 31,
+      "kind": "spread",
+      "text": "O barquinho ia à frente, feliz.",
+      "spreadId": "spread-13",
+      "artwork": {
+        "key": "e6ef0522-676b-4fa4-92d1-03fd3fc8c917/premium/revisions/25107e7f-4528-4105-bd25-3b795cc1c6df/assets/41be0d191e3ec58ad5ac3e125c7bb79c6ceb4ee002628ec1db33d6afebe20c61.jpg",
+        "generation": "101",
+        "sha256": "41be0d191e3ec58ad5ac3e125c7bb79c6ceb4ee002628ec1db33d6afebe20c61",
+        "bytes": 8
+      },
+      "reading": {
+        "key": "e6ef0522-676b-4fa4-92d1-03fd3fc8c917/premium/revisions/25107e7f-4528-4105-bd25-3b795cc1c6df/assets/a77350171062c7c0d00a38dbc5869fe58fa553500a7255408d763483673eb1ae.png",
+        "generation": "101",
+        "sha256": "a77350171062c7c0d00a38dbc5869fe58fa553500a7255408d763483673eb1ae",
+        "bytes": 10
+      },
+      "textBox": { "x": 0.1, "y": 0.09, "width": 0.8, "height": 0.2 },
+      "digitalCrop": { "x": 828, "y": 12, "width": 816, "height": 816 },
+      "printCrop": { "x": 2584, "y": 0, "width": 2660, "height": 2660 }
+    },
+    {
+      "number": 32,
+      "kind": "ending",
+      "text": "Até amanhã, barquinho!",
+      "artwork": {
+        "key": "e6ef0522-676b-4fa4-92d1-03fd3fc8c917/premium/revisions/25107e7f-4528-4105-bd25-3b795cc1c6df/assets/aa5a38df92cda4023d9e24921a0fdf1666e212b9c6b8869b387cb67b915cf7d9.jpg",
+        "generation": "101",
+        "sha256": "aa5a38df92cda4023d9e24921a0fdf1666e212b9c6b8869b387cb67b915cf7d9",
+        "bytes": 8
+      },
+      "reading": {
+        "key": "e6ef0522-676b-4fa4-92d1-03fd3fc8c917/premium/revisions/25107e7f-4528-4105-bd25-3b795cc1c6df/assets/86d01998fe97b0a7c8cc812d3bd09062f95edccbe5e4fad85f041f04a4dae829.png",
+        "generation": "101",
+        "sha256": "86d01998fe97b0a7c8cc812d3bd09062f95edccbe5e4fad85f041f04a4dae829",
+        "bytes": 10
+      },
+      "textBox": { "x": 0.1, "y": 0.09, "width": 0.8, "height": 0.2 },
+      "digitalCrop": { "x": 12, "y": 12, "width": 816, "height": 816 },
+      "printCrop": { "x": 0, "y": 0, "width": 2660, "height": 2660 }
+    },
+    {
+      "number": 33,
+      "kind": "invitation",
+      "text": "Gostaste desta história?\n\nAgora é a tua vez. O que vai acontecer na tua história?",
+      "link": {
+        "label": "Cria a tua história na Mythoria",
+        "href": "https://mythoria.pt/pt-PT/tell-your-story"
+      }
+    }
+  ],
+  "spreads": [
+    {
+      "nativeWidth": 3840,
+      "nativeHeight": 1952,
+      "effectivePpi": 222.6,
+      "id": "spread-1",
+      "textLayout": "both_pages",
+      "leftPage": 6,
+      "rightPage": 7,
+      "master": {
+        "key": "e6ef0522-676b-4fa4-92d1-03fd3fc8c917/premium/revisions/25107e7f-4528-4105-bd25-3b795cc1c6df/assets/92f33c2c09664034099e0b52799643f11ba6a07c041ec0c3a58320d57287950f.png",
+        "generation": "101",
+        "sha256": "92f33c2c09664034099e0b52799643f11ba6a07c041ec0c3a58320d57287950f",
+        "bytes": 8
+      },
+      "source": {
+        "key": "e6ef0522-676b-4fa4-92d1-03fd3fc8c917/premium/revisions/25107e7f-4528-4105-bd25-3b795cc1c6df/assets/e11b85c24a89d6bb1bb3293cf201c93cfc214a4a6f65b3426978aca8ed1cccc0.png",
+        "generation": "101",
+        "sha256": "e11b85c24a89d6bb1bb3293cf201c93cfc214a4a6f65b3426978aca8ed1cccc0",
+        "bytes": 15
+      },
+      "action": "Inês follows the little boat."
+    },
+    {
+      "nativeWidth": 3840,
+      "nativeHeight": 1952,
+      "effectivePpi": 222.6,
+      "id": "spread-2",
+      "textLayout": "both_pages",
+      "leftPage": 8,
+      "rightPage": 9,
+      "master": {
+        "key": "e6ef0522-676b-4fa4-92d1-03fd3fc8c917/premium/revisions/25107e7f-4528-4105-bd25-3b795cc1c6df/assets/cf3d7ba9c54184fa72a3d5f4f8b63b4ee1b9f3bc222f9716825fce1b1bc55363.png",
+        "generation": "101",
+        "sha256": "cf3d7ba9c54184fa72a3d5f4f8b63b4ee1b9f3bc222f9716825fce1b1bc55363",
+        "bytes": 8
+      },
+      "source": {
+        "key": "e6ef0522-676b-4fa4-92d1-03fd3fc8c917/premium/revisions/25107e7f-4528-4105-bd25-3b795cc1c6df/assets/937b54a10d64efccc4d6e98f15c9a52dddb3679dc2b2c41f72438f27936e914c.png",
+        "generation": "101",
+        "sha256": "937b54a10d64efccc4d6e98f15c9a52dddb3679dc2b2c41f72438f27936e914c",
+        "bytes": 15
+      },
+      "action": "Inês follows the little boat."
+    },
+    {
+      "nativeWidth": 3840,
+      "nativeHeight": 1952,
+      "effectivePpi": 222.6,
+      "id": "spread-3",
+      "textLayout": "right_only",
+      "leftDescription": "À esquerda, a Inês espreita a água junto à margem.",
+      "leftPage": 10,
+      "rightPage": 11,
+      "master": {
+        "key": "e6ef0522-676b-4fa4-92d1-03fd3fc8c917/premium/revisions/25107e7f-4528-4105-bd25-3b795cc1c6df/assets/25525bbc64e5762239aa5ac067bc64e8696d4a10bbb25fb754c7b480c6bad67a.png",
+        "generation": "101",
+        "sha256": "25525bbc64e5762239aa5ac067bc64e8696d4a10bbb25fb754c7b480c6bad67a",
+        "bytes": 8
+      },
+      "source": {
+        "key": "e6ef0522-676b-4fa4-92d1-03fd3fc8c917/premium/revisions/25107e7f-4528-4105-bd25-3b795cc1c6df/assets/39ad60bdee75f51c5b8a05c35a63f3bb10602e5ec95e5a4b1846bea66642fe6b.png",
+        "generation": "101",
+        "sha256": "39ad60bdee75f51c5b8a05c35a63f3bb10602e5ec95e5a4b1846bea66642fe6b",
+        "bytes": 15
+      },
+      "action": "Inês follows the little boat."
+    },
+    {
+      "nativeWidth": 3840,
+      "nativeHeight": 1952,
+      "effectivePpi": 222.6,
+      "id": "spread-4",
+      "textLayout": "both_pages",
+      "leftPage": 12,
+      "rightPage": 13,
+      "master": {
+        "key": "e6ef0522-676b-4fa4-92d1-03fd3fc8c917/premium/revisions/25107e7f-4528-4105-bd25-3b795cc1c6df/assets/fdf488a1bbe89c147fb354a7cfc5f2acdb0f1c8de6c57f773fd04a55a8e9b511.png",
+        "generation": "101",
+        "sha256": "fdf488a1bbe89c147fb354a7cfc5f2acdb0f1c8de6c57f773fd04a55a8e9b511",
+        "bytes": 8
+      },
+      "source": {
+        "key": "e6ef0522-676b-4fa4-92d1-03fd3fc8c917/premium/revisions/25107e7f-4528-4105-bd25-3b795cc1c6df/assets/18c3016f341e92903a20c5e8503b85175ba9d1d191700e9daac820b582e511a5.png",
+        "generation": "101",
+        "sha256": "18c3016f341e92903a20c5e8503b85175ba9d1d191700e9daac820b582e511a5",
+        "bytes": 15
+      },
+      "action": "Inês follows the little boat."
+    },
+    {
+      "nativeWidth": 3840,
+      "nativeHeight": 1952,
+      "effectivePpi": 222.6,
+      "id": "spread-5",
+      "textLayout": "both_pages",
+      "leftPage": 14,
+      "rightPage": 15,
+      "master": {
+        "key": "e6ef0522-676b-4fa4-92d1-03fd3fc8c917/premium/revisions/25107e7f-4528-4105-bd25-3b795cc1c6df/assets/f2e0f0188f730b7714c96f70a1400d023851144d0d5e8f5e3a219135bd68a8a6.png",
+        "generation": "101",
+        "sha256": "f2e0f0188f730b7714c96f70a1400d023851144d0d5e8f5e3a219135bd68a8a6",
+        "bytes": 8
+      },
+      "source": {
+        "key": "e6ef0522-676b-4fa4-92d1-03fd3fc8c917/premium/revisions/25107e7f-4528-4105-bd25-3b795cc1c6df/assets/4e5476a856575c5515cde0d19c488d4d0e9e5cac5605ab57999ee41e1204e606.png",
+        "generation": "101",
+        "sha256": "4e5476a856575c5515cde0d19c488d4d0e9e5cac5605ab57999ee41e1204e606",
+        "bytes": 15
+      },
+      "action": "Inês follows the little boat."
+    },
+    {
+      "nativeWidth": 3840,
+      "nativeHeight": 1952,
+      "effectivePpi": 222.6,
+      "id": "spread-6",
+      "textLayout": "right_only",
+      "leftDescription": "À esquerda, a Inês espreita a água junto à margem.",
+      "leftPage": 16,
+      "rightPage": 17,
+      "master": {
+        "key": "e6ef0522-676b-4fa4-92d1-03fd3fc8c917/premium/revisions/25107e7f-4528-4105-bd25-3b795cc1c6df/assets/a75c4d5632e9da561b79a9b821a36f52e813eb07310ebbe377680494e4dea2d2.png",
+        "generation": "101",
+        "sha256": "a75c4d5632e9da561b79a9b821a36f52e813eb07310ebbe377680494e4dea2d2",
+        "bytes": 8
+      },
+      "source": {
+        "key": "e6ef0522-676b-4fa4-92d1-03fd3fc8c917/premium/revisions/25107e7f-4528-4105-bd25-3b795cc1c6df/assets/8614e562da37b5a830410b10d810d10e5e0f2403be093c96dc22663dc5cdcd37.png",
+        "generation": "101",
+        "sha256": "8614e562da37b5a830410b10d810d10e5e0f2403be093c96dc22663dc5cdcd37",
+        "bytes": 15
+      },
+      "action": "Inês follows the little boat."
+    },
+    {
+      "nativeWidth": 3840,
+      "nativeHeight": 1952,
+      "effectivePpi": 222.6,
+      "id": "spread-7",
+      "textLayout": "both_pages",
+      "leftPage": 18,
+      "rightPage": 19,
+      "master": {
+        "key": "e6ef0522-676b-4fa4-92d1-03fd3fc8c917/premium/revisions/25107e7f-4528-4105-bd25-3b795cc1c6df/assets/acbf21888838990ef2311ddb1e6b661406437f8f2aac850386749ccbe088c638.png",
+        "generation": "101",
+        "sha256": "acbf21888838990ef2311ddb1e6b661406437f8f2aac850386749ccbe088c638",
+        "bytes": 8
+      },
+      "source": {
+        "key": "e6ef0522-676b-4fa4-92d1-03fd3fc8c917/premium/revisions/25107e7f-4528-4105-bd25-3b795cc1c6df/assets/517d948f48b8b827a3e6014bfa70e4d06171d2684a8f407bf371ec54b5a926c5.png",
+        "generation": "101",
+        "sha256": "517d948f48b8b827a3e6014bfa70e4d06171d2684a8f407bf371ec54b5a926c5",
+        "bytes": 15
+      },
+      "action": "Inês follows the little boat."
+    },
+    {
+      "nativeWidth": 3840,
+      "nativeHeight": 1952,
+      "effectivePpi": 222.6,
+      "id": "spread-8",
+      "textLayout": "both_pages",
+      "leftPage": 20,
+      "rightPage": 21,
+      "master": {
+        "key": "e6ef0522-676b-4fa4-92d1-03fd3fc8c917/premium/revisions/25107e7f-4528-4105-bd25-3b795cc1c6df/assets/5ae0c5e228d082f49ccb5c968b29ac1de685391c33bd4ad6ae4368dca3c79160.png",
+        "generation": "101",
+        "sha256": "5ae0c5e228d082f49ccb5c968b29ac1de685391c33bd4ad6ae4368dca3c79160",
+        "bytes": 8
+      },
+      "source": {
+        "key": "e6ef0522-676b-4fa4-92d1-03fd3fc8c917/premium/revisions/25107e7f-4528-4105-bd25-3b795cc1c6df/assets/fa3d0b9adea16b5dd938f230bfec3195102bdc73c90eb058ee4efb7c0cd42ecf.png",
+        "generation": "101",
+        "sha256": "fa3d0b9adea16b5dd938f230bfec3195102bdc73c90eb058ee4efb7c0cd42ecf",
+        "bytes": 15
+      },
+      "action": "Inês follows the little boat."
+    },
+    {
+      "nativeWidth": 3840,
+      "nativeHeight": 1952,
+      "effectivePpi": 222.6,
+      "id": "spread-9",
+      "textLayout": "both_pages",
+      "leftPage": 22,
+      "rightPage": 23,
+      "master": {
+        "key": "e6ef0522-676b-4fa4-92d1-03fd3fc8c917/premium/revisions/25107e7f-4528-4105-bd25-3b795cc1c6df/assets/4200485a24c6250de7a116287ba4379f801bb1e036ff4a2c4113460b8289de00.png",
+        "generation": "101",
+        "sha256": "4200485a24c6250de7a116287ba4379f801bb1e036ff4a2c4113460b8289de00",
+        "bytes": 8
+      },
+      "source": {
+        "key": "e6ef0522-676b-4fa4-92d1-03fd3fc8c917/premium/revisions/25107e7f-4528-4105-bd25-3b795cc1c6df/assets/923207ffc5a361f6e8968bd0cb2e112a43229fcfc7ef65acf35ce23ed95c8da5.png",
+        "generation": "101",
+        "sha256": "923207ffc5a361f6e8968bd0cb2e112a43229fcfc7ef65acf35ce23ed95c8da5",
+        "bytes": 15
+      },
+      "action": "Inês follows the little boat."
+    },
+    {
+      "nativeWidth": 3840,
+      "nativeHeight": 1952,
+      "effectivePpi": 222.6,
+      "id": "spread-10",
+      "textLayout": "both_pages",
+      "leftPage": 24,
+      "rightPage": 25,
+      "master": {
+        "key": "e6ef0522-676b-4fa4-92d1-03fd3fc8c917/premium/revisions/25107e7f-4528-4105-bd25-3b795cc1c6df/assets/a2cdf08ad15556615a03e593fb776c4866dff95e2c3222a009bf385e49ba73e3.png",
+        "generation": "101",
+        "sha256": "a2cdf08ad15556615a03e593fb776c4866dff95e2c3222a009bf385e49ba73e3",
+        "bytes": 9
+      },
+      "source": {
+        "key": "e6ef0522-676b-4fa4-92d1-03fd3fc8c917/premium/revisions/25107e7f-4528-4105-bd25-3b795cc1c6df/assets/096af0857e2a344176e153b11ef55f8a26701cd29da4286a08104c3df96bda66.png",
+        "generation": "101",
+        "sha256": "096af0857e2a344176e153b11ef55f8a26701cd29da4286a08104c3df96bda66",
+        "bytes": 16
+      },
+      "action": "Inês follows the little boat."
+    },
+    {
+      "nativeWidth": 3840,
+      "nativeHeight": 1952,
+      "effectivePpi": 222.6,
+      "id": "spread-11",
+      "textLayout": "both_pages",
+      "leftPage": 26,
+      "rightPage": 27,
+      "master": {
+        "key": "e6ef0522-676b-4fa4-92d1-03fd3fc8c917/premium/revisions/25107e7f-4528-4105-bd25-3b795cc1c6df/assets/2025bd04e1dd176ec006eb15ca8120e92aa9cf704b5af505e4144f71f7550d07.png",
+        "generation": "101",
+        "sha256": "2025bd04e1dd176ec006eb15ca8120e92aa9cf704b5af505e4144f71f7550d07",
+        "bytes": 9
+      },
+      "source": {
+        "key": "e6ef0522-676b-4fa4-92d1-03fd3fc8c917/premium/revisions/25107e7f-4528-4105-bd25-3b795cc1c6df/assets/1ed9c537466b7a15e74b4c4168dae7b29bd1f359ba30002df7469f568744e067.png",
+        "generation": "101",
+        "sha256": "1ed9c537466b7a15e74b4c4168dae7b29bd1f359ba30002df7469f568744e067",
+        "bytes": 16
+      },
+      "action": "Inês follows the little boat."
+    },
+    {
+      "nativeWidth": 3840,
+      "nativeHeight": 1952,
+      "effectivePpi": 222.6,
+      "id": "spread-12",
+      "textLayout": "right_only",
+      "leftDescription": "À esquerda, a Inês espreita a água junto à margem.",
+      "leftPage": 28,
+      "rightPage": 29,
+      "master": {
+        "key": "e6ef0522-676b-4fa4-92d1-03fd3fc8c917/premium/revisions/25107e7f-4528-4105-bd25-3b795cc1c6df/assets/855a4ff17da25507ca0de7459e2bc9d7407990263e0674541d3ac68ae32056cc.png",
+        "generation": "101",
+        "sha256": "855a4ff17da25507ca0de7459e2bc9d7407990263e0674541d3ac68ae32056cc",
+        "bytes": 9
+      },
+      "source": {
+        "key": "e6ef0522-676b-4fa4-92d1-03fd3fc8c917/premium/revisions/25107e7f-4528-4105-bd25-3b795cc1c6df/assets/cdb7676b2191e8d24935f2e772dd6e2641217c191d0b638d40f81a7c2034925b.png",
+        "generation": "101",
+        "sha256": "cdb7676b2191e8d24935f2e772dd6e2641217c191d0b638d40f81a7c2034925b",
+        "bytes": 16
+      },
+      "action": "Inês follows the little boat."
+    },
+    {
+      "nativeWidth": 3840,
+      "nativeHeight": 1952,
+      "effectivePpi": 222.6,
+      "id": "spread-13",
+      "textLayout": "both_pages",
+      "leftPage": 30,
+      "rightPage": 31,
+      "master": {
+        "key": "e6ef0522-676b-4fa4-92d1-03fd3fc8c917/premium/revisions/25107e7f-4528-4105-bd25-3b795cc1c6df/assets/607e499b4ad1408f5ddc99d05583425725da97df4aab85fdf0aad784c5912d10.png",
+        "generation": "101",
+        "sha256": "607e499b4ad1408f5ddc99d05583425725da97df4aab85fdf0aad784c5912d10",
+        "bytes": 9
+      },
+      "source": {
+        "key": "e6ef0522-676b-4fa4-92d1-03fd3fc8c917/premium/revisions/25107e7f-4528-4105-bd25-3b795cc1c6df/assets/45850a56cb338d2df231ebeaf70b2315f72174cb9608d1932d76cc1686e46b33.png",
+        "generation": "101",
+        "sha256": "45850a56cb338d2df231ebeaf70b2315f72174cb9608d1932d76cc1686e46b33",
+        "bytes": 16
+      },
+      "action": "Inês follows the little boat."
+    }
+  ]
+}
