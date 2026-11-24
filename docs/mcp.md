@@ -2,6 +2,12 @@
 
 The Mythoria MCP server is exposed at `/api/mcp` using Streamable HTTP transport with JSON responses enabled.
 
+## Where to change a tool
+
+[`server.ts`](../src/lib/mcp/server.ts) assembles the seven tool groups and connects the HTTP transport. Each `*-tools.ts` file in [the MCP directory](../src/lib/mcp/) contains the input schemas and handlers for one group. Reading and draft creation live in `story-tools.ts`. Audio, export, print, and job status live in `fulfillment-tools.ts`.
+
+When adding a tool, register it in its group and declare its public name, security policy, and any widget binding in [`tool-metadata.ts`](../src/lib/mcp/tool-metadata.ts). The [server contract tests](../src/lib/mcp/server.test.ts) exercise these registrations through the MCP interface.
+
 ## Authentication
 
 - Current mode: mixed auth (`noauth` + OAuth 2.1).
