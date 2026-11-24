@@ -1,4 +1,6 @@
 import assert from 'node:assert/strict';
+import { get as httpGet, type IncomingMessage } from 'node:http';
+import { get as httpsGet } from 'node:https';
 
 const baseArg = process.argv.find((arg) => arg.startsWith('--base-url='));
 const baseUrl = new URL(baseArg?.slice('--base-url='.length) || 'http://localhost:3000');
@@ -43,6 +45,29 @@ async function fetchNoRedirect(url: string) {
       'accept-encoding': 'identity',
       'user-agent': 'Mythoria-SEO-Smoke/1.0',
     },
+  });
+}
+
+// Node's fetch always sends Sec-Fetch-Mode: cors. Use HTTP directly for the
+// two checks that exercise a visitor opening a campaign link in their browser.
+function campaignNavigation(pathname: string): Promise<IncomingMessage> {
+  const url = new URL(pathname, baseUrl);
+  const get = url.protocol === 'https:' ? httpsGet : httpGet;
+  return new Promise((resolve, reject) => {
+    get(
+      url,
+      {
+        headers: {
+          'sec-fetch-dest': 'document',
+          'sec-fetch-mode': 'navigate',
+          'user-agent': 'Mythoria-SEO-Smoke/1.0',
+        },
+      },
+      (response) => {
+        response.resume();
+        resolve(response);
+      },
+    ).on('error', reject);
   });
 }
 
@@ -253,11 +278,13 @@ async function main() {
     '/pt-PT?intent=romance&utm_source=seo-smoke&gclid=click-1',
     '/pt-PT?intent=grandparents&utm_source=seo-smoke&wbraid=click-2',
   ]) {
-    const response = await fetchNoRedirect(absolute(campaignPath));
-    assert.equal(response.status, 200, `${campaignPath} should be an immediate 200`);
-    assert.equal(response.headers.get('location'), null, `${campaignPath} unexpectedly redirects`);
+    const response = await campaignNavigation(campaignPath);
+    assert.equal(response.statusCode, 200, `${campaignPath} should be an immediate 200`);
+    assert.equal(response.headers.location, undefined, `${campaignPath} unexpectedly redirects`);
     assert(
-      response.headers.get('set-cookie')?.includes('mythoria_intent_context='),
+      response.headers['set-cookie']?.some((cookie) =>
+        cookie.startsWith('mythoria_intent_context='),
+      ),
       `${campaignPath} does not persist its intent`,
     );
   }

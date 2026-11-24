@@ -162,6 +162,38 @@ describe('campaign intent cookie', () => {
     expect(applyCookie(path, { 'next-router-prefetch': '1' })).toBeNull();
   });
 
+  it('sets the intent for an actual browser document navigation', () => {
+    expect(
+      applyCookie('/en-US?intent=grandparents', {
+        'sec-fetch-dest': 'document',
+        'sec-fetch-mode': 'navigate',
+      }),
+    ).toEqual({ intent: 'grandparents' });
+  });
+
+  it.each([
+    [
+      'router requests with Flight headers stripped',
+      new Headers({
+        'sec-fetch-dest': 'empty',
+        'sec-fetch-mode': 'cors',
+      }),
+    ],
+    ['fetches with only mode metadata', new Headers({ 'sec-fetch-mode': 'cors' })],
+    ['RSC requests with no Fetch Metadata', new Headers({ rsc: '1' })],
+    [
+      'prerendered documents',
+      new Headers({
+        'sec-fetch-dest': 'document',
+        'sec-fetch-mode': 'navigate',
+        'sec-purpose': 'prefetch;prerender',
+      }),
+    ],
+  ])('does not persist intent for %s', (_description, headers) => {
+    expect(applyCookie('/en-US?intent=grandparents', headers)).toBeNull();
+    expect(applyCookie('/pt-PT/lp/livro-personalizado-para-casais', headers)).toBeNull();
+  });
+
   it('leaves other route query parameters scoped to their own pages', () => {
     expect(applyCookie('/de-DE/aboutUs?intent=kids')).toBeNull();
   });

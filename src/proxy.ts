@@ -93,10 +93,23 @@ export function applyPublicContextCookies(req: NextRequest, response: NextRespon
   const isLandingPage = section === 'lp' && Boolean(slug) && rest.length === 0;
   if (!SUPPORTED_LOCALES.includes(locale) || (!isHomepage && !isLandingPage)) return response;
 
+  // Next strips Flight headers before Proxy. Use Fetch Metadata to avoid writing
+  // campaign cookies on speculative fetches. Committed client navigations persist
+  // the selected intent in LandingPageIntentEntry or HomepageThemeProvider.
+  const destination = req.headers.get('sec-fetch-dest');
+  const mode = req.headers.get('sec-fetch-mode');
   if (
+    req.method !== 'GET' ||
+    (destination !== null && destination !== 'document') ||
+    (mode !== null && mode !== 'navigate') ||
+    req.headers.has('rsc') ||
     req.headers.has('next-router-prefetch') ||
     req.headers.has('next-router-segment-prefetch') ||
-    req.headers.get('purpose') === 'prefetch'
+    req.headers.get('purpose') === 'prefetch' ||
+    req.headers
+      .get('sec-purpose')
+      ?.split(';')
+      .some((purpose) => purpose.trim() === 'prefetch')
   ) {
     return response;
   }
