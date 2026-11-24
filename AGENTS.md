@@ -9,7 +9,7 @@ This document is the single source of truth for agents working on the Mythoria w
 ## Technology Snapshot
 
 - **Framework**: Next.js 16 (App Router, standalone output)
-- **Language**: TypeScript 6 with strict compiler settings
+- **Language**: TypeScript 7 for standalone type checks, with TypeScript 6 for tooling that uses its JavaScript compiler API
 - **Runtime**: Node.js 24.18.1 LTS (enforced through `package.json` engines, `.nvmrc`, `.node-version`, `.npmrc`, Dockerfile, and Cloud Build)
 - **UI**: React 19, Tailwind CSS + DaisyUI, Next PWA integration
 - **Internationalization**: `next-intl` with locale-specific route segments and JSON message bundles
@@ -45,6 +45,7 @@ Following Next.js recommendations for CSS management:
 3. Validate the configuration by running `npm run check:env`; resolve all reported mismatches.
 4. Start the development server with `npm run dev` (Turbopack enabled). The app runs at `http://localhost:3000` by default.
 5. When adding new dependencies, prefer `npm install` (package-lock is committed).
+6. npm 12 applies the `allowScripts` entries in `package.json`. The entries explicitly deny previously blocked dependency hooks. The app uses the installed platform packages and still runs its `patch-package` postinstall.
 
 ## Environment Variables
 
@@ -58,6 +59,7 @@ Following Next.js recommendations for CSS management:
 - Schema definitions live in `src/db/schema`. Update `schema/index.ts` to re-export new tables/enums so Drizzle migrations and services can import them.
 - Generate SQL migrations with `npm run db:generate` and commit the resulting files under `drizzle/`.
 - Apply migrations locally with `npm run db:migrate` (uses `.env.local` credentials) or `npm run db:push` for schema synchronization.
+- Keep the esbuild overrides scoped to `drizzle-kit` and `tsx`. Drizzle Kit uses the 0.25 release line, including its legacy loader, and tsx uses the 0.28 line. `drizzle-kit export --sql` checks schema loading without connecting to the database.
 - `npm run db:reset` drops application tables and enums; `npm run db:setup` performs a reset followed by a push. Use cautiously.
 - `npm run db:studio` launches the Drizzle Studio inspector. `npm run db:seed` is currently a no-op placeholder; keep it updated if a real seed workflow is introduced.
 - Services under `src/db/services` should be covered by Jest tests co-located in the same directory.
@@ -70,7 +72,7 @@ IMPORTANT: We currently only have ONE database instance, used on both developmen
 Run these commands after making code changes and before committing or opening a PR:
 
 - `npm run lint` – ESLint (flat config via `eslint.config.mjs`)
-- `npm run typecheck` – TypeScript `tsc --noEmit`
+- `npm run typecheck` – TypeScript 7 `tsc --noEmit` through the `typescript-native` npm alias. Next.js builds and Jest still use TypeScript 6 through the `typescript` package.
 - `npm run test` – Jest unit tests (includes React Testing Library and server-side utilities)
 - `npm run format` – Prettier validation (run this after every code change; use `npm run format:fix` if issues pop up)
 - `npm run i18n:parity` – Ensures locale bundles remain aligned with `en-US`

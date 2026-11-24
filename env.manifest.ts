@@ -460,7 +460,7 @@ export const envManifest: EnvVarDescriptor[] = [
     required: false,
     scopes: ['prod', 'runtime', 'dev'],
     source: 'substitution',
-    note: 'Optional Stripe API version override. Leave unset to use the installed stripe SDK default.',
+    note: "Optional Stripe API version override. Leave unset to use the payment service's pinned version.",
   },
   {
     name: 'STRIPE_CREDIT_TAX_CODE',

@@ -15,7 +15,12 @@ export const createDatabaseConnection = (): PostgresJsDatabase => {
     `postgres://${config.user}:${config.password}@${config.host}:${config.port}/${config.database}`;
 
   const ssl: PostgresSslOption = config.ssl;
-  const client = postgres(connectionString, { ssl, max: config.maxConnections });
+  const client = postgres(connectionString, {
+    ssl,
+    max: config.maxConnections,
+    // Preserve v3 parameter and timestamp semantics for existing queries and rows.
+    infer: true,
+  });
   return drizzle(client);
 };
 

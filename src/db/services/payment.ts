@@ -40,6 +40,9 @@ import { sanitizeAdContext, type AdContext } from '../../lib/openai-ads/types';
 import { creditPackagesService } from './credit-packages';
 
 type StripeClientConfig = NonNullable<ConstructorParameters<typeof Stripe>[1]>;
+// Keep the previous SDK's wire API version until the payment contract is migrated.
+const DEFAULT_STRIPE_API_VERSION = '2026-08-26.dahlia';
+
 type PaymentSource = 'stripe';
 type StripeLineItem = NonNullable<Stripe.Checkout.SessionCreateParams['line_items']>[number];
 type StripeCheckoutLocale = NonNullable<Stripe.Checkout.SessionCreateParams['locale']>;
@@ -128,11 +131,10 @@ export function getStripeClient(): Stripe {
   }
 
   if (!stripeClient) {
-    const config: StripeClientConfig = {};
-    if (process.env.STRIPE_API_VERSION) {
-      config.apiVersion = process.env.STRIPE_API_VERSION as StripeClientConfig['apiVersion'];
-    }
-    stripeClient = new Stripe(secretKey, config);
+    stripeClient = new Stripe(secretKey, {
+      apiVersion: (process.env.STRIPE_API_VERSION ||
+        DEFAULT_STRIPE_API_VERSION) as StripeClientConfig['apiVersion'],
+    });
   }
 
   return stripeClient;
