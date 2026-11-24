@@ -24,6 +24,7 @@ interface PackBook {
   slug: string;
   language: string;
   targetAudience?: string;
+  publicTopics?: string[];
   readerAgeBand?: string;
   buyerPersona?: string;
   recipientType?: string;
@@ -52,6 +53,14 @@ interface PackManifest {
 }
 
 const PACK_INTENTS: Record<string, StoryIntent> = {
+  'a-carta-que-perdeu-o-envelope': 'christmas',
+  'la-carta-que-perdio-su-sobre': 'christmas',
+  'quando-a-estrela-do-teatro-se-apagou': 'christmas',
+  'cuando-se-apago-la-estrella-del-teatro': 'christmas',
+  'o-clube-do-telhado-torto': 'learning_and_discovery',
+  'el-club-del-tejado-torcido': 'learning_and_discovery',
+  'a-noticia-a-que-faltava-metade': 'school_projects',
+  'la-noticia-a-la-que-le-faltaba-la-mitad': 'school_projects',
   'a-equipa-que-marcou-um-golo-nas-estrelas': 'sports_teams',
   'a-leonor-e-o-segredo-do-oceanario': 'amusement_parks',
   'a-road-trip-dos-planos-impossiveis': 'family_travels',
@@ -166,7 +175,7 @@ async function packToSampleBook(folderName: string): Promise<SampleBook> {
     locale: book.language,
     intent,
     recipients: book.recipientType ? [book.recipientType] : [],
-    tags: normalizeTags(manifest.usageTags),
+    tags: normalizeTags(book.publicTopics ?? manifest.usageTags),
     style: book.graphicalStyle ?? book.novelStyle ?? 'sample book',
     graphicalStyle: book.graphicalStyle,
     novelStyle: book.novelStyle,

@@ -1,0 +1,15 @@
+{
+  "status": "generated",
+  "targetPath": "assets/audio-teaser.mp3",
+  "text": "A Vera tinha espaço para onze palavras no título. Na fotografia que lhe tinham mandado, faltava espaço para uma. Via-se a porta da biblioteca, três caixas no chão e uma folha onde se lia: A biblioteca encerra na sexta-feira. O Dani apontou para a margem direita. Depois de sexta-feira havia ali qualquer coisa. Um risco preto, tão fino como uma pestana. E se a notícia inteira estivesse precisamente do lado de fora da fotografia? Na parede da redação, o relógio avançou um minuto. O Dani apagou a última palavra do título. Era a única que ainda ninguém lhes tinha confirmado.",
+  "voiceDirection": "Narração em português europeu de Lisboa, próxima e curiosa. Dá tempo às pistas e às falas.",
+  "language": "pt-PT",
+  "provider": "google-genai",
+  "model": "gemini-3.8-flash-tts",
+  "voice": "Charon",
+  "recommendedDurationSeconds": 40,
+  "requestModel": "gemini-3.8-flash-tts",
+  "generatedAt": "2026-11-24T17:42:12.612Z",
+  "durationSeconds": 35.38,
+  "humanListeningReview": "pending"
+}

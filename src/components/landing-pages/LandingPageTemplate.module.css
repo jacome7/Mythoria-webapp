@@ -1,0 +1,47 @@
+/* Put the book beside the headline on wide screens and immediately beneath it on phones. */
+@media (max-width: 63.99rem) {
+  .illustratedHero {
+    grid-template-areas:
+      'eyebrow'
+      'title'
+      'book'
+      'actions'
+      'headline'
+      'detail';
+    gap: 0.8rem;
+    padding-block: 2rem;
+  }
+
+  .illustratedHero > div:first-child {
+    display: contents;
+  }
+
+  .illustratedHero > div:first-child > p:first-child {
+    grid-area: eyebrow;
+    justify-self: start;
+    margin: 0;
+  }
+
+  .illustratedHero h1 {
+    grid-area: title;
+  }
+
+  .illustratedHero > div:last-child {
+    grid-area: book;
+  }
+
+  .illustratedHero h1 + p {
+    grid-area: headline;
+    margin: 0;
+  }
+
+  .illustratedHero h1 + p + p {
+    grid-area: detail;
+    margin: 0;
+  }
+
+  .illustratedHero h1 + p + p + div {
+    grid-area: actions;
+    margin-top: 0.25rem;
+  }
+}

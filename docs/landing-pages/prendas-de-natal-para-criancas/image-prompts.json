@@ -1,0 +1,74 @@
+{
+  "imagePrompts": [
+    {
+      "id": "book-01-capa",
+      "bookId": "book-01",
+      "kind": "capa",
+      "promptPath": "assets/covers/book-01-cover.prompt.md",
+      "status": "future_specification"
+    },
+    {
+      "id": "book-01-contexto de leitura",
+      "bookId": "book-01",
+      "kind": "contexto de leitura",
+      "promptPath": "assets/use-cases/book-01-use-case.prompt.md",
+      "status": "future_specification"
+    },
+    {
+      "id": "book-02-capa",
+      "bookId": "book-02",
+      "kind": "capa",
+      "promptPath": "assets/covers/book-02-cover.prompt.md",
+      "status": "future_specification"
+    },
+    {
+      "id": "book-02-contexto de leitura",
+      "bookId": "book-02",
+      "kind": "contexto de leitura",
+      "promptPath": "assets/use-cases/book-02-use-case.prompt.md",
+      "status": "future_specification"
+    },
+    {
+      "id": "book-03-capa",
+      "bookId": "book-03",
+      "kind": "capa",
+      "promptPath": "assets/covers/book-03-cover.prompt.md",
+      "status": "future_specification"
+    },
+    {
+      "id": "book-03-contexto de leitura",
+      "bookId": "book-03",
+      "kind": "contexto de leitura",
+      "promptPath": "assets/use-cases/book-03-use-case.prompt.md",
+      "status": "future_specification"
+    },
+    {
+      "id": "book-04-capa",
+      "bookId": "book-04",
+      "kind": "capa",
+      "promptPath": "assets/covers/book-04-cover.prompt.md",
+      "status": "future_specification"
+    },
+    {
+      "id": "book-04-contexto de leitura",
+      "bookId": "book-04",
+      "kind": "contexto de leitura",
+      "promptPath": "assets/use-cases/book-04-use-case.prompt.md",
+      "status": "future_specification"
+    },
+    {
+      "id": "book-05-capa",
+      "bookId": "book-05",
+      "kind": "capa",
+      "promptPath": "assets/covers/book-05-cover.prompt.md",
+      "status": "future_specification"
+    },
+    {
+      "id": "book-05-contexto de leitura",
+      "bookId": "book-05",
+      "kind": "contexto de leitura",
+      "promptPath": "assets/use-cases/book-05-use-case.prompt.md",
+      "status": "future_specification"
+    }
+  ]
+}

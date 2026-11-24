@@ -1,5 +1,6 @@
 import { autismStoriesLandingPage } from './autism-stories.pt-PT';
 import { childrenBooksLandingPage } from './children-books.pt-PT';
+import { christmasLandingPages } from './christmas';
 import { familyTravelLandingPage } from './family-travel.pt-PT';
 import { grandparentsStoriesLandingPage } from './grandparents-stories.pt-PT';
 import { localizedLandingPages } from './localized';
@@ -23,6 +24,7 @@ const landingPages = [
   romanceGiftsLandingPage,
   supportiveStoriesLandingPage,
   workshopsChildrenLandingPage,
+  ...christmasLandingPages,
   ...localizedLandingPages,
 ] satisfies LandingPageContent[];
 
@@ -36,16 +38,23 @@ const landingPageCategories: Record<LandingPageTranslationKey, string> = {
   'workshops-children': 'Crianças e aprendizagem',
   'supportive-stories': 'Histórias de apoio',
   'family-travel': 'Viagens e memórias',
+  'christmas-gifts': 'Crianças e aprendizagem',
 };
 
 const relatedLandingPageKeys: Record<LandingPageTranslationKey, LandingPageTranslationKey[]> = {
-  'personalized-children-books': ['supportive-stories', 'autism-stories', 'grandparents-stories'],
+  'personalized-children-books': [
+    'christmas-gifts',
+    'supportive-stories',
+    'autism-stories',
+    'grandparents-stories',
+  ],
   'grandparents-stories': ['family-travel', 'romance-gifts', 'supportive-stories'],
   'romance-gifts': ['family-travel', 'grandparents-stories', 'supportive-stories'],
   'autism-stories': ['supportive-stories', 'workshops-children', 'grandparents-stories'],
   'supportive-stories': ['autism-stories', 'grandparents-stories', 'family-travel'],
   'workshops-children': ['autism-stories', 'grandparents-stories', 'family-travel'],
   'family-travel': ['grandparents-stories', 'romance-gifts', 'workshops-children'],
+  'christmas-gifts': ['personalized-children-books', 'grandparents-stories', 'family-travel'],
 };
 
 export function getLandingPage(locale: string, slug: string): LandingPageContent | undefined {

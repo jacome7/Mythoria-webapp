@@ -15,6 +15,14 @@ The engine is built so a new page is **content-first**: author a typed content f
 
 ## End-User Experience
 
+The Christmas gift collection uses the `christmas-gifts` translation key at
+`/pt-PT/lp/prendas-de-natal-para-criancas` and `/es-ES/lp/regalos-de-navidad-y-reyes-para-ninos`.
+Its hero opens a complete localized reading PDF from `public/seasonal-books/ines`.
+Four other books per language use illustrated openings and audio from their sample-book packs.
+The primary CTA opens the regular story creator. Keep the sample album separate from any
+commercial promise about square hardcover availability or delivery dates.
+See the [editorial and research dossier](../landing-pages/prendas-de-natal-para-criancas/research-report.md).
+
 A landing page renders (top to bottom) inside the normal site shell (header, footer, cookie banner):
 
 - **Hero** — eyebrow badge, H1 (`title`), emotional headline + subheadline, hero image, primary CTA

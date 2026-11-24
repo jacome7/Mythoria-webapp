@@ -1,0 +1,19 @@
+{
+  "schemaVersion": "1.0",
+  "status": "approved",
+  "slug": "la-noticia-a-la-que-le-faltaba-la-mitad",
+  "title": "La noticia a la que le faltaba la mitad",
+  "language": "es-ES",
+  "experimentalLanguage": false,
+  "placement": "seo-landing-page",
+  "usageTags": [
+    "christmas-reyes",
+    "illustrated-opening",
+    "sample-book"
+  ],
+  "riskRating": "yellow",
+  "sensitiveNiche": true,
+  "requiresHumanApproval": true,
+  "createdAt": "2026-11-24",
+  "updatedAt": "2026-11-24"
+}

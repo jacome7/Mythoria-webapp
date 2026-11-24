@@ -1,0 +1,73 @@
+{
+  "id": "teatro-pt-PT",
+  "title": "Quando a estrela do teatro se apagou",
+  "slug": "quando-a-estrela-do-teatro-se-apagou",
+  "language": "pt-PT",
+  "targetAudience": "children_7-10",
+  "readerAgeBand": "6–9 anos",
+  "buyerPersona": "Famílias que oferecem uma história personalizada",
+  "recipientType": "Criança",
+  "storyIntent": "Invenções de Natal",
+  "synopsis": "Faltam minutos para o espetáculo de Natal e a estrela dourada da Mara aparece preta no lençol. Nos bastidores, ela e o Nico têm cartão, uma lanterna e uma viajante de papel à espera de encontrar o caminho.",
+  "shortExcerpt": "A estrela tinha levado duas camadas de tinta dourada. No lençol parecia uma batata com cinco cotovelos.",
+  "sampleChapterPath": "sample-chapter.md",
+  "sampleFormat": "chapter_opening",
+  "audioTeaserText": "A estrela tinha levado duas camadas de tinta dourada. No lençol parecia uma batata com cinco cotovelos. A Mara virou-a ao contrário. Agora parecia a mesma batata de costas. Do outro lado do pano alguém perguntou se aquilo se comia assado. O Nico tapou o nariz para não se rir ao microfone. Faltavam nove minutos para o espetáculo de Natal, e a estrela que devia mostrar o caminho não conseguia sequer mostrar a própria cor. A Mara espreitou o cartão de frente para a lanterna. Havia um buraquinho no meio. Do outro lado do lençol, a batata estava a piscar o olho.",
+  "graphicalStyle": "hand_drawn",
+  "novelStyle": "adventure",
+  "fictionalUserContext": "Exemplo ficcional da Mythoria. As personagens e as suas circunstâncias são inventadas.",
+  "publicProvenance": "mythoria_created_example",
+  "publicTopics": [
+    "Teatro de sombras",
+    "Luz e papel",
+    "Natal"
+  ],
+  "coverImage": {
+    "localPath": "assets/cover.jpeg"
+  },
+  "featureImage": {
+    "localPath": "assets/feature.jpeg"
+  },
+  "sampleChapterImage": {
+    "localPath": "assets/sample-chapter.jpeg"
+  },
+  "audioSample": {
+    "localPath": "assets/audio-teaser.mp3",
+    "provider": "google-genai",
+    "model": "gemini-3.8-flash-tts",
+    "voice": "Puck",
+    "status": "generated"
+  },
+  "safetyNotes": [
+    "História de ficção para ler em família.",
+    "As ilustrações representam personagens inventadas.",
+    "O teatro e a festa retratados são imaginários."
+  ],
+  "chapterTitle": "Uma estrela cor de batata",
+  "chapterImageAlt": "A Mara aponta a lanterna ao palco. As sombras das casas e da estrela aparecem no pano.",
+  "styleLabel": "Teatro de papel",
+  "openingParagraphs": [
+    "A estrela tinha levado duas camadas de tinta dourada. No lençol parecia uma batata com cinco cotovelos. A Mara virou-a ao contrário. Agora parecia a mesma batata de costas.",
+    "— Isso come-se assado? — perguntou alguém na primeira fila.",
+    "O Nico tapou o nariz para não se rir ao microfone. A avó da Mara ainda ia na segunda estrofe da canção de abrir. Faltavam nove minutos para o teatro de sombras da festa de Natal. O tempo de comer duas filhós, se fossem pequenas. O tempo de refazer uma estrela? Era o que iam descobrir.",
+    "A Mara conhecia o problema de cor. Tinha escrito o texto, afinal. Uma viajante de papel, com uma mala maior do que ela, atravessava a noite para chegar à ceia da irmã. No último cruzamento havia cinco caminhos. A estrela iluminava o caminho certo. Sem estrela, a viajante ia jantar a casa de uma cabra. A cabra gostava de visitas, mas a irmã da viajante já tinha posto a mesa.",
+    "— Mais tinta? — sugeriu o Nico.",
+    "Pintaram uma ponta com a tinta dourada que sobrava no pires. Atrás do lençol, a estrela ficou mais bonita. À frente ficou preta como antes. E agora tinham um dedo dourado cada um.",
+    "A Mara pousou a estrela. O Nico ficou a segurar a lanterna. Era a única luz dos bastidores. Tinham-na voltado para o lençol esticado entre dois cabides. Bastava alguém passar entre a luz e o pano para aparecer do outro lado. A cauda enrolada do gato passara assim no ensaio e o público dos bastidores votara para que ficasse no espetáculo. O gato tinha outros planos.",
+    "— E se a aproximarmos da luz? — disse a Mara.",
+    "A estrela cresceu no lençol. Ficou maior que a viajante, maior que a cabra e quase maior que o pano. Das cadeiras chegou a voz do mesmo menino:",
+    "— Afinal é uma batata familiar!",
+    "O Nico afastou a figura da lanterna. A batata voltou a encolher. A luz crescia à volta da estrela, reparou a Mara, mas nunca entrava dentro dela. Podiam pintar a estrela às bolinhas cor-de-rosa. No pano, as bolinhas ficariam todas da mesma cor.",
+    "— Há ali um buraco! — disse o Nico.",
+    "No meio da sombra, num sítio onde nenhum dos dois tinha posto tinta, havia um pontinho claro. A Mara espreitou a estrela verdadeira. O cartão viera de uma caixa de sapatos. Um alfinete de prender etiquetas tinha deixado um furo da largura de uma formiga.",
+    "A Mara cobriu o furo com um dedo. No pano, a luzinha desapareceu. Tirou o dedo. Voltou. Cobriu, tirou, cobriu, tirou. O menino da primeira fila bateu palmas, convencido de que a batata lhe estava a piscar o olho.",
+    "— Se por um buraco tão pequeno passa uma migalha de luz… — começou ela.",
+    "O resto da frase perdeu-se numa salva de palmas. A avó tinha acabado a canção mais cedo. Esquecera-se da segunda metade. A cortina ia abrir dali a três minutos, anunciou, muito contente. O Nico guardou o microfone numa meia para a sala inteira não ouvir o que pensava daquilo.",
+    "No fundo do cesto havia outro pedaço de cartão, um lápis e a tesoura de pontas redondas. A Mara pegou no lápis. Desenhou uma estrela de cinco pontas no centro do cartão.",
+    "— Queres que recorte a estrela? — perguntou o Nico.",
+    "— Quero que guardes o que fica à volta.",
+    "Ele pôs-se a olhar para o desenho, depois para a amiga. Era a primeira vez que alguém lhe pedia o resto de alguma coisa e lhe mandava deixar a coisa em cima da mesa.",
+    "Do lado de fora, a avó bateu três vezes no chão. Era o sinal. A viajante já tinha a mala na mão. A cabra já estendia o pescoço para ver quem vinha jantar. O Nico levantou a tesoura.",
+    "— Faz tu a voz da viajante — sussurrou a Mara. — Esta noite, eu vou fazer a voz dos bocadinhos que sobram."
+  ]
+}

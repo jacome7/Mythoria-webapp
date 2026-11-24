@@ -108,6 +108,8 @@ describe('sitemap.xml route', () => {
       'https://mythoria.pt/en-US/lp/personalized-book-for-grandparents-and-grandchildren',
       'https://mythoria.pt/es-ES/lp/libro-personalizado-para-abuelos-y-nietos',
       'https://mythoria.pt/fr-FR/lp/livre-personnalise-pour-grands-parents-et-petits-enfants',
+      'https://mythoria.pt/pt-PT/lp/prendas-de-natal-para-criancas',
+      'https://mythoria.pt/es-ES/lp/regalos-de-navidad-y-reyes-para-ninos',
     ]) {
       expect(xml).toContain(`<loc>${url}</loc>`);
     }
@@ -148,7 +150,7 @@ describe('sitemap.xml route', () => {
     const hubEntry = xml.match(
       /<url>\s*<loc>https:\/\/mythoria\.pt\/pt-PT\/lp<\/loc>[\s\S]*?<\/url>/,
     )?.[0];
-    expect(hubEntry).toContain('<lastmod>2026-08-08T00:00:00.000Z</lastmod>');
+    expect(hubEntry).toContain('<lastmod>2026-11-24T00:00:00.000Z</lastmod>');
 
     const approvedSampleMatches = xml.match(
       /<loc>https:\/\/mythoria\.pt\/pt-PT\/sample-books\/duas-chavenas-uma-vida<\/loc>/g,

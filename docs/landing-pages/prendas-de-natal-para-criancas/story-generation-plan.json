@@ -1,0 +1,55 @@
+{
+  "status": "manual_review_required",
+  "storiesToCreate": [
+    {
+      "id": "book-01",
+      "slug": "o-barco-que-tinha-sede",
+      "title": "O barco que tinha sede",
+      "intent": "kids_adventures",
+      "makePublic": false,
+      "featureInGetInspired": false,
+      "status": "pending_story_generation",
+      "note": "Plano para eventual nova criação; o exemplo existente tem ciclo de vida próprio."
+    },
+    {
+      "id": "book-02",
+      "slug": "a-carta-que-perdeu-o-envelope",
+      "title": "A carta que perdeu o envelope",
+      "intent": "kids_adventures",
+      "makePublic": false,
+      "featureInGetInspired": false,
+      "status": "pending_story_generation",
+      "note": "Plano para eventual nova criação; o exemplo existente tem ciclo de vida próprio."
+    },
+    {
+      "id": "book-03",
+      "slug": "quando-a-estrela-do-teatro-se-apagou",
+      "title": "Quando a estrela do teatro se apagou",
+      "intent": "kids_adventures",
+      "makePublic": false,
+      "featureInGetInspired": false,
+      "status": "pending_story_generation",
+      "note": "Plano para eventual nova criação; o exemplo existente tem ciclo de vida próprio."
+    },
+    {
+      "id": "book-04",
+      "slug": "o-clube-do-telhado-torto",
+      "title": "O clube do telhado torto",
+      "intent": "kids_adventures",
+      "makePublic": false,
+      "featureInGetInspired": false,
+      "status": "pending_story_generation",
+      "note": "Plano para eventual nova criação; o exemplo existente tem ciclo de vida próprio."
+    },
+    {
+      "id": "book-05",
+      "slug": "a-noticia-a-que-faltava-metade",
+      "title": "A notícia a que faltava metade",
+      "intent": "kids_adventures",
+      "makePublic": false,
+      "featureInGetInspired": false,
+      "status": "pending_story_generation",
+      "note": "Plano para eventual nova criação; o exemplo existente tem ciclo de vida próprio."
+    }
+  ]
+}

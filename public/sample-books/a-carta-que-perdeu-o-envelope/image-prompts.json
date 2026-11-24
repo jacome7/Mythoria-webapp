@@ -1,0 +1,56 @@
+{
+  "cover": {
+    "promptPath": "assets/prompts/cover.prompt.md",
+    "targetPath": "assets/cover.jpeg",
+    "status": "generated",
+    "provider": "OpenAI image generation in Codex",
+    "model": "not_reported",
+    "quality": "not_reported",
+    "size": "1000x1000",
+    "assetDimensions": {
+      "width": 1000,
+      "height": 1000
+    },
+    "productionNotes": "AI-generated cover and opening composed side by side, separated locally. The localized title was typeset after generation. The glove illustration was corrected locally.",
+    "regeneration": {
+      "recommendedModel": "gpt-image-2",
+      "recommendedQuality": "high"
+    }
+  },
+  "chapter": {
+    "promptPath": "assets/prompts/chapter.prompt.md",
+    "targetPath": "assets/sample-chapter.jpeg",
+    "status": "generated",
+    "provider": "OpenAI image generation in Codex",
+    "model": "not_reported",
+    "quality": "not_reported",
+    "size": "920x920",
+    "assetDimensions": {
+      "width": 920,
+      "height": 920
+    },
+    "productionNotes": "AI-generated cover and opening composed side by side. The opening was separated locally without title lettering. The glove illustration was corrected locally.",
+    "regeneration": {
+      "recommendedModel": "gpt-image-2",
+      "recommendedQuality": "high"
+    }
+  },
+  "feature": {
+    "promptPath": "assets/prompts/feature.prompt.md",
+    "targetPath": "assets/feature.jpeg",
+    "status": "generated",
+    "provider": "OpenAI image generation in Codex",
+    "model": "not_reported",
+    "quality": "not_reported",
+    "size": "1080x720",
+    "assetDimensions": {
+      "width": 1080,
+      "height": 720
+    },
+    "productionNotes": "Product photograph generated separately for this edition using its localized cover as the image reference. The glove illustration was corrected locally.",
+    "regeneration": {
+      "recommendedModel": "gpt-image-2",
+      "recommendedQuality": "high"
+    }
+  }
+}

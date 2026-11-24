@@ -1,5 +1,6 @@
 import Image from 'next/image';
 import Link from 'next/link';
+import { useTranslations } from 'next-intl';
 import type { SeoSampleBook } from '@/content/sample-books/seo';
 import type { SampleBook } from '@/types/sample-book';
 
@@ -18,21 +19,41 @@ export default function SampleBookDetailPage({
   seo,
   createSimilar,
 }: SampleBookDetailPageProps) {
+  const t = useTranslations('SampleBookDetail');
+  const tFacts = useTranslations('GetInspiredPage');
+  const factValue = (category: string, value?: string) =>
+    value && tFacts.has(`${category}.${value}`) ? tFacts(`${category}.${value}`) : value;
   const isMythoriaCreatedExample = book.publicProvenance === 'mythoria_created_example';
   const isFictionalBook = Boolean(book.fictionalUserContext) && !isMythoriaCreatedExample;
+  const title = { title: book.title };
+  const coverAlt = isMythoriaCreatedExample
+    ? 'coverMythoria'
+    : isFictionalBook
+      ? 'coverFictional'
+      : 'cover';
+  const sceneAlt = isMythoriaCreatedExample
+    ? 'sceneMythoria'
+    : isFictionalBook
+      ? 'sceneFictional'
+      : 'scene';
   const facts = [
-    ['Intenção', book.intent],
-    ['Público', book.readerAgeBand ?? book.targetAudience],
-    ['Destinatário', book.recipientType],
-    ['Estilo literário', book.novelStyle],
-    ['Estilo visual', book.graphicalStyle],
-    ['Idioma', book.locale],
+    [t('intent'), t(`intents.${book.intent}`)],
+    [t('audience'), book.readerAgeBand ?? factValue('targetAudience', book.targetAudience)],
+    [t('recipient'), book.recipientType],
+    [t('literaryStyle'), factValue('novelStyle', book.novelStyle)],
+    [
+      t('visualStyle'),
+      book.graphicalStyle === 'euro_comic_book'
+        ? t('comicAdventure')
+        : factValue('graphicalStyle', book.graphicalStyle),
+    ],
+    [t('language'), factValue('storyLanguage', book.locale)],
   ].filter((fact): fact is [string, string] => Boolean(fact[1]));
 
   return (
     <main className="bg-base-200 py-8 sm:py-12">
       <article className="mx-auto max-w-5xl px-4">
-        <nav aria-label="Breadcrumb" className="mb-6 text-sm text-base-content/65">
+        <nav aria-label={t('breadcrumb')} className="mb-6 text-sm text-base-content/65">
           <Link href={`/${locale}`} className="font-semibold text-primary hover:underline">
             Mythoria
           </Link>{' '}
@@ -40,7 +61,7 @@ export default function SampleBookDetailPage({
           {seo ? (
             <>
               <Link href={seo.hubHref} className="font-semibold text-primary hover:underline">
-                Guias
+                {t('guides')}
               </Link>{' '}
               <span aria-hidden="true">/</span>{' '}
             </>
@@ -53,13 +74,7 @@ export default function SampleBookDetailPage({
             <div className="relative aspect-[4/5] overflow-hidden rounded-2xl bg-base-200 shadow-lg">
               <Image
                 src={book.coverSrc}
-                alt={
-                  isMythoriaCreatedExample
-                    ? `Capa do livro de demonstração “${book.title}”, criado com a Mythoria`
-                    : isFictionalBook
-                      ? `Capa do exemplo ficcional “${book.title}”`
-                      : `Capa de “${book.title}”`
-                }
+                alt={t(coverAlt, title)}
                 fill
                 priority
                 sizes="(max-width: 768px) 100vw, 40vw"
@@ -70,11 +85,11 @@ export default function SampleBookDetailPage({
             <header>
               {isMythoriaCreatedExample ? (
                 <p className="text-sm font-semibold uppercase tracking-wide text-primary/70">
-                  Livro criado com a Mythoria
+                  {t('mythoriaExample')}
                 </p>
               ) : isFictionalBook ? (
                 <p className="text-sm font-semibold uppercase tracking-wide text-primary/70">
-                  Exemplo de livro inteiramente ficcional
+                  {t('fictionalExample')}
                 </p>
               ) : null}
               <h1
@@ -108,7 +123,7 @@ export default function SampleBookDetailPage({
 
               {book.tags.length > 0 ? (
                 <div className="mt-6">
-                  <h2 className="font-semibold">Temas deste livro</h2>
+                  <h2 className="font-semibold">{t('topics')}</h2>
                   <div className="mt-2 flex flex-wrap gap-2">
                     {book.tags.map((tag) => (
                       <span key={tag} className="badge badge-primary badge-outline">
@@ -121,15 +136,15 @@ export default function SampleBookDetailPage({
 
               {book.audioSampleSrc ? (
                 <section className="mt-7 rounded-2xl bg-primary/10 p-4">
-                  <h2 className="font-display text-xl text-primary">Excerto em áudio</h2>
+                  <h2 className="font-display text-xl text-primary">{t('audio')}</h2>
                   <p className="mt-1 text-sm text-base-content/70">
-                    Ouça um breve trecho narrado deste{' '}
-                    {isMythoriaCreatedExample
-                      ? 'livro de demonstração criado com a Mythoria'
-                      : isFictionalBook
-                        ? 'exemplo ficcional'
-                        : 'livro'}
-                    .
+                    {t(
+                      isMythoriaCreatedExample
+                        ? 'audioMythoria'
+                        : isFictionalBook
+                          ? 'audioFictional'
+                          : 'audioBook',
+                    )}
                   </p>
                   <audio controls preload="metadata" className="mt-3 w-full">
                     <source src={book.audioSampleSrc} type="audio/mpeg" />
@@ -141,27 +156,19 @@ export default function SampleBookDetailPage({
 
           {book.featureSrc || book.chapterImageSrc ? (
             <section
-              aria-label="Ilustrações do livro"
+              aria-label={t('illustrations')}
               className="grid gap-5 border-t border-base-300 p-5 sm:p-8 md:grid-cols-2"
             >
               {[book.featureSrc, book.chapterImageSrc]
                 .filter((src): src is string => Boolean(src))
-                .map((src, index) => (
+                .map((src) => (
                   <figure
                     key={src}
                     className="relative aspect-[4/3] overflow-hidden rounded-2xl bg-base-200"
                   >
                     <Image
                       src={src}
-                      alt={
-                        index === 0
-                          ? isMythoriaCreatedExample
-                            ? `Cena do livro de demonstração “${book.title}”, criado com a Mythoria`
-                            : isFictionalBook
-                              ? `Cena ilustrada do exemplo ficcional “${book.title}”`
-                              : `Cena ilustrada de “${book.title}”`
-                          : `Ilustração do capítulo de amostra de “${book.title}”`
-                      }
+                      alt={t(src === book.featureSrc ? sceneAlt : 'chapterImage', title)}
                       fill
                       sizes="(max-width: 768px) 100vw, 50vw"
                       className="object-cover"
@@ -173,14 +180,14 @@ export default function SampleBookDetailPage({
 
           {book.storyIntent ? (
             <section className="border-t border-base-300 p-5 sm:p-8">
-              <h2 className="font-display text-2xl text-primary">Intenção editorial da história</h2>
+              <h2 className="font-display text-2xl text-primary">{t('editorialIntent')}</h2>
               <p className="mt-3 leading-relaxed">{book.storyIntent}</p>
             </section>
           ) : null}
 
           {chapter ? (
             <section className="border-t border-base-300 p-5 sm:p-8">
-              <h2 className="font-display text-2xl text-primary">Capítulo de amostra</h2>
+              <h2 className="font-display text-2xl text-primary">{t('chapter')}</h2>
               <div className="mt-4 space-y-4 leading-8 text-base-content/85">
                 {chapter.split(/\n{2,}/).map((block) => {
                   const text = block.trim();
@@ -202,15 +209,13 @@ export default function SampleBookDetailPage({
             <section className="border-t border-base-300 bg-base-200/60 p-5 sm:p-8">
               {book.fictionalUserContext ? (
                 <>
-                  <h2 className="font-display text-2xl text-primary">Contexto ficcional</h2>
+                  <h2 className="font-display text-2xl text-primary">{t('fictionalContext')}</h2>
                   <p className="mt-3 leading-relaxed">{book.fictionalUserContext}</p>
                 </>
               ) : null}
               {book.safetyNotes && book.safetyNotes.length > 0 ? (
                 <>
-                  <h2 className="mt-6 font-display text-2xl text-primary">
-                    Notas de segurança editorial
-                  </h2>
+                  <h2 className="mt-6 font-display text-2xl text-primary">{t('editorialNotes')}</h2>
                   <ul className="mt-4 list-disc space-y-2 pl-5 text-sm leading-relaxed text-base-content/75">
                     {book.safetyNotes.map((note) => (
                       <li key={note}>{note}</li>
@@ -223,25 +228,26 @@ export default function SampleBookDetailPage({
 
           {seo ? (
             <aside className="border-t border-base-300 p-5 sm:p-8">
-              <h2 className="font-display text-2xl text-primary">Continue a explorar este tema</h2>
+              <h2 className="font-display text-2xl text-primary">{t('learnMore')}</h2>
               <p className="mt-3 max-w-3xl leading-relaxed text-base-content/75">
-                {isMythoriaCreatedExample
-                  ? 'Este livro foi criado pela equipa Mythoria como demonstração e não é apresentado como história de cliente.'
-                  : isFictionalBook
-                    ? 'Este exemplo mostra uma possibilidade narrativa, não uma história de cliente.'
-                    : 'Este livro mostra uma possibilidade narrativa criada com Mythoria.'}{' '}
-                Consulte o guia para preparar o conteúdo e a página do tema para conhecer formas de
-                personalização.
+                {t(
+                  isMythoriaCreatedExample
+                    ? 'learnMythoria'
+                    : isFictionalBook
+                      ? 'learnFictional'
+                      : 'learnBook',
+                )}{' '}
+                {t('learnHelp')}
               </p>
               <div className="mt-5 flex flex-col gap-3">
                 <Link className="font-semibold text-primary hover:underline" href={seo.guideHref}>
-                  Ler o guia “{seo.guideLabel}”
+                  {t('guideLink', { title: seo.guideLabel })}
                 </Link>
                 <Link className="font-semibold text-primary hover:underline" href={seo.landingHref}>
-                  Explorar {seo.landingLabel}
+                  {t('themeLink', { title: seo.landingLabel })}
                 </Link>
                 <Link className="font-semibold text-primary hover:underline" href={seo.hubHref}>
-                  Ver todos os guias para livros personalizados
+                  {t('allGuides')}
                 </Link>
               </div>
             </aside>

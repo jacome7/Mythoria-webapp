@@ -1,0 +1,58 @@
+---
+title: A primeira gota
+slug: o-clube-do-telhado-torto
+language: pt-PT
+targetAudience: children_7-10
+novelStyle: contemporary
+graphicalStyle: watercolor
+---
+
+# A primeira gota
+
+No desenho, o telhado estava direito. Na bancada, estava torto. Na opinião do pardal, que lhes virou a cauda, estava atrasado o almoço.
+
+A Eva fechou um olho. O Leo fechou os dois.
+
+— Assim fica impecável — disse ele.
+
+O Leo tinha passado o recreio inteiro a desenhar uma placa para a casa dos pássaros. Dizia «Clube do Telhado Direito» e tinha espaço para a fita azul do concurso de invenções. Agora tapou a última palavra com o polegar. Ainda se liam o D, o I e uma pontinha do R.
+
+A Eva gostava do telhado como estava. As casas da sua rua também caíam cada uma para seu lado quando ela espreitava o reflexo nas poças. Mas a casa dos pássaros tinha de ficar seca por dentro. Se ela própria levasse com uma gota de água no nariz enquanto dormia, ia querer falar com o dono da pensão.
+
+Naquela manhã, a professora trouxera tábuas já cortadas e ajudara a turma a montar as caixas. A deles tinha uma entrada redonda, uma parede com um nó castanho e um telhado cinzento como as costas de um burro. Ainda não tinham prendido o telhado de vez. O Leo queria que o concurso começasse dali a cinco minutos. A Eva preferia que primeiro chovesse.
+
+Tloc.
+
+A primeira gota bateu no telhado. Ficou ali, redondinha, a tremer. Depois escorregou para o lado esquerdo e caiu na bancada. O pardal veio ver se se comia, decidiu que não e voltou para o muro.
+
+— Tivemos sorte! — disse o Leo. — A água escorre para fora.
+
+Outra gota caiu. Desta vez estava tão perto da entrada que rolou para a beira da tábua, deu meia volta por baixo dela e desapareceu.
+
+A Eva baixou a cabeça até à bancada. Acabava de nascer uma bolinha de água lá dentro, no chão onde devia dormir um pássaro.
+
+— E esta? Também tivemos sorte?
+
+O Leo espreitou pelo buraco. Do outro lado viu o olho enorme da Eva, porque ela espreitava pela frincha de trás.
+
+— Em primeiro lugar, tu não cabes aí — disse ele. — Em segundo lugar, de onde é que veio essa gota?
+
+Experimentaram fazer o mesmo com água do jarro. O Leo despejou tanta de uma vez que até a placa do clube ficou a boiar. A Eva apareceu com o pano da sala de artes. Torceu-o para dentro de um balde e ficou a olhar para as marcas claras dos seus dedos no tecido molhado. Teve uma ideia.
+
+Em vez de despejarem água na casa toda, iam mandar uma gota de cada vez. Penduraram três tiras de papel de rascunho em sítios diferentes, uma junto à porta, outra a meio do chão e outra debaixo da parede mais baixa. A uma deram o nome de Senhora Entrada. As outras chamavam-se Meio e Fim, porque, segundo o Leo, estava a passar a hora de almoço e ele já tinha pouca imaginação.
+
+À primeira gota, as três ficaram secas. À segunda, a Senhora Entrada dobrou o queixo, como se estivesse a dizer que sim. À terceira, tinha uma manchinha cinzenta mesmo na ponta.
+
+— Ora muito prazer, Dona Gota — disse a Eva. — Já sabemos por onde entra. Agora gostávamos que fizesse o favor de sair.
+
+O Leo pegou no telhado cinzento. Queria endireitá-lo. A Eva queria puxá-lo um bocadinho para a frente, para fazer um beiral sobre a porta. Só havia uma caixa e cada um tinha a certeza de ter razão.
+
+Do outro lado do pátio, as campainhas das bicicletas anunciaram que o júri do concurso acabava de chegar. A placa do clube, ainda a secar, enrolou-se de um lado como se quisesse esconder o nome.
+
+A Eva virou a placa ao contrário e traçou dois quadrados no verso.
+
+— Temos tempo para dois testes. Escolhes o primeiro?
+
+O Leo pôs a fita azul imaginária no bolso. Há coisas que não convém molhar.
+
+— Escolho. E, se a tua ideia ganhar, a Senhora Entrada fica presidente do clube.
