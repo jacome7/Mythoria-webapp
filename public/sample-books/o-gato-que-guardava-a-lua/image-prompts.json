@@ -18,5 +18,11 @@
     "quality": "medium",
     "gcsUri": "gs://mythoria-public/landing-page-assets/sample-books/o-gato-que-guardava-a-lua/assets/feature.jpeg",
     "publicUrl": "https://storage.googleapis.com/mythoria-public/landing-page-assets/sample-books/o-gato-que-guardava-a-lua/assets/feature.jpeg"
+  },
+  "chapter": {
+    "promptPath": "assets/prompts/chapter-01.prompt.md",
+    "targetPath": "assets/chapter-01.jpeg",
+    "gcsUri": "gs://mythoria-public/landing-page-assets/sample-books/o-gato-que-guardava-a-lua/assets/chapter-01.jpeg",
+    "publicUrl": "https://storage.googleapis.com/mythoria-public/landing-page-assets/sample-books/o-gato-que-guardava-a-lua/assets/chapter-01.jpeg"
   }
 }
