@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from './support/fixtures';
 
 const editions = [
   {
@@ -49,8 +49,8 @@ for (const edition of editions) {
       const pdf = await request.head((await fullBook.getAttribute('href'))!);
       expect(pdf.ok()).toBe(true);
       expect(pdf.headers()['content-type']).toContain('application/pdf');
-      await expect(page.locator('a[data-cta-placement=hero_primary]')).toHaveText(edition.create);
-      const create = page.locator('a[data-cta-placement=hero_primary]');
+      const create = page.locator('#landing-page-hero a[data-cta-placement=hero_primary]');
+      await expect(create).toHaveText(edition.create);
       await expect(create).toHaveAttribute('href', /\/sign-up\?/, { timeout: 20_000 });
       const signup = new URL((await create.getAttribute('href'))!, page.url());
       const returnTo = new URL(signup.searchParams.get('redirect')!, page.url());

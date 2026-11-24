@@ -75,7 +75,7 @@ for (const [locale, slug] of romances) {
     await page.goto(`/${locale}/lp/${slug}?utm_source=fixture&ref=fixture-partner`, {
       waitUntil: 'domcontentloaded',
     });
-    const primary = page.locator('[data-cta-placement="hero_primary"]');
+    const primary = page.locator('#landing-page-hero [data-cta-placement="hero_primary"]');
     await expect(primary).toHaveAttribute('href', new RegExp(`^/${locale}/sign-up\\?redirect=`), {
       timeout: 30000,
     });
@@ -85,10 +85,9 @@ for (const [locale, slug] of romances) {
     expect(returned.searchParams.get('landingSlug')).toBe(slug);
     expect(returned.searchParams.get('primaryIntent')).toBe('romance');
     expect(returned.searchParams.get('ref')).toBe('fixture-partner');
-    await expect(page.locator('[data-cta-placement="final_primary"]')).toHaveAttribute(
-      'href',
-      destination.pathname + destination.search,
-    );
+    await expect(
+      page.locator('#landing-page-top [data-cta-placement="final_primary"]'),
+    ).toHaveAttribute('href', destination.pathname + destination.search);
     await dismissConsent(page);
     await primary.click();
     await expect(page).toHaveURL(new RegExp(`/${locale}/sign-up\\?`));

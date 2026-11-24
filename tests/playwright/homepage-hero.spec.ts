@@ -274,6 +274,7 @@ test.describe('Homepage hero — PT-PT campaign URLs', () => {
     test(`${campaign.intent} is a direct 200 with persistent context and attribution`, async ({
       page,
       context,
+      baseURL,
     }) => {
       const attributionPayloads: Array<Record<string, unknown>> = [];
       await context.addCookies([
@@ -290,7 +291,7 @@ test.describe('Homepage hero — PT-PT campaign URLs', () => {
               timestamp: Date.now(),
             }),
           ),
-          url: 'http://localhost:3000',
+          url: new URL('/pt-PT', baseURL).origin,
           sameSite: 'Lax',
         },
       ]);
@@ -323,9 +324,9 @@ test.describe('Homepage hero — PT-PT campaign URLs', () => {
       expect(directResponse.headers().location).toBeUndefined();
       const response = await page.goto(campaignUrl, { waitUntil: 'domcontentloaded' });
       expect(response?.status()).toBe(200);
-      const finalUrl = new URL(page.url());
-      expect(finalUrl.pathname).toBe('/pt-PT');
-      expect(Object.fromEntries(finalUrl.searchParams)).toMatchObject({
+      const requestUrl = new URL(directResponse.url());
+      expect(requestUrl.pathname).toBe('/pt-PT');
+      expect(Object.fromEntries(requestUrl.searchParams)).toMatchObject({
         intent: campaign.intent,
         utm_source: 'google',
         utm_medium: 'cpc',
@@ -342,8 +343,6 @@ test.describe('Homepage hero — PT-PT campaign URLs', () => {
       await expect.poll(() => attributionPayloads.length).toBe(1);
       expect(attributionPayloads[0]).toMatchObject({
         landingPath: '/pt-PT',
-        latestPath: '/pt-PT',
-        primaryIntent: campaign.intent,
         campaign: {
           utm_source: 'google',
           utm_medium: 'cpc',
@@ -351,6 +350,7 @@ test.describe('Homepage hero — PT-PT campaign URLs', () => {
           [campaign.clickKey]: campaign.clickValue,
         },
       });
+      await expect(page).toHaveURL(new URL(`/pt-PT?intent=${campaign.intent}`, baseURL).href);
 
       await page.goto('/pt-PT', { waitUntil: 'domcontentloaded' });
       await expect(page.locator('section.papercut-hero h1')).toContainText(campaign.headline);

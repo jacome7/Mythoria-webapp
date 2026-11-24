@@ -3,13 +3,13 @@ import { existsSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import process from 'node:process';
 import sharp from 'sharp';
-import { getIndexableLandingPages } from '../src/content/landing-pages';
+import { localizedLandingPages } from '../src/content/landing-pages/localized';
 
 const LOCALES = new Set(['en-US', 'es-ES', 'fr-FR']);
 const MODEL = 'gemini-3.1-flash-tts-preview';
 
 async function main() {
-  const pages = getIndexableLandingPages().filter((page) => LOCALES.has(page.locale));
+  const pages = localizedLandingPages.filter((page) => page.indexable && LOCALES.has(page.locale));
   const errors: string[] = [];
   let images = 0;
   let audio = 0;

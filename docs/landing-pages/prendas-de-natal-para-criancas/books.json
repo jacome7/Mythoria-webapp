@@ -32,10 +32,7 @@
         "featureInGetInspired": false,
         "note": "Plano para eventual nova criação; não indica o estado do exemplo já existente."
       },
-      "safetyNotes": [
-        "Revisão por adulto.",
-        "Sem dados reais de crianças."
-      ]
+      "safetyNotes": ["Revisão por adulto.", "Sem dados reais de crianças."]
     },
     {
       "id": "book-02",
@@ -69,10 +66,7 @@
         "featureInGetInspired": false,
         "note": "Plano para eventual nova criação; não indica o estado do exemplo já existente."
       },
-      "safetyNotes": [
-        "Revisão por adulto.",
-        "Sem dados reais de crianças."
-      ]
+      "safetyNotes": ["Revisão por adulto.", "Sem dados reais de crianças."]
     },
     {
       "id": "book-03",
@@ -106,10 +100,7 @@
         "featureInGetInspired": false,
         "note": "Plano para eventual nova criação; não indica o estado do exemplo já existente."
       },
-      "safetyNotes": [
-        "Revisão por adulto.",
-        "Sem dados reais de crianças."
-      ]
+      "safetyNotes": ["Revisão por adulto.", "Sem dados reais de crianças."]
     },
     {
       "id": "book-04",
@@ -143,10 +134,7 @@
         "featureInGetInspired": false,
         "note": "Plano para eventual nova criação; não indica o estado do exemplo já existente."
       },
-      "safetyNotes": [
-        "Revisão por adulto.",
-        "Sem dados reais de crianças."
-      ]
+      "safetyNotes": ["Revisão por adulto.", "Sem dados reais de crianças."]
     },
     {
       "id": "book-05",
@@ -180,10 +168,7 @@
         "featureInGetInspired": false,
         "note": "Plano para eventual nova criação; não indica o estado do exemplo já existente."
       },
-      "safetyNotes": [
-        "Revisão por adulto.",
-        "Sem dados reais de crianças."
-      ]
+      "safetyNotes": ["Revisão por adulto.", "Sem dados reais de crianças."]
     }
   ]
 }
