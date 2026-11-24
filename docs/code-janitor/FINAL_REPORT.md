@@ -9,7 +9,7 @@ Compared the four requested pinned Git trees for the Web App, Admin, Story Gener
 | Service                   | Tracked paths before → after | Added / deleted / modified | Production source lines before → after | Test lines before → after | Documentation lines before → after | Operations script lines before → after |
 | ------------------------- | ---------------------------: | -------------------------: | -------------------------------------: | ------------------------: | ---------------------------------: | -------------------------------------: |
 | Web App                   |                4,066 → 4,066 |                  0 / 0 / 4 |                      127,570 → 127,535 |           31,488 → 31,488 |                    23,006 → 23,006 |                        10,623 → 10,623 |
-| Admin                     |                    531 → 529 |                  0 / 2 / 0 |                        54,160 → 54,073 |             5,069 → 5,069 |                      8,636 → 8,636 |                          3,323 → 3,323 |
+| Admin                     |                    531 → 528 |                  0 / 3 / 2 |                        54,160 → 54,075 |             5,069 → 5,069 |                      8,636 → 8,636 |                          3,323 → 3,323 |
 | Story Generation Workflow |                    429 → 429 |                  1 / 1 / 5 |                        33,411 → 33,411 |             9,887 → 9,887 |                      4,246 → 4,231 |                          3,167 → 3,167 |
 | Notification Engine       |                    410 → 410 |                  0 / 0 / 2 |                        12,707 → 12,516 |             4,242 → 4,269 |                      1,165 → 1,165 |                          1,874 → 1,874 |
 
@@ -31,6 +31,8 @@ No direct dependency declarations or locked package versions changed in the comp
 ## Validation and next steps
 
 The four final unit runs passed 3,220 tests. Additional isolated PostgreSQL checks passed for fiscal recovery, delivery bookkeeping and referral processing. Both local Web App builds retained the mobile reader footer breakpoint.
+
+Admin’s clean install initially failed on an obsolete UI patch. After removing it and explicitly preserving its two generated style utilities, a fresh offline npm ci passed. The generated stylesheet was byte-identical, and Chrome retained focus and hover behavior.
 
 Release verification is partial. Two Web App browser specifications failed in the isolated identity and networking setup on the original and final revisions. The staff app passed its webpack build on both revisions. Its default Turbopack build and full formatting check were blocked by sandbox restrictions. Provider acceptance and staging journeys still require separate validation.
 
