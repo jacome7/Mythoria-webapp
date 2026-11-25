@@ -145,6 +145,22 @@ it('holds a destination without tracked shipping', async () => {
   respond = () => [{ level: 'MAIL', traceable: false }];
   await expect(quoteLuluOrder(input)).rejects.toThrow('NO_TRACKED_SHIPPING');
 });
+it('quotes a tracked service when the suggested city differs only in capitalization', async () => {
+  respond = (u) =>
+    u.endsWith('/shipping-options/')
+      ? [{ level: 'GROUND', traceable: true }]
+      : {
+          currency: 'EUR',
+          total_cost_incl_tax: '8.08',
+          shipping_address: {
+            suggested_address: { city: input.shippingAddress.city.toUpperCase() },
+          },
+        };
+  await expect(quoteLuluOrder(input)).resolves.toMatchObject({
+    shippingLevel: 'GROUND',
+    totalEur: 8.08,
+  });
+});
 it('blocks material address corrections', async () => {
   respond = (u) =>
     u.endsWith('/shipping-options/')

@@ -668,6 +668,7 @@ export async function processPrintProof(id: string) {
     return leaseUpdate(order, leaseId, {
       quote,
       status: 'proof_ready',
+      lastError: null,
       leaseId: null,
       leaseUntil: null,
     });
