@@ -1,6 +1,7 @@
 import { clerkMiddleware } from '@clerk/nextjs/server';
 import createMiddleware from 'next-intl/middleware';
 import { NextRequest, NextResponse } from 'next/server';
+import { parseAndValidateFlightRouterState } from 'next/dist/server/app-render/parse-and-validate-flight-router-state';
 import { routing } from './i18n/routing';
 import { getLandingPageIntentContext } from '@/content/landing-pages';
 import {
@@ -133,6 +134,24 @@ export function applyPublicContextCookies(req: NextRequest, response: NextRespon
   return response;
 }
 
+export function rejectInvalidRouterState(req: NextRequest): NextResponse | null {
+  if (req.method !== 'GET' || /^\/(?:api|trpc)(?:\/|$)/.test(req.nextUrl.pathname)) return null;
+
+  const state = req.headers.get('next-router-state-tree');
+  if (state === null) return null;
+
+  try {
+    parseAndValidateFlightRouterState(state);
+    return null;
+  } catch {
+    console.warn(JSON.stringify({ severity: 'WARNING', message: 'Invalid router state rejected' }));
+    return new NextResponse('Bad Request', {
+      status: 400,
+      headers: { 'Cache-Control': 'no-store' },
+    });
+  }
+}
+
 export const proxy = clerkMiddleware(
   async (auth, req: NextRequest, event) => {
     const pathname = req.nextUrl.pathname;
@@ -146,6 +165,9 @@ export const proxy = clerkMiddleware(
     ) {
       return NextResponse.next();
     }
+
+    const invalidRouterState = rejectInvalidRouterState(req);
+    if (invalidRouterState) return invalidRouterState;
 
     const publicSeoResponse = await getPublicSeoResponse(req);
     if (publicSeoResponse) return publicSeoResponse;

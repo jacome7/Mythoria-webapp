@@ -199,7 +199,7 @@ export default function StoryGenerationProgress({
           {premiumBook ? tBook('generationProgress') : t('progress.leaveMessage')}
         </p>
       )}
-      <Link href={`/${locale}/stories`} className={styles.myStories}>
+      <Link href={`/${locale}/my-stories`} className={styles.myStories}>
         {t('progress.myStories')}
       </Link>
     </section>

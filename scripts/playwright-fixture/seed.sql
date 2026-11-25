@@ -31,4 +31,4 @@ INSERT INTO blog_post_translations (post_id, locale, slug, title, summary, conte
  ('00000000-0000-4000-8000-000000000007', 'fr-FR', 'decouvrez-equipe-mythoria', 'Découvrez notre équipe', 'Un article de test fictif.', 'Découvrez une équipe fictive dans cet article de test.');
 COMMIT;
 UPDATE stories SET is_featured=true WHERE slug='juventude-de-gaia-no-mundial-de-clubes';
-INSERT INTO pricing (service_code, credits) VALUES ('eBookGeneration', 10);
+INSERT INTO pricing (service_code, credits) VALUES ('eBookGeneration', 10), ('printedSoftCover', 20), ('extraBookCopy', 15), ('shippingCost', 5);

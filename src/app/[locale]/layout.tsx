@@ -240,7 +240,7 @@ export default async function LocaleLayout({
     '@type': ['Organization', 'SoftwareApplication'],
     name: metadata.structuredData?.name || 'Mythoria',
     url: 'https://mythoria.pt',
-    logo: 'https://mythoria.pt/assets/logo.svg',
+    logo: 'https://mythoria.pt/icon-512.png',
     description:
       metadata.structuredData?.description ||
       'Mythoria lets anyone create and customize fully illustrated books using generative AI.',

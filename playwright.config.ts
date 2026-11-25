@@ -29,7 +29,7 @@ const chromium = {
       }
     : {}),
 };
-const sessionTests = /(?:my-stories|navigation|premium-book)\.auth\.spec\.ts$/;
+const sessionTests = /(?:my-stories|navigation|premium-book|webapp-reliability)\.auth\.spec\.ts$/;
 
 // Decide if we need to run the setup project this invocation.
 // Conditions: missing file OR REFRESH_AUTH=1 OR file older than AUTH_MAX_AGE_HOURS (default 12)

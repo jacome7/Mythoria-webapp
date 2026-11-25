@@ -67,7 +67,7 @@ it('shows a named, determinate meter and the generation stages with a way back t
   expect(screen.getByText('Your story will keep generating if you leave.')).toBeVisible();
   expect(screen.getByRole('link', { name: 'Go to My Stories' })).toHaveAttribute(
     'href',
-    '/en-US/stories',
+    '/en-US/my-stories',
   );
   expect(screen.queryByText(/estimated time/i)).toBeNull();
 });

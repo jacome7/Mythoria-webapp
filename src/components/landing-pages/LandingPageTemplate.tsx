@@ -1513,7 +1513,7 @@ function buildStructuredData(page: LandingPageContent) {
     url: base,
     logo: {
       '@type': 'ImageObject',
-      url: `${base}/assets/logo.svg`,
+      url: `${base}/icon-512.png`,
     },
   };
 

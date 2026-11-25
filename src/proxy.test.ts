@@ -32,6 +32,7 @@ import {
   getCanonicalRedirectResponse,
   getCanonicalRequestRedirect,
   getPublicSeoResponse,
+  rejectInvalidRouterState,
 } from './proxy';
 
 describe('proxy canonical redirects', () => {
@@ -196,5 +197,42 @@ describe('campaign intent cookie', () => {
 
   it('leaves other route query parameters scoped to their own pages', () => {
     expect(applyCookie('/de-DE/aboutUs?intent=kids')).toBeNull();
+  });
+});
+
+describe('router state validation', () => {
+  it('returns a non-cacheable client error without logging the rejected value', () => {
+    const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
+    try {
+      const response = rejectInvalidRouterState(
+        new NextRequest('https://mythoria.pt/en-US', {
+          headers: { 'next-router-state-tree': 'invalid' },
+        }),
+      );
+      expect(response?.status).toBe(400);
+      expect(response?.headers.get('cache-control')).toBe('no-store');
+      expect(warn).toHaveBeenCalledWith(
+        JSON.stringify({ severity: 'WARNING', message: 'Invalid router state rejected' }),
+      );
+    } finally {
+      warn.mockRestore();
+    }
+  });
+
+  it('allows valid navigation state and API requests', () => {
+    expect(
+      rejectInvalidRouterState(
+        new NextRequest('https://mythoria.pt/en-US', {
+          headers: { 'next-router-state-tree': encodeURIComponent(JSON.stringify(['', {}])) },
+        }),
+      ),
+    ).toBeNull();
+    expect(
+      rejectInvalidRouterState(
+        new NextRequest('https://mythoria.pt/api/health', {
+          headers: { 'next-router-state-tree': 'invalid' },
+        }),
+      ),
+    ).toBeNull();
   });
 });

@@ -4,7 +4,7 @@ import QualifiedShareOpen from '@/components/QualifiedShareOpen';
 import { useEffect, useState } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
 import { ArrowLeft, Edit3, Share2, Volume2 } from 'lucide-react';
-import { Show } from '@clerk/nextjs';
+import PrivateStoryReaderGate from '@/components/PrivateStoryReaderGate';
 import { useRouter } from 'next/navigation';
 import { useParams } from 'next/navigation';
 import StoryReader from '../../../../../../../components/StoryReader';
@@ -37,28 +37,45 @@ interface Story {
 }
 
 export default function ReadChapterPage() {
+  const { storyId = '', chapterNumber: chapter = '' } = useParams<{
+    storyId?: string;
+    chapterNumber?: string;
+  }>();
+  const chapterNumber = /^[1-9]\d*$/.test(chapter) ? Number(chapter) : 0;
+  return (
+    <PrivateStoryReaderGate resourceKey={`${storyId}/chapter/${chapter}`}>
+      <StoryChapter storyId={storyId} chapterNumber={chapterNumber} />
+    </PrivateStoryReaderGate>
+  );
+}
+
+function StoryChapter({ storyId, chapterNumber }: { storyId: string; chapterNumber: number }) {
   const router = useRouter();
-  const params = useParams<{ storyId?: string; chapterNumber?: string }>();
   const locale = useLocale();
   const tLoading = useTranslations('Loading');
   const tErrors = useTranslations('Errors');
   const tActions = useTranslations('Actions');
-  const storyId = (params?.storyId as string | undefined) ?? '';
-  const chapterNumber = parseInt((params?.chapterNumber as string | undefined) ?? '0', 10);
   const [story, setStory] = useState<Story | null>(null);
   const [chapters, setChapters] = useState<Chapter[]>([]);
   const [currentChapter, setCurrentChapter] = useState<Chapter | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(Boolean(storyId && chapterNumber));
   const [error, setError] = useState<string | null>(null);
   const [showShareModal, setShowShareModal] = useState(false);
   const [showSelfPrintModal, setShowSelfPrintModal] = useState(false);
 
   useEffect(() => {
+    if (!storyId || !chapterNumber) return;
+    const controller = new AbortController();
+    const { signal } = controller;
     const fetchChapter = async () => {
       try {
-        const response = await fetch(`/api/stories/${storyId}/chapters/${chapterNumber}`);
+        const response = await fetch(`/api/stories/${storyId}/chapters/${chapterNumber}`, {
+          signal,
+        });
+        if (signal.aborted) return;
         if (response.ok) {
           const data = await response.json();
+          if (signal.aborted) return;
           if (data.redirectToReader) {
             router.replace(`/${locale}/stories/read/${storyId}`);
             return;
@@ -76,16 +93,16 @@ export default function ReadChapterPage() {
           setError(tErrors('failedToLoad'));
         }
       } catch (error) {
+        if (signal.aborted) return;
         console.error('Error fetching story chapter:', error);
         setError(tErrors('failedToLoad'));
       } finally {
-        setLoading(false);
+        if (!signal.aborted) setLoading(false);
       }
     };
 
-    if (storyId && chapterNumber) {
-      fetchChapter();
-    }
+    void fetchChapter();
+    return () => controller.abort();
   }, [storyId, chapterNumber, tErrors, locale, router]);
 
   const navigateToListen = () => {
@@ -161,79 +178,64 @@ export default function ReadChapterPage() {
 
   return (
     <div className="min-h-screen bg-base-100">
-      <Show when="signed-in">
-        {/* Action Bar */}
-        <div className="relative z-[80] overflow-visible bg-base-200 border-b border-base-300 p-4 print:hidden">
-          <div className="max-w-6xl mx-auto flex items-center justify-between">
-            <button onClick={navigateToMyStories} className="btn btn-ghost btn-sm">
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              <span className="hidden sm:inline">{tActions('backToMyStories')}</span>
+      {/* Action Bar */}
+      <div className="relative z-[80] overflow-visible bg-base-200 border-b border-base-300 p-4 print:hidden">
+        <div className="max-w-6xl mx-auto flex items-center justify-between">
+          <button onClick={navigateToMyStories} className="btn btn-ghost btn-sm">
+            <ArrowLeft className="w-4 h-4 mr-2" />
+            <span className="hidden sm:inline">{tActions('backToMyStories')}</span>
+          </button>
+
+          <div className="flex items-center gap-2">
+            <button onClick={navigateToListen} className="btn btn-ghost btn-sm">
+              <Volume2 className="w-4 h-4" />
+              <span className="hidden sm:inline sm:ml-2">{tActions('listen')}</span>
             </button>
 
-            <div className="flex items-center gap-2">
-              <button onClick={navigateToListen} className="btn btn-ghost btn-sm">
-                <Volume2 className="w-4 h-4" />
-                <span className="hidden sm:inline sm:ml-2">{tActions('listen')}</span>
-              </button>
+            <button onClick={navigateToEdit} className="btn btn-ghost btn-sm">
+              <Edit3 className="w-4 h-4" />
+              <span className="hidden sm:inline sm:ml-2">{tActions('edit')}</span>
+            </button>
 
-              <button onClick={navigateToEdit} className="btn btn-ghost btn-sm">
-                <Edit3 className="w-4 h-4" />
-                <span className="hidden sm:inline sm:ml-2">{tActions('edit')}</span>
-              </button>
+            <StoryPrintActions onPrint={handlePrint} onDownload={handleDownload} />
 
-              <StoryPrintActions onPrint={handlePrint} onDownload={handleDownload} />
-
-              <button onClick={handleShare} className="btn btn-ghost btn-sm">
-                <Share2 className="w-4 h-4" />
-                <span className="hidden sm:inline sm:ml-2">{tActions('share')}</span>
-              </button>
-            </div>
-          </div>
-        </div>
-
-        {/* Story Reader */}
-        <QualifiedShareOpen storyId={storyId} />
-        <StoryReader
-          storyId={storyId}
-          story={story}
-          chapters={chapters}
-          currentChapter={chapterNumber}
-        />
-
-        {isLastChapter && (
-          <div className="max-w-4xl mx-auto p-4 print:hidden">
-            <StoryRating storyId={storyId} />
-          </div>
-        )}
-
-        {/* Share Modal */}
-        <ShareModal
-          storyId={storyId}
-          storyTitle={story.title}
-          isOpen={showShareModal}
-          onClose={() => setShowShareModal(false)}
-        />
-
-        <SelfPrintModal
-          isOpen={showSelfPrintModal}
-          storyId={storyId}
-          storyTitle={story?.title}
-          onClose={() => setShowSelfPrintModal(false)}
-        />
-      </Show>
-
-      <Show when="signed-out">
-        <div className="min-h-screen bg-base-100 flex items-center justify-center">
-          <div className="text-center">
-            <div className="text-6xl mb-4">🔒</div>
-            <h1 className="text-3xl font-bold mb-4">{tErrors('authRequired')}</h1>
-            <p className="text-lg mb-6">{tErrors('pleaseSignIn')}</p>
-            <button onClick={() => router.push(`/${locale}/sign-in`)} className="btn btn-primary">
-              {tActions('signIn')}
+            <button onClick={handleShare} className="btn btn-ghost btn-sm">
+              <Share2 className="w-4 h-4" />
+              <span className="hidden sm:inline sm:ml-2">{tActions('share')}</span>
             </button>
           </div>
         </div>
-      </Show>
+      </div>
+
+      {/* Story Reader */}
+      <QualifiedShareOpen storyId={storyId} />
+      <StoryReader
+        storyId={storyId}
+        story={story}
+        chapters={chapters}
+        currentChapter={chapterNumber}
+      />
+
+      {isLastChapter && (
+        <div className="max-w-4xl mx-auto p-4 print:hidden">
+          <StoryRating storyId={storyId} />
+        </div>
+      )}
+
+      {/* Share Modal */}
+      <ShareModal
+        storyId={storyId}
+        storyTitle={story.title}
+        isOpen={showShareModal}
+        onClose={() => setShowShareModal(false)}
+      />
+
+      <SelfPrintModal
+        isOpen={showSelfPrintModal}
+        storyId={storyId}
+        storyTitle={story?.title}
+        onClose={() => setShowSelfPrintModal(false)}
+      />
     </div>
   );
 }

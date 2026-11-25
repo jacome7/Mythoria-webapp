@@ -66,6 +66,16 @@ const nextConfig: NextConfig = {
   async redirects() {
     return [
       {
+        source: '/:locale(en-US|pt-PT|es-ES|fr-FR|de-DE)/stories',
+        destination: '/:locale/my-stories',
+        permanent: false,
+      },
+      {
+        source: '/assets/og/mythoria_:language(en|pt).jpg',
+        destination: '/Mythoria-logo-white-512x336.jpg',
+        permanent: false,
+      },
+      {
         source: '/apple-touch-icon-precomposed.png',
         destination: '/apple-touch-icon.png',
         permanent: true,
@@ -75,6 +85,8 @@ const nextConfig: NextConfig = {
   // Canonical URL normalization is handled in middleware so locale casing and
   // trailing slashes collapse into a single redirect.
   skipTrailingSlashRedirect: true,
+  // Validate the original router state header before Next.js renders the page.
+  skipProxyUrlNormalize: true,
   // Image configuration to allow external images
   images: {
     remotePatterns: [
