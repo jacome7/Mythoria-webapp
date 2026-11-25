@@ -207,7 +207,7 @@ describe('paid print checkout recovery', () => {
         },
       ],
       [{ id: 'provider', availableCountries: ['PT'] }],
-      [{ defaultProvider: 'none', maxEurPerCopy: '25' }],
+      [{ defaultProvider: 'none', maxEurPerCopy: '0' }],
       [
         { serviceCode: 'printedHardCover', credits: 12 },
         { serviceCode: 'extraChapterCost', credits: 99 },
@@ -217,10 +217,22 @@ describe('paid print checkout recovery', () => {
     );
   }
 
-  it.each([32, 33])(
-    'freezes the %i-page manual edition at the existing hardcover price with None selected',
-    async (pageCount) => {
-      configureSquare(true, pageCount === 32 ? 'sandbox' : 'manual');
+  it.each([
+    { pageCount: 32, approval: 'matching Lulu', luluConfigured: true },
+    { pageCount: 33, approval: 'manual-only', luluConfigured: false },
+  ])(
+    'freezes the $pageCount-page manual edition at the existing price with $approval approval',
+    async ({ pageCount, luluConfigured }) => {
+      if (luluConfigured) {
+        configureSquare(true, 'sandbox');
+      } else {
+        delete process.env.LULU_PRINT_ENVIRONMENT;
+        delete process.env.LULU_PREMIUM_SQUARE_POD_PACKAGE_ID;
+        delete process.env.LULU_PRINT_CLIENT_KEY;
+        delete process.env.LULU_PRINT_SECRET_VERSION;
+        delete process.env.LULU_PRINT_CONTACT_EMAIL;
+        process.env.PREMIUM_SQUARE_PRINT_APPROVAL = 'manual:physical-proof-1';
+      }
       mockLoadManifest.mockResolvedValue({ format: { pageCount } });
       stageSquareCheckout();
       const request = { id: orderId, storyId, shippingId, requestedAt: new Date() };
