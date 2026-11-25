@@ -9,7 +9,7 @@
     "club_primary": "#1f4e79",
     "club_accent": "#f4c542"
   },
-  "notes": "Assets marked 'placeholder' are copies of kids_fantasy assets and must be replaced with sports-themed art. Assets marked 'draft' were generated with gpt-image-2 and may need refinement.",
+  "notes": "The sports hero uses one Portuguese-cover portrait in every locale and shares the cloud and sparkle artwork with other themes.",
   "heroSlots": {
     "_doc": "Canonical hero slot grammar shared by every style folder. Filenames are lowercase: {slot}.webp, {slot}_{device}.webp, {slot}_{device}_{locale}.webp, person{n}_{locale}.webp. Locale fallback chain at build time: exact locale -> en-US -> pt-PT -> unsuffixed -> first available.",
     "required": ["cloud_left", "cloud_right", "sky_left", "sky_right", "sparkles", "background", "foreground", "person1", "icon1", "icon2", "icon3"]
@@ -19,51 +19,51 @@
       "file": "sky_left.webp",
       "slot": "sky_left",
       "usage": "PaperCutHero sky band — left floater, in front of cloud_left, slightly below",
-      "description": "Triangular pennant flag in blue/yellow club colors on a wooden stick, papercut style, floating left side of sky",
+      "description": "Blue papercut pennant with a cream star and a wooden pole.",
       "dimensions": { "w": 256, "h": 315 },
       "transparentBackground": true,
       "format": "webp",
-      "status": "draft"
+      "status": "final"
     },
     {
       "file": "sky_right.webp",
       "slot": "sky_right",
       "usage": "PaperCutHero sky band — right floater, in front of cloud_right, slightly below",
-      "description": "Gold trophy cup with blue/yellow ribbon, papercut style, glowing right side of sky",
+      "description": "Gold papercut trophy with a star and a wooden base.",
       "dimensions": { "w": 256, "h": 291 },
       "transparentBackground": true,
       "format": "webp",
-      "status": "draft"
+      "status": "final"
     },
     {
       "file": "cloud_left.webp",
       "slot": "cloud_left",
       "usage": "PaperCutHero sky band — top-left background cloud, behind sky_left",
-      "description": "Layered paper cloud, soft cream tones. PLACEHOLDER: copy of kids_fantasy cloud; optionally tint cooler blue for sports sky.",
+      "description": "Shared neutral papercut cloud behind the sports pennant.",
       "dimensions": { "w": 460, "h": 350 },
       "transparentBackground": true,
       "format": "webp",
-      "status": "placeholder"
+      "status": "final"
     },
     {
       "file": "cloud_right.webp",
       "slot": "cloud_right",
       "usage": "PaperCutHero sky band — top-right background cloud, behind sky_right",
-      "description": "Layered paper cloud, soft cream tones. PLACEHOLDER: copy of kids_fantasy cloud; optionally tint cooler blue for sports sky.",
+      "description": "Shared neutral papercut cloud behind the sports trophy.",
       "dimensions": { "w": 489, "h": 317 },
       "transparentBackground": true,
       "format": "webp",
-      "status": "placeholder"
+      "status": "final"
     },
     {
       "file": "sparkles.webp",
       "slot": "sparkles",
       "usage": "PaperCutHero sky band — twinkle cluster centered above the page title",
-      "description": "Cluster of gold stars. PLACEHOLDER: copy of kids_fantasy sparkles; final art could mix stars with a small football accent.",
+      "description": "Shared gold papercut sparkles above the sports headline.",
       "dimensions": { "w": 328, "h": 318 },
       "transparentBackground": true,
       "format": "webp",
-      "status": "placeholder"
+      "status": "final"
     },
     {
       "file": "background_laptop.webp",
@@ -110,114 +110,15 @@
       "status": "final"
     },
     {
-      "file": "person1_de-DE.webp",
-      "slot": "person1",
-      "locale": "de-DE",
-      "usage": "HeroScene person carousel — real person holding a real Mythoria book (z5, bottom-anchored, centered)",
-      "description": "Smiling boy in football kit holding his team's personalized yearbook, German cover title. DRAFT: verify cover text is localized (all locale files currently share one source image).",
-      "dimensions": { "w": 572, "h": 1024 },
-      "transparentBackground": true,
-      "format": "webp",
-      "status": "draft"
-    },
-    {
-      "file": "person1_en-US.webp",
-      "slot": "person1",
-      "locale": "en-US",
-      "usage": "HeroScene person carousel — real person holding a real Mythoria book",
-      "description": "Smiling boy in football kit holding his team's personalized yearbook, English cover title. DRAFT: verify cover text is localized.",
-      "dimensions": { "w": 572, "h": 1024 },
-      "transparentBackground": true,
-      "format": "webp",
-      "status": "draft"
-    },
-    {
-      "file": "person1_es-ES.webp",
-      "slot": "person1",
-      "locale": "es-ES",
-      "usage": "HeroScene person carousel — real person holding a real Mythoria book",
-      "description": "Smiling boy in football kit holding his team's personalized yearbook, Spanish cover title. DRAFT: verify cover text is localized.",
-      "dimensions": { "w": 572, "h": 1024 },
-      "transparentBackground": true,
-      "format": "webp",
-      "status": "draft"
-    },
-    {
-      "file": "person1_fr-FR.webp",
-      "slot": "person1",
-      "locale": "fr-FR",
-      "usage": "HeroScene person carousel — real person holding a real Mythoria book",
-      "description": "Smiling boy in football kit holding his team's personalized yearbook, French cover title. DRAFT: verify cover text is localized.",
-      "dimensions": { "w": 572, "h": 1024 },
-      "transparentBackground": true,
-      "format": "webp",
-      "status": "draft"
-    },
-    {
       "file": "person1_pt-PT.webp",
       "slot": "person1",
       "locale": "pt-PT",
       "usage": "HeroScene person carousel — real person holding a real Mythoria book",
-      "description": "Smiling boy in football kit holding 'A Nossa Equipa' team yearbook. DRAFT: verify cover text is localized.",
+      "description": "Football player holding the Portuguese sample book A Nossa Equipa, used as the shared sports portrait.",
       "dimensions": { "w": 572, "h": 1024 },
       "transparentBackground": true,
       "format": "webp",
-      "status": "draft"
-    },
-    {
-      "file": "person2_de-DE.webp",
-      "slot": "person2",
-      "locale": "de-DE",
-      "usage": "HeroScene person carousel — second rotation slide",
-      "description": "Second team member with the personalized yearbook, German cover. DRAFT: currently identical to person1 — needs distinct art.",
-      "dimensions": { "w": 572, "h": 1024 },
-      "transparentBackground": true,
-      "format": "webp",
-      "status": "draft"
-    },
-    {
-      "file": "person2_en-US.webp",
-      "slot": "person2",
-      "locale": "en-US",
-      "usage": "HeroScene person carousel — second rotation slide",
-      "description": "Second team member with the personalized yearbook, English cover. DRAFT: currently identical to person1 — needs distinct art.",
-      "dimensions": { "w": 572, "h": 1024 },
-      "transparentBackground": true,
-      "format": "webp",
-      "status": "draft"
-    },
-    {
-      "file": "person2_es-ES.webp",
-      "slot": "person2",
-      "locale": "es-ES",
-      "usage": "HeroScene person carousel — second rotation slide",
-      "description": "Second team member with the personalized yearbook, Spanish cover. DRAFT: currently identical to person1 — needs distinct art.",
-      "dimensions": { "w": 572, "h": 1024 },
-      "transparentBackground": true,
-      "format": "webp",
-      "status": "draft"
-    },
-    {
-      "file": "person2_fr-FR.webp",
-      "slot": "person2",
-      "locale": "fr-FR",
-      "usage": "HeroScene person carousel — second rotation slide",
-      "description": "Second team member with the personalized yearbook, French cover. DRAFT: currently identical to person1 — needs distinct art.",
-      "dimensions": { "w": 572, "h": 1024 },
-      "transparentBackground": true,
-      "format": "webp",
-      "status": "draft"
-    },
-    {
-      "file": "person2_pt-PT.webp",
-      "slot": "person2",
-      "locale": "pt-PT",
-      "usage": "HeroScene person carousel — second rotation slide",
-      "description": "Second team member with the personalized yearbook, Portuguese cover. DRAFT: currently identical to person1 — needs distinct art.",
-      "dimensions": { "w": 572, "h": 1024 },
-      "transparentBackground": true,
-      "format": "webp",
-      "status": "draft"
+      "status": "final"
     },
     {
       "file": "icon1.webp",

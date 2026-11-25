@@ -1,5 +1,3 @@
-/** @jest-environment jsdom */
-
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 
 const trackEventMock = jest.fn();

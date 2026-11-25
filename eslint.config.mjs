@@ -1,3 +1,4 @@
+import { fixupConfigRules } from '@eslint/compat';
 import { dirname } from 'path';
 import { fileURLToPath } from 'url';
 import nextPlugin from 'eslint-config-next';
@@ -25,7 +26,7 @@ const eslintConfig = [
       '**/*.gen.*',
     ],
   },
-  ...nextPlugin,
+  ...fixupConfigRules(nextPlugin),
   {
     // Override rules from the React Compiler ESLint plugin that are bundled with
     // eslint-config-next 16.2+. These rules enforce React Compiler semantics which

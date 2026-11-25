@@ -52,7 +52,7 @@ A valid `?intent=<value>` on a localized homepage or landing page takes preceden
 
 The paper-cut illustrations in shared surfaces and homepage sections follow the sitewide theme. The homepage gallery uses the resolved campaign intent and recipient to prioritize sample books.
 
-**Locale-aware hero assets:** background/foreground/person assets may carry a locale suffix (e.g. `background_mobile_pt-PT.webp`, `person1_pt-PT.webp`). Resolution happens at build time through `src/components/papercut/heroManifest.ts` with the deterministic fallback chain `exact locale → en-US → pt-PT → unsuffixed → first available` — missing variants never 404. Each style folder documents its assets in `assets_metadata.json` (validated by `npm run homepage:assets`) and lists outstanding designer work in `MISSING_ASSETS.md`.
+**Locale-aware hero assets:** background/foreground/person assets may carry a locale suffix (e.g. `background_mobile_pt-PT.webp`, `person1_pt-PT.webp`). Resolution happens at build time through `src/components/papercut/heroManifest.ts` with the deterministic fallback chain `exact locale → en-US → pt-PT → unsuffixed → first available` — missing variants never 404. Entries with `localeOnly` appear only in their declared locale, so the carousel can omit a cover that has no matching translation. Each style folder documents its assets in `assets_metadata.json` (validated by `npm run homepage:assets`) and lists outstanding designer work in `MISSING_ASSETS.md`.
 
 ---
 

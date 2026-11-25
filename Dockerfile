@@ -59,7 +59,8 @@ ENV NEXT_PUBLIC_ASSETS_BASE_URL=$NEXT_PUBLIC_ASSETS_BASE_URL
 ENV APP_GIT_SHA=$APP_GIT_SHA
 
 # Copy package.json and package-lock.json (if available)
-COPY package*.json ./
+COPY package*.json .npmrc ./
+COPY compat/ ./compat/
 
 # Update npm and install dependencies
 RUN npm install -g npm@latest && \
@@ -83,14 +84,15 @@ WORKDIR /app
 RUN apk upgrade --no-cache
 
 # Copy package.json and package-lock.json (if available)
-COPY package*.json ./
+COPY package*.json .npmrc ./
+COPY compat/ ./compat/
 
 # Create a non-root user
 RUN addgroup -g 1001 -S nodejs && adduser -S nextjs -u 1001
 
 # Reuse the already patched dependencies from the builder image, then prune dev-only packages
 COPY --from=builder /app/node_modules ./node_modules
-RUN npm prune --omit=dev && chown -R nextjs:nodejs /app
+RUN npm prune --omit=dev --ignore-scripts && chown -R nextjs:nodejs /app
 
 # Copy the built application from builder stage (standalone output)
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./

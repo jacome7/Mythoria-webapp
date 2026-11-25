@@ -1,5 +1,3 @@
-/** @jest-environment jsdom */
-
 import { act, fireEvent, render, screen } from '@testing-library/react';
 import { clearConsent, getStoredConsent } from '@/lib/consent';
 import CookieConsentBanner from './CookieConsentBanner';
@@ -54,7 +52,7 @@ describe('CookieConsentBanner', () => {
 
   it('accepts analytics without advertising from the first layer', async () => {
     await showBanner();
-    fireEvent.click(screen.getByRole('button', { name: 'analyticsOnly noAdvertising' }));
+    fireEvent.click(screen.getByRole('button', { name: /^analyticsOnly\s*noAdvertising$/ }));
 
     expect(getStoredConsent()).toMatchObject({
       preferences: { analytics: true, advertising: false },

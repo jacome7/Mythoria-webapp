@@ -1,5 +1,3 @@
-/** @jest-environment jsdom */
-
 import { StrictMode } from 'react';
 import { act, fireEvent, render, waitFor } from '@testing-library/react';
 import Link from 'next/link';

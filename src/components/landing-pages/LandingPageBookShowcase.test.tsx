@@ -1,5 +1,3 @@
-/** @jest-environment jsdom */
-
 import { fireEvent, render, screen } from '@testing-library/react';
 import LandingPageBookShowcase from './LandingPageBookShowcase';
 import type { LandingPageBook } from '@/content/landing-pages';

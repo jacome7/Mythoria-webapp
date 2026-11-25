@@ -1,5 +1,4 @@
 /**
- * @jest-environment jsdom
  * @jest-environment-options {"url":"https://mythoria.pt/pt-PT"}
  */
 import { act, renderHook, waitFor } from '@testing-library/react';

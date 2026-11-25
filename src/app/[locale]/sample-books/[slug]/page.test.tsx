@@ -1,5 +1,3 @@
-/** @jest-environment jsdom */
-
 import { render, screen } from '@testing-library/react';
 import SampleBookPage, { generateMetadata } from './page';
 import { getSampleBookBySlug } from '@/lib/sample-books/catalog';

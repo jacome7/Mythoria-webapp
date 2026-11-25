@@ -1,7 +1,7 @@
 /** @type {import('jest').Config} */
 module.exports = {
   preset: 'ts-jest',
-  testEnvironment: 'jsdom',
+  testEnvironment: '<rootDir>/jest.environment.cjs',
   moduleNameMapper: {
     '\\.module\\.css$': '<rootDir>/src/test-utils/style-mock.cjs',
     '^@/(.*)$': '<rootDir>/src/$1',

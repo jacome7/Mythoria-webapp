@@ -1287,7 +1287,7 @@ describe('Story Whisperer in Step 2', () => {
       render(
         <Step2Client templatesEnabled whispererEnabled templates={getStoryTemplates(mockLocale)} />,
       );
-      fireEvent.click(await screen.findByRole('button', { name: 'title subtitle' }));
+      fireEvent.click(await screen.findByRole('button', { name: /^title\s*subtitle$/ }));
       expect(await screen.findByText(opening.question)).toBeVisible();
       expect(startCalls()).toHaveLength(1);
       expect(payload(startCalls()[0])).toEqual({
@@ -1903,7 +1903,7 @@ describe('Story Whisperer in Step 2', () => {
       render(
         <Step2Client templatesEnabled whispererEnabled templates={getStoryTemplates(mockLocale)} />,
       );
-      fireEvent.click(await screen.findByRole('button', { name: 'title subtitle' }));
+      fireEvent.click(await screen.findByRole('button', { name: /^title\s*subtitle$/ }));
       const next = await screen.findByRole('button', { name: 'continue' });
       expect(startCalls().map(payload)).toEqual([{ locale: mockLocale }]);
       expect(sessionStorage.getItem(`storyWhispererDraft:${owner}`)).toBe(boundDraftId);
@@ -1919,7 +1919,7 @@ describe('Story Whisperer in Step 2', () => {
         expect(await screen.findByText('structureDeclined')).toBeInTheDocument();
         expect(screen.queryByRole('button', { name: 'retryOutline' })).toBeNull();
         expect(mockPush).not.toHaveBeenCalled();
-        fireEvent.click(await screen.findByRole('button', { name: 'title subtitle' }));
+        fireEvent.click(await screen.findByRole('button', { name: /^title\s*subtitle$/ }));
         const reopened = await screen.findByRole('button', { name: 'continue' });
         await waitFor(() => expect(reopened).toBeEnabled());
         fireEvent.click(reopened);
@@ -2031,7 +2031,7 @@ describe('Story Whisperer in Step 2', () => {
       expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
       expect(document.documentElement.style.overflow).toBe(rootOverflow);
       expect(document.body.style.overflow).toBe(bodyOverflow);
-      expect(screen.getByRole('button', { name: 'title subtitle' })).toBeVisible();
+      expect(screen.getByRole('button', { name: /^title\s*subtitle$/ })).toBeVisible();
     },
   );
 
@@ -2230,7 +2230,7 @@ describe('Story Whisperer in Step 2', () => {
       <Step2Client templatesEnabled whispererEnabled templates={getStoryTemplates(mockLocale)} />,
     );
     fireEvent.click(await screen.findByRole('button', { name: 'Continue my story' }));
-    fireEvent.click(screen.getByRole('button', { name: 'title subtitle' }));
+    fireEvent.click(screen.getByRole('button', { name: /^title\s*subtitle$/ }));
     expect(await screen.findByRole('textbox', { name: 'reply' })).toBeVisible();
     expect(sessionStorage.getItem(`storyWhispererDraft:${owner}`)).not.toBe(draftId);
     expect(startCalls().map(payload)).toEqual([{ locale: mockLocale }]);
@@ -2258,7 +2258,7 @@ describe('Story Whisperer in Step 2', () => {
       { reactStrictMode: true },
     );
     expect(startCalls()).toHaveLength(0);
-    fireEvent.click(await screen.findByRole('button', { name: 'title subtitle' }));
+    fireEvent.click(await screen.findByRole('button', { name: /^title\s*subtitle$/ }));
     const working = within(screen.getByRole('log')).getByText('working');
     expect(working).toHaveAttribute('role', 'status');
     expect(working.firstElementChild).toHaveClass('motion-safe:animate-pulse');
@@ -2270,7 +2270,7 @@ describe('Story Whisperer in Step 2', () => {
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
     expect(startCalls().map(payload)).toEqual([{ locale: mockLocale }, { locale: mockLocale }]);
 
-    fireEvent.click(screen.getByRole('button', { name: 'title subtitle' }));
+    fireEvent.click(screen.getByRole('button', { name: /^title\s*subtitle$/ }));
     expect(await screen.findByRole('textbox', { name: 'reply' })).toBeVisible();
     expect(startCalls()).toHaveLength(2);
   });
@@ -2373,7 +2373,7 @@ describe('Story Whisperer in Step 2', () => {
     render(
       <Step2Client templatesEnabled whispererEnabled templates={getStoryTemplates(mockLocale)} />,
     );
-    fireEvent.click(await screen.findByRole('button', { name: 'title subtitle' }));
+    fireEvent.click(await screen.findByRole('button', { name: /^title\s*subtitle$/ }));
     const reset = await screen.findByRole('button', { name: 'reset' });
     await waitFor(() => expect(reset).toBeEnabled());
     fireEvent.click(reset);

@@ -10,7 +10,7 @@
     "rose": "#9c3d54",
     "lamplight": "#f4a259"
   },
-  "notes": "Assets marked 'placeholder' are copies of kids_fantasy assets and must be replaced with romance-themed art (pink clouds, heart sparkles).",
+  "notes": "Neutral clouds and gold sparkles are shared with the other themes. The pink balloon and heart distinguish the romance scene.",
   "heroSlots": {
     "_doc": "Canonical hero slot grammar shared by every style folder. Filenames are lowercase: {slot}.webp, {slot}_{device}.webp, {slot}_{device}_{locale}.webp, person{n}_{locale}.webp. Locale fallback chain at build time: exact locale -> en-US -> pt-PT -> unsuffixed -> first available.",
     "required": ["cloud_left", "cloud_right", "sky_left", "sky_right", "sparkles", "background", "foreground", "person1", "icon1", "icon2", "icon3"]
@@ -40,31 +40,31 @@
       "file": "cloud_left.webp",
       "slot": "cloud_left",
       "usage": "PaperCutHero sky band — top-left background cloud, behind sky_left",
-      "description": "Layered paper cloud, soft cream tones. PLACEHOLDER: copy of kids_fantasy cloud; final art should be blush-pink romance cloud.",
+      "description": "Shared neutral papercut cloud behind the rose hot-air balloon.",
       "dimensions": { "w": 460, "h": 350 },
       "transparentBackground": true,
       "format": "webp",
-      "status": "placeholder"
+      "status": "final"
     },
     {
       "file": "cloud_right.webp",
       "slot": "cloud_right",
       "usage": "PaperCutHero sky band — top-right background cloud, behind sky_right",
-      "description": "Layered paper cloud, soft cream tones. PLACEHOLDER: copy of kids_fantasy cloud; final art should be blush-pink romance cloud.",
+      "description": "Shared neutral papercut cloud behind the papercut heart.",
       "dimensions": { "w": 489, "h": 317 },
       "transparentBackground": true,
       "format": "webp",
-      "status": "placeholder"
+      "status": "final"
     },
     {
       "file": "sparkles.webp",
       "slot": "sparkles",
       "usage": "PaperCutHero sky band — twinkle cluster centered above the page title",
-      "description": "Cluster of gold stars. PLACEHOLDER: copy of kids_fantasy sparkles; final art should mix a gold star with small paper hearts.",
+      "description": "Shared gold papercut sparkles above the romance headline.",
       "dimensions": { "w": 328, "h": 318 },
       "transparentBackground": true,
       "format": "webp",
-      "status": "placeholder"
+      "status": "final"
     },
     {
       "file": "background_laptop.webp",

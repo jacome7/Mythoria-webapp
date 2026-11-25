@@ -1,5 +1,3 @@
-/** @jest-environment jsdom */
-
 import { fireEvent, render, screen } from '@testing-library/react';
 import LandingPageSupportHub from './LandingPageSupportHub';
 import type { LandingPageSupportHub as LandingPageSupportHubContent } from '@/content/landing-pages/types';

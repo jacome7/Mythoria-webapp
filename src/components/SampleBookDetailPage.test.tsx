@@ -1,5 +1,3 @@
-/** @jest-environment jsdom */
-
 import { render, screen } from '@testing-library/react';
 import SampleBookDetailPage from './SampleBookDetailPage';
 import spanishFacts from '@/messages/es-ES/GetInspiredPage.json';

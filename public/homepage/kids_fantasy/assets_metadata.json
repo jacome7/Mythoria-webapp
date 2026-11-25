@@ -69,44 +69,44 @@
       "slot": "background",
       "device": "laptop",
       "usage": "HeroScene — back layer for tablet/laptop (z1), behind the person carousel",
-      "description": "Rolling parchment hills, distant castle towers, forest silhouette — full-bleed panorama. PLACEHOLDER: copy of the legacy 3840x2160 panorama; final art should be 1920x1072 to match other styles.",
+      "description": "Papercut castle, forest and hills behind the desktop hero.",
       "dimensions": { "w": 3840, "h": 2160 },
       "transparentBackground": true,
       "format": "webp",
-      "status": "placeholder"
+      "status": "final"
     },
     {
       "file": "background_mobile.webp",
       "slot": "background",
       "device": "mobile",
       "usage": "HeroScene — back layer for mobile (z1), behind the person carousel",
-      "description": "Mobile crop of the fantasy panorama. PLACEHOLDER: copy of the legacy 3840x2160 panorama; final art should be 1080x1072 portrait-friendly crop.",
+      "description": "Papercut castle and rolling hills behind the mobile hero.",
       "dimensions": { "w": 3840, "h": 2160 },
       "transparentBackground": true,
       "format": "webp",
-      "status": "placeholder"
+      "status": "final"
     },
     {
       "file": "foreground_laptop.webp",
       "slot": "foreground",
       "device": "laptop",
       "usage": "HeroScene — front layer for tablet/laptop (z10), in front of the person carousel",
-      "description": "Rolling green foreground hills with flowers and grass tufts, full-width strip. PLACEHOLDER: copy of the legacy foreground; final art should be 1920x1072-compatible with transparent top.",
+      "description": "Layered foreground hills and a paper ship along the bottom of the desktop hero.",
       "dimensions": { "w": 1920, "h": 1072 },
       "transparentBackground": true,
       "format": "webp",
-      "status": "placeholder"
+      "status": "final"
     },
     {
       "file": "foreground_mobile.webp",
       "slot": "foreground",
       "device": "mobile",
       "usage": "HeroScene — front layer for mobile (z10), in front of the person carousel",
-      "description": "Mobile crop of the foreground hills. PLACEHOLDER: copy of the legacy foreground; final art should be ~1080-wide with transparent top.",
+      "description": "Mobile foreground of layered hills and a paper ship.",
       "dimensions": { "w": 1080, "h": 1072 },
       "transparentBackground": true,
       "format": "webp",
-      "status": "placeholder"
+      "status": "final"
     },
     {
       "file": "person1_en-US.webp",
@@ -146,11 +146,11 @@
       "slot": "person1",
       "locale": "pt-PT",
       "usage": "HeroScene person carousel — real person holding a real Mythoria book",
-      "description": "Smiling girl holding up the 'SARA' fantasy storybook. DRAFT: legacy 461x717 cutout — re-export at 572x1024 to match siblings",
+      "description": "Girl holding the Portuguese fantasy book Sara.",
       "dimensions": { "w": 461, "h": 717 },
       "transparentBackground": true,
       "format": "webp",
-      "status": "draft"
+      "status": "final"
     },
     {
       "file": "person2_en-US.webp",
@@ -201,33 +201,24 @@
       "slot": "person3",
       "locale": "pt-PT",
       "usage": "HeroScene person carousel — third rotation slide",
-      "description": "Child holding a personalized fantasy storybook with a Portuguese cover title. DRAFT: 540x717 cutout — re-export at 572x1024 to match the carousel siblings.",
+      "description": "Boy and dog beside the Portuguese fantasy book Duarte & Farrusco.",
       "dimensions": { "w": 540, "h": 717 },
       "transparentBackground": true,
       "format": "webp",
-      "status": "draft"
-    },
-    {
-      "file": "person3_en-US.webp",
-      "slot": "person3",
-      "locale": "en-US",
-      "usage": "HeroScene person carousel — third rotation slide",
-      "description": "Child and dog holding a personalized fantasy storybook. DRAFT: uploaded artwork has a Spanish cover and is 539x717; replace with an English-cover 572x1024 cutout.",
-      "dimensions": { "w": 539, "h": 717 },
-      "transparentBackground": true,
-      "format": "webp",
-      "status": "draft"
+      "localeOnly": true,
+      "status": "final"
     },
     {
       "file": "person3_es-ES.webp",
       "slot": "person3",
       "locale": "es-ES",
       "usage": "HeroScene person carousel — third rotation slide",
-      "description": "Child and dog holding a personalized fantasy storybook with a Spanish cover title. DRAFT: 539x717 cutout — re-export at 572x1024 to match the carousel siblings.",
+      "description": "Boy and dog beside the Spanish fantasy book Diego y Farrusco.",
       "dimensions": { "w": 539, "h": 717 },
       "transparentBackground": true,
       "format": "webp",
-      "status": "draft"
+      "localeOnly": true,
+      "status": "final"
     },
     {
       "file": "person4_en-US.webp",

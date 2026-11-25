@@ -35,6 +35,7 @@ interface ManifestEntry {
   slot: string;
   device?: HeroDevice;
   locale?: string;
+  localeOnly?: boolean;
   dimensions?: { w: number; h: number };
   status: AssetStatus;
 }
@@ -91,7 +92,11 @@ export function resolveAsset(
   opts?: { device?: HeroDevice; locale?: string },
 ): ResolvedAsset | null {
   const candidates = MANIFEST[style].assets.filter(
-    (a) => a.slot === slot && a.status !== 'missing' && (a.device ?? undefined) === opts?.device,
+    (asset) =>
+      asset.slot === slot &&
+      asset.status !== 'missing' &&
+      asset.device === opts?.device &&
+      (!asset.localeOnly || asset.locale === opts?.locale),
   );
   if (candidates.length === 0) return null;
 

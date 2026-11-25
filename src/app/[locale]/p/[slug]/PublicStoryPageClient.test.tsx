@@ -1,5 +1,3 @@
-/** @jest-environment jsdom */
-
 import { fireEvent, render, screen } from '@testing-library/react';
 import PublicStoryPageClient, { type PublicStoryData } from './PublicStoryPageClient';
 

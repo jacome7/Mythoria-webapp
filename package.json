@@ -99,6 +99,7 @@
     "next": "^16.4.6",
     "next-intl": "^4.16.1",
     "next-mdx-remote": "^6.0.0",
+    "node-domexception": "file:compat/node-domexception",
     "pdfjs-dist": "^6.5.438",
     "pg": "^8.23.1",
     "postgres": "^4.1.1",
@@ -123,6 +124,8 @@
   },
   "devDependencies": {
     "@clerk/testing": "2.3.7",
+    "@eslint/compat": "^2.1.1",
+    "@jest/environment-jsdom-abstract": "^30.5.2",
     "@lingual/i18n-check": "^0.9.5",
     "@playwright/test": "^1.65.1",
     "@tailwindcss/postcss": "^4.3.5",
@@ -136,12 +139,12 @@
     "baseline-browser-mapping": "^2.11.39",
     "cross-env": "^10.1.0",
     "dotenv": "^18.0.10",
-    "eslint": "^9.39.5",
+    "eslint": "^10.15.0",
     "eslint-config-next": "^16.4.6",
     "eslint-config-prettier": "^10.1.8",
     "jest": "^30.5.2",
-    "jest-environment-jsdom": "^30.5.2",
     "js-yaml": "^5.5.0",
+    "jsdom": "^27.4.0",
     "knip": "^6.48.0",
     "patch-package": "^8.0.1",
     "prettier": "^3.10.1",
@@ -179,10 +182,24 @@
       "workbox-window": "7.4.1"
     },
     "drizzle-kit": {
-      "esbuild": "^0.25.12"
+      "esbuild": "^0.25.12",
+      "@esbuild-kit/esm-loader": "npm:tsx@4.23.15"
     },
     "tsx": {
       "esbuild": "~0.28.2"
+    },
+    "node-domexception": "$node-domexception",
+    "eslint-plugin-react": {
+      "eslint": "$eslint"
+    },
+    "eslint-plugin-import": {
+      "eslint": "$eslint"
+    },
+    "eslint-plugin-jsx-a11y": {
+      "eslint": "$eslint"
+    },
+    "eslint-import-resolver-typescript": {
+      "eslint": "$eslint"
     }
   },
   "allowScripts": {

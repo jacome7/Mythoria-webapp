@@ -4,13 +4,9 @@ Canonical naming: `{slot}.webp`, `{slot}_{device}.webp`, `{slot}_{device}_{local
 Locales: `en-US`, `pt-PT`, `es-ES`, `fr-FR`, `de-DE`. Devices: `laptop` (also used by tablet), `mobile`.
 See `assets_metadata.json` for per-asset specs (dimensions, transparency, status).
 
-## Placeholders to replace with final art
+## Shared sky artwork
 
-| File | Target spec | Notes |
-| --- | --- | --- |
-| `cloud_left.webp` | ~460×350, transparent | Copy of kids_fantasy cream cloud — final art should be a blush-pink romance cloud (see mockup). |
-| `cloud_right.webp` | ~489×317, transparent | Same as above, right side. |
-| `sparkles.webp` | ~328×318, transparent | Copy of kids_fantasy gold sparkles — final art should mix a gold star with small paper hearts. |
+The romance hero uses the shared neutral clouds and gold sparkles alongside its pink balloon and heart.
 
 ## Person images
 

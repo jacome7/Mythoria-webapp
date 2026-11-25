@@ -1,5 +1,3 @@
-/** @jest-environment jsdom */
-
 import { clearConsent, consentStateFromPreferences, saveConsent } from '@/lib/consent';
 import { conversions, type OpenAiConversion } from './events';
 import {
