@@ -11,7 +11,7 @@ import {
 } from '@/lib/analytics/ecommerce';
 import { sanitizeAnalyticsPathname } from '@/lib/analytics/page-context';
 import { readAnalyticsConsentCookie } from '@/lib/analytics/consent-server';
-import { isGaClientId } from '@/lib/analytics/destinations';
+import { analyticsPrivacyPaused, isGaClientId } from '@/lib/analytics/destinations';
 import { getLandingPageBySlug } from '@/content/landing-pages';
 import { analyticsReference } from '@/lib/analytics/reference';
 import { storyShareFromCampaign, type StoryShareContext } from '@/lib/analytics/story-share';
@@ -190,6 +190,7 @@ function sanitizeCampaignAttribution(campaign: CampaignParams): CampaignParams {
 
 export async function POST(request: NextRequest) {
   try {
+    if (analyticsPrivacyPaused()) return NextResponse.json({ captured: false }, { status: 202 });
     const cookie = request.cookies.get(CONSENT_COOKIE_NAME)?.value;
     const consent = readAnalyticsConsentCookie(cookie);
     if (!consent) return NextResponse.json({ captured: false }, { status: 202 });

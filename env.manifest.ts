@@ -658,6 +658,13 @@ export const envManifest: EnvVarDescriptor[] = [
     note: 'GA4 server delivery destination: off, production or audit. Audit needs separate IDs.',
   },
   {
+    name: 'ANALYTICS_PRIVACY_PAUSE',
+    required: false,
+    secret: false,
+    scopes: ['runtime', 'dev', 'prod'],
+    note: 'Keeps vendor delivery and new first-party analytics collection paused.',
+  },
+  {
     name: 'ANONYMOUS_ANALYTICS_ENABLED',
     required: false,
     scopes: ['prod', 'runtime'],

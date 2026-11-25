@@ -54,7 +54,7 @@ const nextConfig: NextConfig = {
     '@grpc/proto-loader',
   ],
   async headers() {
-    return [{ source: '/:path*', headers: [{ key: 'Referrer-Policy', value: 'strict-origin' }] }];
+    return [{ source: '/:path*', headers: [{ key: 'Referrer-Policy', value: 'no-referrer' }] }];
   },
   async redirects() {
     return [

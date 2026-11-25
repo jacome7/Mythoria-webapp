@@ -1,4 +1,5 @@
 import { SUPPORTED_LOCALES } from '@/config/locales';
+import { analyticsPrivacyPaused } from './destinations';
 
 export const ANONYMOUS_REQUEST_SURFACES = [
   'home',
@@ -28,6 +29,7 @@ export function anonymousRequestSurface(pathname: string): AnonymousRequestSurfa
 
 export function anonymousAnalyticsEnabled(): boolean {
   return (
+    !analyticsPrivacyPaused() &&
     process.env.ANONYMOUS_ANALYTICS_ENABLED === 'true' &&
     process.env.NEXT_PUBLIC_BASE_URL === 'https://mythoria.pt' &&
     process.env.NODE_ENV === 'production'

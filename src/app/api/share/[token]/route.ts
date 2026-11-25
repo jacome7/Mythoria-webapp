@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { CONSENT_COOKIE_NAME } from '@/lib/consent';
 import { readAnalyticsConsentCookie } from '@/lib/analytics/consent-server';
+import { analyticsPrivacyPaused } from '@/lib/analytics/destinations';
 import { cookiesFromHeaders } from '@/lib/openai-ads/context';
 import { auth, currentUser } from '@clerk/nextjs/server';
 import { db } from '@/db';
@@ -23,6 +24,7 @@ function withQualifiedReaderLink(
 ) {
   if (
     eligible &&
+    !analyticsPrivacyPaused() &&
     new URL(request.url).searchParams.get('utm_campaign') === 'story_share' &&
     readAnalyticsConsentCookie(cookiesFromHeaders(request.headers).get(CONSENT_COOKIE_NAME)?.value)
   ) {

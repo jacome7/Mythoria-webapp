@@ -2,6 +2,8 @@
 
 ## Destinations
 
+All responses use `Referrer-Policy: no-referrer`. When replacing the containment revision, set `ANALYTICS_PRIVACY_PAUSE=true` (`_ANALYTICS_PRIVACY_PAUSE=true` with Cloud Build). The pause keeps vendor delivery, first-party receipt capture, and new aggregate and growth measurement off at runtime. The operations outbox and consent withdrawal remain available. OpenAI Ads pending rows retain their delivery state while expired raw context is cleared. The flag defaults to false for releases that already use first-party measurement.
+
 Apply the additive analytics schema before deploying. The release defaults external GA4 and OpenAI Ads delivery to off. First-party counters on canonical production use `ANONYMOUS_ANALYTICS_ENABLED=true` and have no dependency on a vendor. They store UTC day, bounded surface, outcome and count. Confirmed document navigations count requests rather than people. The scheduled drain recomputes recent completed product totals from committed account, generation and payment records.
 
 Browser GA4 and the optional ads Pixel require an explicit isolated origin, a separate test property and eligible public routes. Set `NEXT_PUBLIC_ANALYTICS_AUDIT_ORIGIN` and `NEXT_PUBLIC_ANALYTICS_AUDIT_MEASUREMENT_ID` in the isolated build. Enable `NEXT_PUBLIC_GA_DEBUG` there for DebugView. An OpenAI Pixel audit also requires a separate `NEXT_PUBLIC_OPENAI_AUDIT_PIXEL_ID`. Production browser tags require a subsequent reviewed release supported by actual payload evidence.

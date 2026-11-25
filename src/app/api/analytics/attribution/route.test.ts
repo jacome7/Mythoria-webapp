@@ -68,6 +68,24 @@ describe('POST /api/analytics/attribution', () => {
     mockInsert.mockReset();
   });
 
+  it('leaves consented receipt collection paused without reading or writing attribution', async () => {
+    const env = jest.replaceProperty(process, 'env', {
+      ...process.env,
+      ANALYTICS_PRIVACY_PAUSE: 'true',
+    });
+    try {
+      const response = await POST(request({ analyticsContext }, true));
+      expect(response.status).toBe(202);
+      expect(await response.json()).toEqual({ captured: false });
+      expect(response.cookies.get('mythoria_attribution')).toBeUndefined();
+      expect(mockSelect).not.toHaveBeenCalled();
+      expect(mockUpdate).not.toHaveBeenCalled();
+      expect(mockInsert).not.toHaveBeenCalled();
+    } finally {
+      env.restore();
+    }
+  });
+
   it('captures immutable first-touch and mutable latest-touch fields on first visit', async () => {
     mockInsert.mockReturnValue({
       values: jest.fn((values) => ({

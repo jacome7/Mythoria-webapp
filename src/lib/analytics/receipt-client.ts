@@ -1,16 +1,21 @@
 'use client';
 
 import { getStoredConsent } from '@/lib/consent';
+import { analyticsPrivacyPaused } from './destinations';
 
 let pending: Promise<boolean> | undefined;
 let readyUntil = 0;
+
+function canCaptureReceipt() {
+  return !analyticsPrivacyPaused() && getStoredConsent()?.state.analytics_storage === 'granted';
+}
 
 export function clearAnalyticsAttributionReceipt(): void {
   readyUntil = 0;
 }
 
 export function ensureAnalyticsAttributionReceipt(): Promise<boolean> {
-  if (getStoredConsent()?.state.analytics_storage !== 'granted') return Promise.resolve(false);
+  if (!canCaptureReceipt()) return Promise.resolve(false);
   if (readyUntil > Date.now()) return Promise.resolve(true);
   if (pending) return pending;
   return captureAnalyticsAttribution({});
@@ -20,7 +25,7 @@ export async function captureAnalyticsAttribution(
   payload: Record<string, unknown>,
 ): Promise<boolean> {
   if (pending) await pending;
-  if (getStoredConsent()?.state.analytics_storage !== 'granted') return false;
+  if (!canCaptureReceipt()) return false;
 
   const request = fetch('/api/analytics/attribution', {
     method: 'POST',

@@ -5,6 +5,7 @@
  * One invalid event fails the whole batch (HTTP 400), so callers isolate bad events themselves.
  */
 import type { OpenAiCustomEventName, OpenAiEventData, OpenAiEventType } from './events';
+import { analyticsPrivacyPaused } from '@/lib/analytics/destinations';
 
 export const OPENAI_CAPI_ENDPOINT = 'https://bzr.openai.com/v1/events';
 export const OPENAI_CAPI_INTEGRATION_SOURCE = 'mythoria-webapp';
@@ -50,6 +51,7 @@ export type OpenAiCapiResult =
 
 function capiCredentials(): { apiKey: string; pixelId: string } | null {
   if (
+    analyticsPrivacyPaused() ||
     process.env.OPENAI_ADS_CAPI_DELIVERY_ENABLED !== 'true' ||
     process.env.NEXT_PUBLIC_BASE_URL !== 'https://mythoria.pt'
   )

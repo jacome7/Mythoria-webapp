@@ -13,7 +13,7 @@ import { getCurrentAuthor } from '@/lib/auth';
 import { ANALYTICS_BASE_URL, sanitizeAnalyticsPageUrl } from '@/lib/analytics/page-context';
 import { CONSENT_COOKIE_NAME } from '@/lib/consent';
 import { readAnalyticsConsentCookie } from '@/lib/analytics/consent-server';
-import { isGaClientId } from '@/lib/analytics/destinations';
+import { analyticsPrivacyPaused, isGaClientId } from '@/lib/analytics/destinations';
 import { linkGrowthRecipient } from '@/lib/growth/measurement-server';
 import { storyShareEventParams } from '@/lib/analytics/story-share';
 
@@ -21,7 +21,10 @@ export const runtime = 'nodejs';
 
 export async function POST(request: NextRequest) {
   try {
-    if (!readAnalyticsConsentCookie(request.cookies.get(CONSENT_COOKIE_NAME)?.value)) {
+    if (
+      analyticsPrivacyPaused() ||
+      !readAnalyticsConsentCookie(request.cookies.get(CONSENT_COOKIE_NAME)?.value)
+    ) {
       return NextResponse.json({ linked: false });
     }
     const author = await getCurrentAuthor();

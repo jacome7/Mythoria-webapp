@@ -2,6 +2,13 @@ const PRODUCTION_ORIGIN = 'https://mythoria.pt';
 const PRODUCTION_MEASUREMENT_ID = 'G-86D0QFW197';
 export const ANALYTICS_TAG_READY_EVENT = 'mythoria:analytics-tag-ready';
 
+export function analyticsPrivacyPaused(): boolean {
+  return (
+    process.env.ANALYTICS_PRIVACY_PAUSE === 'true' ||
+    (typeof document !== 'undefined' && document.body?.dataset.analyticsPrivacyPaused === 'true')
+  );
+}
+
 function configuredOrigin(value?: string): string | undefined {
   try {
     const url = new URL(value || '');
@@ -22,6 +29,7 @@ function configuredOrigin(value?: string): string | undefined {
  * destination and cannot use the production origin or stream.
  */
 export function getAuditBrowserMeasurementId(origin: string): string | undefined {
+  if (analyticsPrivacyPaused()) return undefined;
   const auditOrigin = configuredOrigin(process.env.NEXT_PUBLIC_ANALYTICS_AUDIT_ORIGIN);
   const measurementId = process.env.NEXT_PUBLIC_ANALYTICS_AUDIT_MEASUREMENT_ID;
   if (
@@ -39,6 +47,7 @@ export function getAuditBrowserMeasurementId(origin: string): string | undefined
 
 export function getServerAnalyticsDestination():
   { measurementId: string; apiSecret: string } | undefined {
+  if (analyticsPrivacyPaused()) return undefined;
   const target = process.env.ANALYTICS_DELIVERY_TARGET;
   const origin = configuredOrigin(process.env.NEXT_PUBLIC_BASE_URL);
   if (target === 'production' && origin === PRODUCTION_ORIGIN) {

@@ -9,6 +9,7 @@ import {
   stories,
 } from '@/db/schema';
 import { readAnalyticsConsentCookie } from '@/lib/analytics/consent-server';
+import { analyticsPrivacyPaused } from '@/lib/analytics/destinations';
 import type { ReferralTransaction } from '@/db/services/referrals';
 import type { NextRequest } from 'next/server';
 import { CONSENT_COOKIE_NAME } from '@/lib/consent';
@@ -16,7 +17,7 @@ import type { CreationObservation } from './creation';
 import { analyticsReference } from '@/lib/analytics/reference';
 
 export function growthMeasurementEnabled(): boolean {
-  return process.env.GROWTH_MEASUREMENT_V2_ENABLED === 'true';
+  return !analyticsPrivacyPaused() && process.env.GROWTH_MEASUREMENT_V2_ENABLED === 'true';
 }
 
 export function requestAnalyticsReceipt(request: NextRequest): string | undefined {

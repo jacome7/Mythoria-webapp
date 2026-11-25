@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { drainDurableOutboxes } from '@/lib/analytics/outbox';
+import { analyticsPrivacyPaused } from '@/lib/analytics/destinations';
 import { refreshAnonymousProductActions } from '@/db/services/anonymous-analytics';
 import {
   purgeRevokedGrowthMeasurement,
@@ -24,9 +25,11 @@ export async function POST(request: Request) {
       console.warn('[AnalyticsDrain] Share payment reconciliation unavailable');
       return 0;
     });
-    await purgeRevokedGrowthMeasurement().catch(() => {
-      console.warn('[AnalyticsDrain] Growth measurement cleanup unavailable');
-    });
+    if (!analyticsPrivacyPaused()) {
+      await purgeRevokedGrowthMeasurement().catch(() => {
+        console.warn('[AnalyticsDrain] Growth measurement cleanup unavailable');
+      });
+    }
     console.info('[AnalyticsDrain]', result);
     return NextResponse.json({ success: true, ...result, sharePaymentsReconciled });
   } catch (error) {

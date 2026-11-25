@@ -318,6 +318,21 @@ describe('deliverAdConversions', () => {
 
   afterEach(() => jest.restoreAllMocks());
 
+  it('clears aged raw context without expiring pending delivery during the privacy pause', async () => {
+    jest.replaceProperty(process, 'env', { ...process.env, ANALYTICS_PRIVACY_PAUSE: 'true' });
+    const sets = mockUpdates([outboxRow({ occurredAt: new Date(Date.now() - 8 * DAY) })]);
+
+    await expect(deliverAdConversions()).resolves.toEqual({
+      delivered: 0,
+      failed: 0,
+      skipped: 0,
+      deferred: 0,
+    });
+    expect(selectMock).not.toHaveBeenCalled();
+    expect(sendOpenAiEventsMock).not.toHaveBeenCalled();
+    expect(sets).toEqual([{ adContext: null }]);
+  });
+
   it('sends nothing and only expires stale rows when the Conversions API is not configured', async () => {
     isConfiguredMock.mockReturnValue(false);
     const sets = mockUpdates([outboxRow({ occurredAt: new Date(Date.now() - 8 * DAY) })]);

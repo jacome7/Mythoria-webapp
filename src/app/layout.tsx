@@ -10,6 +10,7 @@ import { SUPPORTED_LOCALES } from '@/config/locales';
 import { getIntentContext } from '@/app/i/actions';
 import { resolveWebsiteTheme } from '@/constants/websiteTheme';
 import { HomepageThemeProvider } from '@/hooks/useHomepageTheme';
+import { analyticsPrivacyPaused } from '@/lib/analytics/destinations';
 import './globals.css';
 
 // Base metadata for non-localized routes only
@@ -52,6 +53,7 @@ export default async function RootLayout({
   };
 
   const clerkLocalization = getClerkLocalization(locale);
+  const pauseAnalytics = analyticsPrivacyPaused();
 
   return (
     <ClerkProvider localization={clerkLocalization}>
@@ -74,11 +76,16 @@ export default async function RootLayout({
           <link rel="apple-touch-icon" href="/icon-192.png" />
           <link rel="mask-icon" href="/icon-192.png" />
         </head>
-        <body suppressHydrationWarning={true}>
-          <Suspense fallback={null}>
-            <GoogleAnalytics />
-            <OpenAIAdsPixel />
-          </Suspense>
+        <body
+          suppressHydrationWarning={true}
+          data-analytics-privacy-paused={pauseAnalytics || undefined}
+        >
+          {!pauseAnalytics && (
+            <Suspense fallback={null}>
+              <GoogleAnalytics />
+              <OpenAIAdsPixel />
+            </Suspense>
+          )}
           <div className="flex flex-col min-h-screen">
             <AnalyticsProvider>
               <HomepageThemeProvider initialIntentContext={initialIntentContext}>

@@ -9,6 +9,7 @@
  * `scrubPaymentOrderAdContext` removes the checkout-time copy (`payment_orders.metadata.ads`).
  */
 import { createHash, randomUUID } from 'crypto';
+import { analyticsPrivacyPaused } from '@/lib/analytics/destinations';
 import {
   and,
   asc,
@@ -558,6 +559,19 @@ export async function deliverAdConversions(): Promise<{
   deferred: number;
 }> {
   const counts = { delivered: 0, failed: 0, skipped: 0, deferred: 0 };
+  if (analyticsPrivacyPaused()) {
+    // Retain pending delivery status while removing raw identifiers that have aged out.
+    await db
+      .update(adConversionOutbox)
+      .set({ adContext: null })
+      .where(
+        and(
+          isNotNull(adConversionOutbox.adContext),
+          lt(adConversionOutbox.occurredAt, new Date(Date.now() - MAX_EVENT_AGE_MS)),
+        ),
+      );
+    return counts;
+  }
   const drainStartedMs = Date.now();
   if (!isOpenAiCapiConfigured()) {
     // Without credentials rows stay pending, but never past the delivery window: expiring them
