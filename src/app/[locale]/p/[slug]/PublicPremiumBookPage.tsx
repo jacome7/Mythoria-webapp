@@ -5,6 +5,7 @@ import { useTranslations } from 'next-intl';
 import { Link } from '@/i18n/routing';
 import PremiumBookReader from '@/components/PremiumBookReader';
 import PublicStoryRating from '@/components/PublicStoryRating';
+import QualifiedShareOpen from '@/components/QualifiedShareOpen';
 import type { PremiumBookReaderData } from '@/lib/premium-children-book/reader';
 
 export default function PublicPremiumBookPage({ slug }: { slug: string }) {
@@ -66,6 +67,7 @@ export default function PublicPremiumBookPage({ slug }: { slug: string }) {
         </div>
       )}
       <PremiumBookReader book={book.premiumBook} />
+      <QualifiedShareOpen publicSlug={slug} />
       <div className="mx-auto max-w-4xl px-4">
         <PublicStoryRating storyId={book.story.storyId} />
       </div>

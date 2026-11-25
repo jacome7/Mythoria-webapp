@@ -11,6 +11,28 @@ import { hasPremiumBookMarker } from '@/lib/premium-children-book/contract';
 import { toPremiumBookReaderData } from '@/lib/premium-children-book/reader';
 import { loadPublishedPremiumBook } from '@/lib/premium-children-book/storage';
 
+function withQualifiedReaderLink(
+  response: NextResponse,
+  request: Request,
+  token: string,
+  eligible: boolean,
+) {
+  if (
+    eligible &&
+    new URL(request.url).searchParams.get('utm_campaign') === 'story_share' &&
+    readAnalyticsConsentCookie(cookiesFromHeaders(request.headers).get(CONSENT_COOKIE_NAME)?.value)
+  ) {
+    response.cookies.set('mythoria_reader_link', token, {
+      maxAge: 120,
+      httpOnly: true,
+      sameSite: 'lax',
+      secure: process.env.NODE_ENV === 'production',
+      path: '/api/analytics/qualified-share',
+    });
+  }
+  return response;
+}
+
 export async function GET(request: Request, context: { params: Promise<{ token: string }> }) {
   try {
     const { token } = await context.params;
@@ -88,9 +110,15 @@ export async function GET(request: Request, context: { params: Promise<{ token: 
     if (isPremiumBook && link.story) {
       const book = await loadPublishedPremiumBook(link.storyId, link.story.authorId, link.features);
       if (!book) return NextResponse.json({ error: 'Story unavailable' }, { status: 503 });
-      return NextResponse.json(
-        { success: true, premiumBook: toPremiumBookReaderData(book, token) },
+      const response = NextResponse.json(
+        { success: true, storyId: book.storyId, premiumBook: toPremiumBookReaderData(book, token) },
         { headers: { 'Cache-Control': 'private, no-store' } },
+      );
+      return withQualifiedReaderLink(
+        response,
+        request,
+        token,
+        Boolean(userId) && link.accessLevel === 'view',
       );
     }
 
@@ -204,22 +232,7 @@ export async function GET(request: Request, context: { params: Promise<{ token: 
       accessLevel: link.accessLevel,
       redirectUrl: `/stories/read/${link.storyId}${link.accessLevel === 'edit' ? '?mode=edit' : ''}`,
     });
-    if (
-      currentAuthorId &&
-      new URL(request.url).searchParams.get('utm_campaign') === 'story_share' &&
-      readAnalyticsConsentCookie(
-        cookiesFromHeaders(request.headers).get(CONSENT_COOKIE_NAME)?.value,
-      )
-    ) {
-      response.cookies.set('mythoria_reader_link', token, {
-        maxAge: 120,
-        httpOnly: true,
-        sameSite: 'lax',
-        secure: process.env.NODE_ENV === 'production',
-        path: '/api/analytics/qualified-share',
-      });
-    }
-    return response;
+    return withQualifiedReaderLink(response, request, token, Boolean(currentAuthorId));
   } catch (error) {
     console.error('Error accessing shared story:', error);
     return NextResponse.json({ error: 'Failed to access shared story' }, { status: 500 });

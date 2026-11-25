@@ -12,6 +12,8 @@ import {
 import { getCurrentAuthor } from '@/lib/auth';
 import { analyticsReference } from '@/lib/analytics/reference';
 import { storyShareFromCampaign } from '@/lib/analytics/story-share';
+import { getPublishedPremiumRevision } from '@/lib/premium-children-book/audiobook';
+import { hasPremiumBookMarker } from '@/lib/premium-children-book/contract';
 import {
   activeReceipt,
   growthOutboxContext,
@@ -57,11 +59,17 @@ export async function POST(request: NextRequest) {
   } else if (storyId && authorId && share.scope !== 'public') {
     const token = request.cookies.get('mythoria_reader_link')?.value;
     if (!token || !z.string().uuid().safeParse(token).success) return noContent();
-    [story] = await db
-      .select({ id: stories.storyId, owner: stories.authorId })
+    const [linkedStory] = await db
+      .select({
+        id: stories.storyId,
+        owner: stories.authorId,
+        status: stories.status,
+        features: stories.features,
+        collaboratorId: storyCollaborators.userId,
+      })
       .from(shareLinks)
       .innerJoin(stories, eq(stories.storyId, shareLinks.storyId))
-      .innerJoin(
+      .leftJoin(
         storyCollaborators,
         and(
           eq(storyCollaborators.storyId, stories.storyId),
@@ -77,6 +85,20 @@ export async function POST(request: NextRequest) {
           eq(shareLinks.accessLevel, share.scope === 'private_edit' ? 'edit' : 'view'),
         ),
       );
+    if (!linkedStory) return noContent();
+    if (hasPremiumBookMarker(linkedStory.features)) {
+      // Premium view links authorize the current reader without persisting a collaborator grant.
+      if (
+        share.scope !== 'private_view' ||
+        linkedStory.status !== 'published' ||
+        !getPublishedPremiumRevision(linkedStory.features)
+      ) {
+        return noContent();
+      }
+    } else if (!linkedStory.collaboratorId) {
+      return noContent();
+    }
+    story = linkedStory;
   }
   if (!story || story.owner === authorId || analyticsReference(story.id) !== share.itemId)
     return noContent();

@@ -10,6 +10,7 @@ import { getLogoForGraphicalStyle } from '@/utils/logo-mapping';
 import { buildAuthEntryPath } from '@/lib/auth-return';
 import { buildStoryAuthReturnSearch } from '@/lib/campaign-context';
 import PremiumBookReader from '@/components/PremiumBookReader';
+import QualifiedShareOpen from '@/components/QualifiedShareOpen';
 import type { PremiumBookReaderData } from '@/lib/premium-children-book/reader';
 
 interface StoryPreview {
@@ -29,6 +30,7 @@ interface ApiResponse {
   redirectUrl?: string;
   error?: string;
   premiumBook?: PremiumBookReaderData;
+  storyId?: string;
 }
 
 export default function SharedStoryPageClient() {
@@ -45,7 +47,11 @@ export default function SharedStoryPageClient() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [storyPreview, setStoryPreview] = useState<StoryPreview | null>(null);
-  const [premiumBook, setPremiumBook] = useState<PremiumBookReaderData>();
+  const [premiumShare, setPremiumShare] = useState<{
+    token: string;
+    book: PremiumBookReaderData;
+    storyId?: string;
+  }>();
   const [requiresAuth, setRequiresAuth] = useState(false);
   const [accessLevel, setAccessLevel] = useState<string>('');
 
@@ -61,17 +67,22 @@ export default function SharedStoryPageClient() {
   useEffect(() => {
     if (!token) return;
 
+    const controller = new AbortController();
     const accessSharedStory = async () => {
       try {
         const response = await fetch(
           `/api/share/${token}${searchParams.get('utm_campaign') === 'story_share' ? '?utm_campaign=story_share' : ''}`,
-          { cache: 'no-store' },
+          { cache: 'no-store', signal: controller.signal },
         );
         const result: ApiResponse = await response.json();
+        if (controller.signal.aborted) return;
+        setPremiumShare(
+          result.success && result.premiumBook
+            ? { token, book: result.premiumBook, storyId: result.storyId }
+            : undefined,
+        );
 
-        if (result.success && result.premiumBook) {
-          setPremiumBook(result.premiumBook);
-        } else if (result.success && result.redirectUrl) {
+        if (result.success && result.redirectUrl) {
           // Normalize legacy redirect (if old format /stories/<id>) to /stories/read/<id>
           let target = result.redirectUrl;
           const legacyMatch = target.match(/^\/stories\/([^\/\?]+)(.*)$/);
@@ -92,14 +103,16 @@ export default function SharedStoryPageClient() {
           setError(result.error);
         }
       } catch (err) {
+        if (controller.signal.aborted) return;
         console.error('Error accessing shared story:', err);
         setError(tSharedStoryPage('errors.failedToAccess'));
       } finally {
-        setLoading(false);
+        if (!controller.signal.aborted) setLoading(false);
       }
     };
 
-    accessSharedStory();
+    void accessSharedStory();
+    return () => controller.abort();
   }, [token, router, locale, preservedSearch, searchParams, tSharedStoryPage]);
 
   if (loading) {
@@ -114,7 +127,14 @@ export default function SharedStoryPageClient() {
     );
   }
 
-  if (premiumBook) return <PremiumBookReader book={premiumBook} />;
+  if (premiumShare?.token === token) {
+    return (
+      <>
+        <PremiumBookReader book={premiumShare.book} />
+        {premiumShare.storyId && <QualifiedShareOpen storyId={premiumShare.storyId} />}
+      </>
+    );
+  }
 
   if (requiresAuth && storyPreview) {
     // Build a safe redirect param so that after sign-in/up user returns to this shared story
