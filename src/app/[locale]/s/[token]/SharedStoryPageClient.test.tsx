@@ -23,14 +23,26 @@ jest.mock('next-intl', () => ({
   useTranslations: () => translate,
 }));
 jest.mock('@/i18n/routing', () => ({ Link: () => null }));
-jest.mock('@/components/PremiumBookReader', () => () => <p>Premium reader</p>);
+jest.mock(
+  '@/components/PremiumBookReader',
+  () =>
+    function MockPremiumBookReader() {
+      return <p>Premium reader</p>;
+    },
+);
 jest.mock('@/components/PublicStoryRating', () => () => null);
 jest.mock(
   '@/components/QualifiedShareOpen',
   () =>
-    ({ publicSlug, storyId }: { publicSlug?: string; storyId?: string }) => (
-      <p>Observe {publicSlug ?? storyId}</p>
-    ),
+    function MockQualifiedShareOpen({
+      publicSlug,
+      storyId,
+    }: {
+      publicSlug?: string;
+      storyId?: string;
+    }) {
+      return <p>Observe {publicSlug ?? storyId}</p>;
+    },
 );
 
 beforeEach(() => {
