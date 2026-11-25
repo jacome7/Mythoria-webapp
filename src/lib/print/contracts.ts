@@ -16,6 +16,10 @@ export const assetSchema = z.object({
   sha256: z.string().regex(/^[a-f0-9]{64}$/),
   size: z.number().int().positive(),
 });
+export const coverDimensionsSchema = z.object({
+  width: z.number().positive(),
+  height: z.number().positive(),
+});
 export const proofSchema = z.object({
   interior: assetSchema,
   cover: assetSchema,
@@ -23,12 +27,7 @@ export const proofSchema = z.object({
   sourcePageCount: z.number().int().positive().optional(),
   normalizedPageCount: z.number().int().positive().optional(),
   addedBlankPages: z.number().int().nonnegative().optional(),
-  coverDimensions: z
-    .object({
-      width: z.number().positive(),
-      height: z.number().positive(),
-    })
-    .optional(),
+  coverDimensions: coverDimensionsSchema.optional(),
   qaPassed: z.boolean(),
   qaCriticalCount: z.number().int().nonnegative(),
   issues: z.array(z.string()).default([]),
@@ -168,6 +167,7 @@ export function validateLuluShipping(shipping: PrintShippingAddress) {
     ? {
         addressTooLong: 'Use at most 30 characters for the city and each shipping address line.',
         postalCodeRequired: 'Enter the postal code for the shipping address.',
+        spanishProvinceRequired: 'Enter the province name or short code for the shipping address.',
         subdivisionRequired:
           'Enter the short state, province, or region code for the shipping address.',
       }[addressIssue]
@@ -180,5 +180,11 @@ export function validateLuluShipping(shipping: PrintShippingAddress) {
           ? 'Enter the recipient tax ID for this destination.'
           : undefined;
   if (message) throw new PrintError('shipping_details_required', message, 400);
-  return { ...shipping, state_code: shipping.state_code?.toUpperCase() };
+  const state = shipping.state_code;
+  return {
+    ...shipping,
+    // Lulu's Spain suggestions can contain a spelled-out province such as Madrid.
+    state_code:
+      shipping.country_code === 'ES' && state && state.length > 3 ? state : state?.toUpperCase(),
+  };
 }

@@ -132,19 +132,29 @@ async function main() {
   const run = randomUUID();
   const externalId = 'mythoria-sandbox-' + run;
   console.log('Sandbox run ID:', run);
+  const input = { ...fixture, externalId, podPackageId, title: 'Mythoria synthetic proof' };
+  const requirePackageMatch = fixture.product === 'square_hardcover';
+  const interior = await lulu.validateLuluFileDetailed('interior', {
+    ...input,
+    requirePackageMatch,
+    sourceUrl: input.interiorUrl,
+  });
+  if (requirePackageMatch && interior.sourcePageCount !== fixture.pageCount)
+    throw new Error('LULU_INTERIOR_MISMATCH');
+  const normalized = { ...input, pageCount: interior.normalizedPageCount };
   const dimensions = await lulu.getLuluCoverDimensions({
     podPackageId,
-    pageCount: fixture.pageCount,
+    pageCount: normalized.pageCount,
   });
   console.log(
-    'Sandbox OAuth and cover dimensions verified (points):',
+    'Sandbox accepted',
+    normalized.pageCount,
+    'pages. Cover dimensions (points):',
     dimensions.width,
     dimensions.height,
   );
-  const input = { ...fixture, externalId, podPackageId, title: 'Mythoria synthetic proof' };
-  await lulu.validateLuluFile('interior', { ...input, sourceUrl: input.interiorUrl });
-  await lulu.validateLuluFile('cover', { ...input, sourceUrl: input.coverUrl });
-  const quote = await lulu.quoteLuluOrder(input);
+  await lulu.validateLuluFile('cover', { ...normalized, sourceUrl: input.coverUrl });
+  const quote = await lulu.quoteLuluOrder(normalized);
   console.log('Preflight passed. Tracked quote:', quote.shippingLevel, quote.totalEur, 'EUR.');
   if (fixture.webhookId) {
     await lulu.testLuluSandboxWebhook(fixture.webhookId);

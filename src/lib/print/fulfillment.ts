@@ -21,12 +21,15 @@ import {
   quoteLuluOrder,
   submitLuluJob,
   validateLuluFile,
+  validateLuluFileDetailed,
 } from '@/lib/lulu/client';
 import { getPrintSettings } from './checkout';
 import { convertLuluCostToEur, recordLuluNativeCost } from './lulu-costs';
 import { luluOrderNumberPattern, printOrderNumber, printOrderNumberInUse } from './order-number';
 import {
+  assetSchema,
   bindingSchema,
+  coverDimensionsSchema,
   emailVariablesSchema,
   luluPackageId,
   luluPageCountSupported,
@@ -37,6 +40,7 @@ import {
   shippingSchema,
   vendorSchema,
   validateLuluShipping,
+  type PrintAsset,
   type PrintShippingAddress,
   type PrintProof,
   type PrintProvider,
@@ -52,10 +56,10 @@ import {
 import * as luluClient from '@/lib/lulu/client';
 import {
   approvedSquareSupplier,
-  configuredSquareSupplier,
   getPublishedSquareEdition,
   readSquareEdition,
   requireSquareSupplier,
+  squareLuluAuthorization,
   type PremiumSquareEdition,
 } from './premium-edition';
 
@@ -99,6 +103,49 @@ function isAdminOrder(order: Order) {
   return Boolean(options && typeof options === 'object' && 'adminPrintOrder' in options);
 }
 
+function authorizeSquareLuluOrder(order: Order, edition: PremiumSquareEdition, country: string) {
+  const { binding, copies, creditsSpent } = order.fulfillment;
+  const staffProof = isStaffProof(order);
+  if (binding !== 'hardcover' || (staffProof && (copies !== 1 || creditsSpent !== 0))) {
+    throw new PrintError(
+      'square_lulu_invalid_order',
+      'Lulu requires a square hardcover and limits staff proofs to one copy with no customer charge.',
+    );
+  }
+  const authorization = squareLuluAuthorization(country, staffProof);
+  if (authorization.error) throw authorization.error;
+  const { supplier } = authorization;
+  if (
+    edition.luluEnvironment &&
+    (edition.luluEnvironment !== supplier.luluEnvironment ||
+      edition.podPackageId?.replaceAll('.', '') !== supplier.podPackageId.replaceAll('.', ''))
+  ) {
+    throw new PrintError(
+      'square_supplier_changed',
+      'Restore the Lulu environment and product pinned to this order.',
+    );
+  }
+  return supplier;
+}
+
+function requireLuluCeiling(ceiling: number) {
+  if (ceiling <= 0) {
+    throw new PrintError('lulu_ceiling_unset', 'Set a positive landed EUR ceiling for Lulu.');
+  }
+}
+
+async function authorizeSquareLuluPreparation(
+  order: Order,
+  edition: PremiumSquareEdition,
+  ceiling: number,
+) {
+  const shipping = validateLuluShipping(shippingSchema.parse(order.fulfillment.shippingSnapshot));
+  const supplier = authorizeSquareLuluOrder(order, edition, shipping.country_code);
+  requireLuluCeiling(ceiling);
+  await requireAvailablePrintCountry(shipping.country_code);
+  return supplier;
+}
+
 function renderInput(order: Order) {
   const edition = readSquareEdition(order.request.printingOptions);
   const provider = providerSchema.parse(order.fulfillment.provider);
@@ -125,7 +172,59 @@ const validationSchema = proofSchema.extend({
   podPackageId: z.string().optional(),
   interiorValidationId: z.string().optional(),
   coverValidationId: z.string().optional(),
+  squareLuluValidated: z.literal(true).optional(),
 });
+type CompletedProof = z.infer<typeof validationSchema>;
+
+const squareLuluPreparationSchema = z.object({
+  squareLuluPreparation: z.object({
+    podPackageId: z.string(),
+    interior: assetSchema,
+    pageCount: z.literal([32, 33]),
+    interiorValidationId: z.string().optional(),
+    coverParameters: z
+      .object({ pageCount: z.literal([32, 33, 34]), dimensions: coverDimensionsSchema })
+      .optional(),
+    renderedProof: proofSchema.optional(),
+    coverValidationId: z.string().optional(),
+  }),
+});
+type SquareLuluPreparation = z.infer<typeof squareLuluPreparationSchema>['squareLuluPreparation'];
+
+function readSquareLuluPreparation(value: unknown) {
+  return squareLuluPreparationSchema.safeParse(value).data?.squareLuluPreparation;
+}
+
+function readCompletedProof(value: unknown) {
+  return readSquareLuluPreparation(value) ? null : validationSchema.nullable().parse(value);
+}
+
+function squareCoverPageCount(sourcePageCount: number, normalizedPageCount: number) {
+  if (sourcePageCount === 32 && normalizedPageCount === 32) return 32;
+  if (sourcePageCount === 33 && (normalizedPageCount === 33 || normalizedPageCount === 34))
+    return normalizedPageCount;
+}
+
+function isValidatedSquareLuluProof(
+  proof: CompletedProof | null,
+  edition: PremiumSquareEdition | null,
+): proof is CompletedProof & { normalizedPageCount: 32 | 33 | 34 } {
+  return Boolean(
+    edition &&
+    proof?.squareLuluValidated &&
+    proof.podPackageId === edition.podPackageId &&
+    proof.interiorValidationId &&
+    proof.coverValidationId &&
+    proof.coverDimensions &&
+    proof.qaPassed &&
+    proof.qaCriticalCount === 0 &&
+    proof.sourcePageCount === edition.pageCount &&
+    proof.pageCount === edition.pageCount &&
+    proof.normalizedPageCount !== undefined &&
+    squareCoverPageCount(proof.pageCount, proof.normalizedPageCount) &&
+    proof.addedBlankPages === proof.normalizedPageCount - proof.pageCount,
+  );
+}
 
 function requireSquareProofPageCount(edition: PremiumSquareEdition | null, pageCount: number) {
   if (edition && pageCount !== edition.pageCount)
@@ -242,14 +341,162 @@ async function notifyProof(order: Order, proof: PrintProof) {
     throw new PrintError('print_proof_email_pending', 'Proof email delivery is pending.', 502);
 }
 
-async function generateProof(order: Order, leaseId: string) {
-  const edition = readSquareEdition(order.request.printingOptions);
+function sameProofAsset(a: PrintAsset, b: PrintAsset) {
+  return (
+    a.bucket === b.bucket &&
+    a.object === b.object &&
+    a.generation === b.generation &&
+    a.sha256 === b.sha256 &&
+    a.size === b.size
+  );
+}
+
+async function generateSquareLuluProof(
+  order: Order,
+  leaseId: string,
+  edition: PremiumSquareEdition,
+) {
+  const input = renderInput(order);
+  const podPackageId = requireSquareSupplier(edition);
+  let stage = readSquareLuluPreparation(order.fulfillment.proof);
+  const save = async (value: SquareLuluPreparation) => {
+    order = await leaseUpdate(order, leaseId, { proof: { squareLuluPreparation: value } });
+    return value;
+  };
+  if (!stage) {
+    const preliminary = await renderOrderProof(input);
+    requireSquareProofPageCount(edition, preliminary.pageCount);
+    await verifyProofFile(preliminary.interior, input, 'interior');
+    stage = await save({
+      interior: preliminary.interior,
+      pageCount: edition.pageCount,
+      podPackageId,
+    });
+  }
+  requireSquareProofPageCount(edition, stage.pageCount);
+  if (stage.podPackageId !== podPackageId) {
+    throw new PrintError(
+      'lulu_print_profile_changed',
+      'Prepare a new proof for the configured Lulu product.',
+    );
+  }
+  let coverParameters = stage.coverParameters;
+  if (!coverParameters) {
+    const preliminary = stage;
+    const sourceUrl = await signedProofLink(
+      preliminary.interior,
+      input,
+      'interior',
+      duration.supplier,
+    );
+    const validation = await validateLuluFileDetailed(
+      'interior',
+      { sourceUrl, podPackageId, pageCount: preliminary.pageCount, requirePackageMatch: true },
+      preliminary.interiorValidationId,
+      async (id) => {
+        await save({ ...preliminary, interiorValidationId: id });
+      },
+    ).catch(async (error: unknown) => {
+      if (
+        (error instanceof LuluHttpError &&
+          error.status === 404 &&
+          preliminary.interiorValidationId) ||
+        (error instanceof Error &&
+          [
+            'LULU_INTERIOR_REJECTED',
+            'LULU_INTERIOR_MISMATCH',
+            'LULU_VALIDATION_ID_MISMATCH',
+          ].includes(error.message))
+      ) {
+        await save({ ...preliminary, interiorValidationId: undefined });
+      }
+      throw error;
+    });
+    const pageCount = squareCoverPageCount(preliminary.pageCount, validation.normalizedPageCount);
+    if (
+      pageCount === undefined ||
+      validation.sourcePageCount !== preliminary.pageCount ||
+      validation.addedBlankPages !== pageCount - preliminary.pageCount
+    ) {
+      await save({ ...preliminary, interiorValidationId: undefined });
+      throw new Error('LULU_INTERIOR_MISMATCH');
+    }
+    const dimensions = await getLuluCoverDimensions({ podPackageId, pageCount });
+    coverParameters = { pageCount, dimensions };
+    stage = await save({ ...preliminary, interiorValidationId: validation.id, coverParameters });
+  }
+  if (
+    !stage.interiorValidationId ||
+    !squareCoverPageCount(edition.pageCount, coverParameters.pageCount)
+  ) {
+    throw new PrintError(
+      'invalid_square_validation',
+      'The square proof has invalid Lulu page-count evidence.',
+    );
+  }
+  let rendered = stage.renderedProof;
+  if (!rendered) {
+    rendered = proofSchema.parse(
+      await renderOrderProof(input, coverParameters.dimensions, coverParameters.pageCount),
+    );
+    requireSquareProofPageCount(edition, rendered.pageCount);
+    if (!sameProofAsset(rendered.interior, stage.interior)) {
+      throw new PrintError(
+        'print_proof_mismatch',
+        'The interior changed while preparing the cover.',
+      );
+    }
+    await verifyProofFile(rendered.cover, input, 'cover');
+    stage = await save({ ...stage, renderedProof: rendered });
+  }
+  const proof: CompletedProof = {
+    ...rendered,
+    podPackageId,
+    interiorValidationId: stage.interiorValidationId,
+    sourcePageCount: stage.pageCount,
+    normalizedPageCount: coverParameters.pageCount,
+    addedBlankPages: coverParameters.pageCount - stage.pageCount,
+    coverDimensions: coverParameters.dimensions,
+  };
+  if (!proof.qaPassed || proof.qaCriticalCount > 0) return { order, proof };
+
+  const validatedInterior = stage;
+  const sourceUrl = await signedProofLink(proof.cover, input, 'cover', duration.supplier);
+  try {
+    const coverValidationId = await validateLuluFile(
+      'cover',
+      { sourceUrl, podPackageId, pageCount: coverParameters.pageCount, requirePackageMatch: true },
+      stage.coverValidationId,
+      async (id) => {
+        await save({ ...validatedInterior, coverValidationId: id });
+      },
+    );
+    return {
+      order,
+      proof: { ...proof, coverValidationId, squareLuluValidated: true as const },
+    };
+  } catch (error) {
+    if (
+      (error instanceof LuluHttpError &&
+        error.status === 404 &&
+        validatedInterior.coverValidationId) ||
+      (error instanceof Error &&
+        ['LULU_COVER_REJECTED', 'LULU_VALIDATION_ID_MISMATCH'].includes(error.message))
+    ) {
+      await save({ ...validatedInterior, coverValidationId: undefined });
+    }
+    throw error;
+  }
+}
+
+async function generateProof(order: Order, leaseId: string, edition: PremiumSquareEdition | null) {
+  if (edition && order.fulfillment.provider === 'lulu')
+    return generateSquareLuluProof(order, leaseId, edition);
   const input = renderInput(order);
   if (input.provider === 'manual')
     return { order, proof: proofSchema.parse(await renderOrderProof(input)) };
-  const podPackageId = edition ? requireSquareSupplier(edition) : luluPackageId(input.binding);
+  const podPackageId = luluPackageId(input.binding);
   const preliminary = await renderOrderProof(input);
-  requireSquareProofPageCount(edition, preliminary.pageCount);
   assetFile(preliminary.interior, input, 'interior');
   if (!luluPageCountSupported(input.binding, preliminary.pageCount)) {
     if (input.binding === 'hardcover')
@@ -274,10 +521,7 @@ async function generateProof(order: Order, leaseId: string) {
   const proof = proofSchema.parse(await renderOrderProof(input, dimensions));
   if (
     proof.pageCount !== preliminary.pageCount ||
-    proof.interior.sha256 !== preliminary.interior.sha256 ||
-    (edition &&
-      (proof.interior.generation !== preliminary.interior.generation ||
-        proof.interior.size !== preliminary.interior.size))
+    proof.interior.sha256 !== preliminary.interior.sha256
   ) {
     throw new PrintError('print_proof_mismatch', 'The interior changed while preparing the cover.');
   }
@@ -306,21 +550,52 @@ export async function processPrintProof(id: string) {
     .returning();
   if (!claimed) return order;
   order = { ...order, fulfillment: claimed };
+  let squareLulu = false;
   try {
     // A held order may have been rebound between the initial read and the worker claim.
     order = await readOrder(id);
     if (order.fulfillment.leaseId !== leaseId) return order;
     if (!order.fulfillment.ticketId)
       throw new PrintError('missing_print_ticket', 'The print ticket is unavailable.', 500);
-    let proof = proofSchema.nullable().parse(order.fulfillment.proof);
+    const edition = readSquareEdition(order.request.printingOptions);
+    squareLulu = Boolean(edition && order.fulfillment.provider === 'lulu');
+    if (edition && squareLulu) {
+      try {
+        await authorizeSquareLuluPreparation(
+          order,
+          edition,
+          (await getPrintSettings()).maxEurPerCopy,
+        );
+      } catch (error) {
+        if (!(error instanceof PrintError)) throw error;
+        return leaseUpdate(order, leaseId, {
+          status: 'held',
+          holdReason: error.message,
+          leaseId: null,
+          leaseUntil: null,
+        });
+      }
+    }
+    let proof = readCompletedProof(order.fulfillment.proof);
+    if (
+      squareLulu &&
+      (proof || order.fulfillment.quote || order.fulfillment.proofSentAt) &&
+      !isValidatedSquareLuluProof(proof, edition)
+    ) {
+      order = await leaseUpdate(order, leaseId, {
+        ...proofRevisionChanges(order),
+        status: 'preparing',
+      });
+      proof = null;
+    }
     if (!proof) {
-      const result = await generateProof(order, leaseId);
+      const result = await generateProof(order, leaseId, edition);
       order = result.order;
       proof = result.proof;
       const input = renderInput(order);
       assetFile(proof.interior, input, 'interior');
       assetFile(proof.cover, input, 'cover');
-      if (input.premiumBook) {
+      if (input.premiumBook && !squareLulu) {
         await Promise.all([
           verifyProofFile(proof.interior, input, 'interior'),
           verifyProofFile(proof.cover, input, 'cover'),
@@ -328,7 +603,7 @@ export async function processPrintProof(id: string) {
       }
       order = await leaseUpdate(order, leaseId, { proof });
     }
-    requireSquareProofPageCount(readSquareEdition(order.request.printingOptions), proof.pageCount);
+    requireSquareProofPageCount(edition, proof.pageCount);
     if (!proof.qaPassed || proof.qaCriticalCount > 0) {
       return leaseUpdate(order, leaseId, {
         status: 'manual_review',
@@ -336,6 +611,12 @@ export async function processPrintProof(id: string) {
         leaseId: null,
         leaseUntil: null,
       });
+    }
+    if (squareLulu && !isValidatedSquareLuluProof(proof, edition)) {
+      throw new PrintError(
+        'invalid_square_validation',
+        'Lulu must validate the complete square proof.',
+      );
     }
     if (!order.fulfillment.proofSentAt && !isAdminOrder(order)) {
       const variables = emailVariablesSchema.parse(order.fulfillment.emailVariables);
@@ -397,6 +678,9 @@ export async function processPrintProof(id: string) {
             LULU_INTERIOR_REJECTED: 'Lulu rejected the interior PDF.',
             LULU_COVER_REJECTED: 'Lulu rejected the cover PDF.',
             LULU_INTERIOR_MISMATCH: 'Lulu reported a different final page count or product.',
+            LULU_VALIDATION_ID_MISMATCH: squareLulu
+              ? 'Lulu returned an unexpected PDF validation reference.'
+              : undefined,
             LULU_NO_TRACKED_SHIPPING: 'Lulu returned no tracked shipping option for this address.',
             LULU_ADDRESS_CONFIRMATION_REQUIRED:
               'Lulu requires the shipping address to be reviewed.',
@@ -442,23 +726,53 @@ async function quoteForOrder(order: Order, leaseId: string) {
   const proof = validationSchema.parse(order.fulfillment.proof);
   const edition = readSquareEdition(order.request.printingOptions);
   requireSquareProofPageCount(edition, proof.pageCount);
-  const input = renderInput(order);
-  const podPackageId = edition ? requireSquareSupplier(edition) : luluPackageId(input.binding);
+  const podPackageId = edition
+    ? requireSquareSupplier(edition)
+    : luluPackageId(bindingSchema.parse(order.fulfillment.binding));
   if (proof.podPackageId && proof.podPackageId !== podPackageId) {
     throw new PrintError(
       'lulu_print_profile_changed',
       'Prepare a new proof for the configured Lulu product.',
     );
   }
-  const [interiorUrl, coverUrl] = await proofLinks(order, proof, duration.supplier);
-  const options = {
-    podPackageId,
-    pageCount: proof.pageCount,
-    requirePackageMatch: Boolean(edition),
-  };
   const shippingAddress = validateLuluShipping(
     shippingSchema.parse(order.fulfillment.shippingSnapshot),
   );
+  let effectivePageCount: number;
+  if (edition) {
+    if (!isValidatedSquareLuluProof(proof, edition)) {
+      throw new PrintError(
+        'invalid_square_validation',
+        'Lulu must validate the complete square proof.',
+      );
+    }
+    effectivePageCount = proof.normalizedPageCount;
+  } else {
+    effectivePageCount = await validateA5Proof(order, leaseId, proof, podPackageId);
+  }
+  const quote = await quoteLuluOrder({
+    podPackageId,
+    pageCount: effectivePageCount,
+    copies: order.fulfillment.copies,
+    shippingAddress,
+  });
+  return quoteSchema.parse({
+    ...quote,
+    perCopyEur: quote.totalEur / order.fulfillment.copies,
+    confirmationId: randomUUID(),
+    podPackageId,
+    ...(effectivePageCount !== proof.pageCount ? { normalizedPageCount: effectivePageCount } : {}),
+  });
+}
+
+async function validateA5Proof(
+  order: Order,
+  leaseId: string,
+  proof: CompletedProof,
+  podPackageId: string,
+) {
+  const [interiorUrl, coverUrl] = await proofLinks(order, proof, duration.supplier);
+  const options = { podPackageId, pageCount: proof.pageCount, requirePackageMatch: false };
   let workingProof = proof;
   const interiorValidation =
     typeof luluClient.validateLuluFileDetailed === 'function'
@@ -516,19 +830,7 @@ async function quoteForOrder(order: Order, leaseId: string) {
       await leaseUpdate(order, leaseId, { proof: workingProof });
     },
   );
-  const quote = await quoteLuluOrder({
-    ...options,
-    pageCount: effectivePageCount,
-    copies: order.fulfillment.copies,
-    shippingAddress,
-  });
-  return quoteSchema.parse({
-    ...quote,
-    perCopyEur: quote.totalEur / order.fulfillment.copies,
-    confirmationId: randomUUID(),
-    podPackageId,
-    ...(effectivePageCount !== proof.pageCount ? { normalizedPageCount: effectivePageCount } : {}),
-  });
+  return effectivePageCount;
 }
 
 export async function withPrintTicket(id: string, ticketId: string) {
@@ -564,7 +866,7 @@ export async function hasPaidOrderForStory(storyId: string, requestedThrough?: D
 
 export async function printOrderView(order: Order) {
   const row = order.fulfillment;
-  const proof = validationSchema.nullable().parse(row.proof);
+  const proof = readCompletedProof(row.proof);
   const edition = readSquareEdition(order.request.printingOptions);
   const [interiorUrl, coverUrl] = proof
     ? await proofLinks(order, proof, duration.preview)
@@ -573,6 +875,15 @@ export async function printOrderView(order: Order) {
   const { recipient_tax_id: taxId, ...shippingAddress } = shippingSchema.parse(
     row.shippingSnapshot,
   );
+  let squareLuluBlockReason: string | undefined;
+  if (edition && editable.includes(row.status)) {
+    try {
+      await authorizeSquareLuluPreparation(order, edition, settings.maxEurPerCopy);
+    } catch (error) {
+      if (!(error instanceof PrintError)) throw error;
+      squareLuluBlockReason = error.message;
+    }
+  }
   const parsedLuluVendor = row.provider === 'lulu' ? vendorSchema.safeParse(row.vendor) : null;
   const vendor = parsedLuluVendor?.success
     ? {
@@ -599,6 +910,7 @@ export async function printOrderView(order: Order) {
         : ('customer' as const),
     luluConfigured: typeof luluConfigured === 'function' ? luluConfigured() : false,
     squareLuluCustomerApproved: Boolean(approvedSquareSupplier()),
+    ...(squareLuluBlockReason && { squareLuluBlockReason }),
     proofVersion: row.proofVersion,
     ...(edition
       ? {
@@ -623,7 +935,12 @@ export async function printOrderView(order: Order) {
       sentAt: row.proofSentAt,
       supplierValidated:
         row.provider === 'lulu' &&
-        Boolean(row.quote && proof.interiorValidationId && proof.coverValidationId),
+        Boolean(
+          row.quote &&
+          (edition
+            ? isValidatedSquareLuluProof(proof, edition)
+            : proof.interiorValidationId && proof.coverValidationId),
+        ),
       interiorUrl,
       coverUrl,
     },
@@ -639,16 +956,20 @@ export async function queuePrintPreparation(order: Order) {
   if (order.fulfillment.status === 'preparing' || order.fulfillment.status === 'pending')
     return order;
   requireEditable(order);
-  if (order.fulfillment.holdReason || order.fulfillment.status === 'proof_ready') return order;
-  if (
-    readSquareEdition(order.request.printingOptions) &&
-    order.fulfillment.status === 'manual_review'
-  ) {
-    // Retry supplier validation for the same bytes with fresh links and a new quote.
-    const proof = proofSchema.nullable().parse(order.fulfillment.proof);
-    return editableUpdate(order, { status: 'pending', lastError: null, proof, quote: null });
+  const row = order.fulfillment;
+  if (row.holdReason) return order;
+  const edition = readSquareEdition(order.request.printingOptions);
+  if (edition && row.provider === 'lulu' && row.status === 'proof_ready') {
+    if (!isValidatedSquareLuluProof(readCompletedProof(row.proof), edition)) {
+      return editableUpdate(order, proofRevisionChanges(order));
+    }
   }
-  return editableUpdate(order, { status: 'pending', lastError: null });
+  if (row.status === 'proof_ready') return order;
+  return editableUpdate(order, {
+    status: 'pending',
+    lastError: null,
+    ...(edition && row.status === 'manual_review' ? { quote: null } : {}),
+  });
 }
 
 export async function preparePrintOrderNow(order: Order) {
@@ -658,14 +979,16 @@ export async function preparePrintOrderNow(order: Order) {
 
 export async function setPrintHold(order: Order, reason: string | null) {
   requireEditable(order);
+  const row = order.fulfillment;
+  const edition = readSquareEdition(order.request.printingOptions);
+  const proof = readCompletedProof(row.proof);
+  const proofReady =
+    (row.proofSentAt || (isAdminOrder(order) && proof)) &&
+    (row.provider === 'manual' ||
+      (row.quote && (!edition || isValidatedSquareLuluProof(proof, edition))));
   return editableUpdate(order, {
     holdReason: reason,
-    status: reason
-      ? 'held'
-      : (order.fulfillment.proofSentAt || (isAdminOrder(order) && order.fulfillment.proof)) &&
-          (order.fulfillment.provider === 'manual' || order.fulfillment.quote)
-        ? 'proof_ready'
-        : 'pending',
+    status: reason ? 'held' : proofReady ? 'proof_ready' : 'pending',
   });
 }
 
@@ -699,31 +1022,23 @@ export async function revisePrintProof(order: Order, provider?: PrintProvider) {
   const chosen = provider ?? providerSchema.parse(row.provider);
   const edition = readSquareEdition(order.request.printingOptions);
   if (edition) {
-    if (provider && provider === row.provider) return order;
     if (!provider)
       throw new PrintError(
         'square_revision_required',
         'Bind a published correction to this square order while it is on hold.',
       );
-    if (chosen === 'manual')
-      return editableUpdate(order, { ...proofRevisionChanges(order), provider: chosen });
+    if (chosen === 'manual') {
+      return chosen === row.provider
+        ? order
+        : editableUpdate(order, { ...proofRevisionChanges(order), provider: chosen });
+    }
 
-    const supplier = configuredSquareSupplier();
-    if (!supplier)
-      throw new PrintError(
-        'square_supplier_unavailable',
-        'Square print setup is incomplete for Lulu.',
-      );
-    if (
-      edition.luluEnvironment &&
-      (edition.luluEnvironment !== supplier.luluEnvironment ||
-        edition.podPackageId?.replaceAll('.', '') !== supplier.podPackageId.replaceAll('.', ''))
-    )
-      throw new PrintError(
-        'square_supplier_changed',
-        'Restore the Lulu environment and product pinned to this order.',
-      );
-    validateLuluShipping(shippingSchema.parse(row.shippingSnapshot));
+    const supplier = await authorizeSquareLuluPreparation(
+      order,
+      edition,
+      (await getPrintSettings()).maxEurPerCopy,
+    );
+    if (chosen === row.provider) return order;
     return db.transaction(async (tx) => {
       const next = await editableUpdate(
         order,
@@ -850,7 +1165,7 @@ export async function submitPrintOrder(
   const row = order.fulfillment;
   if (row.status === 'submitted' || row.status === 'submitting' || row.status === 'uncertain')
     return order;
-  const proof = validationSchema.nullable().parse(row.proof);
+  const proof = readCompletedProof(row.proof);
   const quote = quoteSchema.nullable().parse(row.quote);
   const edition = readSquareEdition(order.request.printingOptions);
   const proofOnly = isStaffProof(order);
@@ -868,10 +1183,8 @@ export async function submitPrintOrder(
       (row.binding !== 'hardcover' ||
         input.checkedInbox !== true ||
         row.proofVersion !== input.proofVersion ||
-        proof.pageCount !== edition.pageCount ||
-        proof.podPackageId !== edition.podPackageId ||
-        !proof.interiorValidationId ||
-        !proof.coverValidationId)) ||
+        !isValidatedSquareLuluProof(proof, edition) ||
+        (quote.normalizedPageCount ?? proof.pageCount) !== proof.normalizedPageCount)) ||
     quote.confirmationId !== input.confirmationId ||
     quote.totalEur !== input.confirmedTotalEur
   ) {
@@ -893,9 +1206,9 @@ export async function submitPrintOrder(
   }
   const shippingAddress = validateLuluShipping(shippingSchema.parse(row.shippingSnapshot));
   if (edition) {
+    await authorizeSquareLuluPreparation(order, edition, (await getPrintSettings()).maxEurPerCopy);
     const context = renderInput(order);
     await Promise.all([
-      requireAvailablePrintCountry(shippingAddress.country_code),
       ensureProofFileAvailable(proof.interior, context, 'interior'),
       ensureProofFileAvailable(proof.cover, context, 'cover'),
     ]);
@@ -926,6 +1239,9 @@ export async function submitPrintOrder(
     podPackageId: quote.podPackageId,
     perCopyEur: fresh.totalEur / row.copies,
     confirmationId: randomUUID(),
+    ...(edition && proof.normalizedPageCount !== proof.pageCount
+      ? { normalizedPageCount: proof.normalizedPageCount }
+      : {}),
   });
   if (
     currentQuote.totalEur !== quote.totalEur ||
@@ -1322,7 +1638,7 @@ export async function reserveManualPrint(
   const row = order.fulfillment;
   const proofOnly = isStaffProof(order);
   const adminOrder = isAdminOrder(order);
-  const proof = proofSchema.nullable().parse(row.proof);
+  const proof = readCompletedProof(row.proof);
   if (
     row.provider !== 'manual' ||
     !input.checkedInbox ||

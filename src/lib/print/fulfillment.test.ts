@@ -12,6 +12,7 @@ const mockOrderNumberLookup = jest.fn();
 const mockRender = jest.fn();
 const mockDimensions = jest.fn();
 const mockValidate = jest.fn();
+const mockValidateDetailed = jest.fn();
 const mockVerifyProof = jest.fn();
 const mockEnsureAvailable = jest.fn();
 const mockReadBookManifest = jest.fn();
@@ -82,6 +83,9 @@ jest.mock('@/db', () => ({
       }),
   },
 }));
+jest.mock('./checkout', () => ({
+  getPrintSettings: async () => ({ maxEurPerCopy: Number(mockCeiling) }),
+}));
 jest.mock('@/lib/lulu/client', () => ({
   luluConfigured: () => true,
   submitLuluJob: (...args: unknown[]) => mockSubmit(...args),
@@ -108,6 +112,7 @@ jest.mock('@/lib/lulu/client', () => ({
   cancelLuluJob: (...args: unknown[]) => mockCancel(...args),
   getLuluCoverDimensions: (...args: unknown[]) => mockDimensions(...args),
   validateLuluFile: (...args: unknown[]) => mockValidate(...args),
+  validateLuluFileDetailed: (...args: unknown[]) => mockValidateDetailed(...args),
 }));
 jest.mock('./proof', () => ({
   assetFile: jest.fn(),
@@ -188,6 +193,7 @@ const fulfillment = {
   binding: 'paperback',
   proofSentAt: new Date(),
   proofVersion: 1,
+  creditsSpent: 0,
   proof,
   copies: 2,
   runId: id,
@@ -223,6 +229,11 @@ function squareOrder(overrides: Partial<typeof fulfillment> = {}, pageCount = 32
         podPackageId: PREMIUM_SQUARE_PACKAGE,
         interiorValidationId: '111',
         coverValidationId: '222',
+        sourcePageCount: pageCount,
+        normalizedPageCount: pageCount,
+        addedBlankPages: 0,
+        coverDimensions: { width: 1368, height: 738 },
+        squareLuluValidated: true,
       },
     },
     quote: { ...fulfillment.quote, podPackageId: PREMIUM_SQUARE_PACKAGE },
@@ -255,6 +266,17 @@ describe('Lulu release safety', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     mockRender.mockReset();
+    mockValidate.mockReset();
+    mockValidateDetailed.mockImplementation(async (kind, options, savedId, remember) => {
+      const validationId = await mockValidate(kind, options, savedId, remember);
+      return {
+        id: validationId,
+        sourcePageCount: options.pageCount,
+        normalizedPageCount: options.pageCount,
+        addedBlankPages: 0,
+        warnings: [],
+      };
+    });
     mockReadBookManifest.mockReset();
     mockCeiling = '20';
     mockCurrentOrder = undefined;
@@ -271,7 +293,12 @@ describe('Lulu release safety', () => {
     jest.replaceProperty(process, 'env', {
       ...process.env,
       LULU_PAPERBACK_POD_PACKAGE_ID: LULU_SKUS.paperback,
+      LULU_PRINT_ENVIRONMENT: 'sandbox',
+      LULU_PREMIUM_SQUARE_POD_PACKAGE_ID: PREMIUM_SQUARE_PACKAGE,
+      PREMIUM_SQUARE_PRINT_APPROVAL: 'sandbox:physical-proof-fixture',
+      LULU_PREMIUM_SQUARE_CUSTOMER_COUNTRIES: 'PT',
     });
+    delete process.env.LULU_PREMIUM_SQUARE_STAFF_PROOF_APPROVAL;
   });
   afterEach(() => jest.restoreAllMocks());
 
@@ -367,15 +394,22 @@ describe('Lulu release safety', () => {
     expect(mockSubmit).not.toHaveBeenCalled();
   });
 
-  it('prepares Lulu for an existing manual order even when public square checkout is closed', async () => {
-    process.env.LULU_PRINT_ENVIRONMENT = 'sandbox';
-    process.env.LULU_PREMIUM_SQUARE_POD_PACKAGE_ID = PREMIUM_SQUARE_PACKAGE;
-    delete process.env.PREMIUM_SQUARE_PRINT_APPROVAL;
+  it('prepares Lulu for a manual ticket only after customer approval for its destination', async () => {
     const paid = squareOrder({ provider: 'manual' });
     const options = paid.request.printingOptions as { premiumEdition: Record<string, unknown> };
     delete options.premiumEdition.luluEnvironment;
     delete options.premiumEdition.podPackageId;
     mockCurrentOrder = paid;
+    process.env.PREMIUM_SQUARE_PRINT_APPROVAL = 'manual:manual-proof-fixture';
+    await expect(revisePrintProof(paid, 'lulu')).rejects.toMatchObject({
+      code: 'square_lulu_customer_unapproved',
+    });
+    process.env.PREMIUM_SQUARE_PRINT_APPROVAL = 'sandbox:physical-proof-fixture';
+    process.env.LULU_PREMIUM_SQUARE_CUSTOMER_COUNTRIES = 'ES';
+    await expect(revisePrintProof(paid, 'lulu')).rejects.toMatchObject({
+      code: 'square_lulu_destination_unapproved',
+    });
+    process.env.LULU_PREMIUM_SQUARE_CUSTOMER_COUNTRIES = 'ES, PT';
     await expect(revisePrintProof(paid, 'lulu')).resolves.toMatchObject({
       fulfillment: { provider: 'lulu', status: 'pending', proofVersion: 2 },
       request: {
@@ -391,9 +425,41 @@ describe('Lulu release safety', () => {
     expect(mockSubmit).not.toHaveBeenCalled();
   });
 
-  it.each([32, 33])(
-    'renders, emails and validates a paid %i-page edition without reading the current story or submitting a job',
-    async (pageCount) => {
+  it('rechecks customer approval at release and keeps the separate staff proof gate', async () => {
+    const approval = { confirmationId, confirmedTotalEur: 30, checkedInbox: true, proofVersion: 1 };
+    const actor = 'operator@example.test';
+    delete process.env.LULU_PREMIUM_SQUARE_CUSTOMER_COUNTRIES;
+    await expect(submitPrintOrder(squareOrder(), approval, actor)).rejects.toMatchObject({
+      code: 'square_lulu_destination_unapproved',
+    });
+    const staff = squareOrder({ copies: 1, proofSentAt: null as never });
+    staff.request.printingOptions = {
+      ...(staff.request.printingOptions as object),
+      staffProofRevision: id,
+    };
+    process.env.LULU_PREMIUM_SQUARE_STAFF_PROOF_APPROVAL = 'production:pilot-fixture';
+    await expect(submitPrintOrder(staff, approval, actor)).rejects.toMatchObject({
+      code: 'square_lulu_staff_proof_unapproved',
+    });
+    expect(mockQuote).not.toHaveBeenCalled();
+    expect(mockSubmit).not.toHaveBeenCalled();
+    process.env.LULU_PREMIUM_SQUARE_STAFF_PROOF_APPROVAL = 'sandbox:pilot-fixture';
+    mockCeiling = '30';
+    mockCurrentOrder = staff;
+    mockSubmit.mockRejectedValueOnce(new Error('Lulu connection lost'));
+    await expect(submitPrintOrder(staff, approval, actor)).resolves.toMatchObject({
+      fulfillment: { status: 'uncertain' },
+    });
+    expect(mockSubmit).toHaveBeenCalledTimes(1);
+  });
+
+  it.each([
+    [32, 32],
+    [33, 33],
+    [33, 34],
+  ])(
+    'validates a paid %i-page edition at %i pages before emailing its exact files',
+    async (pageCount, normalizedPageCount) => {
       process.env.LULU_PRINT_ENVIRONMENT = 'sandbox';
       const pending = squareOrder({}, pageCount);
       pending.fulfillment = {
@@ -410,9 +476,19 @@ describe('Lulu release safety', () => {
       };
       mockRender.mockResolvedValue({ ...proof, pageCount });
       mockDimensions.mockResolvedValue({ width: 1368, height: 738 });
-      mockValidate.mockImplementation(async (kind, _options, _existing, remember) => {
-        await remember(kind);
-        return kind;
+      mockValidateDetailed.mockImplementation(async (_kind, _options, _existing, remember) => {
+        await remember('interior');
+        return {
+          id: 'interior',
+          sourcePageCount: pageCount,
+          normalizedPageCount,
+          addedBlankPages: normalizedPageCount - pageCount,
+          warnings: [],
+        };
+      });
+      mockValidate.mockImplementation(async (_kind, _options, _existing, remember) => {
+        await remember('cover');
+        return 'cover';
       });
       const sent = jest
         .spyOn(global, 'fetch')
@@ -423,13 +499,22 @@ describe('Lulu release safety', () => {
 
       const waitingForMail = await processPrintProof(id);
       expect(waitingForMail.fulfillment).toMatchObject({ status: 'pending', proofSentAt: null });
-      expect(mockValidate).not.toHaveBeenCalled();
+      expect(mockValidateDetailed).toHaveBeenCalledTimes(1);
+      expect(mockValidate).toHaveBeenCalledTimes(1);
       const ready = await processPrintProof(id);
       expect(ready.fulfillment).toMatchObject({
         status: 'proof_ready',
         proofSentAt: expect.any(Date),
         quote: { podPackageId: PREMIUM_SQUARE_PACKAGE, totalEur: 30 },
-        proof: { interiorValidationId: 'interior', coverValidationId: 'cover', pageCount },
+        proof: {
+          interiorValidationId: 'interior',
+          coverValidationId: 'cover',
+          pageCount,
+          sourcePageCount: pageCount,
+          normalizedPageCount,
+          addedBlankPages: normalizedPageCount - pageCount,
+          squareLuluValidated: true,
+        },
       });
       expect(mockRender).toHaveBeenCalledTimes(2);
       expect(mockRender).toHaveBeenLastCalledWith(
@@ -439,20 +524,47 @@ describe('Lulu release safety', () => {
           podPackageId: PREMIUM_SQUARE_PACKAGE,
         }),
         { width: 1368, height: 738 },
+        normalizedPageCount,
       );
       expect(mockDimensions).toHaveBeenCalledWith({
         podPackageId: PREMIUM_SQUARE_PACKAGE,
-        pageCount,
+        pageCount: normalizedPageCount,
       });
-      expect(mockValidate.mock.calls.map(([kind]) => kind)).toEqual(['interior', 'cover']);
-      for (const [, options] of mockValidate.mock.calls) {
-        expect(options).toMatchObject({
+      expect(mockValidateDetailed).toHaveBeenCalledWith(
+        'interior',
+        expect.objectContaining({
           pageCount,
           podPackageId: PREMIUM_SQUARE_PACKAGE,
           requirePackageMatch: true,
-        });
-      }
-      expect(mockQuote).toHaveBeenCalledWith(expect.objectContaining({ pageCount }));
+        }),
+        undefined,
+        expect.any(Function),
+      );
+      expect(mockValidate).toHaveBeenCalledWith(
+        'cover',
+        expect.objectContaining({
+          pageCount: normalizedPageCount,
+          podPackageId: PREMIUM_SQUARE_PACKAGE,
+          requirePackageMatch: true,
+        }),
+        undefined,
+        expect.any(Function),
+      );
+      expect(mockValidateDetailed.mock.invocationCallOrder[0]).toBeLessThan(
+        mockDimensions.mock.invocationCallOrder[0]!,
+      );
+      expect(mockDimensions.mock.invocationCallOrder[0]).toBeLessThan(
+        mockRender.mock.invocationCallOrder[1]!,
+      );
+      expect(mockVerifyProof.mock.invocationCallOrder[1]).toBeLessThan(
+        mockValidate.mock.invocationCallOrder[0]!,
+      );
+      expect(mockValidate.mock.invocationCallOrder[0]).toBeLessThan(
+        sent.mock.invocationCallOrder[0]!,
+      );
+      expect(mockQuote).toHaveBeenCalledWith(
+        expect.objectContaining({ pageCount: normalizedPageCount }),
+      );
       expect(mockReadBookManifest).not.toHaveBeenCalled();
       expect(mockVerifyProof).toHaveBeenCalledTimes(2);
       expect(mockSubmit).not.toHaveBeenCalled();
@@ -468,8 +580,8 @@ describe('Lulu release safety', () => {
     },
   );
 
-  it.each(['a stored proof', 'the preliminary render', 'the completed render'])(
-    'stops before emailing or validating %s with the wrong page count',
+  it.each(['the preliminary render', 'the completed render'])(
+    'stops before emailing or validating the cover when %s has the wrong page count',
     async (mismatch) => {
       process.env.LULU_PRINT_ENVIRONMENT = 'sandbox';
       const pending = squareOrder({}, 33);
@@ -478,7 +590,7 @@ describe('Lulu release safety', () => {
         ...pending.fulfillment,
         status: 'pending',
         ticketId: id,
-        proof: mismatch === 'a stored proof' ? wrongProof : null,
+        proof: null,
         proofSentAt: null,
         quote: null,
       };
@@ -489,17 +601,160 @@ describe('Lulu release safety', () => {
         )
         .mockResolvedValueOnce(wrongProof);
       mockDimensions.mockResolvedValue({ width: 1368, height: 738 });
+      mockValidateDetailed.mockResolvedValue({
+        id: 'interior',
+        sourcePageCount: 33,
+        normalizedPageCount: 34,
+        addedBlankPages: 1,
+      });
       const send = jest.spyOn(global, 'fetch');
 
       await expect(processPrintProof(id)).resolves.toMatchObject({
         fulfillment: { status: 'manual_review', proofSentAt: null, quote: null },
       });
       expect(mockDimensions).toHaveBeenCalledTimes(Number(mismatch === 'the completed render'));
+      expect(mockValidateDetailed).toHaveBeenCalledTimes(
+        Number(mismatch === 'the completed render'),
+      );
       expect(mockValidate).not.toHaveBeenCalled();
       expect(mockQuote).not.toHaveBeenCalled();
       expect(send).not.toHaveBeenCalled();
     },
   );
+
+  it.each([
+    [32, 32, 34],
+    [33, 32, 33],
+    [33, 33, 35],
+  ])(
+    'requires valid Lulu normalization for a %i-page edition when Lulu reports %i to %i',
+    async (pageCount, sourcePageCount, normalizedPageCount) => {
+      process.env.LULU_PRINT_ENVIRONMENT = 'sandbox';
+      const pending = squareOrder({}, pageCount);
+      pending.fulfillment = {
+        ...pending.fulfillment,
+        status: 'pending',
+        ticketId: id,
+        proof: null,
+        proofSentAt: null,
+        quote: null,
+      };
+      mockCurrentOrder = pending;
+      mockRender.mockResolvedValueOnce({ ...proof, pageCount });
+      mockValidateDetailed.mockResolvedValue({
+        id: 'interior',
+        sourcePageCount,
+        normalizedPageCount,
+        addedBlankPages: normalizedPageCount - pageCount,
+      });
+      const send = jest.spyOn(global, 'fetch');
+      await expect(processPrintProof(id)).resolves.toMatchObject({
+        fulfillment: { status: 'manual_review', proofSentAt: null, quote: null },
+      });
+      expect(mockRender).toHaveBeenCalledTimes(1);
+      expect(mockDimensions).not.toHaveBeenCalled();
+      expect(mockValidate).not.toHaveBeenCalled();
+      expect(mockQuote).not.toHaveBeenCalled();
+      expect(send).not.toHaveBeenCalled();
+    },
+  );
+
+  it('reuses each pending validation ID for its pinned PDF and emails only after cover validation completes', async () => {
+    process.env.LULU_PRINT_ENVIRONMENT = 'sandbox';
+    const pending = squareOrder({}, 33);
+    pending.fulfillment = {
+      ...pending.fulfillment,
+      status: 'pending',
+      ticketId: id,
+      proof: null,
+      proofSentAt: null,
+      quote: null,
+    };
+    mockCurrentOrder = pending;
+    mockRender.mockResolvedValue({ ...proof, pageCount: 33 });
+    mockDimensions.mockResolvedValue({ width: 1368, height: 738 });
+    mockValidateDetailed
+      .mockImplementationOnce(async (_kind, _options, _existing, remember) => {
+        await remember('interior');
+        throw new Error('LULU_VALIDATION_PENDING');
+      })
+      .mockResolvedValueOnce({
+        id: 'interior',
+        sourcePageCount: 33,
+        normalizedPageCount: 34,
+        addedBlankPages: 1,
+      });
+    mockValidate
+      .mockImplementationOnce(async (_kind, _options, _existing, remember) => {
+        await remember('cover');
+        throw new Error('LULU_VALIDATION_PENDING');
+      })
+      .mockResolvedValueOnce('cover');
+    const send = jest
+      .spyOn(global, 'fetch')
+      .mockResolvedValueOnce(Response.json({ success: true, data: { deliveryStatus: 'sent' } }));
+
+    await expect(processPrintProof(id)).resolves.toMatchObject({
+      fulfillment: { status: 'pending', proofSentAt: null, quote: null },
+    });
+    expect(mockDimensions).not.toHaveBeenCalled();
+    await expect(processPrintProof(id)).resolves.toMatchObject({
+      fulfillment: { status: 'pending', proofSentAt: null, quote: null },
+    });
+    expect(send).not.toHaveBeenCalled();
+    expect(mockQuote).not.toHaveBeenCalled();
+    await expect(processPrintProof(id)).resolves.toMatchObject({
+      fulfillment: { status: 'proof_ready', proof: { squareLuluValidated: true } },
+    });
+    expect(mockValidateDetailed.mock.calls.map(([, , savedId]) => savedId)).toEqual([
+      undefined,
+      'interior',
+    ]);
+    expect(mockValidate.mock.calls.map(([, , savedId]) => savedId)).toEqual([undefined, 'cover']);
+    expect(mockRender).toHaveBeenCalledTimes(2);
+    expect(mockVerifyProof).toHaveBeenCalledTimes(2);
+    expect(mockDimensions).toHaveBeenCalledTimes(1);
+    expect(send).toHaveBeenCalledTimes(1);
+  });
+
+  it('refreshes an already emailed legacy square proof with a new run and proof email version', async () => {
+    process.env.LULU_PRINT_ENVIRONMENT = 'sandbox';
+    const pending = squareOrder({}, 33);
+    pending.fulfillment = {
+      ...pending.fulfillment,
+      status: 'pending',
+      ticketId: id,
+      proof: { ...proof, pageCount: 33 },
+    };
+    mockCurrentOrder = pending;
+    mockRender.mockResolvedValue({ ...proof, pageCount: 33 });
+    mockDimensions.mockResolvedValue({ width: 1368, height: 738 });
+    mockValidateDetailed.mockResolvedValue({
+      id: 'interior',
+      sourcePageCount: 33,
+      normalizedPageCount: 34,
+      addedBlankPages: 1,
+    });
+    mockValidate.mockResolvedValue('cover');
+    const send = jest
+      .spyOn(global, 'fetch')
+      .mockResolvedValueOnce(Response.json({ success: true, data: { deliveryStatus: 'sent' } }));
+
+    const replaced = await processPrintProof(id);
+    expect(replaced.fulfillment).toMatchObject({
+      status: 'proof_ready',
+      proofVersion: 2,
+      proof: { squareLuluValidated: true },
+    });
+    expect(replaced.fulfillment.runId).not.toBe(id);
+    expect(mockRender).toHaveBeenCalledWith(
+      expect.objectContaining({ runId: replaced.fulfillment.runId }),
+    );
+    expect(JSON.parse(String(send.mock.calls[0]?.[1]?.body))).toMatchObject({
+      proofVersion: 2,
+      revised: true,
+    });
+  });
 
   it('binds the direct published successor under a hold and archives the previous emailed pair', async () => {
     const held = squareOrder({ status: 'held', holdReason: 'Customer reply' as never });
@@ -671,7 +926,8 @@ describe('Lulu release safety', () => {
     mockFind.mockResolvedValue(null);
     const approval = { confirmationId, confirmedTotalEur: 30 };
     const actor = 'operator@example.test';
-    const uncertain = await submitPrintOrder(order(), approval, actor);
+    mockCurrentOrder = order();
+    const uncertain = await submitPrintOrder(mockCurrentOrder, approval, actor);
     expect(uncertain.fulfillment.status).toBe('uncertain');
     expect(mockWrite.mock.calls.map(([values]) => values.status)).toEqual([
       'submitting',

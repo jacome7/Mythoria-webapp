@@ -34,6 +34,7 @@ export async function GET(_request: Request, context: { params: Promise<{ storyI
         synopsis: edition?.opening.synopsis ?? story.synopsis ?? '',
         chapterCount: edition ? 0 : story.chapterCount,
         bookType: edition ? 'premium_children' : 'standard',
+        editionRevision: edition?.revision,
         frontCoverImageUrl: edition
           ? premiumBookImagePath(storyId, 'front', { revision: edition.revision })
           : toAbsoluteImageUrl(story.coverUri),

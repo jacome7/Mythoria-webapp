@@ -1,6 +1,6 @@
 # Lulu sandbox lifecycle check
 
-This CLI selects the A5 paperback or A5 casewrap package from the fixture's `binding`. Verify the premium square product through the isolated staff-proof flow until the CLI supports a square fixture. Use both a current 33-page edition and a historical 32-page edition to verify the normalized page count, the cover dimensions and the rendered page order before a supplier rollout.
+The CLI supports A5 paperback, A5 casewrap and square casewrap fixtures. Use `product: 'square_hardcover'` with `binding: 'hardcover'` for square. Also run isolated linked staff-proof tickets with current 33-page and historical 32-page editions to verify the normalized page count, cover dimensions, rendered page order, callback and ticket lifecycle before a supplier rollout.
 
 From the WebApp directory, run the offline check with Node 24 and installed npm dependencies.
 

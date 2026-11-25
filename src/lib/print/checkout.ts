@@ -30,6 +30,7 @@ import {
 import {
   approvedSquareSupplier,
   getPublishedSquareEdition,
+  getSquareLuluCustomerCountries,
   readSquareEdition,
   squarePrintApproved,
 } from './premium-edition';
@@ -64,6 +65,16 @@ function purchasableStory(storyId: string, authorId: string) {
 }
 
 const squarePriceLines = ['shippingCost', 'extraBookCopy'] as const;
+
+function squareLuluPilotCountries(maxEurPerCopy: number) {
+  return maxEurPerCopy > 0 ? getSquareLuluCustomerCountries() : [];
+}
+
+function servesPrintCountry(provider: { availableCountries: unknown }, country: string) {
+  return (
+    Array.isArray(provider.availableCountries) && provider.availableCountries.includes(country)
+  );
+}
 
 function squareCheckoutMode(defaultProvider: string | undefined, maxEurPerCopy: number) {
   if (defaultProvider === 'lulu') {
@@ -112,11 +123,23 @@ export async function getPublicPrintOptions(selection?: { storyId: string; autho
       const squareEditionRevision = mode
         ? (await getPublishedSquareEdition(story, mode.supplier))?.edition.premiumBook.revision
         : undefined;
+      const pilotCountries = squareEditionRevision
+        ? squareLuluPilotCountries(settings.maxEurPerCopy)
+        : [];
+      const activeProviders = pilotCountries.length
+        ? await db
+            .select({ availableCountries: printProviders.availableCountries })
+            .from(printProviders)
+            .where(eq(printProviders.isActive, true))
+        : [];
       return {
         paperbackAvailable: false,
         hardcoverAvailable: Boolean(squareEditionRevision),
         luluDefault: defaultProvider === 'lulu',
         squareEditionRevision,
+        squareLuluCustomerCountries: pilotCountries.filter((country) =>
+          activeProviders.some((provider) => servesPrintCountry(provider, country)),
+        ),
       };
     }
   }
@@ -263,11 +286,7 @@ async function reservePrintCheckout(
       .from(printProviders)
       .where(eq(printProviders.isActive, true))
       .orderBy(asc(printProviders.createdAt), asc(printProviders.id));
-    const provider = availableProviders.find(
-      (candidate) =>
-        Array.isArray(candidate.availableCountries) &&
-        candidate.availableCountries.includes(country),
-    );
+    const provider = availableProviders.find((candidate) => servesPrintCountry(candidate, country));
     if (!provider)
       throw new PrintError('country_unsupported', 'Printing is unavailable for this country.', 404);
     const serviceCode = input.printingOption.serviceCode;
@@ -299,6 +318,17 @@ async function reservePrintCheckout(
       );
     }
     const providerMode = setting?.defaultProvider === 'lulu' ? 'lulu' : 'manual';
+    const squareLuluEligible = Boolean(
+      premiumEdition &&
+      squareLuluPilotCountries(Number(setting?.maxEurPerCopy ?? 0)).includes(country),
+    );
+    if (premiumEdition && providerMode === 'lulu' && !squareLuluEligible) {
+      throw new PrintError(
+        'square_lulu_country_unavailable',
+        'Square hardcover shipping is unavailable for this destination.',
+        400,
+      );
+    }
     if (!premiumEdition && binding === 'hardcover' && providerMode !== 'lulu') {
       throw new PrintError('hardcover_unavailable', 'Hardcover printing is unavailable.', 400);
     }
@@ -356,7 +386,7 @@ async function reservePrintCheckout(
       email: input.recipient?.email ?? author.email,
       recipient_tax_id: input.recipient?.recipient_tax_id || undefined,
     });
-    if (providerMode === 'lulu') {
+    if (providerMode === 'lulu' || squareLuluEligible) {
       if (!input.recipient)
         throw new PrintError(
           'shipping_details_required',

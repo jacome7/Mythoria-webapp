@@ -14,7 +14,11 @@
     },
     "errors": {
       "squareUnavailable": "A impressão em capa dura quadrada está temporariamente indisponível.",
-      "editionChanged": "A edição para impressão mudou. Volte atrás e reveja a edição atual antes de encomendar.",
+      "editionChanged": "A edição para impressão mudou. Reveja a edição atual antes de encomendar.",
+      "pricingChanged": "O preço mudou. Reveja o total atualizado antes de fazer a encomenda.",
+      "orderPending": "Ainda não conseguimos confirmar a sua encomenda. Verifique o estado antes de fazer outra.",
+      "destinationUnavailable": "Não podemos enviar este livro para essa morada. Escolha outra morada.",
+      "shippingDetailsRequired": "Reveja a morada de entrega e preencha os dados obrigatórios do destinatário.",
       "storyNotFound": "História não encontrada",
       "storyNotPublished": "Apenas histórias publicadas podem ser impressas",
       "loadingFailed": "Falha ao carregar dados da história",
@@ -68,7 +72,8 @@
       "taxId": "Número fiscal do destinatário",
       "addressTooLong": "Volte atrás e reduza a cidade e cada linha da morada a 30 caracteres ou menos.",
       "postalCodeRequired": "Volte atrás e adicione o código postal à morada de entrega.",
-      "subdivisionRequired": "Volte atrás e introduza o código abreviado do estado, província ou região."
+      "subdivisionRequired": "Volte atrás e introduza o código abreviado do estado, província ou região.",
+      "spanishProvinceRequired": "Volte atrás e introduza o nome da província ou o seu código abreviado."
     },
     "confirmation": {
       "title": "Encomenda Realizada com Sucesso!",
@@ -78,6 +83,7 @@
       "continue": "Continuar",
       "back": "Voltar",
       "placeOrder": "Efetuar Encomenda",
+      "checkOrder": "Verificar encomenda",
       "backToStories": "Voltar às Minhas Histórias",
       "confirm": "Confirmar Encomenda",
       "cancel": "Cancelar"

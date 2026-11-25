@@ -48,16 +48,71 @@ export function configuredSquareSupplier(): SquareSupplier | null {
   return { luluEnvironment: mode, podPackageId: PREMIUM_SQUARE_PACKAGE };
 }
 
-export function squarePrintApproved(mode: 'manual' | SquareSupplier['luluEnvironment']) {
-  const [approvedMode, reference, extra] = (process.env.PREMIUM_SQUARE_PRINT_APPROVAL ?? '')
-    .trim()
-    .split(':');
+function matchesApproval(value: string | undefined, mode: string) {
+  const [approvedMode, reference, extra] = (value ?? '').trim().split(':');
   return approvedMode === mode && extra === undefined && /^[\w./-]+$/.test(reference ?? '');
+}
+
+export function squarePrintApproved(mode: 'manual' | SquareSupplier['luluEnvironment']) {
+  return matchesApproval(process.env.PREMIUM_SQUARE_PRINT_APPROVAL, mode);
 }
 
 export function approvedSquareSupplier(): SquareSupplier | null {
   const supplier = configuredSquareSupplier();
   return supplier && squarePrintApproved(supplier.luluEnvironment) ? supplier : null;
+}
+
+function configuredCustomerCountries() {
+  const list = process.env.LULU_PREMIUM_SQUARE_CUSTOMER_COUNTRIES?.trim();
+  const countries = list ? list.split(',').map((country) => country.trim()) : [];
+  return countries.every((country) => /^[A-Z]{2}$/.test(country)) ? [...new Set(countries)] : [];
+}
+
+export function getSquareLuluCustomerCountries(): string[] {
+  return approvedSquareSupplier() ? configuredCustomerCountries() : [];
+}
+
+export function squareLuluAuthorization(country: string, staffProof: boolean) {
+  const supplier = configuredSquareSupplier();
+  if (!supplier) {
+    return {
+      error: new PrintError(
+        'square_supplier_unavailable',
+        'Square print setup is incomplete for Lulu.',
+        503,
+      ),
+    };
+  }
+  if (staffProof) {
+    return matchesApproval(
+      process.env.LULU_PREMIUM_SQUARE_STAFF_PROOF_APPROVAL,
+      supplier.luluEnvironment,
+    )
+      ? { supplier }
+      : {
+          error: new PrintError(
+            'square_lulu_staff_proof_unapproved',
+            'The Lulu staff proof pilot is closed for this environment.',
+          ),
+        };
+  }
+  if (!squarePrintApproved(supplier.luluEnvironment)) {
+    return {
+      error: new PrintError(
+        'square_lulu_customer_unapproved',
+        'The square hardcover needs a physical Lulu approval for this environment.',
+      ),
+    };
+  }
+  if (!configuredCustomerCountries().includes(country)) {
+    return {
+      error: new PrintError(
+        'square_lulu_destination_unapproved',
+        'This destination is outside the Lulu square hardcover pilot.',
+      ),
+    };
+  }
+  return { supplier };
 }
 
 export function readSquareEdition(options: unknown): PremiumSquareEdition | null {

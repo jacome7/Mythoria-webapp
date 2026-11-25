@@ -32,6 +32,7 @@ it('gives an eligible public buyer only checkout metadata with a revision-pinned
   expect(body.story).toMatchObject({
     synopsis: 'Summary',
     chapterCount: 0,
+    editionRevision: 'edition',
     frontCoverImageUrl: expect.stringContaining('revision=edition'),
   });
   expect(body.story.features).toBeUndefined();

@@ -46,6 +46,9 @@ export const envManifest: EnvVarDescriptor[] = [
     'LULU_HARDCOVER_POD_PACKAGE_ID',
     'LULU_PREMIUM_SQUARE_POD_PACKAGE_ID',
     'PREMIUM_SQUARE_PRINT_APPROVAL',
+    'LULU_PREMIUM_SQUARE_CUSTOMER_COUNTRIES',
+    'LULU_PREMIUM_SQUARE_STAFF_PROOF_APPROVAL',
+    'LULU_WEBHOOK_BASE_URL',
   ].map((name): EnvVarDescriptor => ({
     name,
     required: false,

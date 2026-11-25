@@ -4,6 +4,8 @@ import pt from '../../src/messages/pt-PT/PremiumBook.json';
 import es from '../../src/messages/es-ES/PremiumBook.json';
 import fr from '../../src/messages/fr-FR/PremiumBook.json';
 import de from '../../src/messages/de-DE/PremiumBook.json';
+import actions from '../../src/messages/pt-PT/Actions.json';
+import printOrder from '../../src/messages/pt-PT/PrintOrder.json';
 import publishedBook from '../../src/lib/premium-children-book/worker-manifest.fixture.json';
 
 const locales = { 'en-US': en, 'pt-PT': pt, 'es-ES': es, 'fr-FR': fr, 'de-DE': de };
@@ -61,6 +63,72 @@ test.describe('Premium book format', () => {
       }
     });
   }
+
+  test('orders one paid square hardcover after opening print from the reader and narrow My Stories', async ({
+    page,
+  }) => {
+    const { storyId, opening, revision } = publishedBook;
+    const { PrintOrder: copy } = printOrder;
+    const checkoutPath = `/pt-PT/stories/print/${storyId}`;
+    const creditsPath = '/api/my-credits';
+    const requestsPath = '/api/print-requests';
+
+    await page.setViewportSize({ width: 1150, height: 850 });
+    await page.goto(`/pt-PT/stories/read/${storyId}`);
+    await page.getByRole('button', { name: 'Recusar opcionais' }).click();
+    await page.getByRole('button', { name: actions.Actions.print, exact: true }).click();
+    await expect(page).toHaveURL(checkoutPath);
+    await expect(page.getByRole('heading', { name: opening.title })).toBeVisible();
+
+    await page.setViewportSize({ width: 402, height: 874 });
+    await page.goto('/pt-PT/my-stories');
+    await page.locator(`[data-story-menu="${storyId}"]`).click();
+    await page
+      .locator(`[data-story-menu-panel="${storyId}"]`)
+      .getByRole('button', { name: actions.Actions.print, exact: true })
+      .click();
+    await expect(page).toHaveURL(checkoutPath);
+
+    const before = await page.request.get(creditsPath);
+    expect(before.ok()).toBe(true);
+    const { currentBalance: previousBalance } = await before.json();
+    await page.getByRole('button', { name: copy.buttons.continue }).click();
+    await expect(page.getByText('Rua do Livro 10', { exact: true })).toBeVisible();
+    await page.getByRole('button', { name: copy.buttons.continue }).click();
+    await expect(page.getByText(copy.payment.squareHardcoverTitle)).toBeVisible();
+    await expect(page.getByText(copy.payment.softcoverTitle)).toHaveCount(0);
+    await page.getByRole('button', { name: copy.buttons.placeOrder }).click();
+    const submitted = page.waitForResponse(
+      (response) =>
+        new URL(response.url()).pathname === requestsPath && response.request().method() === 'POST',
+    );
+    await page.getByRole('button', { name: copy.buttons.confirm }).click();
+    const response = await submitted;
+    const checkout = response.request().postDataJSON();
+    expect(checkout).toMatchObject({
+      checkout: {
+        storyId,
+        numberOfCopies: 1,
+        totalCost: 27,
+        printingOption: { serviceCode: 'printedHardCover', editionRevision: revision },
+      },
+    });
+    const order = await response.json();
+    expect(order).toMatchObject({ success: true, request: { storyId, status: 'requested' } });
+    await expect(page.getByRole('heading', { name: copy.confirmation.title })).toBeVisible();
+
+    const replay = await page.request.post(requestsPath, { data: checkout });
+    expect(replay.ok()).toBe(true);
+    expect((await replay.json()).request.id).toBe(order.request.id);
+    const orderList = await page.request.get(`${requestsPath}?storyId=${storyId}`);
+    expect(orderList.ok()).toBe(true);
+    expect((await orderList.json()).requests.map((request: { id: string }) => request.id)).toEqual([
+      order.request.id,
+    ]);
+    const after = await page.request.get(creditsPath);
+    expect(after.ok()).toBe(true);
+    expect((await after.json()).currentBalance).toBe(previousBalance - 27);
+  });
 
   test('renders and authorizes a published copy across owner, public, and revoked share routes', async ({
     page,

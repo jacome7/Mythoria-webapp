@@ -58,6 +58,11 @@ export CLERK_SECRET_KEY=sk_live_fixture CLERK_E2E_EMAIL=author@fixture.invalid
 export SURVEY_LINK_SECRET=fixture-survey-secret-not-for-production MCP_E2E_BEARER_TOKEN=oat_browser_fixture
 export PREMIUM_BOOK_GENERATION_ENABLED=true PREMIUM_BOOK_BUCKET=premium-book-fixture-no-storage
 export PLAYWRIGHT_PREMIUM_STORAGE_DIR="$fixture/premium-storage"
+export PREMIUM_SQUARE_PRINT_APPROVAL=manual:playwright-fixture
+export PRINT_PROOF_BUCKET=print-fixture-no-storage PRINT_INTERNAL_AUDIENCE="$PLAYWRIGHT_BASE_URL"
+export PRINT_ADMIN_SERVICE_ACCOUNT=admin@fixture.invalid PRINT_SCHEDULER_SERVICE_ACCOUNT=scheduler@fixture.invalid
+export ADMIN_API_URL=https://admin-print.fixture.invalid ADMIN_API_KEY=print-admin-fixture
+export STORY_GENERATION_WORKFLOW_API_KEY=print-sgw-fixture NOTIFICATION_ENGINE_API_KEY=print-notification-fixture
 
 cleanup() {
   if [[ -n "${app_pid:-}" ]]; then kill "$app_pid" 2>/dev/null || true; fi
@@ -90,7 +95,7 @@ npm run surveys:publish -- --apply > survey-publish.log 2>&1
 npm run surveys:local-test -- --email "$CLERK_E2E_EMAIL" --survey activation_no_story --apply > survey.log 2>&1
 export E2E_SURVEY_TOKEN="$(sed -n 's@^Open: .*/survey/@@p' survey.log)"
 [[ -n "$E2E_SURVEY_TOKEN" ]]
-npm run build > build.log 2>&1
+node --disable-warning=DEP0040 node_modules/next/dist/bin/next build --webpack > build.log 2>&1
 cp -R public .next/standalone/
 cp -R .next/static .next/standalone/.next/
 
@@ -98,6 +103,7 @@ node "$fixture_scripts/session.cjs"
 export CLERK_JWT_KEY="$(cat clerk-public.pem)" CLERK_FIXTURE_SESSION="$(cat clerk-session.txt)"
 export NODE_OPTIONS="$NODE_OPTIONS --require=$fixture_scripts/clerk-backend.cjs"
 export NODE_OPTIONS="$NODE_OPTIONS --require=$fixture_scripts/premium-storage.cjs"
+export NODE_OPTIONS="$NODE_OPTIONS --require=$fixture_scripts/print-admin.cjs"
 node .next/standalone/server.js > server.log 2>&1 &
 app_pid=$!
 for attempt in {1..20}; do

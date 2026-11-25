@@ -14,7 +14,11 @@
     },
     "errors": {
       "squareUnavailable": "Das quadratische Hardcover ist derzeit nicht erhältlich.",
-      "editionChanged": "Die Druckausgabe hat sich geändert. Gehe zurück und prüfe die aktuelle Ausgabe vor der Bestellung.",
+      "editionChanged": "Die Druckausgabe hat sich geändert. Prüfe die aktuelle Ausgabe vor der Bestellung.",
+      "pricingChanged": "Der Preis hat sich geändert. Prüfe den aktualisierten Gesamtbetrag vor der Bestellung.",
+      "orderPending": "Wir konnten deine Bestellung noch nicht bestätigen. Prüfe den Status, bevor du erneut bestellst.",
+      "destinationUnavailable": "Dieses Buch kann nicht an diese Adresse geliefert werden. Wähle eine andere Adresse.",
+      "shippingDetailsRequired": "Prüfe die Lieferadresse und vervollständige die erforderlichen Empfängerdaten.",
       "storyNotFound": "Story nicht gefunden",
       "storyNotPublished": "Nur veröffentlichte Stories können gedruckt werden",
       "loadingFailed": "Story-Daten konnten nicht geladen werden",
@@ -68,7 +72,8 @@
       "taxId": "Steuer-ID des Empfängers",
       "addressTooLong": "Gehe zurück und kürze den Ortsnamen und jede Adresszeile auf höchstens 30 Zeichen.",
       "postalCodeRequired": "Gehe zurück und ergänze die Postleitzahl der Lieferadresse.",
-      "subdivisionRequired": "Gehe zurück und gib das Kürzel für den Bundesstaat, die Provinz oder die Region ein."
+      "subdivisionRequired": "Gehe zurück und gib das Kürzel für den Bundesstaat, die Provinz oder die Region ein.",
+      "spanishProvinceRequired": "Geh zurück und gib den Namen oder das Kürzel der Provinz ein."
     },
     "confirmation": {
       "title": "Bestellung erfolgreich aufgegeben!",
@@ -78,6 +83,7 @@
       "continue": "Weiter",
       "back": "Zurück",
       "placeOrder": "Bestellung aufgeben",
+      "checkOrder": "Bestellung prüfen",
       "backToStories": "Zurück zu meinen Stories",
       "confirm": "Bestätigen",
       "cancel": "Abbrechen"

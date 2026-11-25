@@ -2,10 +2,9 @@
 
 import { useUser } from '@clerk/nextjs';
 import ModalPortal from '@/components/ModalPortal';
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import { CreditCard } from 'lucide-react';
-import { useState, useEffect, useCallback } from 'react';
-import { useLocale } from 'next-intl';
+import { useState, useEffect, useCallback, type Dispatch, type SetStateAction } from 'react';
 import {
   luluAddressIssue,
   luluPhonePattern,
@@ -57,10 +56,11 @@ interface PaymentStepProps {
   };
   story: Story;
   selectedPrintingOption: PrintingOption | null;
-  onSelectPrintingOption: (option: PrintingOption) => void;
+  onSelectPrintingOption: Dispatch<SetStateAction<PrintingOption | null>>;
   onBack: () => void;
   onPlaceOrder: (order: PaymentOrderDetails) => void;
   loading: boolean;
+  refreshVersion?: number;
 }
 
 interface ServiceResponse {
@@ -75,6 +75,14 @@ interface ServicesApiResponse {
   services: ServiceResponse[];
 }
 
+interface PrintOptionsResponse {
+  hardcoverAvailable: boolean;
+  luluDefault: boolean;
+  paperbackAvailable?: boolean;
+  squareEditionRevision?: string;
+  squareLuluCustomerCountries?: string[];
+}
+
 export default function PaymentStep({
   story,
   address,
@@ -83,6 +91,7 @@ export default function PaymentStep({
   onBack,
   onPlaceOrder,
   loading,
+  refreshVersion = 0,
 }: PaymentStepProps) {
   const tPrintOrder = useTranslations('PrintOrder');
   const locale = useLocale();
@@ -97,7 +106,7 @@ export default function PaymentStep({
 
   const { user } = useUser();
   const [options, setOptions] = useState<PrintingOption[]>([]);
-  const [requiresCarrierContact, setRequiresCarrierContact] = useState(false);
+  const [settings, setSettings] = useState<PrintOptionsResponse>();
   const isSquare = Boolean(selectedPrintingOption?.editionRevision);
   const [recipientName, setRecipientName] = useState<string>();
   const [recipientEmail, setRecipientEmail] = useState<string>();
@@ -107,6 +116,9 @@ export default function PaymentStep({
   const email = (recipientEmail ?? user?.primaryEmailAddress?.emailAddress ?? '').trim();
   const phone = (recipientPhone ?? address.phone ?? '').trim();
   const country = address.country.toUpperCase();
+  const squareLuluEligible = settings?.squareLuluCustomerCountries?.includes(country) ?? false;
+  const requiresCarrierContact = isSquare ? squareLuluEligible : Boolean(settings?.luluDefault);
+  const squareLuluDestinationBlocked = isSquare && settings?.luluDefault && !squareLuluEligible;
   const needsTaxId = requiresCarrierContact && luluRequiresTaxId(country);
   const addressIssue = requiresCarrierContact
     ? luluAddressIssue({
@@ -127,128 +139,132 @@ export default function PaymentStep({
       luluPhonePattern.test(phone) &&
       (!needsTaxId || taxId.trim().length > 0));
 
-  const fetchPrintingOptions = useCallback(async () => {
-    try {
-      const [response, availability] = await Promise.all([
-        fetch('/api/pricing/services'),
-        fetch('/api/print-requests/options?' + new URLSearchParams({ storyId: story.storyId })),
-      ]);
-      if (!response.ok || !availability.ok) {
-        throw new Error('Failed to fetch pricing data');
-      }
+  const fetchPrintingOptions = useCallback(
+    async (signal: AbortSignal) => {
+      try {
+        const [response, availability] = await Promise.all([
+          fetch('/api/pricing/services', { cache: 'no-store', signal }),
+          fetch('/api/print-requests/options?' + new URLSearchParams({ storyId: story.storyId }), {
+            signal,
+          }),
+        ]);
+        if (!response.ok || !availability.ok) {
+          throw new Error('Failed to fetch pricing data');
+        }
 
-      const data: ServicesApiResponse = await response.json();
+        const data: ServicesApiResponse = await response.json();
 
-      const settings = (await availability.json()) as {
-        hardcoverAvailable: boolean;
-        luluDefault: boolean;
-        paperbackAvailable?: boolean;
-        squareEditionRevision?: string;
-      };
-      setRequiresCarrierContact(settings.luluDefault);
-      const isSquare = Boolean(settings.squareEditionRevision);
-      const formats = [
-        ...(settings.paperbackAvailable !== false ? ['printedSoftCover'] : []),
-        ...(settings.hardcoverAvailable ? ['printedHardCover'] : []),
-      ].flatMap((serviceCode) => {
-        const service = data.services.find((s) => s.isActive && s.serviceCode === serviceCode);
-        if (!service) return [];
-        const title = tPrintOrder(
-          isSquare
-            ? 'payment.squareHardcoverTitle'
-            : serviceCode === 'printedHardCover'
-              ? 'payment.hardcoverTitle'
-              : 'payment.softcoverTitle',
+        const settings: PrintOptionsResponse = await availability.json();
+        if (signal.aborted) return;
+        setSettings(settings);
+        const isSquare = Boolean(settings.squareEditionRevision);
+        const formats = [
+          ...(settings.paperbackAvailable !== false ? ['printedSoftCover'] : []),
+          ...(settings.hardcoverAvailable ? ['printedHardCover'] : []),
+        ].flatMap((serviceCode) => {
+          const service = data.services.find((s) => s.isActive && s.serviceCode === serviceCode);
+          if (!service) return [];
+          const title = tPrintOrder(
+            isSquare
+              ? 'payment.squareHardcoverTitle'
+              : serviceCode === 'printedHardCover'
+                ? 'payment.hardcoverTitle'
+                : 'payment.softcoverTitle',
+          );
+          return [
+            {
+              serviceCode,
+              title,
+              credits: service.cost,
+              isActive: true,
+              description: title,
+              editionRevision: settings.squareEditionRevision,
+            },
+          ];
+        });
+        setOptions(formats);
+        if (!formats.length && settings.paperbackAvailable === false) {
+          setError(tPrintOrder('errors.squareUnavailable'));
+          return;
+        }
+        if (!formats.length) throw new Error('No active print formats');
+        if (
+          isSquare &&
+          !['shippingCost', 'extraBookCopy'].every((serviceCode) =>
+            data.services.some(
+              (service) => service.serviceCode === serviceCode && service.isActive,
+            ),
+          )
+        ) {
+          setError(tPrintOrder('errors.squareUnavailable'));
+          return;
+        }
+
+        // Get extra chapter cost
+        const extraChapter = data.services.find(
+          (service: ServiceResponse) =>
+            service.isActive && service.serviceCode === 'extraChapterCost',
         );
-        return [
-          {
-            serviceCode,
-            title,
-            credits: service.cost,
-            isActive: true,
-            description: title,
-            editionRevision: settings.squareEditionRevision,
-          },
-        ];
-      });
-      setOptions(formats);
-      if (!formats.length && settings.paperbackAvailable === false) {
-        setError(tPrintOrder('errors.squareUnavailable'));
-        return;
-      }
-      if (!formats.length) throw new Error('No active print formats');
-      if (
-        isSquare &&
-        !['shippingCost', 'extraBookCopy'].every((serviceCode) =>
-          data.services.some((service) => service.serviceCode === serviceCode && service.isActive),
-        )
-      ) {
-        setError(tPrintOrder('errors.squareUnavailable'));
-        return;
-      }
+        setExtraChapterCost(extraChapter?.cost ?? 0);
 
-      // Get extra chapter cost
-      const extraChapter = data.services.find(
-        (service: ServiceResponse) =>
-          service.isActive && service.serviceCode === 'extraChapterCost',
-      );
-      if (extraChapter) {
-        setExtraChapterCost(extraChapter.cost);
-      }
+        // Get extra book copy cost
+        const extraBookCopy = data.services.find(
+          (service: ServiceResponse) => service.isActive && service.serviceCode === 'extraBookCopy',
+        );
+        setExtraBookCopyCost(extraBookCopy?.cost ?? 0);
 
-      // Get extra book copy cost
-      const extraBookCopy = data.services.find(
-        (service: ServiceResponse) => service.isActive && service.serviceCode === 'extraBookCopy',
-      );
-      if (extraBookCopy) {
-        setExtraBookCopyCost(extraBookCopy.cost);
-      }
+        // Get shipping cost
+        const shipping = data.services.find(
+          (service: ServiceResponse) => service.isActive && service.serviceCode === 'shippingCost',
+        );
+        setShippingCost(shipping?.cost ?? 0);
 
-      // Get shipping cost
-      const shipping = data.services.find(
-        (service: ServiceResponse) => service.isActive && service.serviceCode === 'shippingCost',
-      );
-      if (shipping) {
-        setShippingCost(shipping.cost);
+        onSelectPrintingOption(
+          (previous) =>
+            formats.find((format) => format.serviceCode === previous?.serviceCode) ?? formats[0],
+        );
+      } catch (error) {
+        if (signal.aborted) return;
+        console.error('Error fetching printing options:', error);
+        setError(tPrintOrder('errors.loadPricingFailed'));
       }
+    },
+    [tPrintOrder, story.storyId, onSelectPrintingOption],
+  );
 
-      if (
-        !formats.some(
-          (format) =>
-            format.serviceCode === selectedPrintingOption?.serviceCode &&
-            format.credits === selectedPrintingOption.credits &&
-            format.editionRevision === selectedPrintingOption.editionRevision,
-        )
-      )
-        onSelectPrintingOption(formats[0]);
-    } catch (error) {
-      console.error('Error fetching printing options:', error);
-      setError(tPrintOrder('errors.loadPricingFailed'));
-    }
-  }, [tPrintOrder, story.storyId, selectedPrintingOption, onSelectPrintingOption]);
-
-  const fetchUserCredits = useCallback(async () => {
-    try {
-      const response = await fetch('/api/my-credits');
-      if (!response.ok) {
-        throw new Error('Failed to fetch user credits');
+  const fetchUserCredits = useCallback(
+    async (signal: AbortSignal) => {
+      try {
+        const response = await fetch('/api/my-credits', { cache: 'no-store', signal });
+        if (!response.ok) {
+          throw new Error('Failed to fetch user credits');
+        }
+        const data = await response.json();
+        if (signal.aborted) return;
+        setUserCredits(data.currentBalance || 0);
+      } catch (error) {
+        if (signal.aborted) return;
+        console.error('Error fetching user credits:', error);
+        setError(tPrintOrder('errors.fetchCreditsFailed'));
       }
-      const data = await response.json();
-      setUserCredits(data.currentBalance || 0);
-    } catch (error) {
-      console.error('Error fetching user credits:', error);
-      setError(tPrintOrder('errors.fetchCreditsFailed'));
-    }
-  }, [tPrintOrder]);
+    },
+    [tPrintOrder],
+  );
   useEffect(() => {
+    const controller = new AbortController();
+    setLoadingData(true);
+    setError(null);
     const fetchData = async () => {
-      await fetchPrintingOptions();
-      await fetchUserCredits();
-      setLoadingData(false);
+      await Promise.all([
+        fetchPrintingOptions(controller.signal),
+        fetchUserCredits(controller.signal),
+      ]);
+      if (!controller.signal.aborted) setLoadingData(false);
     };
 
     fetchData();
-  }, [fetchPrintingOptions, fetchUserCredits]);
+    return () => controller.abort();
+  }, [fetchPrintingOptions, fetchUserCredits, refreshVersion]);
   const calculateExtraChapters = () => {
     // Base price includes first 4 chapters, charge for additional chapters only
     return isSquare ? 0 : Math.max(0, story.chapterCount - 4);
@@ -295,6 +311,7 @@ export default function PaymentStep({
     return (
       !error &&
       !addressIssue &&
+      !squareLuluDestinationBlocked &&
       contactValid &&
       options.some((option) => option.serviceCode === selectedPrintingOption?.serviceCode) &&
       !hasInsufficientCredits() &&
@@ -438,6 +455,11 @@ export default function PaymentStep({
             {addressIssue && (
               <p className="alert alert-warning mt-3" role="alert">
                 {tPrintOrder(`payment.${addressIssue}`)}
+              </p>
+            )}
+            {squareLuluDestinationBlocked && (
+              <p className="alert alert-warning mt-3" role="alert">
+                {tPrintOrder('errors.destinationUnavailable')}
               </p>
             )}
 

@@ -14,7 +14,11 @@
     },
     "errors": {
       "squareUnavailable": "Square hardcover printing is currently unavailable.",
-      "editionChanged": "The print edition has changed. Go back and review the current edition before ordering.",
+      "editionChanged": "The print edition has changed. Review the current edition before ordering.",
+      "pricingChanged": "The price has changed. Review the updated total before placing your order.",
+      "orderPending": "We couldn’t confirm your order. Check its status before placing another one.",
+      "destinationUnavailable": "This book can’t be shipped to that address. Choose another address.",
+      "shippingDetailsRequired": "Review the shipping address and complete the required recipient details.",
       "storyNotFound": "Story not found",
       "storyNotPublished": "Only published stories can be printed",
       "loadingFailed": "Failed to load story data",
@@ -68,7 +72,8 @@
       "taxId": "Recipient tax ID",
       "addressTooLong": "Go back and shorten the city and each address line to 30 characters or fewer.",
       "postalCodeRequired": "Go back and add the postal code to the shipping address.",
-      "subdivisionRequired": "Go back and enter the short code for the state, province, or region."
+      "subdivisionRequired": "Go back and enter the short code for the state, province, or region.",
+      "spanishProvinceRequired": "Go back and enter the province name or its short code."
     },
     "confirmation": {
       "title": "Order Placed Successfully!",
@@ -78,6 +83,7 @@
       "continue": "Continue",
       "back": "Back",
       "placeOrder": "Place Order",
+      "checkOrder": "Check order",
       "backToStories": "Back to My Stories",
       "confirm": "Confirm Order",
       "cancel": "Cancel"

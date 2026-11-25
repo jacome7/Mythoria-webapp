@@ -1,5 +1,7 @@
 export const luluShippingLimits = { name: 35, address: 30, phone: 20 };
 export const luluPhonePattern = /^\+?[\d\s\-./()]{8,20}$/;
+const shortSubdivision = /^[A-Z0-9]{1,3}$/i;
+const spanishSubdivisionName = /^\p{L}[\p{L}\p{M} .'/()-]{3,29}$/u;
 
 // Lulu's shipping-options endpoint requires a short subdivision code in these markets.
 const subdivisionCountries = new Set([
@@ -60,10 +62,12 @@ export function luluAddressIssue(shipping: {
   )
     return 'addressTooLong';
   if (!shipping.postcode.trim()) return 'postalCodeRequired';
+  const subdivision = shipping.state_code?.trim() ?? '';
   if (
     subdivisionCountries.has(shipping.country_code) &&
-    !/^[A-Z0-9]{1,3}$/i.test(shipping.state_code?.trim() ?? '')
+    !shortSubdivision.test(subdivision) &&
+    !(shipping.country_code === 'ES' && spanishSubdivisionName.test(subdivision))
   )
-    return 'subdivisionRequired';
+    return shipping.country_code === 'ES' ? 'spanishProvinceRequired' : 'subdivisionRequired';
   return undefined;
 }

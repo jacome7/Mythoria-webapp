@@ -4,7 +4,7 @@ import { z } from 'zod';
 import { getEnvironmentConfig } from '@/config/environment';
 import { db } from '@/db';
 import { printFulfillments, printProviders, printRequests, stories } from '@/db/schema';
-import { createOrderTicket } from './checkout';
+import { createOrderTicket, getPrintSettings } from './checkout';
 import { allocatePrintRequestId, printOrderNumber } from './order-number';
 import {
   luluPackageId,
@@ -14,7 +14,7 @@ import {
   type PrintProvider,
   type PrintShippingAddress,
 } from './contracts';
-import { configuredSquareSupplier, getPublishedSquareEdition } from './premium-edition';
+import { getPublishedSquareEdition, squareLuluAuthorization } from './premium-edition';
 
 export async function createStaffPrintProof(
   input: { storyId: string; revision: string; shippingAddress: PrintShippingAddress },
@@ -222,17 +222,6 @@ export async function createAdminPrintOrder(input: AdminPrintOrderInput, actor: 
   }
   const normalizedShipping =
     input.provider === 'lulu' ? validateLuluShipping(input.shippingAddress) : input.shippingAddress;
-  const squareSupplier =
-    input.bookFormat === 'premium_square' && input.provider === 'lulu'
-      ? configuredSquareSupplier()
-      : null;
-  if (input.bookFormat === 'premium_square' && input.provider === 'lulu' && !squareSupplier) {
-    throw new PrintError(
-      'square_supplier_unavailable',
-      'Square print setup is incomplete for Lulu.',
-      503,
-    );
-  }
   if (input.bookFormat === 'standard_a5' && input.provider === 'lulu') {
     luluPackageId(input.binding);
   }
@@ -251,6 +240,15 @@ export async function createAdminPrintOrder(input: AdminPrintOrderInput, actor: 
       if (existing) return existing;
     }
 
+    const squareLulu = input.bookFormat === 'premium_square' && input.provider === 'lulu';
+    const authorization = squareLulu
+      ? squareLuluAuthorization(normalizedShipping.country_code, input.orderKind === 'staff_proof')
+      : null;
+    if (authorization?.error) throw authorization.error;
+    if (squareLulu && (await getPrintSettings(tx)).maxEurPerCopy <= 0) {
+      throw new PrintError('lulu_ceiling_unset', 'Set a positive landed EUR ceiling for Lulu.');
+    }
+
     const [story] = await tx
       .select()
       .from(stories)
@@ -266,7 +264,7 @@ export async function createAdminPrintOrder(input: AdminPrintOrderInput, actor: 
 
     const published =
       input.bookFormat === 'premium_square'
-        ? await getPublishedSquareEdition(story, squareSupplier)
+        ? await getPublishedSquareEdition(story, authorization?.supplier)
         : null;
     if (input.bookFormat === 'premium_square' && !published) {
       throw new PrintError(

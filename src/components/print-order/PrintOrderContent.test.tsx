@@ -1,6 +1,6 @@
 import { webcrypto } from 'node:crypto';
 import { TextEncoder } from 'node:util';
-import { fireEvent, render, screen } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import React, { Suspense, type ComponentType, type ReactNode } from 'react';
 import PrintOrderContent from './PrintOrderContent';
 
@@ -44,27 +44,61 @@ jest.mock('@/components/print-order/steps/StoryStep', () => ({
 }));
 jest.mock('@/components/print-order/steps/AddressStep', () => ({
   __esModule: true,
-  default: ({ onNext }: { onNext: () => void }) => (
-    <button type="button" onClick={onNext}>
-      address-next
-    </button>
+  default: ({
+    onNext,
+    onEditAddress,
+    onSaveAddress,
+    selectedAddress,
+    editingAddress,
+  }: {
+    onNext: () => void;
+    onEditAddress: (address: unknown) => void;
+    onSaveAddress: (address: unknown) => void;
+    selectedAddress: { line1: string };
+    editingAddress: { line1: string } | null;
+  }) => (
+    <>
+      <button type="button" onClick={onNext}>
+        address-next
+      </button>
+      <button type="button" onClick={() => onEditAddress(selectedAddress)}>
+        edit-address
+      </button>
+      {editingAddress && (
+        <button
+          type="button"
+          onClick={() => onSaveAddress({ ...editingAddress, line1: 'Rua nova' })}
+        >
+          save-address
+        </button>
+      )}
+    </>
   ),
 }));
 jest.mock('@/components/print-order/steps/PaymentStep', () => ({
   __esModule: true,
   default: ({
+    address,
+    refreshVersion,
+    story,
     onSelectPrintingOption,
     onPlaceOrder,
   }: {
+    address: { line1: string };
+    refreshVersion: number;
+    story: { editionRevision?: string };
     onSelectPrintingOption: (option: unknown) => void;
     onPlaceOrder: (details: { numberOfCopies: number; totalCost: number }) => void;
   }) => (
     <>
+      <output>{address.line1}</output>
+      <output>{`pricing-${refreshVersion}`}</output>
       <button
         type="button"
         onClick={() =>
           onSelectPrintingOption({
-            serviceCode: 'printedSoftCover',
+            serviceCode: story.editionRevision ? 'printedHardCover' : 'printedSoftCover',
+            editionRevision: story.editionRevision,
             credits: 5,
             isActive: true,
             title: 'Soft cover',
@@ -83,13 +117,23 @@ jest.mock('@/components/print-order/steps/PaymentStep', () => ({
 
 const originalFetch = global.fetch;
 
-function mockFetch(printBody: Record<string, unknown>, onSubmit?: (init?: RequestInit) => void) {
+function mockFetch(
+  printBody: Record<string, unknown>,
+  onSubmit?: (init?: RequestInit) => Response | void,
+  getStory?: () => Record<string, unknown>,
+) {
   global.fetch = jest.fn(async (url: string, init?: RequestInit) => {
     if (url === '/api/print-requests/story/story-1') {
       return {
         ok: true,
         json: async () => ({
-          story: { storyId: 'story-1', status: 'published', title: 'Story', chapterCount: 3 },
+          story: {
+            storyId: 'story-1',
+            status: 'published',
+            title: 'Story',
+            chapterCount: 3,
+            ...getStory?.(),
+          },
         }),
       };
     }
@@ -102,9 +146,14 @@ function mockFetch(printBody: Record<string, unknown>, onSubmit?: (init?: Reques
         }),
       };
     }
+    if (url === '/api/addresses/addr-1' && init?.method === 'PUT') {
+      return {
+        ok: true,
+        json: async () => ({ success: true, address: JSON.parse(String(init.body)) }),
+      };
+    }
     if (url === '/api/print-requests') {
-      onSubmit?.(init);
-      return { ok: true, status: 200, json: async () => printBody };
+      return onSubmit?.(init) ?? { ok: true, status: 200, json: async () => printBody };
     }
     throw new Error(`Unexpected fetch ${url}`);
   }) as unknown as typeof fetch;
@@ -171,7 +220,7 @@ it('reuses a pending checkout intent after response loss and reload, then clears
       if (ids.length === 1) throw new TypeError('Interrupted after submission');
     });
     const first = await submitOrder();
-    await screen.findByText('errors.orderFailed');
+    await screen.findByText('errors.orderPending');
     first.unmount();
     const replay = await submitOrder();
     await screen.findByRole('heading', { name: 'confirmation.title' });
@@ -184,4 +233,71 @@ it('reuses a pending checkout intent after response loss and reload, then clears
   } finally {
     errorLog.mockRestore();
   }
+});
+
+it('retries an uncertain submission using the same request body and keeps checkout open', async () => {
+  const bodies: string[] = [];
+  mockFetch({ success: true }, (init) => {
+    bodies.push(String(init?.body));
+    if (bodies.length === 1)
+      return { status: 503, json: async () => ({ code: 'print_ticket_pending' }) } as Response;
+  });
+  await submitOrder();
+  const retry = await screen.findByRole('button', { name: 'buttons.checkOrder' });
+  expect(screen.getByRole('button', { name: 'place-order' })).toBeDisabled();
+  fireEvent.click(retry);
+  await screen.findByRole('heading', { name: 'confirmation.title' });
+  expect(bodies).toHaveLength(2);
+  expect(bodies[1]).toBe(bodies[0]);
+});
+
+it('refreshes payment details and requires another confirmation when the price changes', async () => {
+  const submit = jest.fn(
+    () => ({ status: 409, json: async () => ({ code: 'pricing_changed' }) }) as Response,
+  );
+  mockFetch({}, submit);
+  await submitOrder();
+  expect(await screen.findByText('errors.pricingChanged')).toBeInTheDocument();
+  expect(screen.getByText('pricing-1')).toBeInTheDocument();
+  expect(screen.getByRole('button', { name: 'place-order' })).toBeEnabled();
+  expect(submit).toHaveBeenCalledTimes(1);
+});
+
+it('reloads the revised story and returns to the edition preview before resubmission', async () => {
+  const revisionRequests: string[] = [];
+  const getStory = jest
+    .fn()
+    .mockReturnValueOnce({ editionRevision: 'revision-1' })
+    .mockReturnValue({ editionRevision: 'revision-2' });
+  mockFetch(
+    { success: true },
+    (init) => {
+      const body = JSON.parse(String(init?.body));
+      revisionRequests.push(body.checkout.printingOption.editionRevision);
+      if (revisionRequests.length === 1)
+        return { status: 409, json: async () => ({ code: 'print_edition_changed' }) } as Response;
+    },
+    getStory,
+  );
+  await submitOrder();
+  expect(await screen.findByText('errors.editionChanged')).toBeInTheDocument();
+  expect(screen.getByRole('button', { name: 'story-next' })).toBeInTheDocument();
+  expect(revisionRequests).toEqual(['revision-1']);
+  fireEvent.click(screen.getByRole('button', { name: 'story-next' }));
+  fireEvent.click(screen.getByRole('button', { name: 'address-next' }));
+  fireEvent.click(await screen.findByRole('button', { name: 'select-option' }));
+  fireEvent.click(screen.getByRole('button', { name: 'place-order' }));
+  await screen.findByRole('heading', { name: 'confirmation.title' });
+  expect(revisionRequests).toEqual(['revision-1', 'revision-2']);
+});
+
+it('uses the updated shipping data after editing the selected address', async () => {
+  mockFetch({ success: true });
+  render(<PrintOrderContent storyId="story-1" />);
+  fireEvent.click(await screen.findByRole('button', { name: 'story-next' }));
+  fireEvent.click(await screen.findByRole('button', { name: 'edit-address' }));
+  fireEvent.click(screen.getByRole('button', { name: 'save-address' }));
+  await waitFor(() => expect(screen.queryByRole('button', { name: 'save-address' })).toBeNull());
+  fireEvent.click(screen.getByRole('button', { name: 'address-next' }));
+  expect(await screen.findByText('Rua nova')).toBeInTheDocument();
 });

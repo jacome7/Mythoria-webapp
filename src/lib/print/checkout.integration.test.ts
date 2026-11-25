@@ -3,7 +3,12 @@ import { randomInt, randomUUID } from 'node:crypto';
 import { and, eq } from 'drizzle-orm';
 import { drizzle } from 'drizzle-orm/node-postgres';
 import { Pool } from 'pg';
-import { getLuluCoverDimensions, quoteLuluOrder, validateLuluFile } from '@/lib/lulu/client';
+import {
+  getLuluCoverDimensions,
+  quoteLuluOrder,
+  validateLuluFile,
+  validateLuluFileDetailed,
+} from '@/lib/lulu/client';
 import { LULU_SKUS } from '@/lib/lulu/products';
 import {
   addresses,
@@ -55,6 +60,17 @@ jest.mock('@/lib/lulu/client', () => ({
     if (saved) return saved;
     await remember(kind);
     return kind;
+  }),
+  validateLuluFileDetailed: jest.fn(async (kind, options, saved, remember) => {
+    const addedBlankPages = kind === 'interior' && options.pageCount === 33 ? 1 : 0;
+    if (!saved) await remember(kind);
+    return {
+      id: saved || kind,
+      sourcePageCount: options.pageCount,
+      normalizedPageCount: options.pageCount + addedBlankPages,
+      addedBlankPages,
+      warnings: [],
+    };
   }),
   quoteLuluOrder: jest.fn(async () => ({ shippingLevel: 'EXPRESS', totalEur: 20 })),
   getLuluJob: (...args: unknown[]) => mockGetLuluJob(...args),
@@ -467,6 +483,7 @@ import {
         PRINT_ADMIN_SERVICE_ACCOUNT: 'admin@example.test',
         PRINT_SCHEDULER_SERVICE_ACCOUNT: 'scheduler@example.test',
         LULU_PREMIUM_SQUARE_POD_PACKAGE_ID: PREMIUM_SQUARE_PACKAGE,
+        LULU_PREMIUM_SQUARE_CUSTOMER_COUNTRIES: 'PT',
         LULU_PAPERBACK_POD_PACKAGE_ID: LULU_SKUS.paperback,
         LULU_HARDCOVER_POD_PACKAGE_ID: LULU_SKUS.hardcover,
         LULU_PRINT_ENVIRONMENT: 'sandbox',
@@ -475,6 +492,7 @@ import {
         LULU_PRINT_CLIENT_SECRET: 'test-only',
       });
       try {
+        const coverPageCount = pageCount === 33 ? 34 : pageCount;
         delete process.env.PREMIUM_SQUARE_PRINT_APPROVAL;
         const [author] = await mockDatabase
           .insert(authors)
@@ -639,6 +657,7 @@ import {
             interior: asset,
             cover: { ...asset, object: 'cover', sha256: 'b'.repeat(64) },
             pageCount,
+            coverPageCount,
             qaPassed: true,
             qaCriticalCount: 0,
           };
@@ -675,6 +694,11 @@ import {
         await expect(
           startPrintCheckout({ ...form, intentId: randomUUID() }, author),
         ).rejects.toMatchObject({ code: 'square_print_unavailable' });
+        const paused = await processPrintProof(request.id);
+        expect(paused.fulfillment).toMatchObject({ status: 'held', proofVersion: 2 });
+        expect(emails).toHaveLength(1);
+        process.env.PREMIUM_SQUARE_PRINT_APPROVAL = 'sandbox:approval-record-fixture';
+        await setPrintHold(paused, null);
         mockRenderOrderProof.mockResolvedValue(proof('2'));
         const ready = await processPrintProof(request.id);
         expect(ready.fulfillment).toMatchObject({ status: 'proof_ready', proofVersion: 2 });
@@ -704,6 +728,11 @@ import {
         ).rejects.toMatchObject({
           code: 'print_not_approved',
         });
+        delete process.env.PREMIUM_SQUARE_PRINT_APPROVAL;
+        await expect(submitPrintOrder(ready, release, actor)).rejects.toMatchObject({
+          code: 'square_lulu_customer_unapproved',
+        });
+        process.env.PREMIUM_SQUARE_PRINT_APPROVAL = 'sandbox:approval-record-fixture';
         const externalId = request.id.slice(0, 8).toUpperCase();
         mockSubmit.mockResolvedValue({
           id: '101',
@@ -726,9 +755,9 @@ import {
         expect(getLuluCoverDimensions).toHaveBeenCalledTimes(2);
         expect(getLuluCoverDimensions).toHaveBeenCalledWith({
           podPackageId: PREMIUM_SQUARE_PACKAGE,
-          pageCount,
+          pageCount: coverPageCount,
         });
-        expect(validateLuluFile).toHaveBeenCalledWith(
+        expect(validateLuluFileDetailed).toHaveBeenCalledWith(
           'interior',
           expect.objectContaining({ pageCount, requirePackageMatch: true }),
           undefined,
@@ -736,12 +765,15 @@ import {
         );
         expect(validateLuluFile).toHaveBeenCalledWith(
           'cover',
-          expect.objectContaining({ pageCount, requirePackageMatch: true }),
+          expect.objectContaining({ pageCount: coverPageCount, requirePackageMatch: true }),
           undefined,
           expect.any(Function),
         );
         expect(quoteLuluOrder).toHaveBeenCalledWith(
-          expect.objectContaining({ pageCount, podPackageId: PREMIUM_SQUARE_PACKAGE }),
+          expect.objectContaining({
+            pageCount: coverPageCount,
+            podPackageId: PREMIUM_SQUARE_PACKAGE,
+          }),
         );
         const [balance] = await mockDatabase
           .select()

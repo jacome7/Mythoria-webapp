@@ -48,6 +48,7 @@ jest.mock('@/config/environment', () => ({
 }));
 
 import { getPublicPrintOptions, startPrintCheckout } from './checkout';
+import { validateLuluShipping } from './contracts';
 import { createAdminPrintOrder, createStaffPrintProof } from './staff-proof';
 
 const storyId = '32c3cb83-00c2-4933-972b-916ec8065f18';
@@ -91,6 +92,7 @@ describe('paid print checkout recovery', () => {
       PRINT_SCHEDULER_SERVICE_ACCOUNT: 'scheduler@test.example',
     });
     mockStatements.length = 0;
+    delete process.env.LULU_PREMIUM_SQUARE_CUSTOMER_COUNTRIES;
     mockOrderNumberLookup.mockResolvedValue([]);
     mockLoadManifest.mockResolvedValue({ format: { pageCount: 32 } });
     mockTransaction.mockImplementation(async (callback) =>
@@ -155,6 +157,7 @@ describe('paid print checkout recovery', () => {
         hardcoverAvailable: approved,
         luluDefault: defaultProvider === 'lulu',
         squareEditionRevision: approved ? revision : undefined,
+        squareLuluCustomerCountries: [],
       });
       expect(mockLoadManifest).toHaveBeenCalledTimes(Number(approved));
     },
@@ -175,6 +178,23 @@ describe('paid print checkout recovery', () => {
         squareEditionRevision: revision,
       });
     }
+  });
+
+  it('advertises only approved pilot destinations served by an active print partner', async () => {
+    configureSquare(true, 'sandbox');
+    process.env.LULU_PREMIUM_SQUARE_CUSTOMER_COUNTRIES = 'PT,ES,DE';
+    mockStatements.push(
+      [{ defaultProvider: 'none', maxEurPerCopy: '25' }],
+      [{ credits: 12, active: true }],
+      [squareStory],
+      fees,
+      [{ availableCountries: ['PT', 'FR'] }, { availableCountries: ['DE'] }],
+    );
+    await expect(getPublicPrintOptions({ storyId, authorId: 'author' })).resolves.toMatchObject({
+      hardcoverAvailable: true,
+      luluDefault: false,
+      squareLuluCustomerCountries: ['PT', 'DE'],
+    });
   });
 
   it.each(['manual', 'production'])(
@@ -208,21 +228,25 @@ describe('paid print checkout recovery', () => {
     },
   };
 
-  function stageSquareCheckout() {
+  function stageSquareCheckout({
+    defaultProvider = 'none',
+    maxEurPerCopy = '0',
+    country = 'PT',
+  } = {}) {
     mockStatements.push(
       [],
       [squareStory],
       [
         {
           addressId: shippingId,
-          country: 'PT',
+          country,
           line1: 'Rua 1',
           city: 'Lisboa',
           postalCode: '1000-001',
         },
       ],
-      [{ id: 'provider', availableCountries: ['PT'] }],
-      [{ defaultProvider: 'none', maxEurPerCopy: '0' }],
+      [{ id: 'provider', availableCountries: [country] }],
+      [{ defaultProvider, maxEurPerCopy }],
       [
         { serviceCode: 'printedHardCover', credits: 12 },
         { serviceCode: 'extraChapterCost', credits: 99 },
@@ -329,13 +353,52 @@ describe('paid print checkout recovery', () => {
     expect(mockFetch).not.toHaveBeenCalled();
   });
 
+  it('requires carrier details before charging for a manual ticket in an approved square pilot destination', async () => {
+    configureSquare(true, 'sandbox');
+    process.env.LULU_PREMIUM_SQUARE_CUSTOMER_COUNTRIES = 'PT';
+    stageSquareCheckout({ maxEurPerCopy: '25' });
+    await expect(
+      startPrintCheckout({ ...squareForm, recipient: undefined }, buyer),
+    ).rejects.toMatchObject({
+      code: 'shipping_details_required',
+    });
+    expect(mockInserts).not.toHaveBeenCalled();
+    expect(mockFetch).not.toHaveBeenCalled();
+  });
+
+  it('rejects a Lulu-default square checkout outside the approved destination list before reserving', async () => {
+    configureSquare(true, 'sandbox');
+    process.env.LULU_PREMIUM_SQUARE_CUSTOMER_COUNTRIES = 'PT';
+    stageSquareCheckout({ defaultProvider: 'lulu', maxEurPerCopy: '25', country: 'ES' });
+    await expect(startPrintCheckout(squareForm, buyer)).rejects.toMatchObject({
+      code: 'square_lulu_country_unavailable',
+    });
+    expect(mockInserts).not.toHaveBeenCalled();
+    expect(mockFetch).not.toHaveBeenCalled();
+  });
+
+  it('keeps a Spain province name intact when sending a validated address to Lulu', () => {
+    expect(
+      validateLuluShipping({
+        name: 'Test Recipient',
+        street1: 'Paseo del Prado 1',
+        city: 'Madrid',
+        postcode: '28014',
+        country_code: 'ES',
+        state_code: 'Madrid',
+        phone_number: '+34600000000',
+        email: 'print@example.test',
+      }).state_code,
+    ).toBe('Madrid');
+  });
+
   it.each([
     [{ line1: 'X'.repeat(31) }, {}, 'each shipping address line'],
     [{ line2: 'X'.repeat(31) }, {}, 'each shipping address line'],
     [{ city: 'X'.repeat(31) }, {}, 'the city'],
     [{}, { name: 'X'.repeat(36) }, '35 characters'],
     [{}, { phone_number: '+351' + '2'.repeat(17) }, '8 to 20 characters'],
-    [{ country: 'ES', stateRegion: 'Madrid' }, {}, 'short state, province, or region code'],
+    [{ country: 'ES', stateRegion: '' }, {}, 'province name or short code'],
   ])(
     'rejects invalid Lulu shipping before reserving or deducting credits',
     async (address, recipient, message) => {

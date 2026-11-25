@@ -24,6 +24,7 @@ type Settings = {
   hardcoverAvailable: boolean;
   paperbackAvailable?: boolean;
   squareEditionRevision?: string;
+  squareLuluCustomerCountries?: string[];
 };
 async function show(
   settings: Settings,
@@ -98,15 +99,20 @@ it.each([
   },
 );
 
-it.each([false, true])(
-  'offers only square hardcover and reserves carrier details for Lulu (%s)',
-  async (luluDefault) => {
+it.each([
+  { luluDefault: false, destinations: [] },
+  { luluDefault: false, destinations: ['PT'] },
+  { luluDefault: true, destinations: ['PT'] },
+])(
+  'offers only square hardcover and requires carrier details for the $destinations pilot (default Lulu $luluDefault)',
+  async ({ luluDefault, destinations }) => {
     const { place, onPlaceOrder } = await show(
       {
         luluDefault,
         hardcoverAvailable: true,
         paperbackAvailable: false,
         squareEditionRevision: 'revision-1',
+        squareLuluCustomerCountries: destinations,
       },
       true,
     );
@@ -120,7 +126,7 @@ it.each([false, true])(
       numberOfCopies: 2,
       totalCost: 18,
       breakdown: { basePrice: 12, extraChaptersCost: 0, extraCopiesCost: 4, shippingCost: 2 },
-      recipient: luluDefault
+      recipient: destinations.length
         ? {
             name: 'Test Recipient',
             email: 'reader@example.org',
@@ -130,6 +136,21 @@ it.each([false, true])(
     });
   },
 );
+it('blocks square checkout outside the pilot when Lulu is the default', async () => {
+  const { place } = await show(
+    {
+      luluDefault: true,
+      hardcoverAvailable: true,
+      paperbackAvailable: false,
+      squareEditionRevision: 'revision-1',
+      squareLuluCustomerCountries: ['ES'],
+    },
+    true,
+  );
+  expect(place).toBeDisabled();
+  expect(screen.getByRole('alert')).toHaveTextContent('errors.destinationUnavailable');
+  expect(screen.queryByLabelText('payment.recipientEmail')).toBeNull();
+});
 it('allows a priced, available hardcover to be confirmed at its own credit price', async () => {
   const { place, onPlaceOrder } = await show({ luluDefault: true, hardcoverAvailable: true }, true);
   const select = screen.getByRole('combobox', { name: /payment.binding/ });
@@ -195,12 +216,19 @@ it('blocks a Lulu checkout and explains how to shorten an overlong address', asy
   expect(screen.getByRole('alert')).toHaveTextContent('payment.addressTooLong');
 });
 
-it('requires a provider subdivision code for a Lulu checkout in Spain', async () => {
+it('asks for a province in a Lulu checkout in Spain', async () => {
+  const { place } = await show({ luluDefault: true, hardcoverAvailable: false }, false, 'ES', {
+    stateRegion: '',
+  });
+  expect(place).toBeDisabled();
+  expect(screen.getByRole('alert')).toHaveTextContent('payment.spanishProvinceRequired');
+});
+
+it('accepts a province name in a Lulu checkout in Spain', async () => {
   const { place } = await show({ luluDefault: true, hardcoverAvailable: false }, false, 'ES', {
     stateRegion: 'Madrid',
   });
-  expect(place).toBeDisabled();
-  expect(screen.getByRole('alert')).toHaveTextContent('payment.subdivisionRequired');
+  expect(place).toBeEnabled();
 });
 
 it('keeps manual checkout available without collecting a carrier email or tax identifier', async () => {

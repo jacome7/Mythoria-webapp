@@ -32,3 +32,10 @@ INSERT INTO blog_post_translations (post_id, locale, slug, title, summary, conte
 COMMIT;
 UPDATE stories SET is_featured=true WHERE slug='juventude-de-gaia-no-mundial-de-clubes';
 INSERT INTO pricing (service_code, credits) VALUES ('eBookGeneration', 10), ('printedSoftCover', 20), ('extraBookCopy', 15), ('shippingCost', 5);
+INSERT INTO pricing (service_code, credits) VALUES ('printedHardCover', 22);
+INSERT INTO author_credit_balances (author_id, total_credits)
+VALUES ('00000000-0000-4000-8000-000000000001', 100);
+INSERT INTO addresses (author_id, type, line1, city, postal_code, country, phone)
+VALUES ('00000000-0000-4000-8000-000000000001', 'delivery', 'Rua do Livro 10', 'Lisboa', '1000-001', 'PT', '+351210000000');
+INSERT INTO print_providers (name, company_name, email_address, address, city, country, prices, available_countries)
+VALUES ('Fixture printer', 'Fixture printer', 'print@fixture.invalid', 'Rua da Impressão 11', 'Lisboa', 'PT', '{}', '["PT"]');

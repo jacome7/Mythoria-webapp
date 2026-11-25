@@ -27,6 +27,7 @@ type RenderInput = {
 export async function renderOrderProof(
   input: RenderInput,
   coverDimensions?: { width: number; height: number },
+  coverPageCount?: number,
 ) {
   const config = getEnvironmentConfig();
   const response = await fetch(
@@ -34,7 +35,7 @@ export async function renderOrderProof(
     {
       method: 'POST',
       headers: { 'content-type': 'application/json', 'x-api-key': config.storyGeneration.apiKey },
-      body: JSON.stringify({ ...input, coverDimensions }),
+      body: JSON.stringify({ ...input, coverDimensions, coverPageCount }),
       signal: AbortSignal.timeout(8 * 60_000),
     },
   );
@@ -44,6 +45,9 @@ export async function renderOrderProof(
   const raw: unknown = await response.json();
   if (input.provider === 'lulu' && !coverDimensions) {
     return z.object({ interior: assetSchema, pageCount: z.number().int().positive() }).parse(raw);
+  }
+  if (coverPageCount !== undefined) {
+    return proofSchema.extend({ coverPageCount: z.literal(coverPageCount) }).parse(raw);
   }
   return proofSchema.parse(raw);
 }

@@ -1,5 +1,5 @@
 // AUTO-GENERATED FILE. Run: npm run i18n:keys
-// Total keys: 3401
+// Total keys: 3407
 export type TranslationKey =
   | 'AIImageEditor.buttons.applyPhoto'
   | 'AIImageEditor.cancelButton'
@@ -1425,12 +1425,14 @@ export type TranslationKey =
   | 'PrintOrder.buttons.back'
   | 'PrintOrder.buttons.backToStories'
   | 'PrintOrder.buttons.cancel'
+  | 'PrintOrder.buttons.checkOrder'
   | 'PrintOrder.buttons.confirm'
   | 'PrintOrder.buttons.continue'
   | 'PrintOrder.buttons.placeOrder'
   | 'PrintOrder.confirmation.message'
   | 'PrintOrder.confirmation.title'
   | 'PrintOrder.createAccount'
+  | 'PrintOrder.errors.destinationUnavailable'
   | 'PrintOrder.errors.editionChanged'
   | 'PrintOrder.errors.fetchCreditsFailed'
   | 'PrintOrder.errors.insufficientCredits'
@@ -1438,6 +1440,9 @@ export type TranslationKey =
   | 'PrintOrder.errors.loadingFailed'
   | 'PrintOrder.errors.missingRequiredFields'
   | 'PrintOrder.errors.orderFailed'
+  | 'PrintOrder.errors.orderPending'
+  | 'PrintOrder.errors.pricingChanged'
+  | 'PrintOrder.errors.shippingDetailsRequired'
   | 'PrintOrder.errors.squareUnavailable'
   | 'PrintOrder.errors.storyNotFound'
   | 'PrintOrder.errors.storyNotPublished'
@@ -1473,6 +1478,7 @@ export type TranslationKey =
   | 'PrintOrder.payment.shippingCost'
   | 'PrintOrder.payment.softcoverDescription'
   | 'PrintOrder.payment.softcoverTitle'
+  | 'PrintOrder.payment.spanishProvinceRequired'
   | 'PrintOrder.payment.squareHardcoverTitle'
   | 'PrintOrder.payment.subdivisionRequired'
   | 'PrintOrder.payment.taxId'

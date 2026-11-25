@@ -14,7 +14,11 @@
     },
     "errors": {
       "squareUnavailable": "L’impression au format carré avec couverture rigide est actuellement indisponible.",
-      "editionChanged": "L’édition imprimée a changé. Revenez en arrière et vérifiez l’édition actuelle avant de commander.",
+      "editionChanged": "L’édition imprimée a changé. Vérifiez l’édition actuelle avant de commander.",
+      "pricingChanged": "Le prix a changé. Vérifiez le nouveau total avant de passer commande.",
+      "orderPending": "Nous n’avons pas pu confirmer votre commande. Vérifiez son statut avant d’en passer une autre.",
+      "destinationUnavailable": "Ce livre ne peut pas être livré à cette adresse. Choisissez une autre adresse.",
+      "shippingDetailsRequired": "Vérifiez l’adresse de livraison et renseignez les coordonnées obligatoires du destinataire.",
       "storyNotFound": "Histoire non trouvée",
       "storyNotPublished": "Seules les histoires publiées peuvent être imprimées",
       "loadingFailed": "Échec de charger les données de l'histoire",
@@ -68,7 +72,8 @@
       "taxId": "Identifiant fiscal du destinataire",
       "addressTooLong": "Reviens en arrière et raccourcis la ville et chaque ligne de l’adresse à 30 caractères maximum.",
       "postalCodeRequired": "Reviens en arrière et ajoute le code postal à l’adresse de livraison.",
-      "subdivisionRequired": "Reviens en arrière et saisis le code abrégé de l’État, de la province ou de la région."
+      "subdivisionRequired": "Reviens en arrière et saisis le code abrégé de l’État, de la province ou de la région.",
+      "spanishProvinceRequired": "Reviens en arrière et saisis le nom de la province ou son code abrégé."
     },
     "confirmation": {
       "title": "Ordre passé avec succès!",
@@ -78,6 +83,7 @@
       "continue": "Continuer",
       "back": "Dos",
       "placeOrder": "Passer la commande",
+      "checkOrder": "Vérifier la commande",
       "backToStories": "Retour à mes histoires",
       "confirm": "Confirmer la commande",
       "cancel": "Annuler"

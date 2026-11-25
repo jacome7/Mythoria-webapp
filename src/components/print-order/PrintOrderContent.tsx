@@ -24,6 +24,7 @@ interface Story {
   title: string;
   synopsis: string;
   bookType?: string;
+  editionRevision?: string;
   frontCoverImageUrl?: string;
   chapterCount: number;
 }
@@ -43,6 +44,14 @@ interface Address {
 }
 
 type Step = 'story' | 'address' | 'payment';
+
+interface PrintOrderSubmission {
+  body: string;
+  storageKey: string;
+  storyId: string;
+  numberOfCopies: number;
+  totalCost: number;
+}
 
 interface PrintOrderContentProps {
   storyId: string;
@@ -72,6 +81,9 @@ export default function PrintOrderContent({ storyId }: PrintOrderContentProps) {
   const [loading, setLoading] = useState(true);
   const [orderLoading, setOrderLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [orderError, setOrderError] = useState<string | null>(null);
+  const [pendingSubmission, setPendingSubmission] = useState<PrintOrderSubmission | null>(null);
+  const [paymentRefreshVersion, setPaymentRefreshVersion] = useState(0);
   const [showCreateAddress, setShowCreateAddress] = useState(false);
   const [editingAddress, setEditingAddress] = useState<Address | null>(null);
 
@@ -84,16 +96,18 @@ export default function PrintOrderContent({ storyId }: PrintOrderContentProps) {
         const storyData = data.story;
         if (storyData.status !== 'published') {
           setError(tPrintOrder('errors.storyNotPublished'));
-          return;
+          return false;
         }
         setStory(storyData);
+        return true;
       } else {
-        setError(data.error || tPrintOrder('errors.storyNotFound'));
+        setError(tPrintOrder('errors.storyNotFound'));
       }
     } catch (err) {
       console.error('Error loading story:', err);
       setError(tPrintOrder('errors.loadingFailed'));
     }
+    return false;
   };
 
   const loadAddresses = async () => {
@@ -122,39 +136,71 @@ export default function PrintOrderContent({ storyId }: PrintOrderContentProps) {
     loadStoryData();
     loadAddresses();
   }, [storyId]); // eslint-disable-line react-hooks/exhaustive-deps
-  const handlePlaceOrder = async ({
-    numberOfCopies,
-    totalCost,
-    recipient,
-  }: PaymentOrderDetails) => {
-    if (submittingOrder.current) return;
-    if (!story || !selectedAddress || !selectedPrintingOption) {
-      setError(tPrintOrder('errors.missingRequiredFields'));
-      return;
+  const reviewCurrentEdition = async () => {
+    if (await loadStoryData()) {
+      setSelectedPrintingOption(null);
+      setCurrentStep('story');
+      setOrderError(tPrintOrder('errors.editionChanged'));
     }
+  };
+
+  const handlePlaceOrder = async (details?: PaymentOrderDetails) => {
+    if (submittingOrder.current) return;
 
     submittingOrder.current = true;
+    let submission = pendingSubmission;
     try {
       setOrderLoading(true);
-      const analyticsContext = await getGoogleAnalyticsContext();
-      const key = JSON.stringify([
-        story.storyId,
-        selectedAddress.addressId,
-        selectedPrintingOption.serviceCode,
-        numberOfCopies,
-        totalCost,
-        recipient,
-        ...(selectedPrintingOption.editionRevision ? [selectedPrintingOption.editionRevision] : []),
-      ]);
-      const hash = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(key));
-      const fingerprint = Array.from(new Uint8Array(hash), (byte) =>
-        byte.toString(16).padStart(2, '0'),
-      ).join('');
-      const storageKey = 'mythoria:print-intent:' + fingerprint;
-      if (intent.current?.key !== key) {
-        const id = sessionStorage.getItem(storageKey) ?? crypto.randomUUID();
-        sessionStorage.setItem(storageKey, id);
-        intent.current = { key, id };
+      setOrderError(null);
+      if (!submission) {
+        if (!details || !story || !selectedAddress || !selectedPrintingOption) {
+          setOrderError(tPrintOrder('errors.missingRequiredFields'));
+          return;
+        }
+        if (story.editionRevision !== selectedPrintingOption.editionRevision) {
+          await reviewCurrentEdition();
+          return;
+        }
+        const { numberOfCopies, totalCost, recipient } = details;
+        const { serviceCode, editionRevision } = selectedPrintingOption;
+        const analyticsContext = await getGoogleAnalyticsContext();
+        const key = JSON.stringify([
+          story.storyId,
+          selectedAddress.addressId,
+          serviceCode,
+          numberOfCopies,
+          totalCost,
+          recipient,
+          ...(editionRevision ? [editionRevision] : []),
+        ]);
+        const hash = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(key));
+        const fingerprint = Array.from(new Uint8Array(hash), (byte) =>
+          byte.toString(16).padStart(2, '0'),
+        ).join('');
+        const storageKey = 'mythoria:print-intent:' + fingerprint;
+        if (intent.current?.key !== key) {
+          const id = sessionStorage.getItem(storageKey) ?? crypto.randomUUID();
+          sessionStorage.setItem(storageKey, id);
+          intent.current = { key, id };
+        }
+        submission = {
+          storageKey,
+          storyId: story.storyId,
+          numberOfCopies,
+          totalCost,
+          body: JSON.stringify({
+            checkout: {
+              storyId: story.storyId,
+              shippingId: selectedAddress.addressId,
+              recipient,
+              intentId: intent.current.id,
+              printingOption: { serviceCode, editionRevision },
+              totalCost,
+              numberOfCopies,
+              analyticsContext,
+            },
+          }),
+        };
       }
 
       const response = await fetch('/api/print-requests', {
@@ -162,58 +208,65 @@ export default function PrintOrderContent({ storyId }: PrintOrderContentProps) {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          checkout: {
-            storyId: story.storyId,
-            shippingId: selectedAddress.addressId,
-            recipient,
-            intentId: intent.current.id,
-            printingOption: {
-              serviceCode: selectedPrintingOption.serviceCode,
-              editionRevision: selectedPrintingOption.editionRevision,
-            },
-            totalCost,
-            numberOfCopies,
-            analyticsContext,
-          },
-        }),
+        body: submission.body,
       });
 
       const data = await response.json();
 
       if (data.success) {
-        sessionStorage.removeItem(storageKey);
+        sessionStorage.removeItem(submission.storageKey);
+        intent.current = null;
+        setPendingSubmission(null);
         setAccepted(true);
         trackPaidAction({
           action_type: 'print',
-          story_id: story.storyId,
-          credits_spent: totalCost,
+          story_id: submission.storyId,
+          credits_spent: submission.totalCost,
         });
         if (typeof data.adEventId === 'string' && data.adEventId) {
           const printRequestId = typeof data.request?.id === 'string' ? data.request.id : '';
           trackOpenAiAdsEvent({
-            ...conversions.printOrderRequested(printRequestId, numberOfCopies),
+            ...conversions.printOrderRequested(printRequestId, submission.numberOfCopies),
             eventId: data.adEventId,
           });
         }
+      } else if (response.status >= 500) {
+        setPendingSubmission(submission);
+        setOrderError(tPrintOrder('errors.orderPending'));
       } else {
-        // Handle insufficient credits error specifically
+        setPendingSubmission(null);
         if (response.status === 402) {
-          setError(tPrintOrder('errors.insufficientCredits'));
+          setOrderError(tPrintOrder('errors.insufficientCredits'));
+          setPaymentRefreshVersion((version) => version + 1);
         } else if (data.code === 'print_edition_changed') {
-          setError(tPrintOrder('errors.editionChanged'));
+          await reviewCurrentEdition();
+        } else if (data.code === 'pricing_changed' || data.code === 'printing_option_unavailable') {
+          setOrderError(tPrintOrder('errors.pricingChanged'));
+          setPaymentRefreshVersion((version) => version + 1);
         } else if (
           data.code === 'square_print_unavailable' ||
           data.code === 'square_edition_unavailable'
         ) {
-          setError(tPrintOrder('errors.squareUnavailable'));
+          setOrderError(tPrintOrder('errors.squareUnavailable'));
+          setPaymentRefreshVersion((version) => version + 1);
+        } else if (
+          data.code === 'country_unsupported' ||
+          data.code === 'square_lulu_country_unavailable' ||
+          data.code === 'address_unavailable'
+        ) {
+          setOrderError(tPrintOrder('errors.destinationUnavailable'));
+          setCurrentStep('address');
+        } else if (data.code === 'shipping_details_required') {
+          setOrderError(tPrintOrder('errors.shippingDetailsRequired'));
+          setPaymentRefreshVersion((version) => version + 1);
         } else {
-          setError(data.error || tPrintOrder('errors.orderFailed'));
+          setOrderError(tPrintOrder('errors.orderFailed'));
         }
       }
     } catch (err) {
       console.error('Error placing order:', err);
-      setError(tPrintOrder('errors.orderFailed'));
+      setPendingSubmission(submission);
+      setOrderError(tPrintOrder(submission ? 'errors.orderPending' : 'errors.orderFailed'));
     } finally {
       submittingOrder.current = false;
       setOrderLoading(false);
@@ -251,6 +304,9 @@ export default function PrintOrderContent({ storyId }: PrintOrderContentProps) {
             );
             return sortAddresses(updated);
           });
+          setSelectedAddress((current) =>
+            current?.addressId === data.address.addressId ? data.address : current,
+          );
         } else {
           setAddresses((prev: Address[]) => {
             const updated: Address[] = [...prev, data.address];
@@ -393,6 +449,21 @@ export default function PrintOrderContent({ storyId }: PrintOrderContentProps) {
       {/* Step Content */}
       <div className="card bg-base-200">
         <div className="card-body">
+          {orderError && (
+            <div className="alert alert-warning mb-3" role="alert">
+              <span>{orderError}</span>
+              {pendingSubmission && (
+                <button
+                  type="button"
+                  className="btn btn-sm"
+                  onClick={() => void handlePlaceOrder()}
+                  disabled={orderLoading}
+                >
+                  {tPrintOrder('buttons.checkOrder')}
+                </button>
+              )}
+            </div>
+          )}
           {currentStep === 'story' && story && (
             <StoryStep story={story} onNext={() => setCurrentStep('address')} />
           )}
@@ -414,15 +485,18 @@ export default function PrintOrderContent({ storyId }: PrintOrderContentProps) {
             />
           )}
           {currentStep === 'payment' && story && selectedAddress && (
-            <PaymentStep
-              address={selectedAddress}
-              story={story}
-              selectedPrintingOption={selectedPrintingOption}
-              onSelectPrintingOption={setSelectedPrintingOption}
-              onBack={() => setCurrentStep('address')}
-              onPlaceOrder={handlePlaceOrder}
-              loading={orderLoading}
-            />
+            <fieldset className="min-w-0" disabled={orderLoading || Boolean(pendingSubmission)}>
+              <PaymentStep
+                address={selectedAddress}
+                story={story}
+                selectedPrintingOption={selectedPrintingOption}
+                onSelectPrintingOption={setSelectedPrintingOption}
+                onBack={() => setCurrentStep('address')}
+                onPlaceOrder={handlePlaceOrder}
+                loading={orderLoading}
+                refreshVersion={paymentRefreshVersion}
+              />
+            </fieldset>
           )}
         </div>
       </div>
