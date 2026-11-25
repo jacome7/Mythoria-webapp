@@ -35,3 +35,7 @@ flowchart LR
   BlogPost --> Share[ShareButton]
   BlogPost --> BackTop[BackToTopButton]
 ```
+
+## Blog audio
+
+Set `NEXT_PUBLIC_ELEVENLABS_AUDIO_NATIVE_PUBLIC_USER_ID` to the public widget ID and allowlist the blog in ElevenLabs. The player loads when a reader chooses to listen and uses the current article URL.

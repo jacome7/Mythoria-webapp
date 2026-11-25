@@ -873,6 +873,13 @@ export const envManifest: EnvVarDescriptor[] = [
     note: 'Optional local key for repository sample-book, voice, and graphic generation scripts; not used by the webapp runtime.',
   },
 
+  {
+    name: 'NEXT_PUBLIC_ELEVENLABS_AUDIO_NATIVE_PUBLIC_USER_ID',
+    required: false,
+    scopes: ['dev', 'runtime', 'prod', 'public'],
+    note: 'Public Audio Native widget ID. Omit to hide blog audio playback.',
+  },
+
   // Non-public Clerk URLs used at runtime (not exposed publicly without prefix)
   {
     name: 'CLERK_SIGN_IN_URL',

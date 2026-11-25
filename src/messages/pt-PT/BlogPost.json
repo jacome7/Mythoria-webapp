@@ -11,6 +11,9 @@
     "notAvailable": "Crónica indisponível",
     "notAvailableDescription": "Esta crónica não está disponível no teu idioma.",
     "error": "Falha ao carregar a crónica",
-    "errorDescription": "Não foi possível carregar a crónica. Por favor, tenta novamente mais tarde."
+    "errorDescription": "Não foi possível carregar a crónica. Por favor, tenta novamente mais tarde.",
+    "listenHeading": "Ouvir esta crónica",
+    "audioLoading": "A preparar a narração…",
+    "audioUnavailable": "O leitor de áudio está indisponível neste momento. Tenta novamente dentro de instantes."
   }
 }

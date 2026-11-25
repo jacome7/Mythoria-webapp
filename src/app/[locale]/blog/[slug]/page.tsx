@@ -21,6 +21,7 @@ import { buildLocalizedPath, buildLocalizedUrl } from '@/lib/seo';
 import { resolveBlogPostRoute, type BlogRouteResolution } from '@/lib/blog-route';
 import { getPortugueseBlogGuideLinks } from '@/lib/blog-guide-links';
 import { getRenderableBlogImageUrl } from '@/lib/blog-image-url';
+import { ElevenLabsAudioNative } from '@/components/ElevenLabsAudioNative';
 
 interface BlogPostPageProps {
   params: Promise<{
@@ -122,6 +123,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
   }
 
   const { post } = resolution;
+  const audioUserId = process.env.NEXT_PUBLIC_ELEVENLABS_AUDIO_NATIVE_PUBLIC_USER_ID?.trim();
 
   const validation = validateMdxSource(post.contentMdx);
   if (!validation.ok) {
@@ -232,6 +234,15 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
             text={post.summary}
             className="text-xl text-base-content/80 leading-relaxed mb-8 italic border-l-4 border-primary pl-6"
           />
+          {audioUserId && (
+            <ElevenLabsAudioNative
+              key={pageUrl}
+              publicUserId={audioUserId}
+              label={tBlogPost('listenHeading')}
+              loading={tBlogPost('audioLoading')}
+              unavailable={tBlogPost('audioUnavailable')}
+            />
+          )}
         </header>
 
         <div className="prose prose-lg max-w-none mb-12">

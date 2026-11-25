@@ -11,6 +11,9 @@
     "notAvailable": "Chronik nicht verfügbar",
     "notAvailableDescription": "Diese Chronik ist in deiner Sprache nicht verfügbar.",
     "error": "Chronik konnte nicht geladen werden",
-    "errorDescription": "Wir konnten die Chronik nicht laden. Bitte versuche es später noch einmal."
+    "errorDescription": "Wir konnten die Chronik nicht laden. Bitte versuche es später noch einmal.",
+    "listenHeading": "Diese Chronik anhören",
+    "audioLoading": "Nacherzählung wird vorbereitet…",
+    "audioUnavailable": "Der Audio-Player ist derzeit nicht verfügbar. Bitte versuche es gleich noch einmal."
   }
 }
