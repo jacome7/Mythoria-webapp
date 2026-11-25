@@ -8,6 +8,7 @@ const mockCancel = jest.fn();
 const mockGetJob = jest.fn();
 const mockGetJobCosts = jest.fn();
 const mockReadOrder = jest.fn();
+const mockOrderNumberLookup = jest.fn();
 const mockRender = jest.fn();
 const mockDimensions = jest.fn();
 const mockValidate = jest.fn();
@@ -53,6 +54,7 @@ jest.mock('@/db', () => ({
     }),
     transaction: async (callback: (tx: unknown) => unknown) =>
       callback({
+        execute: async () => undefined,
         update: (table: object) =>
           table === printRequests
             ? {
@@ -66,10 +68,14 @@ jest.mock('@/db', () => ({
                 },
               }
             : mockWriter(),
-        select: () => ({
+        select: (selection?: { conflictingPrintRequestId?: unknown }) => ({
           from: (table: object) => ({
             where: () => ({
               for: async () => (table === stories ? [mockPublishedStory] : [{ max: mockCeiling }]),
+              limit: () => {
+                if (!selection?.conflictingPrintRequestId) throw new Error('Unexpected lookup');
+                return mockOrderNumberLookup();
+              },
             }),
           }),
         }),
@@ -129,6 +135,7 @@ import {
   preparePrintOrderNow,
   printOrderView,
   processPrintProof,
+  reconcileLuluWebhook,
   reconcilePrintOrder,
   reserveManualPrint,
   revisePrintProof,
@@ -136,6 +143,7 @@ import {
 } from './fulfillment';
 
 const id = '32c3cb83-00c2-4933-972b-916ec8065f18';
+const orderNumber = '32C3CB83';
 const confirmationId = 'b53517fe-a406-493b-bda7-9cad123bd371';
 const proofFile = { bucket: 'b', object: 'o', generation: '1', sha256: 'a'.repeat(64), size: 55 };
 const proof = {
@@ -157,7 +165,7 @@ const shippingSnapshot = {
 const emailVariables = {
   email: 'owner@example.test',
   name: 'Owner',
-  OrderNumber: id,
+  OrderNumber: orderNumber,
   OrderDate: '2026-11-21',
   CreditCost: 10,
   numberOfCopies: 2,
@@ -186,6 +194,7 @@ const fulfillment = {
   holdReason: null,
   updatedAt: new Date(),
   vendor: null,
+  luluExternalId: null as string | null,
   quote: {
     confirmationId,
     podPackageId: LULU_SKUS.paperback as string,
@@ -251,6 +260,7 @@ describe('Lulu release safety', () => {
     mockCurrentOrder = undefined;
     mockPublishedStory = undefined;
     mockDispatchOptions = undefined;
+    mockOrderNumberLookup.mockResolvedValue([]);
     mockQuote.mockResolvedValue({ shippingLevel: 'EXPRESS', totalEur: 30 });
     mockGetJobCosts.mockResolvedValue({
       currency: 'EUR',
@@ -568,7 +578,7 @@ describe('Lulu release safety', () => {
       expect(mockQuote).toHaveBeenCalledWith(expect.objectContaining({ pageCount }));
       expect(mockSubmit).toHaveBeenCalledWith(
         expect.objectContaining({
-          externalId: id,
+          externalId: orderNumber,
           podPackageId: PREMIUM_SQUARE_PACKAGE,
           copies: 2,
           shippingLevel: 'EXPRESS',
@@ -647,6 +657,15 @@ describe('Lulu release safety', () => {
     expect(result.fulfillment).toMatchObject({ status: 'manual_review', quote: null });
   });
 
+  it('blocks Lulu release for an existing duplicate order number', async () => {
+    mockOrderNumberLookup.mockResolvedValueOnce([{ conflictingPrintRequestId: 'other-request' }]);
+    await expect(
+      submitPrintOrder(order(), { confirmationId, confirmedTotalEur: 30 }, 'operator@example.test'),
+    ).rejects.toMatchObject({ code: 'print_order_number_conflict' });
+    expect(mockSubmit).not.toHaveBeenCalled();
+    expect(mockWrite).not.toHaveBeenCalled();
+  });
+
   it('reconciles an ambiguous create without ever resubmitting it', async () => {
     mockSubmit.mockRejectedValue(new Error('lost supplier response'));
     mockFind.mockResolvedValue(null);
@@ -660,9 +679,31 @@ describe('Lulu release safety', () => {
     ]);
     await submitPrintOrder(uncertain, approval, actor);
     expect((await reconcilePrintOrder(uncertain)).fulfillment.status).toBe('uncertain');
-    expect(mockFind).toHaveBeenCalledWith(id);
+    expect(mockWrite.mock.calls[0][0]).toMatchObject({ luluExternalId: orderNumber });
+    expect(mockFind).toHaveBeenCalledWith(orderNumber);
     expect(mockSubmit).toHaveBeenCalledTimes(1);
   });
+
+  it.each([null, orderNumber])(
+    'reconciles signed callback references with stored ID %s',
+    async (storedId) => {
+      process.env.LULU_PRINT_ENVIRONMENT = 'sandbox';
+      const externalId = storedId ?? id;
+      mockCurrentOrder = order({ status: 'uncertain', luluExternalId: storedId });
+      mockFind.mockResolvedValue({
+        id: '77',
+        status: 'CREATED',
+        externalId,
+        tracking: [],
+        lines: [{ external_id: externalId + '-1' }],
+      });
+
+      await reconcileLuluWebhook('77', externalId);
+
+      expect(mockFind).toHaveBeenCalledWith(externalId);
+      expect(mockCurrentOrder.fulfillment).toMatchObject({ status: 'submitted' });
+    },
+  );
 
   it('cancels a cancelable submitted Lulu job and rejects canceling in-production jobs', async () => {
     process.env.LULU_PRINT_ENVIRONMENT = 'sandbox';
@@ -736,9 +777,9 @@ describe('Lulu release safety', () => {
     mockSubmit.mockResolvedValue({
       id: '99',
       status: 'CREATED',
-      externalId: id,
+      externalId: orderNumber,
       tracking: [],
-      lines: [{ external_id: id + '-1', tracking_urls: [] }],
+      lines: [{ external_id: orderNumber + '-1', tracking_urls: [] }],
     });
     mockGetJobCosts.mockResolvedValue({
       currency: 'EUR',

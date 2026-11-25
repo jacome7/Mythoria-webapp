@@ -30,12 +30,15 @@ describe('Lulu status webhook', () => {
     mockVerify.mockResolvedValue(true);
   });
 
-  it('verifies raw bytes before dispatching an exact reference for reconciliation', async () => {
-    const raw = body(orderId);
-    expect((await POST(request(raw))).status).toBe(204);
-    expect(mockVerify).toHaveBeenCalledWith(Buffer.from(raw), 'signature');
-    expect(mockReconcile).toHaveBeenCalledWith('123', orderId);
-  });
+  it.each([orderId, '32C3CB83'])(
+    'verifies raw bytes before reconciling reference %s',
+    async (externalId) => {
+      const raw = body(externalId);
+      expect((await POST(request(raw))).status).toBe(204);
+      expect(mockVerify).toHaveBeenCalledWith(Buffer.from(raw), 'signature');
+      expect(mockReconcile).toHaveBeenCalledWith('123', externalId);
+    },
+  );
 
   it('ignores the supplier test reference', async () => {
     expect((await POST(request(body('test-print-job')))).status).toBe(204);

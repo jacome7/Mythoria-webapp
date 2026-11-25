@@ -5,6 +5,7 @@ import { getEnvironmentConfig } from '@/config/environment';
 import { db } from '@/db';
 import { printFulfillments, printProviders, printRequests, stories } from '@/db/schema';
 import { createOrderTicket } from './checkout';
+import { allocatePrintRequestId, printOrderNumber } from './order-number';
 import {
   luluPackageId,
   PrintError,
@@ -65,7 +66,7 @@ export async function createStaffPrintProof(
         400,
       );
 
-    const id = randomUUID();
+    const id = await allocatePrintRequestId(tx);
     const [request] = await tx
       .insert(printRequests)
       .values({
@@ -98,7 +99,7 @@ export async function createStaffPrintProof(
           email: shippingAddress.email,
           name: shippingAddress.name,
           storyTitle: `${story.title} (staff proof)`,
-          OrderNumber: id.slice(0, 8).toUpperCase(),
+          OrderNumber: printOrderNumber(id),
           OrderDate: request.requestedAt.toISOString().slice(0, 10),
           CreditCost: 0,
           numberOfCopies: 1,
@@ -293,7 +294,7 @@ export async function createAdminPrintOrder(input: AdminPrintOrderInput, actor: 
       );
     }
 
-    const id = randomUUID();
+    const id = await allocatePrintRequestId(tx);
     const [request] = await tx
       .insert(printRequests)
       .values({
@@ -334,7 +335,7 @@ export async function createAdminPrintOrder(input: AdminPrintOrderInput, actor: 
           name: normalizedShipping.name,
           storyTitle:
             input.orderKind === 'staff_proof' ? `${story.title} (staff proof)` : story.title,
-          OrderNumber: id.slice(0, 8).toUpperCase(),
+          OrderNumber: printOrderNumber(id),
           OrderDate: request.requestedAt.toISOString().slice(0, 10),
           CreditCost: 0,
           numberOfCopies: input.copies,

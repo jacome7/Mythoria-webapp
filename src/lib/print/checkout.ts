@@ -19,6 +19,7 @@ import {
 } from '@/db/schema';
 import { normalizeLocale } from '@/utils/locale-utils';
 import { hasPremiumBookMarker } from '@/lib/premium-children-book/contract';
+import { allocatePrintRequestId, printOrderNumber } from './order-number';
 import {
   luluPackageConfigured,
   luluPackageId,
@@ -374,7 +375,7 @@ async function reservePrintCheckout(
         ),
       );
     if (!balance) throw new PrintError('insufficient_credits', 'Insufficient credits.', 402);
-    const orderId = randomUUID();
+    const orderId = await allocatePrintRequestId(tx);
     const [request] = await tx
       .insert(printRequests)
       .values({
@@ -418,7 +419,7 @@ async function reservePrintCheckout(
         emailVariables: {
           name: author.displayName,
           email: author.email,
-          OrderNumber: orderId.slice(0, 8).toUpperCase(),
+          OrderNumber: printOrderNumber(orderId),
           OrderDate: request.requestedAt.toISOString().slice(0, 10),
           CreditCost: totalCost,
           numberOfCopies: input.numberOfCopies,

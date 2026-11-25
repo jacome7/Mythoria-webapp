@@ -61,6 +61,12 @@ Keep the WebApp command API and proof worker available for paid tickets through 
 
 The reconciliation worker records Lulu's tax-exclusive job price and original currency for production orders. Use migration `0055_print_fulfillment_costs` before releasing the worker or the Admin Printing Costs dashboard. EUR jobs retain their native value. For other currencies the worker uses the ECB reference rate on or before the UTC Lulu job date. Missing prices and conversions are retried and shown separately in Admin. Manual and sandbox orders carry no recorded Lulu production cost. The worker can backfill older production jobs when their order identity and price are available.
 
+## Lulu packing slip references
+
+Apply migration `0056_lulu_packing_slip_order_ids` before deploying the WebApp change. New Lulu submissions use the same eight-character order number as the proof email, with `-1` appended for the line item. The WebApp stores that reference before submission so webhooks and polling can recover an uncertain create. Existing Lulu jobs continue to reconcile by full request UUID. If two older print requests share a prefix, release through manual fulfillment to avoid submitting an ambiguous Lulu reference.
+
+The Lulu Developer Portal setting to use Mythoria order and line item IDs controls what appears on the packing slip. After verifying the new reference in Lulu, enable it in **User Account → Packing Slip Information**.
+
 ## Verification
 
 Run each service's tests, typecheck, lint and build from that service directory. Run WebApp locale parity as well. The five-language Notification Engine tests render the confirmation and revised-proof subjects and check both attachment and link delivery.

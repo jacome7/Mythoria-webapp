@@ -24,6 +24,7 @@ import {
 } from '@/lib/lulu/client';
 import { getPrintSettings } from './checkout';
 import { convertLuluCostToEur, recordLuluNativeCost } from './lulu-costs';
+import { luluOrderNumberPattern, printOrderNumber, printOrderNumberInUse } from './order-number';
 import {
   bindingSchema,
   emailVariablesSchema,
@@ -937,6 +938,7 @@ export async function submitPrintOrder(
     });
   }
   const [interiorUrl, coverUrl] = await proofLinks(order, proof, duration.supplier);
+  const externalId = row.luluExternalId ?? printOrderNumber(order.request.id);
   order = await db.transaction(async (tx) => {
     const [setting] = await tx
       .select({ max: printFulfillmentSettings.maxEurPerCopy })
@@ -953,9 +955,22 @@ export async function submitPrintOrder(
         'The landed EUR cost exceeds the per-copy ceiling.',
       );
     }
+    if (await printOrderNumberInUse(tx, externalId, order.request.id)) {
+      throw new PrintError(
+        'print_order_number_conflict',
+        'Another print request already uses this order number. Use manual fulfillment for this order.',
+        409,
+      );
+    }
     return editableUpdate(
       order,
-      { status: 'submitting', approvedAt: new Date(), approvedBy: actor, lastError: null },
+      {
+        status: 'submitting',
+        luluExternalId: externalId,
+        approvedAt: new Date(),
+        approvedBy: actor,
+        lastError: null,
+      },
       tx,
     );
   });
@@ -966,7 +981,7 @@ export async function submitPrintOrder(
     }
     receipt = vendorSchema.parse(
       await submitLuluJob({
-        externalId: order.request.id,
+        externalId,
         podPackageId: quote.podPackageId,
         copies: row.copies,
         shippingAddress,
@@ -976,7 +991,7 @@ export async function submitPrintOrder(
         title: emailVariablesSchema.parse(row.emailVariables).storyTitle,
       }),
     );
-    if (!vendorMatchesOrder(order.request.id, receipt)) throw new Error('LULU_CREATE_MISMATCH');
+    if (!vendorMatchesOrder(order, receipt)) throw new Error('LULU_CREATE_MISMATCH');
   } catch (error) {
     if (error instanceof LuluHttpError && error.status === 400) {
       return editableUpdate(order, {
@@ -1054,11 +1069,17 @@ function statusForVendor(status: string) {
   }
 }
 
-function vendorMatchesOrder(orderId: string, vendor: PrintVendor) {
+function luluExternalId(order: Order) {
+  // Jobs sent before the packing slip change used the full request UUID.
+  return order.fulfillment.luluExternalId ?? order.request.id;
+}
+
+function vendorMatchesOrder(order: Order, vendor: PrintVendor) {
+  const externalId = luluExternalId(order);
   return (
-    vendor.externalId === orderId &&
+    vendor.externalId === externalId &&
     vendor.lines?.length === 1 &&
-    vendor.lines[0].external_id === orderId + '-1'
+    vendor.lines[0].external_id === externalId + '-1'
   );
 }
 
@@ -1067,7 +1088,7 @@ function priorVendor(order: Order) {
 }
 
 async function recordVendor(order: Order, value: PrintVendor) {
-  if (!vendorMatchesOrder(order.request.id, value)) return order;
+  if (!vendorMatchesOrder(order, value)) return order;
   const environment = process.env.LULU_PRINT_ENVIRONMENT;
   if (environment !== 'production' && environment !== 'sandbox') return order;
   const previous = priorVendor(order);
@@ -1148,7 +1169,7 @@ export async function reconcilePrintOrder(order: Order) {
   const edition = readSquareEdition(order.request.printingOptions);
   if (edition) requireSquareSupplier(edition);
   const vendor = priorVendor(order);
-  const result = vendor ? await getLuluJob(vendor.id) : await findLuluJob(order.request.id);
+  const result = vendor ? await getLuluJob(vendor.id) : await findLuluJob(luluExternalId(order));
   if (result) return recordVendor(order, vendorSchema.parse(result));
   if (row.status === 'submitting' && row.updatedAt.getTime() < Date.now() - 2 * 60_000) {
     return editableUpdate(order, {
@@ -1270,18 +1291,26 @@ export async function pollLuluCosts() {
   );
 }
 
-export async function reconcileLuluWebhook(id: string, externalId?: string) {
-  if (externalId) {
-    const [order] = await views().where(eq(printFulfillments.printRequestId, externalId));
-    if (order && ['submitting', 'uncertain', 'submitted'].includes(order.fulfillment.status)) {
-      const edition = readSquareEdition(order.request.printingOptions);
-      if (edition) requireSquareSupplier(edition);
-      const existing = vendorSchema.nullable().parse(order.fulfillment.vendor);
-      if (existing && existing.id !== id) return;
-      const result = existing ? await getLuluJob(id) : await findLuluJob(externalId);
-      if (result?.id === id) await recordVendor(order, vendorSchema.parse(result));
-    }
+export async function reconcileLuluWebhook(id: string, externalId: string) {
+  const [order] = await views().where(
+    luluOrderNumberPattern.test(externalId)
+      ? eq(printFulfillments.luluExternalId, externalId)
+      : eq(printFulfillments.printRequestId, externalId),
+  );
+  if (
+    !order ||
+    luluExternalId(order) !== externalId ||
+    !['submitting', 'uncertain', 'submitted'].includes(order.fulfillment.status)
+  ) {
+    return;
   }
+
+  const edition = readSquareEdition(order.request.printingOptions);
+  if (edition) requireSquareSupplier(edition);
+  const existing = priorVendor(order);
+  if (existing && existing.id !== id) return;
+  const result = existing ? await getLuluJob(id) : await findLuluJob(externalId);
+  if (result?.id === id) await recordVendor(order, vendorSchema.parse(result));
 }
 
 export async function reserveManualPrint(

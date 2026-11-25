@@ -11,6 +11,7 @@ const mockUpdateSet = jest.fn();
 const mockLoadManifest = jest.fn();
 const mockTransaction = jest.fn();
 const mockFetch = jest.fn();
+const mockOrderNumberLookup = jest.fn();
 
 function mockBuilder() {
   const builder: unknown = new Proxy(
@@ -90,11 +91,15 @@ describe('paid print checkout recovery', () => {
       PRINT_SCHEDULER_SERVICE_ACCOUNT: 'scheduler@test.example',
     });
     mockStatements.length = 0;
+    mockOrderNumberLookup.mockResolvedValue([]);
     mockLoadManifest.mockResolvedValue({ format: { pageCount: 32 } });
     mockTransaction.mockImplementation(async (callback) =>
       callback({
         execute: jest.fn().mockResolvedValue(undefined),
-        select: mockBuilder,
+        select: (selection?: { conflictingPrintRequestId?: unknown }) =>
+          selection?.conflictingPrintRequestId
+            ? { from: () => ({ where: () => ({ limit: mockOrderNumberLookup }) }) }
+            : mockBuilder(),
         update: (table: unknown) => {
           mockUpdates(table);
           return {
@@ -416,11 +421,22 @@ describe('paid print checkout recovery', () => {
       [request],
       [staged],
     );
+    mockOrderNumberLookup.mockResolvedValueOnce([{ conflictingPrintRequestId: storyId }]);
     mockFetch.mockRejectedValueOnce(new Error('connection dropped after ticket creation'));
     await expect(startPrintCheckout(form, author)).rejects.toMatchObject({
       code: 'print_ticket_pending',
     });
     expect(mockInserts.mock.calls.flat()).not.toContain(creditLedger);
+    expect(mockOrderNumberLookup).toHaveBeenCalledTimes(2);
+    const requestInsert = mockValues.mock.calls.find(([table]) => table === printRequests)?.[1];
+    expect(mockValues).toHaveBeenCalledWith(
+      printFulfillments,
+      expect.objectContaining({
+        emailVariables: expect.objectContaining({
+          OrderNumber: requestInsert.id.slice(0, 8).toUpperCase(),
+        }),
+      }),
+    );
 
     mockStatements.push([{ request, fulfillment: staged }]);
     mockFetch.mockResolvedValueOnce(

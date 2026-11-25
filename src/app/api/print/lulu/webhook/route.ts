@@ -1,8 +1,10 @@
 import { z } from 'zod';
 import { verifyLuluWebhook } from '@/lib/lulu/client';
 import { reconcileLuluWebhook } from '@/lib/print/fulfillment';
+import { luluOrderNumberPattern } from '@/lib/print/order-number';
 
 export const dynamic = 'force-dynamic';
+const orderReference = z.union([z.string().regex(luluOrderNumberPattern), z.string().uuid()]);
 const payload = z.object({
   topic: z.string(),
   data: z.object({
@@ -26,11 +28,9 @@ export async function POST(request: Request) {
   const parsed = payload.safeParse(body);
   if (!parsed.success) return Response.json({ error: 'Malformed webhook' }, { status: 400 });
   const { id, external_id: externalId } = parsed.data.data;
-  if (
-    parsed.data.topic === 'PRINT_JOB_STATUS_CHANGED' &&
-    z.string().uuid().safeParse(externalId).success
-  ) {
-    await reconcileLuluWebhook(id, externalId ?? undefined);
+  const reference = orderReference.safeParse(externalId);
+  if (parsed.data.topic === 'PRINT_JOB_STATUS_CHANGED' && reference.success) {
+    await reconcileLuluWebhook(id, reference.data);
   }
   return new Response(null, { status: 204 });
 }

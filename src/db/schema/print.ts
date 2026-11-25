@@ -42,21 +42,25 @@ export const printProviders = pgTable('print_providers', {
 });
 
 // Print Requests
-export const printRequests = pgTable('print_requests', {
-  id: uuid('id').primaryKey().defaultRandom(),
-  storyId: uuid('story_id').notNull(), // Not FK - story can be deleted but print request persists
-  authorId: uuid('author_id').notNull(), // Author who placed the request - for admin tracking
-  pdfUrl: text('pdf_url').notNull(), // Public accessible URL to download PDF
-  status: printRequestStatusEnum('status').notNull().default('requested'),
-  shippingId: uuid('shipping_id').references(() => addresses.addressId, { onDelete: 'set null' }), // FK to addresses table
-  printProviderId: uuid('print_provider_id')
-    .notNull()
-    .references(() => printProviders.id, { onDelete: 'restrict' }),
-  printingOptions: jsonb('printing_options').notNull(), // JSON with selected printing options (serviceCode, credits, title, chapterCount, etc.)
-  requestedAt: timestamp('requested_at', { withTimezone: true }).defaultNow().notNull(),
-  printedAt: timestamp('printed_at', { withTimezone: true }),
-  updatedAt: timestamp('updated_at', { withTimezone: true }).defaultNow().notNull(),
-});
+export const printRequests = pgTable(
+  'print_requests',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    storyId: uuid('story_id').notNull(), // Not FK - story can be deleted but print request persists
+    authorId: uuid('author_id').notNull(), // Author who placed the request - for admin tracking
+    pdfUrl: text('pdf_url').notNull(), // Public accessible URL to download PDF
+    status: printRequestStatusEnum('status').notNull().default('requested'),
+    shippingId: uuid('shipping_id').references(() => addresses.addressId, { onDelete: 'set null' }), // FK to addresses table
+    printProviderId: uuid('print_provider_id')
+      .notNull()
+      .references(() => printProviders.id, { onDelete: 'restrict' }),
+    printingOptions: jsonb('printing_options').notNull(), // JSON with selected printing options (serviceCode, credits, title, chapterCount, etc.)
+    requestedAt: timestamp('requested_at', { withTimezone: true }).defaultNow().notNull(),
+    printedAt: timestamp('printed_at', { withTimezone: true }),
+    updatedAt: timestamp('updated_at', { withTimezone: true }).defaultNow().notNull(),
+  },
+  (table) => [index('print_requests_order_number_idx').on(sql`left(${table.id}::text, 8)`)],
+);
 
 // -----------------------------------------------------------------------------
 // Types
@@ -97,6 +101,7 @@ export const printFulfillments = pgTable(
     proofSentAt: timestamp('proof_sent_at', { withTimezone: true }),
     quote: jsonb('quote'),
     vendor: jsonb('vendor'),
+    luluExternalId: varchar('lulu_external_id', { length: 8 }),
     nextLuluCostCheckAt: timestamp('next_lulu_cost_check_at', { withTimezone: true }),
     holdReason: text('hold_reason'),
     lastError: text('last_error'),
@@ -109,6 +114,7 @@ export const printFulfillments = pgTable(
   (table) => [
     uniqueIndex('print_fulfillment_intent_idx').on(table.authorId, table.intentId),
     uniqueIndex('print_fulfillment_ticket_idx').on(table.ticketId),
+    uniqueIndex('print_fulfillment_lulu_external_id_idx').on(table.luluExternalId),
     index('print_fulfillment_lulu_cost_retry_idx')
       .on(table.nextLuluCostCheckAt, table.printRequestId)
       .where(sql`${table.provider} = 'lulu' AND ${table.status} = 'submitted'`),

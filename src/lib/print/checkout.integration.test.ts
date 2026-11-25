@@ -314,14 +314,15 @@ import {
         .where(eq(printFulfillments.printRequestId, request.id));
       const jobId = String(randomInt(1e12));
       const createdAt = '2026-11-22T12:30:00.000Z';
+      const externalId = request.id.slice(0, 8).toUpperCase();
       mockSubmit.mockResolvedValue({
         id: jobId,
         createdAt,
         costs: { currency: 'EUR', total: 20, amountExclTax: '12.345', fees: [] },
         status: 'UNPAID',
-        externalId: request.id,
+        externalId,
         tracking: [],
-        lines: [{ external_id: request.id + '-1' }],
+        lines: [{ external_id: externalId + '-1' }],
       });
       const first = await withPrintTicket(request.id, fulfillment.ticketId!);
       const second = await withPrintTicket(request.id, fulfillment.ticketId!);
@@ -336,6 +337,7 @@ import {
       expect(submitted.fulfillment).toMatchObject({
         status: 'submitted',
         approvedBy: actor,
+        luluExternalId: externalId,
         vendor: { id: jobId, environment: 'production', createdAt },
       });
       const [cost] = await mockDatabase
@@ -370,6 +372,7 @@ import {
         printRequestId: legacyRequestId,
         ticketId: legacyTicketId,
         intentId: randomUUID(),
+        luluExternalId: null,
         vendor: legacyVendor,
       });
       mockGetLuluJob.mockResolvedValueOnce({ ...legacyVendor, id: '987654321', createdAt });
@@ -431,6 +434,7 @@ import {
         printRequestId: sandboxId,
         ticketId: sandboxTicketId,
         intentId: randomUUID(),
+        luluExternalId: null,
         vendor: sandboxJob,
       });
       process.env.LULU_PRINT_ENVIRONMENT = 'sandbox';
@@ -700,12 +704,13 @@ import {
         ).rejects.toMatchObject({
           code: 'print_not_approved',
         });
+        const externalId = request.id.slice(0, 8).toUpperCase();
         mockSubmit.mockResolvedValue({
           id: '101',
           status: 'UNPAID',
-          externalId: request.id,
+          externalId,
           tracking: [],
-          lines: [{ external_id: request.id + '-1' }],
+          lines: [{ external_id: externalId + '-1' }],
         });
         const approvals = await Promise.allSettled([
           submitPrintOrder(ready, release, actor),
@@ -716,7 +721,7 @@ import {
         expect(mockSubmit.mock.calls[0][0]).toMatchObject({
           podPackageId: PREMIUM_SQUARE_PACKAGE,
           copies: 2,
-          externalId: request.id,
+          externalId,
         });
         expect(getLuluCoverDimensions).toHaveBeenCalledTimes(2);
         expect(getLuluCoverDimensions).toHaveBeenCalledWith({
