@@ -1,0 +1,15 @@
+{
+  "status": "generated",
+  "targetPath": "assets/audio-teaser.mp3",
+  "text": "¡Fuuuuu! El viento pasó silbando por el mercadillo. Se llevó el olor a castañas, le hizo cosquillas a Rita con su propia bufanda y le plantó una carta en la nariz. Dentro había un dibujo. Un guante rojo. Un dedo, dos, tres, cuatro, cinco… Un momento. ¿Y aquel que asomaba por la esquina? Rita se quitó un guante para comprobarlo. En su mano solo había cinco. ¿De quién sería aquel guante tan raro? Entonces oyó una voz detrás de los paquetes. Desde el fondo, algo amarillo le hacía señas. ¿Sería aquel dedo de sobra?",
+  "voiceDirection": "Narración en castellano de Madrid, cercana y curiosa. Deja respirar las pistas y las réplicas.",
+  "language": "es-ES",
+  "provider": "google-genai",
+  "model": "gemini-3.8-flash-tts",
+  "voice": "Aoede",
+  "recommendedDurationSeconds": 40,
+  "requestModel": "gemini-3.8-flash-tts",
+  "generatedAt": "2026-11-24T17:41:40.207Z",
+  "durationSeconds": 43.13,
+  "humanListeningReview": "pending"
+}

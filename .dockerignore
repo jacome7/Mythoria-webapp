@@ -11,6 +11,7 @@ coverage
 .env*
 .DS_Store
 **/*.md
+!public/sample-books/*/sample-chapter.md
 docs/
 scripts/
 .vscode/

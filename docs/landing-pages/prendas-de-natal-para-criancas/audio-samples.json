@@ -1,0 +1,40 @@
+{
+  "locale": "pt-PT",
+  "audioSamples": [
+    {
+      "id": "book-01",
+      "slug": "o-barco-que-tinha-sede",
+      "text": "A Inês quer pôr o seu barco de papel a navegar, mas o ribeiro secou. Um som quase escondido leva-a até uma ponte de pedra, onde a água e uns pequenos girinos a esperam.",
+      "voiceDirection": "Voz adulta pt-PT clara e calorosa; ritmo adequado à idade.",
+      "status": "texto de referência; a existência de áudio deve ser verificada"
+    },
+    {
+      "id": "book-02",
+      "slug": "a-carta-que-perdeu-o-envelope",
+      "text": "Fuuuuu! Passou o vento pela feira. Levou o cheiro das castanhas, fez dançar o cachecol da Rita e deixou-lhe uma carta no nariz. A Rita abriu-a. Lá dentro, uma menina tinha desenhado uma luva vermelha. Um dedo, dois dedos, três dedos, quatro dedos, cinco dedos… Espera lá. Aquilo era mais um dedo? A Rita tirou a luva da própria mão. Só tinha cinco. Onde estaria uma pessoa com uma luva daquelas? Ouviu uma voz atrás dos embrulhos. E uma coisa amarela acenou-lhe lá do fundo. Seria o dedo que faltava?",
+      "voiceDirection": "Voz adulta pt-PT clara e calorosa; ritmo adequado à idade.",
+      "status": "texto de referência; a existência de áudio deve ser verificada"
+    },
+    {
+      "id": "book-03",
+      "slug": "quando-a-estrela-do-teatro-se-apagou",
+      "text": "A estrela tinha levado duas camadas de tinta dourada. No lençol parecia uma batata com cinco cotovelos. A Mara virou-a ao contrário. Agora parecia a mesma batata de costas. Do outro lado do pano alguém perguntou se aquilo se comia assado. O Nico tapou o nariz para não se rir ao microfone. Faltavam nove minutos para o espetáculo de Natal, e a estrela que devia mostrar o caminho não conseguia sequer mostrar a própria cor. A Mara espreitou o cartão de frente para a lanterna. Havia um buraquinho no meio. Do outro lado do lençol, a batata estava a piscar o olho.",
+      "voiceDirection": "Voz adulta pt-PT clara e calorosa; ritmo adequado à idade.",
+      "status": "texto de referência; a existência de áudio deve ser verificada"
+    },
+    {
+      "id": "book-04",
+      "slug": "o-clube-do-telhado-torto",
+      "text": "No desenho, a casa dos pássaros tinha quatro paredes direitinhas. Na bancada da escola, o telhado caía mais para um lado do que para o outro. A Eva fechou um olho. O Leo fechou os dois. Assim ficava perfeito, disse ele. Um pardal pousou no muro. Olhou para a casa, olhou para os dois e foi tirar uma minhoca de entre os tijolos. Foi então que a primeira gota caiu. Tloc. Mesmo em cima do telhado torto. A Eva baixou a cabeça até ao banco. Lá dentro, bem no sítio onde devia dormir um pássaro, acabava de nascer outra gota.",
+      "voiceDirection": "Voz adulta pt-PT clara e calorosa; ritmo adequado à idade.",
+      "status": "texto de referência; a existência de áudio deve ser verificada"
+    },
+    {
+      "id": "book-05",
+      "slug": "a-noticia-a-que-faltava-metade",
+      "text": "A Vera tinha espaço para onze palavras no título. Na fotografia que lhe tinham mandado, faltava espaço para uma. Via-se a porta da biblioteca, três caixas no chão e uma folha onde se lia: A biblioteca encerra na sexta-feira. O Dani apontou para a margem direita. Depois de sexta-feira havia ali qualquer coisa. Um risco preto, tão fino como uma pestana. E se a notícia inteira estivesse precisamente do lado de fora da fotografia? Na parede da redação, o relógio avançou um minuto. O Dani apagou a última palavra do título. Era a única que ainda ninguém lhes tinha confirmado.",
+      "voiceDirection": "Voz adulta pt-PT clara e calorosa; ritmo adequado à idade.",
+      "status": "texto de referência; a existência de áudio deve ser verificada"
+    }
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "status": "generated",
+  "targetPath": "assets/audio-teaser.mp3",
+  "text": "La estrella llevaba dos capas de pintura dorada. En la sábana parecía una patata con cinco codos. Mara le dio la vuelta. Ahora parecía la misma patata vista de espaldas. Al otro lado de la tela, alguien preguntó si aquello se comía asado. Nico se tapó la nariz para que no se le escapara la risa por el micrófono. Faltaban nueve minutos para la función de Navidad, y su estrella ni siquiera era capaz de enseñar su propio color. Mara puso el cartón frente a la linterna. Tenía un agujerito en el centro. Al otro lado de la sábana, la patata le estaba guiñando un ojo al público.",
+  "voiceDirection": "Narración en castellano de Madrid, cercana y curiosa. Deja respirar las pistas y las réplicas.",
+  "language": "es-ES",
+  "provider": "google-genai",
+  "model": "gemini-3.8-flash-tts",
+  "voice": "Puck",
+  "recommendedDurationSeconds": 40,
+  "requestModel": "gemini-3.8-flash-tts",
+  "generatedAt": "2026-11-24T17:41:51.192Z",
+  "durationSeconds": 36.14,
+  "humanListeningReview": "pending"
+}

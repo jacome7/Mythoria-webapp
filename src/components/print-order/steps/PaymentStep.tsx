@@ -1,5 +1,6 @@
 'use client';
 
+import { useUser } from '@clerk/nextjs';
 import ModalPortal from '@/components/ModalPortal';
 import { useTranslations } from 'next-intl';
 import { CreditCard } from 'lucide-react';
@@ -31,12 +32,14 @@ export interface PaymentOrderBreakdown {
 }
 
 export interface PaymentOrderDetails {
+  recipient?: { name: string; email: string; phone_number: string; recipient_tax_id?: string };
   numberOfCopies: number;
   totalCost: number;
   breakdown: PaymentOrderBreakdown;
 }
 
 interface PaymentStepProps {
+  address: { country: string; phone?: string };
   story: Story;
   selectedPrintingOption: PrintingOption | null;
   onSelectPrintingOption: (option: PrintingOption) => void;
@@ -59,6 +62,7 @@ interface ServicesApiResponse {
 
 export default function PaymentStep({
   story,
+  address,
   selectedPrintingOption,
   onSelectPrintingOption,
   onBack,
@@ -76,20 +80,55 @@ export default function PaymentStep({
   const [error, setError] = useState<string | null>(null);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
 
+  const { user } = useUser();
+  const [options, setOptions] = useState<PrintingOption[]>([]);
+  const [luluDefault, setLuluDefault] = useState(false);
+  const [recipientName, setRecipientName] = useState<string>();
+  const [recipientEmail, setRecipientEmail] = useState<string>();
+  const [recipientPhone, setRecipientPhone] = useState<string>();
+  const [taxId, setTaxId] = useState('');
+  const name = (recipientName ?? user?.fullName ?? '').trim();
+  const email = (recipientEmail ?? user?.primaryEmailAddress?.emailAddress ?? '').trim();
+  const phone = (recipientPhone ?? address.phone ?? '').trim();
+  const needsTaxId = luluDefault && ['BR', 'CL', 'MX'].includes(address.country.toUpperCase());
+  const contactValid =
+    !luluDefault ||
+    (name.length > 0 &&
+      name.length <= 35 &&
+      /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) &&
+      /^\+?[\d ()/.\-]{8,20}$/.test(phone) &&
+      (!needsTaxId || taxId.trim().length > 0));
+
   const fetchPrintingOptions = useCallback(async () => {
     try {
-      const response = await fetch('/api/pricing/services');
-      if (!response.ok) {
+      const [response, availability] = await Promise.all([
+        fetch('/api/pricing/services'),
+        fetch('/api/print-requests/options'),
+      ]);
+      if (!response.ok || !availability.ok) {
         throw new Error('Failed to fetch pricing data');
       }
 
       const data: ServicesApiResponse = await response.json();
 
-      // Filter for print-related services that are active
-      const printServices = data.services.filter(
-        (service: ServiceResponse) =>
-          service.serviceCode === 'printedSoftCover' && service.isActive,
-      );
+      const settings = (await availability.json()) as {
+        hardcoverAvailable: boolean;
+        luluDefault: boolean;
+      };
+      setLuluDefault(settings.luluDefault);
+      const formats = [
+        'printedSoftCover',
+        ...(settings.hardcoverAvailable ? ['printedHardCover'] : []),
+      ].flatMap((serviceCode) => {
+        const service = data.services.find((s) => s.isActive && s.serviceCode === serviceCode);
+        if (!service) return [];
+        const title = tPrintOrder(
+          serviceCode === 'printedHardCover' ? 'payment.hardcoverTitle' : 'payment.softcoverTitle',
+        );
+        return [{ serviceCode, title, credits: service.cost, isActive: true, description: title }];
+      });
+      setOptions(formats);
+      if (!formats.length) throw new Error('No active print formats');
 
       // Get extra chapter cost
       const extraChapter = data.services.find(
@@ -115,17 +154,14 @@ export default function PaymentStep({
         setShippingCost(shipping.cost);
       }
 
-      // Auto-select softcover option if not already selected
-      if (printServices.length > 0 && !selectedPrintingOption) {
-        const softCoverService = printServices[0];
-        onSelectPrintingOption({
-          serviceCode: softCoverService.serviceCode,
-          credits: softCoverService.cost,
-          isActive: true,
-          title: tPrintOrder('payment.softcoverTitle'),
-          description: tPrintOrder('payment.softcoverDescription'),
-        });
-      }
+      if (
+        !formats.some(
+          (format) =>
+            format.serviceCode === selectedPrintingOption?.serviceCode &&
+            format.credits === selectedPrintingOption.credits,
+        )
+      )
+        onSelectPrintingOption(formats[0]);
     } catch (error) {
       console.error('Error fetching printing options:', error);
       setError(tPrintOrder('errors.loadPricingFailed'));
@@ -197,7 +233,7 @@ export default function PaymentStep({
   };
 
   const canPlaceOrder = () => {
-    return selectedPrintingOption && !hasInsufficientCredits() && !loading;
+    return contactValid && selectedPrintingOption && !hasInsufficientCredits() && !loading;
   };
 
   const handlePlaceOrderClick = () => {
@@ -216,6 +252,16 @@ export default function PaymentStep({
       numberOfCopies,
       totalCost: calculateTotalCost(),
       breakdown,
+      ...(luluDefault
+        ? {
+            recipient: {
+              name,
+              email,
+              phone_number: phone,
+              ...(needsTaxId ? { recipient_tax_id: taxId.trim() } : {}),
+            },
+          }
+        : {}),
     });
   };
 
@@ -254,11 +300,75 @@ export default function PaymentStep({
           {/* Order Summary */}
           <div>
             <h3 className="text-lg font-semibold mb-4">{tPrintOrder('payment.orderSummary')}</h3>
-            <p className="text-sm text-base-content/70 mb-4">
-              {tPrintOrder('payment.paperbackDescriptionWithChapters', {
-                chapters: story.chapterCount,
-              })}
-            </p>
+            {options.length > 1 ? (
+              <label className="form-control mb-4">
+                {tPrintOrder('payment.binding')}
+                <select
+                  className="select select-bordered"
+                  value={selectedPrintingOption.serviceCode}
+                  onChange={(event) => {
+                    const next = options.find(
+                      (format) => format.serviceCode === event.target.value,
+                    );
+                    if (next) onSelectPrintingOption(next);
+                  }}
+                >
+                  {options.map((format) => (
+                    <option key={format.serviceCode} value={format.serviceCode}>
+                      {format.title}
+                    </option>
+                  ))}
+                </select>
+              </label>
+            ) : (
+              <p>{selectedPrintingOption.title}</p>
+            )}
+            {luluDefault && (
+              <fieldset className="grid gap-2 my-4">
+                <legend className="font-semibold">{tPrintOrder('payment.recipient')}</legend>
+                <label>
+                  {tPrintOrder('payment.recipientName')}
+                  <input
+                    className="input input-bordered w-full"
+                    autoComplete="shipping name"
+                    maxLength={35}
+                    value={recipientName ?? user?.fullName ?? ''}
+                    onChange={(e) => setRecipientName(e.target.value)}
+                  />
+                </label>
+                <label>
+                  {tPrintOrder('payment.recipientEmail')}
+                  <input
+                    className="input input-bordered w-full"
+                    autoComplete="shipping email"
+                    type="email"
+                    value={recipientEmail ?? user?.primaryEmailAddress?.emailAddress ?? ''}
+                    onChange={(e) => setRecipientEmail(e.target.value)}
+                  />
+                </label>
+                <label>
+                  {tPrintOrder('payment.recipientPhone')}
+                  <input
+                    className="input input-bordered w-full"
+                    autoComplete="shipping tel"
+                    type="tel"
+                    maxLength={20}
+                    value={recipientPhone ?? address.phone ?? ''}
+                    onChange={(e) => setRecipientPhone(e.target.value)}
+                  />
+                </label>
+                {needsTaxId && (
+                  <label>
+                    {tPrintOrder('payment.taxId')}
+                    <input
+                      className="input input-bordered w-full"
+                      value={taxId}
+                      onChange={(e) => setTaxId(e.target.value)}
+                    />
+                  </label>
+                )}
+              </fieldset>
+            )}
 
             {/* Number of Copies Control */}
             <div className="space-y-2">

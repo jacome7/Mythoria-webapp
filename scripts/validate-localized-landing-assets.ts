@@ -4,12 +4,22 @@ import { dirname, join } from 'node:path';
 import process from 'node:process';
 import sharp from 'sharp';
 import { getIndexableLandingPages } from '../src/content/landing-pages';
+import { resolvePublicAssetFile } from './public-asset-file';
 
 const LOCALES = new Set(['en-US', 'es-ES', 'fr-FR']);
+// This batch covers the four translated families with page-local TTS manifests.
+const TRANSLATED_FAMILIES = new Set([
+  'personalized-children-books',
+  'family-travel',
+  'romance-gifts',
+  'grandparents-stories',
+]);
 const MODEL = 'gemini-3.1-flash-tts-preview';
 
 async function main() {
-  const pages = getIndexableLandingPages().filter((page) => LOCALES.has(page.locale));
+  const pages = getIndexableLandingPages().filter(
+    (page) => LOCALES.has(page.locale) && TRANSLATED_FAMILIES.has(page.translationKey),
+  );
   const errors: string[] = [];
   let images = 0;
   let audio = 0;
@@ -18,7 +28,7 @@ async function main() {
   for (const page of pages) {
     for (const source of [page.hero.imageSrc, page.ogImageSrc]) {
       if (!source) continue;
-      const path = join(process.cwd(), 'public', source.replace(/^\//, ''));
+      const path = resolvePublicAssetFile(join(process.cwd(), 'public', source));
       if (!existsSync(path)) {
         errors.push(`missing hero/OG image ${source}`);
         continue;
@@ -35,7 +45,7 @@ async function main() {
     for (const book of page.books) {
       for (const source of [book.imageSrc, book.sampleChapter?.imageSrc]) {
         if (!source) continue;
-        const path = join(process.cwd(), 'public', source.replace(/^\//, ''));
+        const path = resolvePublicAssetFile(join(process.cwd(), 'public', source));
         if (!existsSync(path)) {
           errors.push(`missing image ${source}`);
           continue;
@@ -46,8 +56,9 @@ async function main() {
       }
 
       if (!book.audioSampleSrc) continue;
-      const path = join(process.cwd(), 'public', book.audioSampleSrc.replace(/^\//, ''));
-      const manifestPath = join(dirname(path), 'audio-sample.json');
+      const requestedPath = join(process.cwd(), 'public', book.audioSampleSrc);
+      const path = resolvePublicAssetFile(requestedPath);
+      const manifestPath = join(dirname(requestedPath), 'audio-sample.json');
       if (!existsSync(path) || !existsSync(manifestPath)) {
         errors.push(`missing audio or manifest ${book.audioSampleSrc}`);
         continue;

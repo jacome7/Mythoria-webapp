@@ -1,6 +1,7 @@
 import type { NextConfig } from 'next';
 import createNextIntlPlugin from 'next-intl/plugin';
 import withPWAInit from '@ducanh2912/next-pwa';
+import publicAssetAliases from './public-asset-aliases.json';
 
 const withNextIntl = createNextIntlPlugin('./src/i18n/request.ts');
 
@@ -36,6 +37,12 @@ const nextConfig: NextConfig = {
     '@grpc/grpc-js',
     '@grpc/proto-loader',
   ],
+  async rewrites() {
+    return Object.entries(publicAssetAliases).map(([source, destination]) => ({
+      source,
+      destination,
+    }));
+  },
   async redirects() {
     return [
       {

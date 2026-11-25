@@ -22,6 +22,7 @@ import LandingPageBookShowcase from './LandingPageBookShowcase';
 import LandingPageFloatingNavigation from './LandingPageFloatingNavigation';
 import LandingAnalytics from './LandingAnalytics';
 import LandingPageSupportHub from './LandingPageSupportHub';
+import styles from './LandingPageTemplate.module.css';
 
 interface LandingPageTemplateProps {
   page: LandingPageContent;
@@ -56,6 +57,55 @@ export default async function LandingPageTemplate({ page }: LandingPageTemplateP
     conceptsWorked: t('tables.conceptsWorked'),
   };
 
+  const examplesSection = (
+    <section
+      id="exemplos"
+      tabIndex={-1}
+      className="my-16 scroll-mt-24 focus:outline-none"
+      data-analytics-section="examples"
+      data-section-position="2"
+    >
+      <div className="mb-8 flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
+        <div>
+          {booksSection.eyebrow && (
+            <p className="text-sm font-semibold uppercase tracking-wide text-primary">
+              {booksSection.eyebrow}
+            </p>
+          )}
+          <h2
+            className={`font-display text-3xl font-bold text-[#33251c] md:text-4xl ${
+              booksSection.eyebrow ? 'mt-2' : ''
+            }`}
+          >
+            {booksSection.title}
+          </h2>
+        </div>
+        {booksSection.intro && (
+          <p className="max-w-2xl text-base-content/70">{booksSection.intro}</p>
+        )}
+      </div>
+
+      <LandingPageBookShowcase
+        books={page.books}
+        showFullCovers={page.examplesFirst}
+        landingSlug={page.slug}
+        locale={page.locale}
+        primaryIntent={page.primaryIntent}
+        audioIcon={page.templateIcons?.audioSample}
+        sampleChapterIcon={page.templateIcons?.sampleChapter}
+        labels={{
+          chapters: t('book.chapters'),
+          listen: t('book.listen'),
+          readWithImage: t('book.readWithImage'),
+          readSample: t('book.readSample'),
+          sampleChapter: t('book.sampleChapter'),
+          closeSample: t('book.closeSample'),
+          transcript: t('book.transcript'),
+        }}
+      />
+    </section>
+  );
+
   return (
     <main
       id="landing-page-top"
@@ -83,7 +133,9 @@ export default async function LandingPageTemplate({ page }: LandingPageTemplateP
         className="relative overflow-hidden border-b border-primary/10 bg-[#f8ead2]"
       >
         <div className="absolute inset-x-0 top-0 h-2 bg-gradient-to-r from-primary via-secondary to-accent" />
-        <div className="mx-auto grid max-w-7xl items-center gap-10 px-4 py-12 sm:px-6 lg:grid-cols-[1fr_0.88fr] lg:px-8 lg:py-20">
+        <div
+          className={`mx-auto grid max-w-7xl items-center gap-10 px-4 py-12 sm:px-6 lg:grid-cols-[1fr_0.88fr] lg:px-8 lg:py-20 ${page.hero.samplePdf ? styles.illustratedHero : ''}`}
+        >
           <div className="max-w-3xl">
             <p className="mb-5 inline-flex items-center gap-2 rounded-full bg-white/75 px-4 py-2 text-sm font-semibold text-primary shadow-sm">
               {page.templateIcons?.heroEyebrow ? (
@@ -112,13 +164,23 @@ export default async function LandingPageTemplate({ page }: LandingPageTemplateP
                 <span>{page.primaryCta}</span>
                 <CtaArrow icon={page.templateIcons?.ctaArrow} />
               </LandingCreationLink>
-              <Link
-                href={secondaryHref}
-                data-cta-placement="hero_secondary"
-                className="btn btn-outline btn-primary btn-lg h-auto min-h-14 whitespace-normal py-3 text-center leading-tight sm:whitespace-nowrap"
-              >
-                {page.secondaryCta}
-              </Link>
+              {page.hero.samplePdf ? (
+                <a
+                  href={page.hero.samplePdf.href}
+                  data-cta-placement="hero_secondary"
+                  className="btn btn-outline btn-primary btn-lg h-auto min-h-14 whitespace-normal py-3 text-center leading-tight sm:whitespace-nowrap"
+                >
+                  {page.hero.samplePdf.label}
+                </a>
+              ) : (
+                <Link
+                  href={secondaryHref}
+                  data-cta-placement="hero_secondary"
+                  className="btn btn-outline btn-primary btn-lg h-auto min-h-14 whitespace-normal py-3 text-center leading-tight sm:whitespace-nowrap"
+                >
+                  {page.secondaryCta}
+                </Link>
+              )}
             </div>
             {page.trustBadges?.length ? (
               <div className="mt-8 flex flex-wrap items-center gap-3 text-xs font-semibold text-[#594332]">
@@ -145,17 +207,25 @@ export default async function LandingPageTemplate({ page }: LandingPageTemplateP
               <Image
                 src={page.hero.imageSrc}
                 alt={page.hero.imageAlt}
-                width={900}
-                height={720}
+                width={page.hero.samplePdf ? 1320 : 900}
+                height={page.hero.samplePdf ? 660 : 720}
                 priority
-                className="aspect-[5/4] w-full rounded-[1.1rem] object-cover"
+                className={
+                  page.hero.samplePdf
+                    ? 'aspect-[2/1] w-full rounded-[1.1rem] object-contain'
+                    : 'aspect-[5/4] w-full rounded-[1.1rem] object-cover'
+                }
               />
             </div>
+            {page.hero.samplePdf?.description && (
+              <p className="mt-4 text-sm text-base-content/70">{page.hero.samplePdf.description}</p>
+            )}
           </div>
         </div>
       </section>
 
       <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
+        {page.examplesFirst && examplesSection}
         {page.formats && page.showFormatsNearHero !== false && (
           <section
             className="mb-12"
@@ -185,9 +255,25 @@ export default async function LandingPageTemplate({ page }: LandingPageTemplateP
           >
             {t('pricing.title')}
           </h2>
-          <p className="mt-3 max-w-3xl text-lg leading-relaxed text-base-content/75">
-            {t('pricing.body')}
-          </p>
+          {page.pricingExample ? (
+            <>
+              <p className="mt-3 max-w-3xl text-lg">{page.pricingExample.description}</p>
+              <dl className="mt-4 max-w-3xl divide-y divide-primary/15">
+                {page.pricingExample.lines.map(({ label, amount }) => (
+                  <div key={label} className="flex items-baseline justify-between gap-4 py-2">
+                    <dt>{label}</dt>
+                    <dd className="shrink-0 font-semibold tabular-nums">{amount}</dd>
+                  </div>
+                ))}
+              </dl>
+              <p className="mt-4 max-w-3xl font-semibold">{page.pricingExample.checkout}</p>
+              <p className="mt-2 max-w-3xl text-sm leading-relaxed">{page.pricingExample.note}</p>
+            </>
+          ) : (
+            <p className="mt-3 max-w-3xl text-lg leading-relaxed text-base-content/75">
+              {t('pricing.body')}
+            </p>
+          )}
           <Link
             href={`/${page.locale}/pricing`}
             className="mt-5 inline-flex items-center gap-2 font-semibold text-primary hover:underline"
@@ -400,51 +486,7 @@ export default async function LandingPageTemplate({ page }: LandingPageTemplateP
           />
         )}
 
-        <section
-          id="exemplos"
-          tabIndex={-1}
-          className="my-16 scroll-mt-24 focus:outline-none"
-          data-analytics-section="examples"
-          data-section-position="2"
-        >
-          <div className="mb-8 flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
-            <div>
-              {booksSection.eyebrow && (
-                <p className="text-sm font-semibold uppercase tracking-wide text-primary">
-                  {booksSection.eyebrow}
-                </p>
-              )}
-              <h2
-                className={`font-display text-3xl font-bold text-[#33251c] md:text-4xl ${
-                  booksSection.eyebrow ? 'mt-2' : ''
-                }`}
-              >
-                {booksSection.title}
-              </h2>
-            </div>
-            {booksSection.intro && (
-              <p className="max-w-2xl text-base-content/70">{booksSection.intro}</p>
-            )}
-          </div>
-
-          <LandingPageBookShowcase
-            books={page.books}
-            landingSlug={page.slug}
-            locale={page.locale}
-            primaryIntent={page.primaryIntent}
-            audioIcon={page.templateIcons?.audioSample}
-            sampleChapterIcon={page.templateIcons?.sampleChapter}
-            labels={{
-              chapters: t('book.chapters'),
-              listen: t('book.listen'),
-              readWithImage: t('book.readWithImage'),
-              readSample: t('book.readSample'),
-              sampleChapter: t('book.sampleChapter'),
-              closeSample: t('book.closeSample'),
-              transcript: t('book.transcript'),
-            }}
-          />
-        </section>
+        {!page.examplesFirst && examplesSection}
 
         <section
           className={`my-16 ${page.showFormatsNearProcess !== false ? 'grid gap-6 lg:grid-cols-2' : ''}`}

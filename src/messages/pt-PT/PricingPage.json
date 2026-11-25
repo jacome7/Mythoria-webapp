@@ -2,7 +2,7 @@
   "PricingPage": {
     "header": {
       "title": "Os Nossos Preços",
-      "subtitle": "Simples, flexível e desenhado para as suas necessidades de criação de histórias."
+      "subtitle": "Os seus primeiros 5 créditos dão para criar uma história digital. Pode editar o texto gratuitamente."
     },
     "creditPackages": {
       "badges": {
@@ -81,7 +81,6 @@
       },
       "close": "Fechar"
     },
-    "newUserMessage": "Todos os novos utilizadores recebem 5 créditos. A sua primeira história é por nossa conta!",
     "infoTexts": {
       "textReview": "As primeiras 5 edições são gratuitas. Apenas cobramos por cada grupo de 5 alterações de texto.",
       "imageGeneration": "A primeira edição de imagem é gratuita.",

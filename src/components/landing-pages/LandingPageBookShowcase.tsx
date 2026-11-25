@@ -10,8 +10,12 @@ import { trackEvent } from '@/lib/analytics';
 import { conversions } from '@/lib/openai-ads/events';
 import { trackOpenAiAdsEvent } from '@/lib/openai-ads/pixel';
 
+const bookActionClass =
+  'btn btn-primary btn-sm h-auto min-h-11 w-full gap-2 whitespace-normal py-2 text-center leading-tight';
+
 interface LandingPageBookShowcaseProps {
   books: LandingPageBook[];
+  showFullCovers?: boolean;
   landingSlug: string;
   locale: string;
   primaryIntent: string;
@@ -30,6 +34,7 @@ interface LandingPageBookShowcaseProps {
 
 export default function LandingPageBookShowcase({
   books,
+  showFullCovers = false,
   landingSlug,
   locale,
   primaryIntent,
@@ -47,8 +52,9 @@ export default function LandingPageBookShowcase({
       : books.length === 6
         ? 'grid gap-6 md:grid-cols-2 xl:grid-cols-3'
         : 'grid gap-6 md:grid-cols-2 xl:grid-cols-5';
-  const bookImageClass =
-    books.length <= 3
+  const bookImageClass = showFullCovers
+    ? 'relative aspect-square overflow-hidden'
+    : books.length <= 3
       ? 'relative aspect-[16/11] overflow-hidden'
       : 'relative aspect-[4/3] overflow-hidden';
 
@@ -126,7 +132,11 @@ export default function LandingPageBookShowcase({
                 fill
                 loading="lazy"
                 sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 20vw"
-                className="object-cover transition duration-500 group-hover:scale-105"
+                className={
+                  showFullCovers
+                    ? 'object-contain'
+                    : 'object-cover transition duration-500 group-hover:scale-105'
+                }
               />
             </div>
             <div className="space-y-3 p-5">
@@ -251,10 +261,20 @@ export default function LandingPageBookShowcase({
                 </div>
               )}
 
-              {book.sampleChapter ? (
+              {book.fullBookPdf ? (
+                <a
+                  className={bookActionClass}
+                  href={book.fullBookPdf.href}
+                  data-cta-placement="full_book_pdf"
+                  onClick={() => handleBookOpen(book)}
+                >
+                  <BookOpen className="h-4 w-4 shrink-0" aria-hidden="true" />
+                  <span>{book.fullBookPdf.label}</span>
+                </a>
+              ) : book.sampleChapter ? (
                 <button
                   type="button"
-                  className="btn btn-primary btn-sm h-auto min-h-11 w-full gap-2 whitespace-normal py-2 text-center leading-tight"
+                  className={bookActionClass}
                   onClick={() => {
                     handleBookOpen(book);
                     trackSampleEvent('sample_chapter_open', book);
@@ -276,7 +296,7 @@ export default function LandingPageBookShowcase({
                 </button>
               ) : book.sampleChapterHref ? (
                 <Link
-                  className="btn btn-primary btn-sm h-auto min-h-11 w-full gap-2 whitespace-normal py-2 text-center leading-tight"
+                  className={bookActionClass}
                   href={book.sampleChapterHref}
                   onClick={() => {
                     handleBookOpen(book);

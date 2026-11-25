@@ -124,6 +124,19 @@ describe('romance landing page route', () => {
     expect(metadata.openGraph?.locale).toBe('en-US');
   });
 
+  it.each([
+    ['pt-PT', 'prendas-de-natal-para-criancas'],
+    ['es-ES', 'regalos-de-navidad-y-reyes-para-ninos'],
+  ])('indexes the Christmas page for %s with reciprocal alternates', async (locale, slug) => {
+    const metadata = await generateMetadata({ params: Promise.resolve({ locale, slug }) });
+    expect(metadata.alternates?.canonical).toBe(`https://mythoria.pt/${locale}/lp/${slug}`);
+    expect(metadata.alternates?.languages).toEqual({
+      'pt-PT': 'https://mythoria.pt/pt-PT/lp/prendas-de-natal-para-criancas',
+      'es-ES': 'https://mythoria.pt/es-ES/lp/regalos-de-navidad-y-reyes-para-ninos',
+    });
+    expect(metadata.robots).toBe('index,follow,max-snippet:-1,max-image-preview:large');
+  });
+
   it('renders an existing localized route', async () => {
     const result = await LandingPageRoute({
       params: Promise.resolve({ locale: 'es-ES', slug: 'libro-personalizado-para-parejas' }),

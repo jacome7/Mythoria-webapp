@@ -1,12 +1,15 @@
 'use client';
 
 import ModalPortal from '@/components/ModalPortal';
-import { AlertTriangle, Lock, Settings, Trash2, User } from 'lucide-react';
-import { useTranslations } from 'next-intl';
+import { buildAuthEntryPath } from '@/lib/auth-return';
+import { AlertTriangle, Settings, Trash2, User } from 'lucide-react';
+import Link from 'next/link';
+import { useLocale, useTranslations } from 'next-intl';
 import { useUser } from '@clerk/nextjs';
 import { useState } from 'react';
 
 export default function DeleteAccountPage() {
+  const locale = useLocale();
   const tDeleteAccount = useTranslations('DeleteAccount');
   const { user, isLoaded } = useUser();
   const [emailConfirmation, setEmailConfirmation] = useState('');
@@ -70,6 +73,12 @@ export default function DeleteAccountPage() {
             <p className="text-gray-700 mb-6 text-lg">
               {tDeleteAccount('notLoggedIn.description')}
             </p>
+            <Link
+              href={`${buildAuthEntryPath(locale, 'sign-in', `/${locale}/privacy-policy/delete-account`)}&auth_mode=sign-in`}
+              className="btn btn-primary mb-6"
+            >
+              {tDeleteAccount('notLoggedIn.signIn')}
+            </Link>
 
             <div className="bg-base-100 border border-base-300 rounded-lg p-6 mb-6">
               <div className="flex items-center gap-2 mb-4">
@@ -79,15 +88,28 @@ export default function DeleteAccountPage() {
                 </h3>
               </div>
               <ol className="list-decimal list-inside space-y-3 text-gray-700">
-                <li className="pl-2">{tDeleteAccount('notLoggedIn.steps.step1')}</li>
-                <li className="pl-2">{tDeleteAccount('notLoggedIn.steps.step2')}</li>
-                <li className="flex items-center gap-2 pl-2">
-                  <Lock className="h-4 w-4 text-primary flex-shrink-0" />
-                  <span>{tDeleteAccount('notLoggedIn.steps.step3')}</span>
+                <li className="pl-2">
+                  {tDeleteAccount('notLoggedIn.steps.step1', {
+                    deleteButton: tDeleteAccount('loggedIn.deleteButton'),
+                  })}
                 </li>
-                <li className="pl-2">{tDeleteAccount('notLoggedIn.steps.step4')}</li>
+                <li className="pl-2">
+                  {tDeleteAccount('notLoggedIn.steps.step2', {
+                    confirmButton: tDeleteAccount('confirmation.confirmDelete'),
+                  })}
+                </li>
               </ol>
             </div>
+
+            <p className="text-gray-700 mb-6">
+              {tDeleteAccount.rich('notLoggedIn.contact', {
+                email: () => (
+                  <a href="mailto:dpo@mythoria.pt" className="link link-primary">
+                    dpo@mythoria.pt
+                  </a>
+                ),
+              })}
+            </p>
 
             <div className="alert alert-warning">
               <AlertTriangle className="h-5 w-5" />

@@ -4,6 +4,7 @@ import { existsSync } from 'node:fs';
 import { join } from 'node:path';
 import sharp from 'sharp';
 import { getLandingPageBySlug } from '../src/content/landing-pages';
+import { resolvePublicAssetFile } from './public-asset-file';
 
 const landingSlug = 'livro-personalizado-crianca';
 const publicRoot = join(process.cwd(), 'public');
@@ -44,8 +45,18 @@ async function main() {
   if (!page.indexable) errors.push('approved landing must remain indexable');
   if (page.books.length !== 5) errors.push(`expected 5 books, found ${page.books.length}`);
 
-  await assertImage(errors, join(landingAssetRoot, 'hero', 'hero.jpeg'), 1500, 1200);
-  await assertImage(errors, join(landingAssetRoot, 'hero', 'og-cover.jpeg'), 1200, 630);
+  await assertImage(
+    errors,
+    resolvePublicAssetFile(join(landingAssetRoot, 'hero', 'hero.jpeg')),
+    1500,
+    1200,
+  );
+  await assertImage(
+    errors,
+    resolvePublicAssetFile(join(landingAssetRoot, 'hero', 'og-cover.jpeg')),
+    1200,
+    630,
+  );
 
   const assetManifestPath = join(landingAssetRoot, 'asset-manifest.json');
   if (!existsSync(assetManifestPath)) errors.push(`missing ${assetManifestPath}`);
@@ -100,7 +111,7 @@ async function main() {
       ['chapter-01.jpeg', 1536, 1024],
     ] as const) {
       const canonicalPath = join(sampleAssets, file);
-      const landingPath = join(landingAssets, file);
+      const landingPath = resolvePublicAssetFile(join(landingAssets, file));
       await assertImage(errors, canonicalPath, width, height);
       await assertImage(errors, landingPath, width, height);
       if (existsSync(canonicalPath) && existsSync(landingPath)) {
@@ -111,7 +122,7 @@ async function main() {
     }
 
     const audioPath = join(sampleAssets, 'audio-teaser.mp3');
-    const landingAudioPath = join(landingAssets, 'audio-teaser.mp3');
+    const landingAudioPath = resolvePublicAssetFile(join(landingAssets, 'audio-teaser.mp3'));
     const audioManifest = JSON.parse(
       await readFile(join(sampleRoot, 'audio-sample.json'), 'utf8'),
     ) as Record<string, unknown>;

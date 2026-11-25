@@ -15,6 +15,14 @@ The engine is built so a new page is **content-first**: author a typed content f
 
 ## End-User Experience
 
+The Christmas gift collection uses the `christmas-gifts` translation key at
+`/pt-PT/lp/prendas-de-natal-para-criancas` and `/es-ES/lp/regalos-de-navidad-y-reyes-para-ninos`.
+Its hero opens a complete localized reading PDF from `public/seasonal-books/ines`.
+Four other books per language use illustrated openings and audio from their sample-book packs.
+The primary CTA opens the regular story creator. Keep the sample album separate from any
+commercial promise about square hardcover availability or delivery dates.
+See the [editorial and research dossier](../landing-pages/prendas-de-natal-para-criancas/research-report.md).
+
 A landing page renders (top to bottom) inside the normal site shell (header, footer, cookie banner):
 
 - **Hero** — eyebrow badge, H1 (`title`), emotional headline + subheadline, hero image, primary CTA
@@ -233,3 +241,14 @@ Do **not** create or reference `public/landing-page-assets/`; that folder is dep
 - **Runtime assets:** `public/landing-pages/{slug}/assets/`
 - **Editorial/source artifacts:** `docs/landing-pages/{slug}/`
 - **SEO helpers:** `src/lib/seo.ts`
+
+## Shared public assets
+
+Byte-identical artwork and audio can share a physical file through
+`public-asset-aliases.json`. Keep existing public URLs as rewrite sources and point them
+directly at files under `public/`. The homepage and landing asset checks resolve these
+rewrites when inspecting files. Audio manifests still live next to their original
+logical URLs. Sample-book packs keep their own files for pack validation and generation.
+
+To give a URL distinct artwork or audio, place the new file at that URL and remove
+its alias. A physical file takes precedence over the rewrite.

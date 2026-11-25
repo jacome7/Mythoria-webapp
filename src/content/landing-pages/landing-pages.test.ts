@@ -1,5 +1,7 @@
 import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
+import publicAssetAliases from '../../../public-asset-aliases.json';
+import { resolvePublicAssetFile } from '../../../scripts/public-asset-file';
 
 import {
   getIndexableLandingPages,
@@ -15,6 +17,14 @@ import {
 } from './index';
 
 describe('landing page content registry', () => {
+  it('keeps public asset aliases pointed directly at files of the same format', () => {
+    for (const [source, destination] of Object.entries(publicAssetAliases)) {
+      expect(source.split('.').at(-1)).toBe(destination.split('.').at(-1));
+      expect(publicAssetAliases).not.toHaveProperty([destination]);
+      expect(existsSync(join(process.cwd(), 'public', destination))).toBe(true);
+    }
+  });
+
   it('registers exactly sixteen variants in the four translated families without German pages', () => {
     const translationKeys = [
       'personalized-children-books',
@@ -52,9 +62,9 @@ describe('landing page content registry', () => {
   });
 
   it('derives homepage cards from the locale-aware registry', () => {
-    expect(getHomepageLandingPageGuides('pt-PT')).toHaveLength(7);
+    expect(getHomepageLandingPageGuides('pt-PT')).toHaveLength(8);
     expect(getHomepageLandingPageGuides('en-US')).toHaveLength(4);
-    expect(getHomepageLandingPageGuides('es-ES')).toHaveLength(4);
+    expect(getHomepageLandingPageGuides('es-ES')).toHaveLength(5);
     expect(getHomepageLandingPageGuides('fr-FR')).toHaveLength(4);
     expect(getHomepageLandingPageGuides('de-DE')).toHaveLength(0);
   });
@@ -108,16 +118,44 @@ describe('landing page content registry', () => {
   });
 
   it('derives a stable hub lastmod from visible editorial dates', () => {
-    expect(getLandingPageHubUpdatedAt()).toBe('2026-08-08');
+    expect(getLandingPageHubUpdatedAt()).toBe('2026-11-24');
   });
 
-  it('gives every indexable landing page complete examples with playable audio', () => {
+  it('gives every indexable landing page complete examples, with audio on established families', () => {
     for (const page of getIndexableLandingPages()) {
       expect(page.books.length).toBeGreaterThan(0);
-      expect(page.books.every((book) => Boolean(book.audioSampleSrc))).toBe(true);
+      if (page.translationKey !== 'christmas-gifts') {
+        expect(page.books.every((book) => Boolean(book.audioSampleSrc))).toBe(true);
+      }
       expect(page.books.every((book) => Boolean(book.title && book.synopsis && book.excerpt))).toBe(
         true,
       );
+    }
+  });
+
+  it('registers two Christmas pages with localized examples and contextual links', () => {
+    const variants = getLandingPageTranslations('christmas-gifts');
+    expect(variants.map((page) => page.locale).sort()).toEqual(['es-ES', 'pt-PT']);
+    for (const page of variants) {
+      expect(page.indexable).toBe(true);
+      expect(page.books).toHaveLength(5);
+      expect(page.hero.imageSrc).toBe(`/seasonal-books/ines/${page.locale}/spread.webp`);
+      expect(page.hero.samplePdf?.href).toBe(`/seasonal-books/ines/${page.locale}/leitura.pdf`);
+      expect(
+        getRelatedLandingPageItems(page.locale, page.slug).some((item) =>
+          item.href.includes(
+            page.locale === 'pt-PT'
+              ? 'livro-personalizado-crianca'
+              : 'libro-personalizado-para-ninos',
+          ),
+        ),
+      ).toBe(true);
+      const childrenSlug =
+        page.locale === 'pt-PT' ? 'livro-personalizado-crianca' : 'libro-personalizado-para-ninos';
+      expect(
+        getRelatedLandingPageItems(page.locale, childrenSlug).map((item) => item.href),
+      ).toContain(`/${page.locale}/lp/${page.slug}`);
+      expect(getLandingPageStaticParams()).toContainEqual({ locale: page.locale, slug: page.slug });
     }
   });
 
@@ -343,7 +381,7 @@ describe('landing page content registry', () => {
     expect(workshops?.workshop?.businessBenefits.items.some((item) => item.iconSrc === icon)).toBe(
       true,
     );
-    expect(existsSync(join(process.cwd(), 'public', icon.slice(1)))).toBe(true);
+    expect(existsSync(resolvePublicAssetFile(join(process.cwd(), 'public', icon)))).toBe(true);
   });
 
   it('builds localized landing page index links from the registry', () => {
@@ -499,7 +537,7 @@ describe('landing page content registry', () => {
       ]) ?? []),
     ].filter((asset): asset is string => Boolean(asset));
     localAssets.forEach((asset) => {
-      expect(existsSync(join(process.cwd(), 'public', asset.replace(/^\//, '')))).toBe(true);
+      expect(existsSync(resolvePublicAssetFile(join(process.cwd(), 'public', asset)))).toBe(true);
     });
 
     expect(getLandingPageIndexItems().map((item) => item.href)).toContain(
@@ -559,7 +597,7 @@ describe('landing page content registry', () => {
       ]) ?? []),
     ].filter((asset): asset is string => Boolean(asset));
     localAssets.forEach((asset) => {
-      expect(existsSync(join(process.cwd(), 'public', asset.replace(/^\//, '')))).toBe(true);
+      expect(existsSync(resolvePublicAssetFile(join(process.cwd(), 'public', asset)))).toBe(true);
     });
 
     expect(getLandingPageIndexItems()).toContainEqual(
@@ -655,7 +693,7 @@ describe('landing page content registry', () => {
       ]) ?? []),
     ].filter((asset): asset is string => Boolean(asset));
     localAssets.forEach((asset) => {
-      expect(existsSync(join(process.cwd(), 'public', asset.replace(/^\//, '')))).toBe(true);
+      expect(existsSync(resolvePublicAssetFile(join(process.cwd(), 'public', asset)))).toBe(true);
     });
 
     const assetManifest = JSON.parse(

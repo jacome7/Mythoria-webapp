@@ -1,9 +1,8 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
 import { ArrowLeft, BookOpen, MapPin, Printer } from 'lucide-react';
-import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import dynamic from 'next/dynamic';
 import { type Address as AddressType } from '@/components/AddressCard';
@@ -55,7 +54,8 @@ interface PrintOrderContentProps {
 }
 
 export default function PrintOrderContent({ storyId }: PrintOrderContentProps) {
-  const router = useRouter();
+  const [accepted, setAccepted] = useState(false);
+  const intent = useRef<{ key: string; id: string } | null>(null);
   const locale = useLocale();
   const tPrintOrder = useTranslations('PrintOrder');
 
@@ -126,7 +126,11 @@ export default function PrintOrderContent({ storyId }: PrintOrderContentProps) {
     loadStoryData();
     loadAddresses();
   }, [storyId]); // eslint-disable-line react-hooks/exhaustive-deps
-  const handlePlaceOrder = async ({ numberOfCopies, totalCost }: PaymentOrderDetails) => {
+  const handlePlaceOrder = async ({
+    numberOfCopies,
+    totalCost,
+    recipient,
+  }: PaymentOrderDetails) => {
     if (!story || !selectedAddress || !selectedPrintingOption) {
       setError(tPrintOrder('errors.missingRequiredFields'));
       return;
@@ -135,6 +139,24 @@ export default function PrintOrderContent({ storyId }: PrintOrderContentProps) {
     try {
       setOrderLoading(true);
       const analyticsContext = await getGoogleAnalyticsContext();
+      const key = JSON.stringify([
+        story.storyId,
+        selectedAddress.addressId,
+        selectedPrintingOption.serviceCode,
+        numberOfCopies,
+        totalCost,
+        recipient,
+      ]);
+      const hash = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(key));
+      const fingerprint = Array.from(new Uint8Array(hash), (byte) =>
+        byte.toString(16).padStart(2, '0'),
+      ).join('');
+      const storageKey = 'mythoria:print-intent:' + fingerprint;
+      if (intent.current?.key !== key) {
+        const id = sessionStorage.getItem(storageKey) ?? crypto.randomUUID();
+        sessionStorage.setItem(storageKey, id);
+        intent.current = { key, id };
+      }
 
       const response = await fetch('/api/print-requests', {
         method: 'POST',
@@ -144,6 +166,8 @@ export default function PrintOrderContent({ storyId }: PrintOrderContentProps) {
         body: JSON.stringify({
           storyId: story.storyId,
           shippingId: selectedAddress.addressId,
+          recipient,
+          intentId: intent.current.id,
           printingOption: {
             serviceCode: selectedPrintingOption.serviceCode,
             credits: selectedPrintingOption.credits,
@@ -159,6 +183,8 @@ export default function PrintOrderContent({ storyId }: PrintOrderContentProps) {
       const data = await response.json();
 
       if (data.success) {
+        sessionStorage.removeItem(storageKey);
+        setAccepted(true);
         trackPaidAction({
           action_type: 'print',
           story_id: story.storyId,
@@ -171,14 +197,10 @@ export default function PrintOrderContent({ storyId }: PrintOrderContentProps) {
             eventId: data.adEventId,
           });
         }
-        // Redirect to my-stories instead of confirmation step
-        router.push(`/${locale}/my-stories`);
       } else {
         // Handle insufficient credits error specifically
         if (response.status === 402) {
-          setError(
-            `${tPrintOrder('errors.insufficientCredits')} ${data.required} credits required, ${data.available} available.`,
-          );
+          setError(tPrintOrder('errors.insufficientCredits'));
         } else {
           setError(data.error || tPrintOrder('errors.orderFailed'));
         }
@@ -279,6 +301,17 @@ export default function PrintOrderContent({ storyId }: PrintOrderContentProps) {
     setEditingAddress(null);
   };
 
+  if (accepted)
+    return (
+      <main className="container max-w-xl mx-auto p-6">
+        <h1 className="text-2xl font-semibold">{tPrintOrder('confirmation.title')}</h1>
+        <p className="my-4">{tPrintOrder('confirmation.message')}</p>
+        <Link className="btn btn-primary" href={`/${locale}/my-stories`}>
+          {tPrintOrder('buttons.backToStories')}
+        </Link>
+      </main>
+    );
+
   if (loading) {
     return (
       <div className="max-w-4xl mx-auto">
@@ -373,8 +406,9 @@ export default function PrintOrderContent({ storyId }: PrintOrderContentProps) {
               onCancelAddressEdit={handleCancelAddressEdit}
             />
           )}
-          {currentStep === 'payment' && story && (
+          {currentStep === 'payment' && story && selectedAddress && (
             <PaymentStep
+              address={selectedAddress}
               story={story}
               selectedPrintingOption={selectedPrintingOption}
               onSelectPrintingOption={setSelectedPrintingOption}

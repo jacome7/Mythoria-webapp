@@ -27,6 +27,7 @@ export interface LandingPageBook {
   contextLabel: string;
   ageLabel?: string;
   sampleChapterHref?: string;
+  fullBookPdf?: { href: string; label: string };
   audio?: LandingPageBookAudio;
   chapterCountLabel?: string;
   durationLabel?: string;
@@ -145,6 +146,7 @@ export type LandingPageTranslationKey =
   | 'family-travel'
   | 'romance-gifts'
   | 'grandparents-stories'
+  | 'christmas-gifts'
   | 'autism-stories'
   | 'supportive-stories'
   | 'workshops-children';
@@ -300,6 +302,14 @@ export interface LandingPageContent {
   showFormatsNearHero?: boolean;
   /** Repeats the formats panel beside the process panel. Defaults to true. */
   showFormatsNearProcess?: boolean;
+  /** Places examples immediately after the hero for gift-selection pages. */
+  examplesFirst?: boolean;
+  pricingExample?: {
+    description: string;
+    lines: { label: string; amount: string }[];
+    checkout: string;
+    note: string;
+  };
   /** Shows the editorial review line below the quick answer. Defaults to true. */
   showEditorialReview?: boolean;
   /** Renders the review line relative to the current date when set. */
@@ -332,6 +342,7 @@ export interface LandingPageContent {
     subheadline: string;
     imageSrc: string;
     imageAlt: string;
+    samplePdf?: { href: string; label: string; description?: string };
   };
   quickAnswer: {
     title: string;

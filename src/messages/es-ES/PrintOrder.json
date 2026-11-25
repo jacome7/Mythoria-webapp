@@ -55,11 +55,18 @@
       "method": "Método de Pago",
       "creditsInfo": "El pago se deducirá de tu saldo de créditos al realizar el pedido.",
       "confirmOrder": "Confirma tu Pedido",
-      "confirmOrderDescription": "Debido a la alta demanda, la entrega puede tardar hasta 4 semanas. ¿Seguro que quieres continuar?"
+      "confirmOrderDescription": "Debido a la alta demanda, la entrega puede tardar hasta 4 semanas. ¿Seguro que quieres continuar?",
+      "hardcoverTitle": "Tapa dura",
+      "binding": "Encuadernación",
+      "recipient": "Contacto de entrega",
+      "recipientName": "Nombre del destinatario",
+      "recipientEmail": "Correo del destinatario",
+      "recipientPhone": "Teléfono para el transportista",
+      "taxId": "Identificación fiscal del destinatario"
     },
     "confirmation": {
       "title": "¡Pedido realizado con éxito!",
-      "message": "Tu solicitud de impresión ha sido enviada. Recibirás actualizaciones sobre la impresión y el envío por email."
+      "message": "Tu pago está confirmado. Te enviaremos el interior y la cubierta por correo cuando estén listos para imprimir. Si ves algún problema, responde a ese correo."
     },
     "buttons": {
       "continue": "Continuar",

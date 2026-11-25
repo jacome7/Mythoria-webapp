@@ -34,6 +34,23 @@ export interface EnvVarDescriptor {
 // function p(name: string): string { return name.startsWith('NEXT_PUBLIC_') ? name : `NEXT_PUBLIC_${name}`; }
 
 export const envManifest: EnvVarDescriptor[] = [
+  ...[
+    'PRINT_PROOF_BUCKET',
+    'PRINT_INTERNAL_AUDIENCE',
+    'PRINT_ADMIN_SERVICE_ACCOUNT',
+    'PRINT_SCHEDULER_SERVICE_ACCOUNT',
+    'LULU_PRINT_ENVIRONMENT',
+    'LULU_PRINT_CLIENT_KEY',
+    'LULU_PRINT_SECRET_VERSION',
+    'LULU_PRINT_CONTACT_EMAIL',
+    'LULU_PAPERBACK_POD_PACKAGE_ID',
+    'LULU_HARDCOVER_POD_PACKAGE_ID',
+  ].map((name): EnvVarDescriptor => ({
+    name,
+    required: false,
+    scopes: ['dev', 'runtime', 'prod'],
+    note: 'Paid print configuration. See shared docs/PRINT_FULFILLMENT.md.',
+  })),
   {
     name: 'REFERRAL_PROGRAM_ENABLED',
     required: false,

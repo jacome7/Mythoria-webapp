@@ -137,3 +137,7 @@ See the [cross-service contract](../docs/SURVEYS.md). Survey definitions are cod
 ## OpenAI ChatGPT Ads tracking (2026-11-16)
 
 See [docs/openai-ads.md](docs/openai-ads.md) for the event map, consent model, outbox lifecycle, env vars and rollout. New conversion points must use the shared `conversions.*` constructors with `enqueueAdConversion` (server, inside the business transaction where one exists) and `trackOpenAiAdsEvent` with the server-returned `adEventId` (browser). Never send PII, IP, user agent, `oppref` or `obref` without Advertising consent, and never put private ids or tokens in event ids. Migration `0049_openai_ads_conversions` (additive) was applied on 2026-11-17 and the feature is live in production; the Ads Manager setup checklist is in the doc. `OPENAI_ADS_CAPI_KEY` is read from the Secret Manager secret `OPENAI_CONVERSIONS_API_KEY` (mapped in `cloudbuild.yaml` `--set-secrets`); server events go live on deploy.
+
+## Paid print proofs
+
+WebApp owns paid print intents, generation-pinned proof manifests, supplier release and reconciliation. Only an authenticated Admin ticket release may create a supplier job. See [the shared operations guide](../docs/PRINT_FULFILLMENT.md).

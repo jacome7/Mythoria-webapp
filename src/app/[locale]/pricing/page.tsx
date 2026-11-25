@@ -119,18 +119,22 @@ export default function PricingPage() {
   };
   return (
     <div className="min-h-screen bg-base-100 text-base-content">
-      <div className="container mx-auto px-4 py-12">
+      <div className="container mx-auto px-4 pt-8 pb-12 sm:pt-12">
         {/* Header Section */}
         <ScrollFadeIn>
-          <header className="text-center mb-16">
-            <h1 className="text-5xl font-bold text-primary">{tPricingPage('header.title')}</h1>
-            <p className="text-xl mt-4 text-gray-700">{tPricingPage('header.subtitle')}</p>
+          <header className="mx-auto max-w-xl text-center">
+            <h1 className="text-4xl font-bold text-primary sm:text-5xl">
+              {tPricingPage('header.title')}
+            </h1>
+            <p className="mt-3 text-base text-gray-700 sm:text-xl">
+              {tPricingPage('header.subtitle')}
+            </p>
           </header>
         </ScrollFadeIn>
 
         {/* Service Costs Section */}
         <ScrollFadeIn delay={100}>
-          <section id="service-costs" className="my-16">
+          <section id="service-costs" className="mt-8 mb-16 sm:mt-12">
             {loading ? (
               <div className="text-center py-12">
                 <span className="loading loading-spinner loading-lg"></span>
@@ -330,16 +334,6 @@ export default function PricingPage() {
               </div>
             )}
           </section>
-        </ScrollFadeIn>
-
-        {/* New User Credits Message */}
-        <ScrollFadeIn delay={300}>
-          <div className="text-center mt-8 mb-4">
-            <p className="text-lg text-primary font-semibold">
-              <Gift className="inline mr-2" />
-              {tPricingPage('newUserMessage')}
-            </p>
-          </div>
         </ScrollFadeIn>
 
         <div className="divider my-16"></div>

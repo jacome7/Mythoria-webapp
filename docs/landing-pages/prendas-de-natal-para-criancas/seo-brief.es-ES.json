@@ -1,0 +1,14 @@
+{
+  "locale": "es-ES",
+  "country": "España",
+  "slug": "regalos-de-navidad-y-reyes-para-ninos",
+  "canonicalPath": "/es-ES/lp/regalos-de-navidad-y-reyes-para-ninos",
+  "primaryKeywords": ["regalos de navidad y reyes para niños", "cuento personalizado de navidad"],
+  "secondaryKeywords": ["regalo personalizado para niños", "libro personalizado para reyes"],
+  "avoidOwning": [
+    "libro personalizado para niños sin intención estacional",
+    "libro para abuelos y nietos"
+  ],
+  "ogImage": "/seasonal-books/ines/es-ES/share.jpg",
+  "notes": "Hipótesis editoriales sin datos de volumen o rendimiento."
+}

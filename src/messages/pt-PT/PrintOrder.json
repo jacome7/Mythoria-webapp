@@ -55,11 +55,18 @@
       "method": "Método de Pagamento",
       "creditsInfo": "O pagamento será deduzido do seu saldo de créditos quando efetuar a encomenda.",
       "confirmOrder": "Confirmar a Sua Encomenda de Impressão",
-      "confirmOrderDescription": "Devido à elevada procura, a entrega pode demorar até 4 semanas. Tem a certeza que quer prosseguir com a sua encomenda?"
+      "confirmOrderDescription": "Devido à elevada procura, a entrega pode demorar até 4 semanas. Tem a certeza que quer prosseguir com a sua encomenda?",
+      "hardcoverTitle": "Capa dura",
+      "binding": "Encadernação",
+      "recipient": "Contacto para a entrega",
+      "recipientName": "Nome do destinatário",
+      "recipientEmail": "Email do destinatário",
+      "recipientPhone": "Telefone para a transportadora",
+      "taxId": "Número fiscal do destinatário"
     },
     "confirmation": {
       "title": "Encomenda Realizada com Sucesso!",
-      "message": "O seu pedido de impressão foi submetido. Receberá atualizações sobre o estado da impressão e envio por email."
+      "message": "O teu pagamento está confirmado. Assim que os ficheiros estiverem prontos, enviamos-te o miolo e a capa por email. Se encontrares algum problema, responde a esse email."
     },
     "buttons": {
       "continue": "Continuar",

@@ -2,7 +2,7 @@
   "PricingPage": {
     "header": {
       "title": "Notre prix",
-      "subtitle": "Simple, flexible et conçu pour vos besoins de narration."
+      "subtitle": "Vos 5 premiers crédits vous permettent de créer une histoire numérique. Vous pouvez modifier le texte vous-même gratuitement."
     },
     "creditPackages": {
       "badges": {
@@ -81,7 +81,6 @@
       },
       "close": "Fermer"
     },
-    "newUserMessage": "Chaque nouvel utilisateur obtient 5 crédits. Votre première histoire est sur nous!",
     "infoTexts": {
       "textReview": "Les 5 premières modifications sont gratuites. Nous ne facturons que par groupe de 5 changements de texte.",
       "imageGeneration": "Le premier montage d'image est gratuit.",

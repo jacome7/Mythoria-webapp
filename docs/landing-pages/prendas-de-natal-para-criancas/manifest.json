@@ -1,0 +1,21 @@
+{
+  "schemaVersion": "1.0",
+  "status": "approved",
+  "locale": "pt-PT",
+  "slug": "prendas-de-natal-para-criancas",
+  "title": "Prendas de Natal para crianças: uma história personalizada",
+  "primaryIntent": "kids_adventures",
+  "mappedExistingIntent": "kids_adventures",
+  "targetCountry": "Portugal",
+  "primaryGoal": "first_story_completed",
+  "secondaryGoal": "account_creation",
+  "primaryPersona": "Adulto que procura uma prenda de Natal para uma criança",
+  "secondaryPersonas": ["Pais e cuidadores", "Avós", "Familiares e amigos"],
+  "recipientTypes": ["child"],
+  "riskRating": "yellow",
+  "sensitiveNiche": true,
+  "requiresHumanApproval": true,
+  "requiresExternalExpertReview": false,
+  "createdAt": "2026-11-24",
+  "updatedAt": "2026-11-24"
+}

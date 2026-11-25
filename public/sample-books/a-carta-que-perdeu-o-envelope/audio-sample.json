@@ -1,0 +1,15 @@
+{
+  "status": "generated",
+  "targetPath": "assets/audio-teaser.mp3",
+  "text": "Fuuuuu! Passou o vento pela feira. Levou o cheiro das castanhas, fez dançar o cachecol da Rita e deixou-lhe uma carta no nariz. A Rita abriu-a. Lá dentro, uma menina tinha desenhado uma luva vermelha. Um dedo, dois dedos, três dedos, quatro dedos, cinco dedos… Espera lá. Aquilo era mais um dedo? A Rita tirou a luva da própria mão. Só tinha cinco. Onde estaria uma pessoa com uma luva daquelas? Ouviu uma voz atrás dos embrulhos. E uma coisa amarela acenou-lhe lá do fundo. Seria o dedo que faltava?",
+  "voiceDirection": "Narração em português europeu de Lisboa, próxima e curiosa. Dá tempo às pistas e às falas.",
+  "language": "pt-PT",
+  "provider": "google-genai",
+  "model": "gemini-3.8-flash-tts",
+  "voice": "Aoede",
+  "recommendedDurationSeconds": 40,
+  "requestModel": "gemini-3.8-flash-tts",
+  "generatedAt": "2026-11-24T17:41:39.484Z",
+  "durationSeconds": 38.66,
+  "humanListeningReview": "pending"
+}
