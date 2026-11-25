@@ -164,33 +164,6 @@ function Deploy-Fast {
     Deploy-With-CloudBuild
 }
 
-function Ensure-ProductionLuluConfig {
-    if ($Staging) {
-        return
-    }
-
-    Write-Info "Ensuring production Lulu Print Cloud Run configuration and Secret Manager binding..."
-    $projectNumber = (& $GCLOUD projects describe $PROJECT_ID --format='value(projectNumber)').Trim()
-    Assert-CommandSucceeded 'Resolve project number'
-    $computeServiceAccount = "$projectNumber-compute@developer.gserviceaccount.com"
-
-    & $GCLOUD secrets add-iam-policy-binding LULU_PRINT_CLIENT_SECRET `
-        --project $PROJECT_ID `
-        --member="serviceAccount:$computeServiceAccount" `
-        --role="roles/secretmanager.secretAccessor" `
-        --quiet | Out-Null
-    Assert-CommandSucceeded 'Grant LULU_PRINT_CLIENT_SECRET secretAccessor'
-
-    & $GCLOUD run services update $SERVICE_NAME `
-        --region $REGION `
-        --project $PROJECT_ID `
-        --update-secrets="LULU_PRINT_CLIENT_SECRET=LULU_PRINT_CLIENT_SECRET:latest" `
-        --update-env-vars="LULU_PRINT_ENVIRONMENT=production,LULU_PRINT_CLIENT_KEY=c115c769-d1aa-4eb2-88d4-cd42dc8c58aa,LULU_PRINT_CONTACT_EMAIL=rodrigo.jacome@mythoria.pt,LULU_PAPERBACK_POD_PACKAGE_ID=0583X0827.FC.PRE.PB.080CW444.MXX,LULU_HARDCOVER_POD_PACKAGE_ID=0583X0827.FC.PRE.CW.080CW444.MXX,LULU_PREMIUM_SQUARE_POD_PACKAGE_ID=0850X0850.FC.PRE.CW.080CW444.MXX,PREMIUM_SQUARE_PRINT_APPROVAL=production:premium-square-hardcover-2026-11-25" `
-        --quiet | Out-Null
-    Assert-CommandSucceeded 'Update production Lulu Cloud Run env and secret binding'
-    Write-Success "Production Lulu Print configuration verified"
-}
-
 function Test-Deployment {
     Write-Info "Fetching service URL"
     $serviceUrl = & $GCLOUD run services describe $SERVICE_NAME --region $REGION --format="value(status.url)"
@@ -248,7 +221,6 @@ function Main {
         Deploy-With-CloudBuild
     }
 
-    Ensure-ProductionLuluConfig
     Test-Deployment
     Test-ProductionSeo -ExpectedGitSha $GIT_SHA
     Write-Success "All done"
