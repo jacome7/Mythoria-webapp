@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getCurrentAuthor } from '@/lib/auth';
 import { ensureStoryIdAccess, AccessDeniedError } from '@/lib/authorization';
 import { hasPremiumBookMarker } from '@/lib/premium-children-book/contract';
-import { premiumPageAudioResponse } from '@/lib/premium-children-book/audio-response';
+import { premiumAudioResponse } from '@/lib/premium-children-book/audio-response';
 // storyService intentionally not imported; access handled via ensureStoryIdAccess
 
 export async function GET(
@@ -42,7 +42,7 @@ export async function GET(
     }
 
     if (hasPremiumBookMarker(story.features)) {
-      return await premiumPageAudioResponse(request, story, chapterIdx);
+      return await premiumAudioResponse(request, story, chapterIdx);
     }
 
     // Check if audiobook data exists

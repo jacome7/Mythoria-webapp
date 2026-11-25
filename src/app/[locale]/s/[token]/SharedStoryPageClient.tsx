@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
 import { AlertCircle, Loader2 } from 'lucide-react';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
@@ -11,7 +11,10 @@ import { buildAuthEntryPath } from '@/lib/auth-return';
 import { buildStoryAuthReturnSearch } from '@/lib/campaign-context';
 import PremiumBookReader from '@/components/PremiumBookReader';
 import QualifiedShareOpen from '@/components/QualifiedShareOpen';
+import { AudioChapterList, useAudioPlayer } from '@/components/AudioPlayer';
+import PremiumAudiobookPlayer from '@/components/AudioPlayer/PremiumAudiobookPlayer';
 import type { PremiumBookReaderData } from '@/lib/premium-children-book/reader';
+import type { PremiumAudioMetadata } from '@/lib/premium-children-book/audiobook';
 
 interface StoryPreview {
   title: string;
@@ -30,7 +33,49 @@ interface ApiResponse {
   redirectUrl?: string;
   error?: string;
   premiumBook?: PremiumBookReaderData;
+  premiumAudio?: PremiumAudioMetadata;
   storyId?: string;
+}
+
+function SharedPremiumAudio({
+  token,
+  audio,
+  storyId,
+}: {
+  token: string;
+  audio: PremiumAudioMetadata;
+  storyId?: string;
+}) {
+  const tActions = useTranslations('Actions');
+  const tListenStory = useTranslations('ListenStory');
+  const audioEndpoint = useCallback(
+    (index: number) =>
+      `/api/share/${encodeURIComponent(token)}/audio/${index}?runId=${audio.runId}`,
+    [token, audio.runId],
+  );
+  const tracks = 'tracks' in audio ? audio.tracks : [];
+  const player = useAudioPlayer({ audioEndpoint, totalChapters: tracks.length });
+
+  return (
+    <details className="mx-auto max-w-6xl px-4 pt-4">
+      <summary className="btn btn-outline">{tActions('listen')}</summary>
+      <div className="pt-3">
+        {'duration' in audio ? (
+          <PremiumAudiobookPlayer src={audioEndpoint(0)} storyId={storyId} />
+        ) : (
+          <AudioChapterList
+            chapters={tracks.map(({ pageNumber, duration }, index) => ({
+              chapterTitle: tListenStory('pageTitle', { number: pageNumber }),
+              duration,
+              audioUri: audioEndpoint(index),
+            }))}
+            {...player}
+            showTrackIndex={false}
+          />
+        )}
+      </div>
+    </details>
+  );
 }
 
 export default function SharedStoryPageClient() {
@@ -50,6 +95,7 @@ export default function SharedStoryPageClient() {
   const [premiumShare, setPremiumShare] = useState<{
     token: string;
     book: PremiumBookReaderData;
+    audio?: PremiumAudioMetadata;
     storyId?: string;
   }>();
   const [requiresAuth, setRequiresAuth] = useState(false);
@@ -78,7 +124,12 @@ export default function SharedStoryPageClient() {
         if (controller.signal.aborted) return;
         setPremiumShare(
           result.success && result.premiumBook
-            ? { token, book: result.premiumBook, storyId: result.storyId }
+            ? {
+                token,
+                book: result.premiumBook,
+                audio: result.premiumAudio,
+                storyId: result.storyId,
+              }
             : undefined,
         );
 
@@ -130,6 +181,14 @@ export default function SharedStoryPageClient() {
   if (premiumShare?.token === token) {
     return (
       <>
+        {premiumShare.audio && (
+          <SharedPremiumAudio
+            key={premiumShare.audio.runId}
+            token={token}
+            audio={premiumShare.audio}
+            storyId={premiumShare.storyId}
+          />
+        )}
         <PremiumBookReader book={premiumShare.book} />
         {premiumShare.storyId && <QualifiedShareOpen storyId={premiumShare.storyId} />}
       </>

@@ -1,5 +1,6 @@
 {
   "ListenStory": {
+    "fullAudiobook": "Livre audio intégral",
     "pageTitle": "Page {number}",
     "accessRestricted": "Accès restreint",
     "needSignInToListen": "Vous devez être connecté pour écouter des histoires.",

@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import {
+  maxPremiumAudiobookBytes,
   premiumBookAssetSchema,
   premiumBookType,
   PremiumBookContractError,
@@ -7,10 +8,18 @@ import {
   readPremiumBookMarker,
 } from './contract';
 
-const audiobookSchema = z.object({
+const audiobookBase = z.object({
   type: z.literal(premiumBookType),
   revision: z.uuid(),
   runId: z.uuid(),
+});
+const fullAudiobookSchema = audiobookBase.extend({
+  audio: premiumBookAssetSchema.extend({
+    bytes: z.number().int().positive().max(maxPremiumAudiobookBytes),
+  }),
+  duration: z.number().positive(),
+});
+const pageAudiobookSchema = audiobookBase.extend({
   tracks: z
     .array(
       z.object({
@@ -22,6 +31,7 @@ const audiobookSchema = z.object({
     .min(1)
     .max(28),
 });
+const audiobookSchema = z.union([fullAudiobookSchema, pageAudiobookSchema]);
 
 export function getPublishedPremiumRevision(features: unknown): string | undefined {
   try {
@@ -41,6 +51,10 @@ export function getCurrentPremiumAudiobook(storyId: string, features: unknown, u
   }
   const { data } = audio;
   const prefix = `${premiumRevisionPrefix(storyId, data.revision)}audiobooks/${data.runId}`;
+  if ('audio' in data) {
+    return data.audio.key === `${prefix}/audiobook-${data.audio.sha256}.mp3` ? data : null;
+  }
+
   let previousPage = 0;
   for (const { audio: asset, pageNumber } of data.tracks) {
     if (
@@ -54,8 +68,15 @@ export function getCurrentPremiumAudiobook(storyId: string, features: unknown, u
   return data;
 }
 
-export function getPremiumAudioMetadata(audio: ReturnType<typeof getCurrentPremiumAudiobook>) {
+export type PremiumAudioMetadata =
+  | { runId: string; duration: number }
+  | { runId: string; tracks: { pageNumber: number; duration: number }[] };
+
+export function getPremiumAudioMetadata(
+  audio: ReturnType<typeof getCurrentPremiumAudiobook>,
+): PremiumAudioMetadata | undefined {
   if (!audio) return undefined;
+  if ('audio' in audio) return { runId: audio.runId, duration: audio.duration };
   return {
     runId: audio.runId,
     tracks: audio.tracks.map(({ pageNumber, duration }) => ({ pageNumber, duration })),
@@ -68,5 +89,3 @@ export function getPendingPremiumAudiobook(revision: string | undefined, uri: un
     ? pending.data.pendingRunId
     : undefined;
 }
-
-export type PremiumAudioMetadata = NonNullable<ReturnType<typeof getPremiumAudioMetadata>>;

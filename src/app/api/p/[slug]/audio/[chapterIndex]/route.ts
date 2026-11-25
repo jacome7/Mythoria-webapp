@@ -4,7 +4,7 @@ import { eq } from 'drizzle-orm';
 import { db } from '@/db';
 import { stories } from '@/db/schema';
 import { hasPremiumBookMarker } from '@/lib/premium-children-book/contract';
-import { premiumPageAudioResponse } from '@/lib/premium-children-book/audio-response';
+import { premiumAudioResponse } from '@/lib/premium-children-book/audio-response';
 
 export async function GET(
   request: NextRequest,
@@ -36,7 +36,7 @@ export async function GET(
     }
 
     if (hasPremiumBookMarker(story.features)) {
-      return await premiumPageAudioResponse(request, story, chapterIdx);
+      return await premiumAudioResponse(request, story, chapterIdx);
     }
 
     // Get chapters for this story

@@ -78,6 +78,25 @@ it('measures the successfully authorized private premium reader', async () => {
   );
 });
 
+it('plays and downloads the complete MP3 from the signed-in share route', async () => {
+  const runId = 'd65bb5f3-204a-479d-b4df-9ee71f6c513e';
+  mockFetch.mockResolvedValueOnce(
+    response({
+      success: true,
+      storyId,
+      premiumBook: {},
+      premiumAudio: { runId, duration: 55 },
+    }),
+  );
+  render(<SharedStoryPageClient />);
+  const audioUrl = `/api/share/view-token/audio/0?runId=${runId}`;
+  expect(await screen.findByLabelText('fullAudiobook')).toHaveAttribute('src', audioUrl);
+  expect(screen.getByText('listen.controls.download')).toHaveAttribute(
+    'href',
+    `${audioUrl}&download=1`,
+  );
+});
+
 it('does not observe when the private link is revoked', async () => {
   mockFetch.mockResolvedValueOnce(response({ error: 'Revoked' }, false));
   render(<SharedStoryPageClient />);

@@ -10,6 +10,10 @@ import { authorService } from '@/db/services';
 import { hasPremiumBookMarker } from '@/lib/premium-children-book/contract';
 import { toPremiumBookReaderData } from '@/lib/premium-children-book/reader';
 import { loadPublishedPremiumBook } from '@/lib/premium-children-book/storage';
+import {
+  getCurrentPremiumAudiobook,
+  getPremiumAudioMetadata,
+} from '@/lib/premium-children-book/audiobook';
 
 function withQualifiedReaderLink(
   response: NextResponse,
@@ -110,8 +114,18 @@ export async function GET(request: Request, context: { params: Promise<{ token: 
     if (isPremiumBook && link.story) {
       const book = await loadPublishedPremiumBook(link.storyId, link.story.authorId, link.features);
       if (!book) return NextResponse.json({ error: 'Story unavailable' }, { status: 503 });
+      const audio = getCurrentPremiumAudiobook(
+        link.storyId,
+        link.features,
+        link.story.audiobookUri,
+      );
       const response = NextResponse.json(
-        { success: true, storyId: book.storyId, premiumBook: toPremiumBookReaderData(book, token) },
+        {
+          success: true,
+          storyId: book.storyId,
+          premiumBook: toPremiumBookReaderData(book, token),
+          premiumAudio: getPremiumAudioMetadata(audio),
+        },
         { headers: { 'Cache-Control': 'private, no-store' } },
       );
       return withQualifiedReaderLink(

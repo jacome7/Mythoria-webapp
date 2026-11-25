@@ -16,6 +16,7 @@ export const premiumBookAssetSchema = z.object({
   bytes: z.number().int().positive(),
 });
 export type PremiumBookAsset = z.infer<typeof premiumBookAssetSchema>;
+export const maxPremiumAudiobookBytes = 16 * 1024 * 1024;
 
 const markerBase = { version: z.literal(1), type: z.literal(premiumBookType) };
 export const draftPremiumBookMarker = {
