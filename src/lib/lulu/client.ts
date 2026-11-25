@@ -106,6 +106,25 @@ const positive = z
   .union([z.string().regex(/^\d+(\.\d+)?$/), z.number()])
   .transform(Number)
   .pipe(z.number().positive().finite());
+const subtotal = z.string().regex(/^\d{1,12}(?:\.\d{1,8})?$/);
+const jobCostResponse = z.object({
+  currency: z.string().regex(/^[A-Z]{3}$/),
+  total_cost_incl_tax: z.unknown().optional(),
+  total_cost_excl_tax: z.unknown().optional(),
+  fees: z.array(z.unknown()).optional().catch(undefined),
+});
+
+function readJobCostSummary(input: unknown) {
+  const response = jobCostResponse.safeParse(input);
+  if (!response.success) return null;
+  const { currency, total_cost_incl_tax, total_cost_excl_tax, fees } = response.data;
+  const total = positive.safeParse(total_cost_incl_tax).data;
+  const amountExclTax = subtotal.safeParse(total_cost_excl_tax).data;
+  if (total === undefined && amountExclTax === undefined) return null;
+  return { currency, total, amountExclTax, fees: fees ?? [] };
+}
+
+export type LuluJobCostSummary = NonNullable<ReturnType<typeof readJobCostSummary>>;
 const id = z.union([z.number().int().positive(), z.string().regex(/^\d+$/)]).transform(String);
 export async function getLuluCoverDimensions(input: { podPackageId: string; pageCount: number }) {
   return z.object({ width: positive, height: positive }).parse(
@@ -270,6 +289,8 @@ const job = z.object({
   id,
   status: z.union([z.string(), z.object({ name: z.string() })]),
   external_id: z.string().nullish(),
+  date_created: z.string().nullish(),
+  costs: z.unknown().optional(),
   line_items: z
     .array(
       z.object({
@@ -288,6 +309,8 @@ const job = z.object({
     .default([]),
 });
 function toJob(value: z.infer<typeof job>) {
+  const createdAt = z.iso.datetime({ offset: true }).safeParse(value.date_created).data;
+  const costs = readJobCostSummary(value.costs);
   return {
     id: value.id,
     externalId: value.external_id,
@@ -297,6 +320,8 @@ function toJob(value: z.infer<typeof job>) {
       .flatMap((line) => [...line.tracking_urls, ...(line.status?.messages?.tracking_urls ?? [])])
       .filter((url) => /^https?:\/\//i.test(url)),
     lines: value.line_items,
+    createdAt: createdAt ? new Date(createdAt).toISOString() : undefined,
+    costs: costs ?? undefined,
   };
 }
 export async function submitLuluJob(input: OrderFiles & { shippingLevel: string; title: string }) {
@@ -412,12 +437,7 @@ export async function testLuluSandboxWebhook(webhookId: string) {
 }
 
 export async function getLuluJobCosts(jobId: string) {
-  const result = z
-    .object({
-      currency: z.string(),
-      total_cost_incl_tax: positive,
-      fees: z.array(z.unknown()).optional(),
-    })
-    .parse(await request('/print-jobs/' + id.parse(jobId) + '/costs/'));
-  return { currency: result.currency, total: result.total_cost_incl_tax, fees: result.fees ?? [] };
+  const costs = readJobCostSummary(await request('/print-jobs/' + id.parse(jobId) + '/costs/'));
+  if (!costs) throw new Error('LULU_JOB_COSTS_UNAVAILABLE');
+  return costs;
 }

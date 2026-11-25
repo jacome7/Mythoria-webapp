@@ -2,7 +2,7 @@
   "PricingPage": {
     "header": {
       "title": "Unsere Preise",
-      "subtitle": "Einfach, flexibel und auf deine Storytelling-Bedürfnisse zugeschnitten."
+      "subtitle": "Mit deinen ersten 5 Credits kannst du eine digitale Geschichte erstellen. Den Text kannst du kostenlos selbst bearbeiten."
     },
     "creditPackages": {
       "badges": {
@@ -81,7 +81,6 @@
       },
       "close": "Schließen"
     },
-    "newUserMessage": "Alle neuen Nutzer:innen bekommen 5 Credits. Deine erste Geschichte geht auf uns!",
     "infoTexts": {
       "textReview": "Die ersten 5 Korrekturen sind gratis. Wir berechnen nur pro Paket von 5 Textänderungen.",
       "imageGeneration": "Die erste Bildbearbeitung ist kostenlos.",

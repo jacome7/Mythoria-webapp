@@ -9,7 +9,11 @@ import {
   integer,
   numeric,
   uniqueIndex,
+  index,
+  date,
+  check,
 } from 'drizzle-orm/pg-core';
+import { sql } from 'drizzle-orm';
 import { addresses } from './authors';
 import { printRequestStatusEnum, printProviderIntegrationEnum } from './enums';
 
@@ -93,6 +97,7 @@ export const printFulfillments = pgTable(
     proofSentAt: timestamp('proof_sent_at', { withTimezone: true }),
     quote: jsonb('quote'),
     vendor: jsonb('vendor'),
+    nextLuluCostCheckAt: timestamp('next_lulu_cost_check_at', { withTimezone: true }),
     holdReason: text('hold_reason'),
     lastError: text('last_error'),
     approvedBy: varchar('approved_by', { length: 255 }),
@@ -104,7 +109,38 @@ export const printFulfillments = pgTable(
   (table) => [
     uniqueIndex('print_fulfillment_intent_idx').on(table.authorId, table.intentId),
     uniqueIndex('print_fulfillment_ticket_idx').on(table.ticketId),
+    index('print_fulfillment_lulu_cost_retry_idx')
+      .on(table.nextLuluCostCheckAt, table.printRequestId)
+      .where(sql`${table.provider} = 'lulu' AND ${table.status} = 'submitted'`),
   ],
 );
 
 export type PrintFulfillment = typeof printFulfillments.$inferSelect;
+
+export const printFulfillmentCosts = pgTable(
+  'print_fulfillment_costs',
+  {
+    printRequestId: uuid('print_request_id')
+      .primaryKey()
+      .references(() => printFulfillments.printRequestId),
+    luluJobId: varchar('lulu_job_id', { length: 32 }).notNull().unique(),
+    jobCreatedAt: timestamp('job_created_at', { withTimezone: true }).notNull(),
+    amountExclTax: numeric('amount_excl_tax').notNull(),
+    currency: varchar('currency', { length: 3 }).notNull(),
+    amountEur: numeric('amount_eur', { precision: 18, scale: 2 }),
+    fxRate: numeric('fx_rate'),
+    fxRateDate: date('fx_rate_date'),
+    updatedAt: timestamp('updated_at', { withTimezone: true }).defaultNow().notNull(),
+  },
+  (table) => [
+    index('print_fulfillment_cost_job_created_idx').on(table.jobCreatedAt),
+    check('print_fulfillment_cost_native_amount_check', sql`${table.amountExclTax} >= 0`),
+    check('print_fulfillment_cost_currency_check', sql`${table.currency} ~ '^[A-Z]{3}$'`),
+    check(
+      'print_fulfillment_cost_fx_check',
+      sql`(${table.amountEur} IS NULL AND ${table.fxRate} IS NULL AND ${table.fxRateDate} IS NULL)
+        OR (${table.amountEur} IS NOT NULL AND ${table.amountEur} >= 0 AND ${table.fxRate} IS NOT NULL
+            AND ${table.fxRate} > 0 AND ${table.fxRateDate} IS NOT NULL)`,
+    ),
+  ],
+);

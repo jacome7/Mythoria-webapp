@@ -2,6 +2,7 @@ import { copyFile, mkdir, readFile, writeFile } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import sharp from 'sharp';
+import { resolvePublicAssetFile } from './public-asset-file';
 
 interface BookAssetSpec {
   slug: string;
@@ -193,6 +194,10 @@ async function composeFeature(coverPath: string, source: string, output: string)
   return output;
 }
 
+async function copyUnlessAliased(source: string, target: string): Promise<void> {
+  if (resolvePublicAssetFile(target) !== source) await copyFile(source, target);
+}
+
 async function copyRuntimeAssets(
   book: BookAssetSpec,
   includeAudio: boolean,
@@ -222,7 +227,7 @@ async function copyRuntimeAssets(
     [chapter, join(destination, 'chapter-01.jpeg')],
   ];
   if (includeAudio) copies.push([audio, join(destination, 'audio-teaser.mp3')]);
-  for (const [source, target] of copies) await copyFile(source, target);
+  for (const [source, target] of copies) await copyUnlessAliased(source, target);
   return Object.fromEntries(
     copies.map(([, target]) => [target.slice(landingRoot.length + 1), target]),
   );
@@ -249,7 +254,10 @@ async function createLocalizedAssets(
     join(sourceAssets, 'source-feature.jpeg'),
     join(destination, 'feature.jpeg'),
   );
-  await copyFile(join(sourceAssets, 'chapter-01.jpeg'), join(destination, 'chapter-01.jpeg'));
+  await copyUnlessAliased(
+    join(sourceAssets, 'chapter-01.jpeg'),
+    join(destination, 'chapter-01.jpeg'),
+  );
 
   return {
     slug: book.slug,

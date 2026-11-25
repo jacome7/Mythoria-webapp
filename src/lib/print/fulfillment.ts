@@ -1,9 +1,10 @@
 import { z } from 'zod';
 import { randomUUID } from 'node:crypto';
-import { and, eq, inArray, isNull, lt, or, sql } from 'drizzle-orm';
+import { and, eq, inArray, isNull, lt, lte, or, sql } from 'drizzle-orm';
 import { db } from '@/db';
 import {
   printFulfillments,
+  printFulfillmentCosts,
   printRequests,
   printProviders,
   printFulfillmentSettings,
@@ -21,6 +22,7 @@ import {
   validateLuluFile,
 } from '@/lib/lulu/client';
 import { getPrintSettings } from './checkout';
+import { convertLuluCostToEur, recordLuluNativeCost } from './lulu-costs';
 import {
   bindingSchema,
   emailVariablesSchema,
@@ -933,10 +935,24 @@ function priorVendor(order: Order) {
 
 async function recordVendor(order: Order, value: PrintVendor) {
   if (!vendorMatchesOrder(order.request.id, value)) return order;
+  const environment = process.env.LULU_PRINT_ENVIRONMENT;
+  if (environment !== 'production' && environment !== 'sandbox') return order;
   const previous = priorVendor(order);
-  const costs = await getLuluJobCosts(value.id).catch(() => previous?.costs);
-  const vendor = { ...value, costs };
-  return db.transaction(async (tx) => {
+  if (
+    previous &&
+    (previous.id !== value.id || (previous.environment && previous.environment !== environment))
+  )
+    return order;
+  const { costs, ...job } = value;
+  const actualCosts =
+    costs?.amountExclTax !== undefined ? costs : await getLuluJobCosts(job.id).catch(() => costs);
+  const vendor = vendorSchema.parse({
+    ...job,
+    environment,
+    createdAt: previous?.createdAt ?? job.createdAt,
+    costs: actualCosts ?? previous?.costs,
+  });
+  const recorded = await db.transaction(async (tx) => {
     const [row] = await tx
       .update(printFulfillments)
       .set({ status: 'submitted', vendor, lastError: null, updatedAt: nextRevisionTime(order) })
@@ -961,6 +977,26 @@ async function recordVendor(order: Order, value: PrintVendor) {
         .where(eq(printRequests.id, order.request.id));
     return { ...order, fulfillment: row };
   });
+  if (environment === 'production' && vendor.createdAt) {
+    try {
+      const actual = actualCosts;
+      if (actual?.amountExclTax !== undefined) {
+        const cost = await recordLuluNativeCost(
+          order.request.id,
+          job.id,
+          recorded.fulfillment.updatedAt,
+          {
+            currency: actual.currency,
+            amountExclTax: actual.amountExclTax,
+          },
+        );
+        if (cost) await convertLuluCostToEur(cost);
+      }
+    } catch {
+      console.warn('[PrintOrder] Lulu cost capture deferred', { printRequestId: order.request.id });
+    }
+  }
+  return recorded;
 }
 
 export async function reconcilePrintOrder(order: Order) {
@@ -1039,6 +1075,61 @@ export async function pollLuluOrders() {
           /* a newer update won */
         }
         console.warn('[PrintOrder] Lulu status poll deferred', {
+          printRequestId: order.request.id,
+        });
+      }
+    }),
+  );
+}
+
+export async function pollLuluCosts() {
+  if (process.env.LULU_PRINT_ENVIRONMENT !== 'production') return [];
+  const now = new Date();
+  const candidates = await db
+    .select({ fulfillment: printFulfillments, request: printRequests, cost: printFulfillmentCosts })
+    .from(printFulfillments)
+    .innerJoin(printRequests, eq(printRequests.id, printFulfillments.printRequestId))
+    .leftJoin(printFulfillmentCosts, eq(printFulfillmentCosts.printRequestId, printRequests.id))
+    .where(
+      and(
+        eq(printFulfillments.provider, 'lulu'),
+        eq(printFulfillments.status, 'submitted'),
+        sql`${printFulfillments.vendor}->>'id' ~ '^[0-9]+$'`,
+        sql`${printFulfillments.vendor}->>'environment' IS DISTINCT FROM 'sandbox'`,
+        isNull(printFulfillmentCosts.amountEur),
+        or(
+          isNull(printFulfillments.nextLuluCostCheckAt),
+          lte(printFulfillments.nextLuluCostCheckAt, now),
+        ),
+      ),
+    )
+    .orderBy(
+      sql`coalesce(${printFulfillments.nextLuluCostCheckAt}, ${printFulfillments.updatedAt})`,
+      printRequests.id,
+    )
+    .limit(10);
+
+  return Promise.allSettled(
+    candidates.map(async ({ cost, ...order }) => {
+      const due = order.fulfillment.nextLuluCostCheckAt;
+      const [claimed] = await db
+        .update(printFulfillments)
+        .set({ nextLuluCostCheckAt: new Date(now.getTime() + 60 * 60_000) })
+        .where(
+          and(
+            eq(printFulfillments.printRequestId, order.request.id),
+            due
+              ? eq(printFulfillments.nextLuluCostCheckAt, due)
+              : isNull(printFulfillments.nextLuluCostCheckAt),
+          ),
+        )
+        .returning({ id: printFulfillments.printRequestId });
+      if (!claimed) return;
+      try {
+        if (cost) await convertLuluCostToEur(cost);
+        else await reconcilePrintOrder(order);
+      } catch {
+        console.warn('[PrintOrder] Lulu cost reconciliation deferred', {
           printRequestId: order.request.id,
         });
       }

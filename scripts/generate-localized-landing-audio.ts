@@ -5,6 +5,7 @@ import { dirname, join, resolve } from 'node:path';
 import process from 'node:process';
 import dotenv from 'dotenv';
 import { getIndexableLandingPages } from '../src/content/landing-pages';
+import { resolvePublicAssetFile } from './public-asset-file';
 
 const MODEL = 'gemini-3.1-flash-tts-preview';
 const VOICE = 'Aoede';
@@ -198,7 +199,7 @@ async function main() {
       const voiceDirection = directions[page.locale];
       if (
         !options.overwrite &&
-        existsSync(outputPath) &&
+        existsSync(resolvePublicAssetFile(outputPath)) &&
         existsSync(manifestPath) &&
         (await hasCurrentManifest(manifestPath, {
           text,

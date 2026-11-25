@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from '@testing-library/react';
+import { act, fireEvent, render, screen } from '@testing-library/react';
 import { useState, type ComponentProps } from 'react';
 import PaymentStep from './PaymentStep';
 
@@ -78,7 +78,9 @@ async function show(
       />
     );
   }
-  render(<Checkout />);
+  await act(async () => {
+    render(<Checkout />);
+  });
   const place = await screen.findByRole('button', { name: 'buttons.placeOrder' });
   return { onPlaceOrder, place };
 }
@@ -132,7 +134,9 @@ it('allows a priced, available hardcover to be confirmed at its own credit price
   const { place, onPlaceOrder } = await show({ luluDefault: true, hardcoverAvailable: true }, true);
   const select = screen.getByRole('combobox', { name: /payment.binding/ });
   expect(select).toHaveValue('printedSoftCover');
-  fireEvent.change(select, { target: { value: 'printedHardCover' } });
+  await act(async () => {
+    fireEvent.change(select, { target: { value: 'printedHardCover' } });
+  });
   expect(select).toHaveValue('printedHardCover');
   fireEvent.click(place);
   fireEvent.click(screen.getByRole('button', { name: 'buttons.confirm' }));

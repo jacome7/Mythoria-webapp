@@ -83,6 +83,7 @@ test.describe('Premium book format', () => {
       expect((await anonymous.request.get(motifUrl)).status()).toBe(404);
       await page.setViewportSize({ width: 1150, height: 850 });
       await page.goto(`/pt-PT/stories/read/${storyId}`);
+      await page.getByRole('button', { name: 'Recusar opcionais' }).click();
       const picker = page.getByRole('combobox', { name: pt.goToPage });
       await expect(page.getByRole('heading', { name: opening.title })).toBeVisible();
       await expect(page.getByRole('group', { name: pt.frontCover }).locator('svg')).toHaveCount(0);
@@ -143,8 +144,12 @@ test.describe('Premium book format', () => {
       await picker.selectOption(String(mixed.leftPage));
       await expect(article(mixed.leftPage)).toBeVisible();
       await expect(article(mixed.rightPage)).toHaveCount(0);
-      const box = await article(mixed.leftPage).boundingBox();
-      expect(Math.abs((box?.height ?? 0) - (box?.width ?? 0))).toBeLessThan(2);
+      await expect
+        .poll(async () => {
+          const box = await article(mixed.leftPage).boundingBox();
+          return box ? Math.abs(box.height - box.width) : Number.POSITIVE_INFINITY;
+        })
+        .toBeLessThan(2);
       await page.getByRole('button', { name: pt.next }).click();
       await expect(article(mixed.rightPage)).toBeVisible();
 

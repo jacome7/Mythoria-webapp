@@ -1,5 +1,5 @@
 /** @jest-environment node */
-import { randomUUID } from 'node:crypto';
+import { randomInt, randomUUID } from 'node:crypto';
 import { and, eq } from 'drizzle-orm';
 import { drizzle } from 'drizzle-orm/node-postgres';
 import { Pool } from 'pg';
@@ -11,13 +11,17 @@ import {
   authors,
   creditLedger,
   pricing,
+  printFulfillmentCosts,
   printFulfillments,
   printProviders,
+  printRequests,
   stories,
 } from '@/db/schema';
 
 let mockDatabase: ReturnType<typeof drizzle>;
 const mockSubmit = jest.fn();
+const mockGetLuluJob = jest.fn();
+const mockGetLuluJobCosts = jest.fn();
 const mockRenderOrderProof = jest.fn();
 const mockLoadPublished = jest.fn();
 const target = process.env.PRINT_TEST_DATABASE_URL;
@@ -53,7 +57,8 @@ jest.mock('@/lib/lulu/client', () => ({
     return kind;
   }),
   quoteLuluOrder: jest.fn(async () => ({ shippingLevel: 'EXPRESS', totalEur: 20 })),
-  getLuluJobCosts: jest.fn(async () => ({ currency: 'EUR', total: 20, fees: [] })),
+  getLuluJob: (...args: unknown[]) => mockGetLuluJob(...args),
+  getLuluJobCosts: (...args: unknown[]) => mockGetLuluJobCosts(...args),
   submitLuluJob: (...args: unknown[]) => mockSubmit(...args),
 }));
 
@@ -63,7 +68,9 @@ import {
   correctSquareEdition,
   finalizeManualPrint,
   hasPaidOrderForStory,
+  pollLuluCosts,
   processPrintProof,
+  reconcilePrintOrder,
   reserveManualPrint,
   setPrintHold,
   submitPrintOrder,
@@ -99,6 +106,7 @@ import {
       PRINT_ADMIN_SERVICE_ACCOUNT: 'admin@example.test',
       PRINT_SCHEDULER_SERVICE_ACCOUNT: 'scheduler@example.test',
       LULU_PAPERBACK_POD_PACKAGE_ID: LULU_SKUS.paperback,
+      LULU_PRINT_ENVIRONMENT: 'production',
     });
     try {
       const [author] = await mockDatabase
@@ -299,8 +307,12 @@ import {
           updatedAt: new Date(),
         })
         .where(eq(printFulfillments.printRequestId, request.id));
+      const jobId = String(randomInt(1e12));
+      const createdAt = '2026-11-22T12:30:00.000Z';
       mockSubmit.mockResolvedValue({
-        id: '100',
+        id: jobId,
+        createdAt,
+        costs: { currency: 'EUR', total: 20, amountExclTax: '12.345', fees: [] },
         status: 'UNPAID',
         externalId: request.id,
         tracking: [],
@@ -319,8 +331,117 @@ import {
       expect(submitted.fulfillment).toMatchObject({
         status: 'submitted',
         approvedBy: actor,
-        vendor: { id: '100' },
+        vendor: { id: jobId, environment: 'production', createdAt },
       });
+      const [cost] = await mockDatabase
+        .select()
+        .from(printFulfillmentCosts)
+        .where(eq(printFulfillmentCosts.printRequestId, request.id));
+      expect(cost).toMatchObject({
+        luluJobId: jobId,
+        jobCreatedAt: new Date(createdAt),
+        currency: 'EUR',
+        amountExclTax: '12.345',
+        amountEur: '12.35',
+        fxRate: '1',
+        fxRateDate: '2026-11-22',
+      });
+
+      const legacyRequestId = randomUUID();
+      const legacyJobId = String(randomInt(1e12));
+      const legacyTicketId = randomUUID();
+      const legacyVendor = {
+        id: legacyJobId,
+        status: 'SHIPPED',
+        externalId: legacyRequestId,
+        tracking: [],
+        lines: [{ external_id: legacyRequestId + '-1' }],
+      };
+      await mockDatabase
+        .insert(printRequests)
+        .values({ ...request, id: legacyRequestId, status: 'delivered' });
+      await mockDatabase.insert(printFulfillments).values({
+        ...submitted.fulfillment,
+        printRequestId: legacyRequestId,
+        ticketId: legacyTicketId,
+        intentId: randomUUID(),
+        vendor: legacyVendor,
+      });
+      mockGetLuluJob.mockResolvedValueOnce({ ...legacyVendor, id: '987654321', createdAt });
+      const legacy = await withPrintTicket(legacyRequestId, legacyTicketId);
+      await reconcilePrintOrder(legacy);
+      expect((await withPrintTicket(legacyRequestId, legacyTicketId)).fulfillment.vendor).toEqual(
+        legacyVendor,
+      );
+
+      mockGetLuluJob.mockResolvedValue({ ...legacyVendor, status: 'DELIVERED', createdAt });
+      mockGetLuluJobCosts.mockRejectedValueOnce(new Error('Supplier cost unavailable'));
+      await pollLuluCosts();
+      const deferred = await withPrintTicket(legacyRequestId, legacyTicketId);
+      expect(deferred.fulfillment.vendor).toMatchObject({ environment: 'production', createdAt });
+      expect(deferred.fulfillment.nextLuluCostCheckAt?.getTime()).toBeGreaterThan(Date.now());
+      await expect(
+        mockDatabase
+          .select()
+          .from(printFulfillmentCosts)
+          .where(eq(printFulfillmentCosts.printRequestId, legacyRequestId)),
+      ).resolves.toEqual([]);
+
+      mockGetLuluJobCosts.mockResolvedValue({ currency: 'USD', amountExclTax: '24.51', fees: [] });
+      jest
+        .mocked(fetch)
+        .mockResolvedValue(
+          new Response('KEY,TIME_PERIOD,OBS_VALUE\nEXR.D.USD.EUR.SP00.A,2026-11-20,1.50\n'),
+        );
+      await mockDatabase
+        .update(printFulfillments)
+        .set({ nextLuluCostCheckAt: new Date(0) })
+        .where(eq(printFulfillments.printRequestId, legacyRequestId));
+      await pollLuluCosts();
+      const [usdCost] = await mockDatabase
+        .select()
+        .from(printFulfillmentCosts)
+        .where(eq(printFulfillmentCosts.printRequestId, legacyRequestId));
+      expect(usdCost).toMatchObject({
+        luluJobId: legacyJobId,
+        amountExclTax: '24.51',
+        currency: 'USD',
+        amountEur: '16.34',
+        fxRateDate: '2026-11-20',
+        fxRate: '1.50',
+      });
+
+      const sandboxId = randomUUID();
+      const sandboxTicketId = randomUUID();
+      const sandboxJob = {
+        id: String(randomInt(1e12)),
+        status: 'UNPAID',
+        externalId: sandboxId,
+        tracking: [],
+        lines: [{ external_id: sandboxId + '-1' }],
+      };
+      await mockDatabase.insert(printRequests).values({ ...request, id: sandboxId });
+      await mockDatabase.insert(printFulfillments).values({
+        ...submitted.fulfillment,
+        printRequestId: sandboxId,
+        ticketId: sandboxTicketId,
+        intentId: randomUUID(),
+        vendor: sandboxJob,
+      });
+      process.env.LULU_PRINT_ENVIRONMENT = 'sandbox';
+      mockGetLuluJob.mockResolvedValueOnce({
+        ...sandboxJob,
+        createdAt,
+        costs: { currency: 'EUR', amountExclTax: '3.00', total: 4, fees: [] },
+      });
+      const sandbox = await reconcilePrintOrder(await withPrintTicket(sandboxId, sandboxTicketId));
+      expect(sandbox.fulfillment.vendor).toMatchObject({ environment: 'sandbox', createdAt });
+      await expect(
+        mockDatabase
+          .select()
+          .from(printFulfillmentCosts)
+          .where(eq(printFulfillmentCosts.printRequestId, sandboxId)),
+      ).resolves.toEqual([]);
     } finally {
       jest.restoreAllMocks();
     }

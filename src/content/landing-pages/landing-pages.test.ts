@@ -1,3 +1,4 @@
+import { resolvePublicAssetFile } from '../../../scripts/public-asset-file';
 import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
@@ -536,7 +537,9 @@ describe('landing page content registry', () => {
       ]) ?? []),
     ].filter((asset): asset is string => Boolean(asset));
     localAssets.forEach((asset) => {
-      expect(existsSync(join(process.cwd(), 'public', asset.replace(/^\//, '')))).toBe(true);
+      expect(
+        existsSync(resolvePublicAssetFile(join(process.cwd(), 'public', asset.replace(/^\//, '')))),
+      ).toBe(true);
     });
 
     expect(getLandingPageIndexItems().map((item) => item.href)).toContain(
@@ -596,7 +599,9 @@ describe('landing page content registry', () => {
       ]) ?? []),
     ].filter((asset): asset is string => Boolean(asset));
     localAssets.forEach((asset) => {
-      expect(existsSync(join(process.cwd(), 'public', asset.replace(/^\//, '')))).toBe(true);
+      expect(
+        existsSync(resolvePublicAssetFile(join(process.cwd(), 'public', asset.replace(/^\//, '')))),
+      ).toBe(true);
     });
 
     expect(getLandingPageIndexItems()).toContainEqual(
@@ -692,7 +697,9 @@ describe('landing page content registry', () => {
       ]) ?? []),
     ].filter((asset): asset is string => Boolean(asset));
     localAssets.forEach((asset) => {
-      expect(existsSync(join(process.cwd(), 'public', asset.replace(/^\//, '')))).toBe(true);
+      expect(
+        existsSync(resolvePublicAssetFile(join(process.cwd(), 'public', asset.replace(/^\//, '')))),
+      ).toBe(true);
     });
 
     const assetManifest = JSON.parse(

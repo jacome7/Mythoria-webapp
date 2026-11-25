@@ -6,9 +6,6 @@ module.exports = {
     '\\.module\\.css$': '<rootDir>/src/test-utils/style-mock.cjs',
     '^@/(.*)$': '<rootDir>/src/$1',
   },
-  // Silence haste map collision between root package.json and .next/standalone/package.json
-  modulePathIgnorePatterns: ['<rootDir>/.next/'],
-  // Ignore Next build output and Playwright tests (they are executed via `npx playwright test`)
-  testPathIgnorePatterns: ['<rootDir>/.next/', '<rootDir>/tests/playwright/'],
+  roots: ['<rootDir>/src', '<rootDir>/scripts'],
   setupFilesAfterEnv: ['<rootDir>/jest.setup.ts'],
 };

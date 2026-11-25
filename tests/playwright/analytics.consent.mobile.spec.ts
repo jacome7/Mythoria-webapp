@@ -33,7 +33,7 @@ test('records no optional destination request through signup, encoded return, an
   const response = await page.goto(
     `/pt-PT?gclid=${sentinel}&utm_content=${encodeURIComponent(`/pt-PT/s/${sentinel}`)}`,
   );
-  expect(response?.headers()['referrer-policy']).toBe('strict-origin');
+  expect(response?.headers()['referrer-policy']).toBe('no-referrer');
   await expect(page.getByRole('button', { name: /só análise|analytics only/i })).toBeVisible();
   expect(
     (await context.cookies()).find(({ name }) => name === 'mythoria_attribution'),

@@ -245,3 +245,14 @@ Do **not** create or reference `public/landing-page-assets/`; that folder is dep
 - **Runtime assets:** `public/landing-pages/{slug}/assets/`
 - **Editorial/source artifacts:** `docs/landing-pages/{slug}/`
 - **SEO helpers:** `src/lib/seo.ts`
+
+## Shared public assets
+
+Byte-identical artwork and audio can share a physical file through
+`public-asset-aliases.json`. Keep existing public URLs as rewrite sources and point them
+directly at files under `public/`. The homepage and landing asset checks resolve these
+rewrites when inspecting files. Audio manifests still live next to their original
+logical URLs. Sample-book packs keep their own files for pack validation and generation.
+
+To give a URL distinct artwork or audio, place the new file at that URL and remove
+its alias. A physical file takes precedence over the rewrite.

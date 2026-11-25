@@ -55,7 +55,7 @@ describe('LandingAnalytics', () => {
   });
 
   afterEach(() => {
-    jest.runOnlyPendingTimers();
+    act(() => jest.runOnlyPendingTimers());
     jest.useRealTimers();
   });
 
@@ -92,7 +92,11 @@ describe('LandingAnalytics', () => {
   it('tracks canonical CTA placement without its query string', () => {
     const { getByRole } = render(
       <>
-        <Link href="/en-US/sign-up?token=secret" data-cta-placement="hero_primary">
+        <Link
+          onClick={(event) => event.preventDefault()}
+          href="/en-US/sign-up?token=secret"
+          data-cta-placement="hero_primary"
+        >
           Start
         </Link>
         <LandingAnalytics landingSlug="kids-fantasy" primaryIntent="create_story" locale="en-US" />
@@ -112,6 +116,7 @@ describe('LandingAnalytics', () => {
     const { getByRole } = render(
       <>
         <Link
+          onClick={(event) => event.preventDefault()}
           href="/pt-PT/tell-your-story/step-1?landingSlug=historias-de-apoio&primaryIntent=remembrance"
           data-cta-placement="challenge_card"
           data-challenge-id="remember-pet"

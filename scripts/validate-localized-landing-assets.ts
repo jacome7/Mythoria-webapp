@@ -2,6 +2,7 @@ import { readFile, stat } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import process from 'node:process';
+import { resolvePublicAssetFile } from './public-asset-file';
 import sharp from 'sharp';
 import { localizedLandingPages } from '../src/content/landing-pages/localized';
 
@@ -18,7 +19,7 @@ async function main() {
   for (const page of pages) {
     for (const source of [page.hero.imageSrc, page.ogImageSrc]) {
       if (!source) continue;
-      const path = join(process.cwd(), 'public', source.replace(/^\//, ''));
+      const path = resolvePublicAssetFile(join(process.cwd(), 'public', source.replace(/^\//, '')));
       if (!existsSync(path)) {
         errors.push(`missing hero/OG image ${source}`);
         continue;
@@ -35,7 +36,9 @@ async function main() {
     for (const book of page.books) {
       for (const source of [book.imageSrc, book.sampleChapter?.imageSrc]) {
         if (!source) continue;
-        const path = join(process.cwd(), 'public', source.replace(/^\//, ''));
+        const path = resolvePublicAssetFile(
+          join(process.cwd(), 'public', source.replace(/^\//, '')),
+        );
         if (!existsSync(path)) {
           errors.push(`missing image ${source}`);
           continue;
@@ -46,8 +49,9 @@ async function main() {
       }
 
       if (!book.audioSampleSrc) continue;
-      const path = join(process.cwd(), 'public', book.audioSampleSrc.replace(/^\//, ''));
-      const manifestPath = join(dirname(path), 'audio-sample.json');
+      const urlPath = join(process.cwd(), 'public', book.audioSampleSrc.replace(/^\//, ''));
+      const path = resolvePublicAssetFile(urlPath);
+      const manifestPath = join(dirname(urlPath), 'audio-sample.json');
       if (!existsSync(path) || !existsSync(manifestPath)) {
         errors.push(`missing audio or manifest ${book.audioSampleSrc}`);
         continue;

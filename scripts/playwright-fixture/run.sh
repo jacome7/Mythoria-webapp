@@ -30,7 +30,7 @@ shift
 cd "$fixture"
 mkdir -p socket
 rsync -a --exclude='__pycache__' --exclude='.auth' --exclude='.env*' --exclude='.venv' "$repo"/{src,scripts,public,tests} .
-cp "$repo"/{package.json,package-lock.json,next.config.ts,postcss.config.mjs,tailwind.config.ts,tsconfig.json,env.manifest.ts,playwright.config.ts,drizzle.config.ts,jest.setup.ts} .
+cp "$repo"/{package.json,package-lock.json,public-asset-aliases.json,next.config.ts,postcss.config.mjs,tailwind.config.ts,tsconfig.json,env.manifest.ts,playwright.config.ts,drizzle.config.ts,jest.setup.ts} .
 ln -s "$repo/node_modules" node_modules
 # Reserve distinct loopback ports, then require both local listeners to start successfully.
 select_port() {
@@ -100,7 +100,7 @@ node .next/standalone/server.js > server.log 2>&1 &
 app_pid=$!
 for attempt in {1..20}; do
   kill -0 "$app_pid"
-  if curl --noproxy '*' -fsS --max-time 2 "$PLAYWRIGHT_BASE_URL/robots.txt" >/dev/null; then break; fi
+  if curl --noproxy '*' -fs --max-time 2 "$PLAYWRIGHT_BASE_URL/robots.txt" >/dev/null; then break; fi
   sleep 1
 done
 curl --noproxy '*' -fsS --max-time 2 "$PLAYWRIGHT_BASE_URL/robots.txt" >/dev/null

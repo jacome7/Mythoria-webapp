@@ -1,6 +1,7 @@
 import type { NextConfig } from 'next';
 import createNextIntlPlugin from 'next-intl/plugin';
 import withPWAInit, { runtimeCaching } from '@ducanh2912/next-pwa';
+import publicAssetAliases from './public-asset-aliases.json';
 
 const withNextIntl = createNextIntlPlugin('./src/i18n/request.ts');
 
@@ -55,6 +56,12 @@ const nextConfig: NextConfig = {
   ],
   async headers() {
     return [{ source: '/:path*', headers: [{ key: 'Referrer-Policy', value: 'no-referrer' }] }];
+  },
+  async rewrites() {
+    return Object.entries(publicAssetAliases).map(([source, destination]) => ({
+      source,
+      destination,
+    }));
   },
   async redirects() {
     return [

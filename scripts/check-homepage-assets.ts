@@ -17,6 +17,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import sharp from 'sharp';
 import { SUPPORTED_LOCALES } from '../src/config/locales';
+import { resolvePublicAssetFile } from './public-asset-file';
 
 const STYLE_IDS = ['kids_fantasy', 'sports_teams', 'romance', 'grandparents', 'christmas'] as const;
 const HOMEPAGE_DIR = path.join(__dirname, '..', 'public', 'homepage');
@@ -109,7 +110,7 @@ async function checkStyle(style: string): Promise<void> {
   // 1. listed files exist + 4. naming + 5. dimensions
   for (const entry of meta.assets) {
     if (entry.status === 'missing') continue;
-    const filePath = path.join(dir, entry.file);
+    const filePath = resolvePublicAssetFile(path.join(dir, entry.file));
     if (!fs.existsSync(filePath)) {
       fail(
         style,

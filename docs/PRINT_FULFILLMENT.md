@@ -49,6 +49,10 @@ Switch the default to None to prepare new orders for manual production. Continue
 
 Keep the WebApp command API and proof worker available for paid tickets through rollback. An older checkout tab receives a reload prompt on the new server. A new checkout tab sends a versioned request body that the previous server rejects before charging credits.
 
+## Printing costs
+
+The reconciliation worker records Lulu's tax-exclusive job price and original currency for production orders. Use migration `0055_print_fulfillment_costs` before releasing the worker or the Admin Printing Costs dashboard. EUR jobs retain their native value. For other currencies the worker uses the ECB reference rate on or before the UTC Lulu job date. Missing prices and conversions are retried and shown separately in Admin. Manual and sandbox orders carry no recorded Lulu production cost. The worker can backfill older production jobs when their order identity and price are available.
+
 ## Verification
 
 Run each service's tests, typecheck, lint and build from that service directory. Run WebApp locale parity as well. The five-language Notification Engine tests render the confirmation and revised-proof subjects and check both attachment and link delivery.

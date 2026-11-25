@@ -49,6 +49,8 @@ export const vendorSchema = z.object({
   tracking: z.array(z.string()).default([]),
   externalId: z.string().nullish(),
   orderId: z.union([z.string(), z.number()]).nullish(),
+  environment: z.enum(['sandbox', 'production']).optional(),
+  createdAt: z.iso.datetime().optional(),
   lines: z
     .array(
       z.object({
@@ -76,7 +78,15 @@ export const vendorSchema = z.object({
     )
     .optional(),
   costs: z
-    .object({ currency: z.string(), total: z.number().positive(), fees: z.array(z.unknown()) })
+    .object({
+      currency: z.string(),
+      total: z.number().positive().optional(),
+      amountExclTax: z
+        .string()
+        .regex(/^\d{1,12}(?:\.\d{1,8})?$/)
+        .optional(),
+      fees: z.array(z.unknown()),
+    })
     .optional(),
 });
 export const emailVariablesSchema = z.object({

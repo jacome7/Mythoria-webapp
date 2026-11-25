@@ -2,7 +2,7 @@
   "PricingPage": {
     "header": {
       "title": "Our Pricing",
-      "subtitle": "Simple, flexible, and designed for your storytelling needs."
+      "subtitle": "Your first 5 credits cover a digital story. You can edit its text yourself for free."
     },
     "creditPackages": {
       "badges": {
@@ -81,7 +81,6 @@
       },
       "close": "Close"
     },
-    "newUserMessage": "Every new user gets 5 credits. Your first story is on us!",
     "infoTexts": {
       "textReview": "The first 5 edits are free. We only charge per group of 5 text changes.",
       "imageGeneration": "The first image editing is free.",

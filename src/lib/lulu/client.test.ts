@@ -4,6 +4,7 @@ import {
   findLuluJob,
   getLuluCoverDimensions,
   getLuluJob,
+  getLuluJobCosts,
   prepareLuluQuote,
   quoteLuluOrder,
   submitLuluJob,
@@ -230,6 +231,39 @@ it('requires an exact job and line reference on reconciliation', async () => {
     ],
   });
   await expect(findLuluJob(input.externalId)).rejects.toThrow('RECONCILIATION_REQUIRED');
+});
+it('preserves the native pre-tax decimal from an unpaid job and the separate cost endpoint', async () => {
+  const costs = {
+    currency: 'USD',
+    total_cost_incl_tax: '86.45',
+    total_cost_excl_tax: '80.7900',
+  };
+  respond = (url) => {
+    if (url.endsWith('/status/')) return { name: 'UNPAID' };
+    if (url.endsWith('/costs/')) return costs;
+    return { id: 4, status: { name: 'UNPAID' }, date_created: '2026-11-21T00:30:00+01:00', costs };
+  };
+  const summary = { currency: 'USD', total: 86.45, amountExclTax: '80.7900', fees: [] };
+  await expect(getLuluJob('4')).resolves.toMatchObject({
+    id: '4',
+    status: 'UNPAID',
+    createdAt: '2026-11-20T23:30:00.000Z',
+    costs: summary,
+  });
+  await expect(getLuluJobCosts('4')).resolves.toEqual(summary);
+});
+
+it('reads the job identity even when its cost and creation date are unavailable', async () => {
+  respond = (url) =>
+    url.endsWith('/status/')
+      ? { name: 'CREATED' }
+      : { id: 4, status: 'CREATED', date_created: null, costs: { currency: 'EUR' } };
+  await expect(getLuluJob('4')).resolves.toMatchObject({
+    id: '4',
+    status: 'CREATED',
+    createdAt: undefined,
+    costs: undefined,
+  });
 });
 it('authenticates the raw bytes before parsing', async () => {
   const raw = Buffer.from('{"a": 1}');
