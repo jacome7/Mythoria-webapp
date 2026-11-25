@@ -44,7 +44,9 @@ Both flows use Mythoria credits, require a **published** story, and are availabl
 
 Checkout shows payment confirmation and a link back to My Stories. Once the order-specific files pass QA, the purchaser receives the existing confirmation email with the exact interior and cover PDFs. Oversized files use private download links. Customers can reply with their order reference if the pagination or cover needs correction.
 
-The default production provider is None. An administrator may prepare a Lulu-specific edition on an individual ticket. Preparing files and sending proofs never places a supplier order. Staff check the reply inbox and release a reviewed edition from its ticket. Hardcover requires Lulu as the default and an active hardcover price.
+As of 2026-11-25 the production provider is **None (manual fulfillment)**. Eligible premium illustrated children's editions offer the square hardcover with manual printer dispatch. The active square rate is 22 credits for the first copy, 18 for each additional copy and 5 per order for shipping. The chapter surcharge applies only to the standard format. A5 hardcover requires a configured Lulu product, Lulu as the default and an active hardcover price.
+
+Staff check the reply inbox and release the reviewed proof from its linked ticket. Preparing and emailing proofs are independent of supplier release. The Lulu adapter supports supplier-specific proof preparation and release once configured for an approved environment.
 
 See the [paid print operations runbook](../PRINT_FULFILLMENT.md) for provider settings, secure file storage, scheduler setup, supplier payment, and recovery. See [sandbox verification](../lulu-sandbox.md) for a synthetic supplier smoke test.
 
@@ -99,9 +101,13 @@ See the [paid print operations runbook](../PRINT_FULFILLMENT.md) for provider se
 
 - Optional filters: `storyId`, `status`.
 
+**`GET /api/print-requests/options?storyId={storyId}`** – Check available formats for the signed-in purchaser and story
+
+- Eligible premium editions expose only the square hardcover and return the published revision for checkout. Omitting `storyId` returns the generic A5 options.
+
 **`GET /api/pricing/services`** – Load pricing used in the print order wizard
 
-- Includes `printedSoftCover`, `extraBookCopy`, `extraChapterCost`, and `shippingCost` when active.
+- Includes `printedSoftCover`, `printedHardCover`, `extraBookCopy`, `extraChapterCost` and `shippingCost` when active.
 
 **`GET /api/pricing/self-print`** – Load pricing for self-print
 

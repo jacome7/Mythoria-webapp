@@ -1,12 +1,18 @@
 # Paid print orders and customer proofs
 
+## Production release on 2026-11-25
+
+The premium square hardcover is open to eligible published editions under the manual approval `manual:premium-square-hardcover-2026-11-25`. The live default is **None (manual fulfillment)**. The active rates are 22 credits for the first copy, 18 for each additional copy, and 5 per order for shipping. One copy costs 27 credits and two cost 45, with no chapter surcharge. The generic options endpoint continues to report A5 availability. The signed-in, story-specific endpoint checks the purchaser's access and the published square edition.
+
+Cloud Run sent all WebApp traffic to `mythoria-webapp-premium-5506bb18`. The matching Admin, SGW and Notification Engine revisions were serving production traffic. The `paid-print-proof-reconcile` job ran every five minutes, with successful requests to the live WebApp revision. The WebApp revision had no `LULU_*` runtime configuration. The approval, price, default and worker checks were read-only. An authenticated order and physical delivery were outside this verification.
+
 ## Staff workflow
 
 Open **Tickets → Print fulfillment settings** in Admin to set the default provider, maximum landed EUR per copy, and hardcover credit price. The initial provider is **None (manual fulfillment)**. The default selects the production profile for new orders. A physical print purchase pays Mythoria with credits. A Lulu job can incur a separate supplier charge, depending on the payment settings in Mythoria’s Lulu account.
 
 1. The paid order appears on a print-request ticket. Wait for the current proof version to show successful email delivery. The purchaser receives the existing print-order confirmation with the interior PDF and wraparound cover. For oversized pairs the email includes private download links. The configured Reply-To mailbox receives customer replies.
 2. Check that mailbox using the order reference before dispatch. Staff choose the review period. Place the ticket on hold if there is a concern. Record the correction, prepare a revised proof, and check that the new version has been sent. For a proposed shipping-address correction, obtain customer confirmation and record the corrected details on the held ticket.
-3. For a manual order, dispatch the reviewed pair to the printer from the linked ticket. For an individual Lulu order choose **Prepare for Lulu**, even when the default is None. The different print profile needs its own cover and interior. Review the replacement proof, binding, copy count, shipping service, and total supplier quote.
+3. For a manual order, dispatch the reviewed pair to the printer from the linked ticket. In an approved Lulu environment, choose **Prepare for Lulu** on an individual ticket to prepare its supplier-specific cover and interior. Review the replacement proof, binding, copy count, shipping service, and total supplier quote.
 4. **Submit to Lulu** releases the current version. Check the inbox and confirm the displayed amount. A hold, changed quote, excessive cost per copy, failed QA, or missing proof delivery prevents release. Ticket resolution is a separate staff action.
 5. If a supplier call times out, reconcile the existing job and line references. Check the Developer Portal before considering any replacement. An unpaid supplier order can still exist. A manufacturing error or carrier delay needs investigation. Retain identifiers, actual costs, dates, tracking details and photos for supplier claims. Confirm cancellation and refund status separately with Lulu. Track the claims deadline from the shipment date.
 
@@ -23,9 +29,7 @@ Open **Tickets → Print fulfillment settings** in Admin to set the default prov
 - Register the environment’s HTTPS WebApp callback at `/api/print/lulu/webhook` for `PRINT_JOB_STATUS_CHANGED` in Lulu. Verify a signed sandbox test event. Check webhook activity, failed submissions, overdue proofs, email delivery outcomes, rejected files, pending supplier payments and uncertain orders. Reconcile missed updates against the supplier job details.
 - Before enabling production release, exercise the synthetic sandbox lifecycle. Obtain approval to order a physical paperback and casewrap proof. Check pagination, gutters, bleed, color, spine and hinges, packing slip, return address, tracked shipping, landed cost and delivery time. Confirm supplier payment mode, billing, privacy terms and retention with operations.
 
-## Rollback and existing orders
-
-### Premium square hardcover
+## Premium square hardcover
 
 The premium edition uses the existing hardcover credit rate, extra-copy rate and shipping rate without a chapter surcharge. New editions have 33 interior pages, including the localized Mythoria invitation on page 33. Published 32-page editions and already paid orders keep their original pagination. **None** selects manual production for new square orders, and **Lulu** selects automated supplier preparation. A5 hardcover still requires the Lulu default.
 
@@ -39,9 +43,13 @@ To activate that approval, set the WebApp runtime variable `PREMIUM_SQUARE_PRINT
 
 For a separately approved Lulu default, set `PREMIUM_SQUARE_PRINT_APPROVAL` to `production:<approval-record>` or `sandbox:<approval-record>` for the matching Lulu environment. The same approval keeps checkout available if the default changes to **None**. Lulu checkout also requires the validated `LULU_PREMIUM_SQUARE_POD_PACKAGE_ID` and a positive landed EUR limit. The catalog lists `0850X0850FCPRECW080CW444MXX` and `0850X0850.FC.PRE.CW.080CW444.MXX` for the 8.5 × 8.5 in casewrap on Premium Color coated white stock with matte finish.
 
+The Lulu default affects new A5 orders as well as premium squares. The environment-specific approval gates square checkout under a Lulu default. A staff provider change checks the configured square package and environment, so paid ticket overrides need their own server-side rollout gate before a production pilot with **None** as the global default. Staff proofs need a separately controlled release path so operators can obtain the physical supplier proof before approving customer routing.
+
 Checkout freezes the current published private manifest by key, generation, SHA-256 and interior page count. Both PDFs use the immutable assets from that edition, and the worker verifies their object generations, size and SHA-256 before recording the proof. Manual production uses the square hardcover files and ships to the frozen address. Lulu uses the exact frozen count for dimensions, validation and quotes. A different normalized count or an incompatible package requires manual review and blocks Lulu release. The versioned email sends the exact PDFs or private links to the purchaser. Staff review the inbox and both files, then release from the paid ticket. For Lulu they confirm the proof version and landed quote and use **Release square order to Lulu**. The render, mail and status workers never submit a supplier job.
 
 Place the ticket on hold before binding a correction. Publish the corrected immutable manifest as a direct successor of the ticket’s edition with the same page count. Enter the new revision ID and reason on the ticket. The order records its previous edition, proof, quote, actor and reason, and advances the proof version. Clearing the hold queues the replacement pair and email without charging again. A shipping-only correction keeps the frozen edition and also advances the proof version. Investigate an uncertain or submitted job through reconciliation before handling a cancellation or replacement.
+
+## Rollback and existing orders
 
 To close new square checkout, remove `PREMIUM_SQUARE_PRINT_APPROVAL`. Preserve the paid-print worker, private buckets and Lulu environment required by existing tickets. A material change to the stock, binding, template geometry or renderer requires a new physical sign-off before reopening sales.
 
@@ -57,7 +65,7 @@ The reconciliation worker records Lulu's tax-exclusive job price and original cu
 
 Run each service's tests, typecheck, lint and build from that service directory. Run WebApp locale parity as well. The five-language Notification Engine tests render the confirmation and revised-proof subjects and check both attachment and link delivery.
 
-The WebApp PostgreSQL concurrency test opts in through `PRINT_TEST_DATABASE_URL`. Use a disposable loopback database named `print_test` on a non-default port, initialized with the existing core schema and the WebApp print migration. The test exercises duplicate checkout and simultaneous release. Historical core migrations assume pre-existing schema objects when starting with an empty database.
+The optional WebApp PostgreSQL concurrency suite covers duplicate checkout and simultaneous release. Leave `PRINT_TEST_DATABASE_URL` unset in the production-connected local workspace. Use mocked order tests here. Supplier sandbox checks use synthetic print files and recipient data.
 
 See the [sandbox smoke instructions](lulu-sandbox.md) for synthetic supplier verification, including recovery of an uncertain sandbox create. Mocked checks cover dispatch control and request boundaries. Use physical proofs and the intended Lulu account to verify print output and supplier payment settings.
 
