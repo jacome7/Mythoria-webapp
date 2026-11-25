@@ -468,6 +468,8 @@ describe('survey reward funded product generation', () => {
       authorId: 'author-1',
       storyId: 'story-1',
       actionType: 'audiobook_generation',
+      fundingSource: 'survey_reward',
+      rewardEntitlementId: 'ent-1',
     };
     const { tx } = makeTx([
       [entitlement({ status: 'processing', attempts: 1, productRunId: 'run-live' })],
@@ -478,6 +480,18 @@ describe('survey reward funded product generation', () => {
     await expect(startProductGeneration(rewardInput)).resolves.toMatchObject({
       request: { runId: 'run-live' },
       duplicate: true,
+    });
+    expect(tx.insert).not.toHaveBeenCalled();
+    expect(tx.update).not.toHaveBeenCalled();
+  });
+
+  it('rejects a request occupying a survey attempt key for another funding source', async () => {
+    const { tx } = makeTx([
+      [entitlement()],
+      [{ ...input, runId: 'unrelated', fundingSource: 'credits' }],
+    ]);
+    await expect(startProductGeneration(rewardInput)).rejects.toMatchObject({
+      code: 'entitlement_mismatch',
     });
     expect(tx.insert).not.toHaveBeenCalled();
     expect(tx.update).not.toHaveBeenCalled();

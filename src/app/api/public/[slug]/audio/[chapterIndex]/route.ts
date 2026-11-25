@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { db } from '@/db';
 import { stories } from '@/db/schema';
 import { eq, and } from 'drizzle-orm';
+import { hasPremiumBookMarker } from '@/lib/premium-children-book/contract';
 
 export async function GET(
   request: NextRequest,
@@ -33,6 +34,7 @@ export async function GET(
         audiobookUri: stories.audiobookUri,
         isPublic: stories.isPublic,
         status: stories.status,
+        features: stories.features,
       })
       .from(stories)
       .where(
@@ -61,7 +63,7 @@ export async function GET(
     }
 
     // Check if audiobook data exists
-    if (!story.audiobookUri || typeof story.audiobookUri !== 'object' || story.audiobookUri === null) {
+    if (hasPremiumBookMarker(story.features) || !story.audiobookUri || typeof story.audiobookUri !== 'object') {
       return NextResponse.json(
         { error: "No audiobook available for this story" },
         { status: 404 }

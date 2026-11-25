@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
-import { and, desc, eq, isNull, ne, or } from 'drizzle-orm';
+import { and, desc, eq, isNull, ne, or, sql } from 'drizzle-orm';
 import { db } from '@/db';
 import {
   addresses,
@@ -84,6 +84,7 @@ export async function GET(request: NextRequest) {
     .where(
       and(
         eq(printRequests.authorId, author.authorId),
+        sql`${printRequests.printingOptions}->>'staffProofRevision' is null`,
         or(isNull(printFulfillments.status), ne(printFulfillments.status, 'awaiting_ticket')),
         storyId ? eq(printRequests.storyId, storyId) : undefined,
         status ? eq(printRequests.status, status) : undefined,

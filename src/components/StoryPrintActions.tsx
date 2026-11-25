@@ -5,8 +5,8 @@ import { Download, Printer } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 interface StoryPrintActionsProps {
-  onPrint: () => void;
-  onDownload: () => void;
+  onPrint?: (() => void) | undefined;
+  onDownload?: (() => void) | undefined;
 }
 
 export default function StoryPrintActions({ onPrint, onDownload }: StoryPrintActionsProps) {
@@ -40,13 +40,26 @@ export default function StoryPrintActions({ onPrint, onDownload }: StoryPrintAct
 
   const handleMobilePrint = () => {
     setIsMobileMenuOpen(false);
-    onPrint();
+    onPrint?.();
   };
 
   const handleMobileDownload = () => {
     setIsMobileMenuOpen(false);
-    onDownload();
+    onDownload?.();
   };
+
+  if (!onPrint || !onDownload) {
+    const action = onPrint ?? onDownload;
+    if (!action) return null;
+    const Icon = onPrint ? Printer : Download;
+    const label = tActions(onPrint ? 'print' : 'downloadPdf');
+    return (
+      <button type="button" onClick={action} aria-label={label} className="btn btn-ghost btn-sm">
+        <Icon aria-hidden="true" className="w-4 h-4" />
+        <span className="hidden sm:inline sm:ml-2">{label}</span>
+      </button>
+    );
+  }
 
   return (
     <>

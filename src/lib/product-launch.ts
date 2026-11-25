@@ -3,6 +3,7 @@ import { publishAudiobookRequest } from '@/lib/pubsub';
 import { sgwFetch } from '@/lib/sgw-client';
 import { analyticsReference } from '@/lib/analytics/reference';
 import { compensateProductGeneration, markProductGenerationQueued } from '@/lib/product-generation';
+import type { PremiumBookMarker } from '@/lib/premium-children-book/contract';
 
 /**
  * Shared "hand the pending request to the workflow" helpers. Both the credit-funded story routes
@@ -18,13 +19,14 @@ export async function launchAudiobookWorkflow(params: {
   runId: string;
   voice: string;
   includeBackgroundMusic: boolean;
+  premiumRevision?: string;
 }): Promise<LaunchAudiobookResult> {
-  const { storyId, runId, voice, includeBackgroundMusic } = params;
+  const { storyId, runId, voice, includeBackgroundMusic, premiumRevision } = params;
 
-  // Update story status to indicate audiobook generation is in progress
-  await storyService.updateStory(storyId, {
-    audiobookStatus: 'generating' as const,
-  });
+  // The premium workflow sets story status only after it verifies the queued revision.
+  if (!premiumRevision) {
+    await storyService.updateStory(storyId, { audiobookStatus: 'generating' });
+  }
 
   // Publish the Pub/Sub message to trigger the audiobook generation workflow
   let messageId: string;
@@ -35,6 +37,7 @@ export async function launchAudiobookWorkflow(params: {
         runId,
         voice,
         includeBackgroundMusic,
+        ...(premiumRevision && { premiumRevision }),
         timestamp: new Date().toISOString(),
       }),
     );
@@ -45,7 +48,7 @@ export async function launchAudiobookWorkflow(params: {
     // concurrent launcher already queued it, nothing is compensated and the story status that the
     // live run depends on must not be reverted either.
     const compensated = await compensateProductGeneration(runId, 'queue', 'pubsub_publish_failed');
-    if (compensated !== false) {
+    if (!premiumRevision && compensated !== false) {
       // We could not trigger the workflow: revert the story status.
       await storyService.updateStory(storyId, {
         audiobookStatus: null,
@@ -79,7 +82,7 @@ interface SelfPrintWorkflowErrorResponse {
 type SelfPrintWorkflowResponse = SelfPrintWorkflowSuccessResponse | SelfPrintWorkflowErrorResponse;
 
 export type LaunchSelfPrintResult =
-  { ok: true; result: SelfPrintWorkflowSuccessResponse } | { ok: false };
+  { ok: true; result: SelfPrintWorkflowSuccessResponse } | { ok: false; retryable?: true };
 
 export async function launchSelfPrintWorkflow(params: {
   storyId: string;
@@ -88,6 +91,7 @@ export async function launchSelfPrintWorkflow(params: {
   /** Extra recipients beyond the author; empty means "author only". */
   recipients: { email: string }[];
   generateCMYK: boolean;
+  premiumBook?: Extract<PremiumBookMarker, { state: 'published' }>;
   requestedByAuthorId: string;
   requestedByEmail: string;
 }): Promise<LaunchSelfPrintResult> {
@@ -104,6 +108,7 @@ export async function launchSelfPrintWorkflow(params: {
         includeAuthorEmail: true,
         locale: params.locale,
         generateCMYK: params.generateCMYK,
+        premiumBook: params.premiumBook,
         metadata: {
           requestSource: 'webapp',
           requestedByAuthorId: params.requestedByAuthorId,
@@ -113,6 +118,13 @@ export async function launchSelfPrintWorkflow(params: {
     });
 
     const parsed = (await workflowResponse.json()) as SelfPrintWorkflowResponse;
+
+    if (
+      params.premiumBook &&
+      (workflowResponse.status >= 500 || (parsed.success && !parsed.executionId))
+    ) {
+      return { ok: false, retryable: true };
+    }
 
     if (!workflowResponse.ok || !parsed.success) {
       console.error('Self-print workflow enqueue failed', {
@@ -129,6 +141,7 @@ export async function launchSelfPrintWorkflow(params: {
   } catch (error) {
     console.error('Self-print workflow threw', { storyId, error });
 
+    if (params.premiumBook) return { ok: false, retryable: true };
     await compensateProductGeneration(workflowId, 'queue', 'workflow_enqueue_failed');
     return { ok: false };
   }

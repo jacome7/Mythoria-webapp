@@ -481,7 +481,19 @@ export async function compensateGeneration(
   });
 }
 
-export async function publishGenerations(): Promise<{ published: number; failed: number }> {
+export async function publishGenerations(
+  localPremiumRunId?: string,
+): Promise<{ published: number; failed: number }> {
+  const localHold = new Date('9999-01-01T00:00:00.000Z');
+  if (localPremiumRunId && process.env.MYTHORIA_LOCAL_PREMIUM !== 'true') {
+    throw new Error('Local premium publishing requires the local test environment');
+  }
+  const localScope = localPremiumRunId
+    ? and(
+        eq(storyGenerationRequests.runId, localPremiumRunId),
+        eq(storyGenerationRequests.availableAt, localHold),
+      )
+    : undefined;
   const now = new Date();
   const abandonedBefore = new Date(now.getTime() - ABANDONED_PUBLISH_CLAIM_MS);
   const requests = await db
@@ -496,23 +508,26 @@ export async function publishGenerations(): Promise<{ published: number; failed:
     })
     .from(storyGenerationRequests)
     .where(
-      or(
-        and(
-          eq(storyGenerationRequests.status, 'delivery_failed'),
-          isNull(storyGenerationRequests.compensatedAt),
-          isNull(storyGenerationRequests.terminalAt),
-        ),
-        and(
-          or(
-            eq(storyGenerationRequests.status, 'queued'),
-            eq(storyGenerationRequests.status, 'retrying'),
-            and(
-              eq(storyGenerationRequests.status, 'publishing'),
-              lte(storyGenerationRequests.updatedAt, abandonedBefore),
-            ),
+      and(
+        localScope,
+        or(
+          and(
+            eq(storyGenerationRequests.status, 'delivery_failed'),
+            isNull(storyGenerationRequests.compensatedAt),
+            isNull(storyGenerationRequests.terminalAt),
           ),
-          lte(storyGenerationRequests.availableAt, now),
-          lt(storyGenerationRequests.publishAttempts, MAX_DELIVERY_ATTEMPTS),
+          and(
+            or(
+              eq(storyGenerationRequests.status, 'queued'),
+              eq(storyGenerationRequests.status, 'retrying'),
+              and(
+                eq(storyGenerationRequests.status, 'publishing'),
+                lte(storyGenerationRequests.updatedAt, abandonedBefore),
+              ),
+            ),
+            lte(storyGenerationRequests.availableAt, localScope ? localHold : now),
+            lt(storyGenerationRequests.publishAttempts, MAX_DELIVERY_ATTEMPTS),
+          ),
         ),
       ),
     )
@@ -533,6 +548,7 @@ export async function publishGenerations(): Promise<{ published: number; failed:
       .where(
         and(
           eq(storyGenerationRequests.runId, request.runId),
+          localScope,
           or(
             eq(storyGenerationRequests.status, 'queued'),
             eq(storyGenerationRequests.status, 'retrying'),
@@ -541,7 +557,7 @@ export async function publishGenerations(): Promise<{ published: number; failed:
               lte(storyGenerationRequests.updatedAt, abandonedBefore),
             ),
           ),
-          lte(storyGenerationRequests.availableAt, claimTime),
+          lte(storyGenerationRequests.availableAt, localScope ? localHold : claimTime),
           lt(storyGenerationRequests.publishAttempts, MAX_DELIVERY_ATTEMPTS),
         ),
       )
@@ -567,7 +583,7 @@ export async function publishGenerations(): Promise<{ published: number; failed:
           .set({
             status: 'retrying',
             publishAttempts: attempts,
-            availableAt: retryAt(attempts),
+            availableAt: localScope ? localHold : retryAt(attempts),
             lastError: message,
             updatedAt: new Date(),
           })

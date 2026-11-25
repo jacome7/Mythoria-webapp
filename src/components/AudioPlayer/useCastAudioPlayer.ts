@@ -15,6 +15,7 @@ const CAST_SDK_URL = 'https://www.gstatic.com/cv/js/sender/v1/cast_sender.js?loa
 interface CastAudioPlayerProps extends AudioPlayerHookProps {
   chapters: AudioChapter[];
   storyTitle: string;
+  castEnabled?: boolean;
 }
 
 type PlaybackSnapshot = {
@@ -123,11 +124,13 @@ export function useCastAudioPlayer({
   onError,
   trackingData,
   totalChapters,
+  castEnabled = true,
 }: CastAudioPlayerProps): CastAwareAudioPlayer {
   const tErrors = useTranslations('Errors');
   const [castReady, setCastReady] = useState(false);
   const [castState, setCastState] = useState<cast.framework.CastState | null>(null);
-  const [isCasting, setIsCasting] = useState(false);
+  const [isCastingSession, setIsCasting] = useState(false);
+  const isCasting = castEnabled && isCastingSession;
   const [castingDeviceName, setCastingDeviceName] = useState<string | undefined>();
   const [castAudioProgress, setCastAudioProgress] = useState<Record<number, number>>({});
   const [castDurations, setCastDurations] = useState<Record<number, number>>({});
@@ -158,6 +161,7 @@ export function useCastAudioPlayer({
   }, [currentCastChapter]);
 
   const buildQueueItems = useCallback((): chrome.cast.media.QueueItem[] => {
+    if (!castEnabled) return [];
     const castMedia = typeof window !== 'undefined' ? window.chrome?.cast?.media : undefined;
     const streamType =
       castMedia?.StreamType?.BUFFERED ?? ('BUFFERED' as chrome.cast.media.StreamType);
@@ -182,7 +186,7 @@ export function useCastAudioPlayer({
         autoplay: true,
         preloadTime: 20,
       }));
-  }, [chapters, storyTitle]);
+  }, [castEnabled, chapters, storyTitle]);
 
   const teardownRemoteListeners = useCallback(() => {
     const controller = remoteControllerRef.current;
@@ -298,7 +302,7 @@ export function useCastAudioPlayer({
   );
 
   useEffect(() => {
-    if (typeof window === 'undefined') return undefined;
+    if (!castEnabled || typeof window === 'undefined') return undefined;
     let canceled = false;
     let castStateListener: ((event: cast.framework.CastStateEventData) => void) | null = null;
 
@@ -365,11 +369,11 @@ export function useCastAudioPlayer({
         );
       }
     };
-  }, [attachRemotePlayer]);
+  }, [attachRemotePlayer, castEnabled]);
 
   useEffect(() => {
     const context = castContextRef.current;
-    if (!context) return undefined;
+    if (!castEnabled || !context) return undefined;
 
     const onSessionStateChanged = (event: cast.framework.SessionStateEventData) => {
       if (
@@ -398,7 +402,7 @@ export function useCastAudioPlayer({
         onSessionStateChanged,
       );
     };
-  }, [attachRemotePlayer, teardownCasting]);
+  }, [attachRemotePlayer, castEnabled, teardownCasting]);
 
   const getLocalSnapshot = useCallback((): PlaybackSnapshot => {
     const chapterIndex = audioPlayer.currentlyPlaying;

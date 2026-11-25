@@ -34,7 +34,10 @@ export function useAudioPlayer({
 
   const downloadAudio = useCallback(
     async (chapterIndex: number, fileName: string) => {
-      const audioUrl = `${audioEndpoint}/${chapterIndex}`;
+      const audioUrl =
+        typeof audioEndpoint === 'string'
+          ? `${audioEndpoint}/${chapterIndex}`
+          : audioEndpoint(chapterIndex);
 
       try {
         trackEvent('audiobook_interaction', {
@@ -124,7 +127,10 @@ export function useAudioPlayer({
         setAudioLoading((prev) => ({ ...prev, [chapterIndex]: true }));
 
         // Use the provided audio endpoint
-        const proxyAudioUri = `${audioEndpoint}/${chapterIndex}`;
+        const proxyAudioUri =
+          typeof audioEndpoint === 'string'
+            ? `${audioEndpoint}/${chapterIndex}`
+            : audioEndpoint(chapterIndex);
 
         // Create new audio element if it doesn't exist
         if (!audioElementsRef.current[chapterIndex]) {

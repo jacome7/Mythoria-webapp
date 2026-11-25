@@ -2,6 +2,10 @@ import { NextResponse } from 'next/server';
 import { getCurrentAuthor } from '@/lib/auth';
 import { storyService } from '@/db/services';
 import { hasPremiumBookMarker, premiumBookType } from '@/lib/premium-children-book/contract';
+import {
+  getCurrentPremiumAudiobook,
+  getPublishedPremiumRevision,
+} from '@/lib/premium-children-book/audiobook';
 import { premiumBookImagePath } from '@/lib/premium-children-book/reader';
 import { getPurchasableSquareSupplier } from '@/lib/print/checkout';
 
@@ -24,6 +28,7 @@ export async function GET() {
       .map((story) => {
         if (!hasPremiumBookMarker(story.features)) return story;
         const published = story.status === 'published';
+        const canNarrate = published && Boolean(getPublishedPremiumRevision(story.features));
         return {
           storyId: story.storyId,
           title: story.title,
@@ -37,6 +42,10 @@ export async function GET() {
           bookType: premiumBookType,
           coverUri: published ? premiumBookImagePath(story.storyId, 'front') : null,
           premiumPrintAvailable: published && canPrintPremium,
+          premiumAudiobookAvailable: canNarrate,
+          hasAudio:
+            canNarrate &&
+            Boolean(getCurrentPremiumAudiobook(story.storyId, story.features, story.audiobookUri)),
         };
       });
     return NextResponse.json({ stories: filtered });

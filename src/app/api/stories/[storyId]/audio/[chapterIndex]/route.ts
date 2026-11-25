@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getCurrentAuthor } from '@/lib/auth';
 import { ensureStoryIdAccess, AccessDeniedError } from '@/lib/authorization';
 import { hasPremiumBookMarker } from '@/lib/premium-children-book/contract';
+import { premiumPageAudioResponse } from '@/lib/premium-children-book/audio-response';
 // storyService intentionally not imported; access handled via ensureStoryIdAccess
 
 export async function GET(
@@ -19,8 +20,8 @@ export async function GET(
     }
 
     // Parse chapter index
-    const chapterIdx = parseInt(chapterIndex);
-    if (isNaN(chapterIdx) || chapterIdx < 0) {
+    const chapterIdx = Number(chapterIndex);
+    if (!/^\d+$/.test(chapterIndex) || !Number.isSafeInteger(chapterIdx)) {
       return NextResponse.json({ error: 'Invalid chapter index' }, { status: 400 });
     }
 
@@ -41,7 +42,7 @@ export async function GET(
     }
 
     if (hasPremiumBookMarker(story.features)) {
-      return NextResponse.json({ error: 'No audiobook available for this story' }, { status: 404 });
+      return await premiumPageAudioResponse(request, story, chapterIdx);
     }
 
     // Check if audiobook data exists

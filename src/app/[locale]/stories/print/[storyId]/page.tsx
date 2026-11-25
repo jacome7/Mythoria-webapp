@@ -4,6 +4,7 @@ import { useParams, useRouter } from 'next/navigation';
 import { useLocale, useTranslations } from 'next-intl';
 import { Show } from '@clerk/nextjs';
 import dynamic from 'next/dynamic';
+import { buildAuthEntryPath } from '@/lib/auth-return';
 
 // Lazy load the main content component
 const PrintOrderContent = dynamic(() => import('@/components/print-order/PrintOrderContent'));
@@ -27,10 +28,24 @@ export default function PrintOrderPage() {
             <h1 className="text-4xl font-bold">{tAuth('accessRestricted')}</h1>
             <p className="text-lg text-gray-600">{tAuth('needSignIn')}</p>
             <div className="space-x-4">
-              <button onClick={() => router.push(`/${locale}/sign-in`)} className="btn btn-primary">
+              <button
+                onClick={() =>
+                  router.push(
+                    buildAuthEntryPath(locale, 'sign-in', `/${locale}/stories/print/${storyId}`),
+                  )
+                }
+                className="btn btn-primary"
+              >
                 {tAuth('signIn')}
               </button>
-              <button onClick={() => router.push(`/${locale}/sign-up`)} className="btn btn-outline">
+              <button
+                onClick={() =>
+                  router.push(
+                    buildAuthEntryPath(locale, 'sign-up', `/${locale}/stories/print/${storyId}`),
+                  )
+                }
+                className="btn btn-outline"
+              >
                 {tAuth('createAccount')}
               </button>
             </div>

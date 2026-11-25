@@ -1,6 +1,6 @@
 # Premium children’s books
 
-Step 4 offers the square illustrated format to authors with Experimental Features enabled and an audience of ages 0–2 or 3–6. Step 5 uses the active eBook generation rate and the existing credit balance. The format starts as a usable digital book. Paid square hardcover checkout has its own release approval and controls.
+Step 4 offers the square illustrated format to authors with Experimental Features enabled and an audience of ages 0–2 or 3–6. Step 5 uses the active eBook generation rate and the existing credit balance. Generation publishes the online reader edition first. Self-print, physical checkout and staff proof requests start PDF production on demand. Paid square hardcover checkout has its own release approval and controls.
 
 ## Draft and queue contract
 
@@ -16,7 +16,17 @@ The worker publishes an immutable manifest pointer in `stories.features.premiumB
 
 New books add a 33rd interior page inviting the reader to create a story on Mythoria. The invitation shares a localized destination with the printed edition and opens the existing creation flow on the current WebApp host. The 32-page edition continues to open using its existing manifest.
 
-The reader supports two-page spreads on desktop and one square page at a time on narrow screens. Readers can navigate by button, keyboard, swipe or page selector. A spread can carry text on both pages or on its right page only. Illustration-only left pages expose the localized description as alternative text when available. The reader displays the canonical copy in HTML, including cover lettering. Where present, the manifest’s opening design supplies the background for pages 1–4 and the decorative motif for pages 1 and 3. A generated motif uses the same private PNG on both pages and the reader falls back to the curated drawing if the PNG is missing or unavailable. Chapter editing, translation, duplication, chapter-based PDF/self-print exports and audiobook generation are unavailable for this format. Its paid square hardcover uses the separately approved print profile. [Paid print workflow](./PRINT_FULFILLMENT.md)
+The reader supports two-page spreads on desktop and one square page at a time on narrow screens. Readers can navigate by button, keyboard, swipe or page selector. A spread can carry text on both pages or on its right page only. Illustration-only left pages expose the localized description as alternative text when available. The reader displays the canonical copy in HTML, including cover lettering. Where present, the manifest’s opening design supplies the background for pages 1–4 and the decorative motif for pages 1 and 3. A generated motif uses the same private PNG on both pages and the reader falls back to the curated drawing if the PNG is missing or unavailable. Owners can duplicate the edition, request page-based narration, download self-print files on demand, and describe an illustration change in the reader. The editor shows the existing image-edit rate and preserves earlier paid proofs. The two sides of a facing spread are corrected together. Premium translation remains disabled until pricing is approved. Its paid square hardcover uses the separately approved print profile. [Paid print workflow](./PRINT_FULFILLMENT.md)
+
+The worker marks editions with lettering painted into the narrative artwork as
+`editionLayout: "embedded-lettering-v2"`. The reader displays those illustrations on pages
+5–32 and keeps the saved words in **Read page text** for accessible reading. If an image
+fails to load, its words appear on the page. Page 2 displays the frozen publication details as selectable text, alongside the publisher logo and QR. The loader checks these fields against the page transcript before displaying them.
+Editions without the layout marker retain their original text placement.
+
+New publications expose a revision-pinned `previewImage` through the private image endpoint for every interior page. Opening pages and the final invitation retain their selectable HTML and links. Existing editions can omit previews for pages that use HTML.
+
+Owners request printable interior and cover PDFs from the reader or My Stories at the existing self-print rate. The request verifies the currently published edition before taking credits, then follows the existing product request and email lifecycle with private download links.
 
 ## Runtime configuration and verification
 

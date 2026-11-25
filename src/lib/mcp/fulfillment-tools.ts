@@ -14,6 +14,8 @@ import {
   startProductGeneration,
 } from '@/lib/product-generation';
 import { publishAudiobookRequest } from '@/lib/pubsub';
+import { hasPremiumBookMarker } from '@/lib/premium-children-book/contract';
+import { getCurrentPremiumAudiobook } from '@/lib/premium-children-book/audiobook';
 import {
   getAvailableVoices,
   getDefaultVoice,
@@ -53,6 +55,34 @@ function resolveAuthorStoryAudioApiUrl(storyId: string, chapterIndex: number): s
 
 function resolvePublicStoryListenUrl(locale: string, slug: string): string {
   return `${APP_BASE_URL}/${locale}/p/${slug}/listen`;
+}
+
+function premiumListeningDetails(
+  story: StoryRecord,
+  accessLevel: StoryAudioAccessLevel,
+  locale: string,
+) {
+  if (story.status !== 'published')
+    throw new McpToolUserError('A published premium edition is unavailable.');
+  const audio = getCurrentPremiumAudiobook(story.storyId, story.features, story.audiobookUri);
+  const listenUrl =
+    accessLevel === 'owner'
+      ? resolveAuthorStoryListenUrl(locale, story.storyId)
+      : story.slug
+        ? resolvePublicStoryListenUrl(locale, story.slug)
+        : null;
+  const entries =
+    audio?.tracks.map(({ pageNumber, duration }, index) => ({
+      pageNumber,
+      duration,
+      streamUrl:
+        accessLevel === 'owner'
+          ? `${resolveAuthorStoryAudioApiUrl(story.storyId, index)}?runId=${audio.runId}`
+          : story.slug
+            ? `${resolveStoryAudioPreviewUrl(story.slug, index)}?runId=${audio.runId}`
+            : null,
+    })) ?? [];
+  return { listenUrl, entries, revision: audio?.revision };
 }
 
 type StoryAudioGenerationStatus = 'not_started' | 'generating' | 'completed' | 'failed';
@@ -655,7 +685,11 @@ export function registerFulfillmentTools(server: McpServer, authContext: McpAuth
       .string()
       .optional()
       .describe('Desired locale (for example en-US, pt-PT, es-ES, fr-FR, de-DE).'),
-    chapterNumber: z.number().int().min(1).describe('1-based chapter number to play.'),
+    chapterNumber: z
+      .number()
+      .int()
+      .min(1)
+      .describe('1-based chapter number, or physical page number for an illustrated edition.'),
   });
 
   const voiceCatalogInputSchema = z
@@ -907,7 +941,33 @@ export function registerFulfillmentTools(server: McpServer, authContext: McpAuth
           slug: input.slug,
         });
         const accessLevel = resolveStoryAudioAccess(story, authContext, copy);
-        ensureChapterBook(story);
+        if (hasPremiumBookMarker(story.features)) {
+          const detail = premiumListeningDetails(story, accessLevel, resolvedLocale);
+          const hasAudio = detail.entries.length > 0;
+          return toStructuredToolResult(copy.statusReady, {
+            locale: resolvedLocale,
+            accessLevel,
+            status: hasAudio ? 'audio_available' : 'audio_unavailable',
+            story: {
+              id: story.storyId,
+              title: story.title,
+              hasAudio,
+              bookType: 'premium_children',
+            },
+            audiobook: {
+              revision: detail.revision,
+              generationStatus:
+                story.audiobookStatus === 'generating' || story.audiobookStatus === 'failed'
+                  ? story.audiobookStatus
+                  : hasAudio
+                    ? 'completed'
+                    : 'not_started',
+              pageNumbers: detail.entries.map(({ pageNumber }) => pageNumber),
+              entries: input.includeChapterDetails === false ? [] : detail.entries,
+            },
+            urls: { listenUrl: detail.listenUrl },
+          });
+        }
         const chapters = await chapterService.getStoryChapters(story.storyId);
         const includeChapterDetails = input.includeChapterDetails ?? true;
         const audioEntries = buildAudiobookChapterEntries(story, chapters);
@@ -1007,7 +1067,17 @@ export function registerFulfillmentTools(server: McpServer, authContext: McpAuth
           slug: input.slug,
         });
         const accessLevel = resolveStoryAudioAccess(story, authContext, copy);
-        ensureChapterBook(story);
+        if (hasPremiumBookMarker(story.features)) {
+          const detail = premiumListeningDetails(story, accessLevel, resolvedLocale);
+          const page = detail.entries.find(({ pageNumber }) => pageNumber === input.chapterNumber);
+          return toStructuredToolResult(page ? copy.chapterReady : copy.audioUnavailable, {
+            locale: resolvedLocale,
+            accessLevel,
+            status: page ? 'ok' : 'audio_not_available',
+            page,
+            listenUrl: detail.listenUrl,
+          });
+        }
         const chapters = await chapterService.getStoryChapters(story.storyId);
         const audioEntries = buildAudiobookChapterEntries(story, chapters);
         const targetEntry = audioEntries.find(
@@ -1148,9 +1218,17 @@ export function registerFulfillmentTools(server: McpServer, authContext: McpAuth
         const resolvedLocale = resolveLocale(input.language);
         const copy = getStoryListeningCopy(resolvedLocale);
 
-        ensureChapterBook(story);
         if (story.status !== 'published') {
           throw new McpToolUserError('Story must be published before audiobook generation.');
+        }
+        if (hasPremiumBookMarker(story.features)) {
+          return toStructuredToolResult(copy.generationPreview, {
+            locale: resolvedLocale,
+            status: 'open_listener',
+            storyId: story.storyId,
+            listenUrl: resolveAuthorStoryListenUrl(resolvedLocale, story.storyId),
+            guidance: 'Choose the narrator and confirm the credit cost in the Mythoria listener.',
+          });
         }
 
         if (story.audiobookStatus === 'generating') {

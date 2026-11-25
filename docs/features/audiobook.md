@@ -16,9 +16,15 @@
 2. **If audio exists**, the same chapter player UI is used, including the chapter list and playback controls. 【F:src/app/[locale]/p/[slug]/listen/page.tsx†L189-L203】【F:src/components/AudioPlayer/AudioChapterList.tsx†L41-L206】
 3. **If audio is missing**, the page shows a friendly “audio not available” message with a button back to the story. 【F:src/app/[locale]/p/[slug]/listen/page.tsx†L200-L213】
 
+### Premium illustrated editions
+
+The published edition's **Listen** view uses the existing voice selector, background-music preference, credit cost, and progress display. Tracks are labeled by printed page number and advance in reading order. Illustration-only pages are skipped. If an edition is corrected, the updated edition is eligible for a fresh narration and playback routes require tracks from that edition's revision. Re-narrating the same revision replaces the track list on successful completion.
+
+Premium artwork and audio use private storage. The owner listener requires authentication. A publicly published book can expose its current audiobook through the public listener. Public requests recheck the current publication on every audio request. Shared read links retain their reading permissions. Premium tracks use in-browser playback and downloads. MCP can find the current edition's narrated pages and link customers to the owner listener for purchase.
+
 ### Cast Audio to Devices
 
-Both authenticated and public Listen pages show a Cast bar when the Cast SDK is available. Users can choose a device, see casting status, and stop casting at any time. When casting stops, local playback resumes from the previous position. 【F:src/components/AudioPlayer/AudioChapterList.tsx†L47-L74】【F:src/components/AudioPlayer/useCastAudioPlayer.ts†L121-L232】【F:src/components/AudioPlayer/useCastAudioPlayer.ts†L278-L469】
+Conventional story Listen pages show a Cast bar when the Cast SDK is available. Users can choose a device, see casting status, and stop casting at any time. When casting stops, local playback resumes from the previous position. 【F:src/components/AudioPlayer/AudioChapterList.tsx†L47-L74】【F:src/components/AudioPlayer/useCastAudioPlayer.ts†L121-L232】【F:src/components/AudioPlayer/useCastAudioPlayer.ts†L278-L469】
 
 ---
 

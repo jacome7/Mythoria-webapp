@@ -29,6 +29,7 @@ import {
   approvedSquareSupplier,
   getPublishedSquareEdition,
   readSquareEdition,
+  squarePrintApproved,
 } from './premium-edition';
 
 export const checkoutSchema = z.object({
@@ -62,13 +63,25 @@ function purchasableStory(storyId: string, authorId: string) {
 
 const squarePriceLines = ['shippingCost', 'extraBookCopy'] as const;
 
+function squareCheckoutMode(defaultProvider: string | undefined, maxEurPerCopy: number) {
+  if (defaultProvider === 'lulu') {
+    const supplier = approvedSquareSupplier();
+    return supplier && maxEurPerCopy > 0 ? { supplier } : null;
+  }
+  const luluEnvironment = process.env.LULU_PRINT_ENVIRONMENT;
+  const matchingLuluApproval =
+    (luluEnvironment === 'sandbox' || luluEnvironment === 'production') &&
+    squarePrintApproved(luluEnvironment);
+  return squarePrintApproved('manual') || matchingLuluApproval ? { supplier: null } : null;
+}
+
 export async function getPurchasableSquareSupplier(
   settings?: Awaited<ReturnType<typeof getPrintSettings>>,
 ) {
-  const supplier = approvedSquareSupplier();
-  if (!supplier) return null;
-  const { hardcoverCredits, maxEurPerCopy } = settings ?? (await getPrintSettings());
-  if (hardcoverCredits === null || !(maxEurPerCopy > 0)) return null;
+  const { hardcoverCredits, maxEurPerCopy, defaultProvider } =
+    settings ?? (await getPrintSettings());
+  const mode = squareCheckoutMode(defaultProvider, maxEurPerCopy);
+  if (!mode || hardcoverCredits === null) return null;
   const feeLines = await db
     .select({ serviceCode: pricing.serviceCode })
     .from(pricing)
@@ -79,7 +92,7 @@ export async function getPurchasableSquareSupplier(
         gte(pricing.credits, 0),
       ),
     );
-  return feeLines.length === squarePriceLines.length ? supplier : null;
+  return feeLines.length === squarePriceLines.length ? mode : null;
 }
 
 export async function getPublicPrintOptions(selection?: { storyId: string; authorId: string }) {
@@ -93,9 +106,9 @@ export async function getPublicPrintOptions(selection?: { storyId: string; autho
     if (!story)
       throw new PrintError('story_unavailable', 'The published story is unavailable.', 404);
     if (hasPremiumBookMarker(story.features)) {
-      const supplier = await getPurchasableSquareSupplier(settings);
-      const squareEditionRevision = supplier
-        ? (await getPublishedSquareEdition(story, supplier))?.edition.premiumBook.revision
+      const mode = await getPurchasableSquareSupplier(settings);
+      const squareEditionRevision = mode
+        ? (await getPublishedSquareEdition(story, mode.supplier))?.edition.premiumBook.revision
         : undefined;
       return {
         paperbackAvailable: false,
@@ -262,11 +275,10 @@ async function reservePrintCheckout(
       .from(printFulfillmentSettings)
       .where(eq(printFulfillmentSettings.id, settingsId));
     const wantsSquare = hasPremiumBookMarker(story.features);
-    const squareSupplier = wantsSquare ? approvedSquareSupplier() : null;
-    if (
-      wantsSquare &&
-      (!squareSupplier || binding !== 'hardcover' || Number(setting?.maxEurPerCopy ?? 0) <= 0)
-    ) {
+    const squareMode = wantsSquare
+      ? squareCheckoutMode(setting?.defaultProvider, Number(setting?.maxEurPerCopy ?? 0))
+      : null;
+    if (wantsSquare && (!squareMode || binding !== 'hardcover')) {
       throw new PrintError(
         'square_print_unavailable',
         'Square hardcover printing is unavailable.',
@@ -274,7 +286,7 @@ async function reservePrintCheckout(
       );
     }
     const premiumEdition =
-      squareSupplier && (await getPublishedSquareEdition(story, squareSupplier))?.edition;
+      squareMode && (await getPublishedSquareEdition(story, squareMode.supplier))?.edition;
     if (
       (wantsSquare && !premiumEdition) ||
       premiumEdition?.premiumBook.revision !== input.printingOption.editionRevision
@@ -284,8 +296,8 @@ async function reservePrintCheckout(
         'Refresh the checkout to confirm the current print edition.',
       );
     }
-    const providerMode = premiumEdition || setting?.defaultProvider === 'lulu' ? 'lulu' : 'manual';
-    if (binding === 'hardcover' && providerMode !== 'lulu') {
+    const providerMode = setting?.defaultProvider === 'lulu' ? 'lulu' : 'manual';
+    if (!premiumEdition && binding === 'hardcover' && providerMode !== 'lulu') {
       throw new PrintError('hardcover_unavailable', 'Hardcover printing is unavailable.', 400);
     }
     if (providerMode === 'lulu') {
@@ -430,10 +442,14 @@ async function reservePrintCheckout(
 
 type CheckoutOrder = Awaited<ReturnType<typeof reservePrintCheckout>>;
 
-async function createOrderTicket(order: CheckoutOrder) {
+export async function createOrderTicket(
+  order: Pick<CheckoutOrder, 'request' | 'fulfillment'>,
+  proofOnly?: { revision: string; requestedBy: string },
+) {
   const config = getEnvironmentConfig();
   try {
-    const response = await fetch(new URL('/api/tickets/paid-print', config.admin.apiUrl), {
+    const endpoint = proofOnly ? '/api/tickets/staff-print' : '/api/tickets/paid-print';
+    const response = await fetch(new URL(endpoint, config.admin.apiUrl), {
       method: 'POST',
       redirect: 'error',
       headers: { 'content-type': 'application/json', 'x-api-key': config.admin.apiKey },
@@ -444,7 +460,7 @@ async function createOrderTicket(order: CheckoutOrder) {
         shippingAddress: order.request.shippingId ? { addressId: order.request.shippingId } : null,
         printFormat: order.fulfillment.binding,
         numberOfCopies: order.fulfillment.copies,
-        orderDetails: { fulfillmentVersion: 1, printRequestId: order.request.id },
+        orderDetails: { fulfillmentVersion: 1, printRequestId: order.request.id, proofOnly },
       }),
       signal: AbortSignal.timeout(20_000),
     });
@@ -452,10 +468,17 @@ async function createOrderTicket(order: CheckoutOrder) {
       const ticket = z
         .object({
           id: z.string().uuid(),
-          metadata: z.object({ printRequestId: z.string().uuid() }),
+          metadata: z.object({
+            printRequestId: z.string().uuid(),
+            staffProofRevision: z.uuid().optional(),
+          }),
         })
         .parse(await response.json());
-      if (ticket.metadata.printRequestId === order.request.id) return ticket.id;
+      if (
+        ticket.metadata.printRequestId === order.request.id &&
+        ticket.metadata.staffProofRevision === proofOnly?.revision
+      )
+        return ticket.id;
     }
   } catch {
     // The Admin ticket endpoint reconciles lost responses by printRequestId.

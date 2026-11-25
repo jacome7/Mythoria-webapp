@@ -59,6 +59,7 @@ export async function GET(
           premiumBook: toPremiumBookReaderData(premium),
           canShare: owned,
           canPrint,
+          canSelfPrint: owned,
         },
         { headers: { 'Cache-Control': 'private, no-store' } },
       );

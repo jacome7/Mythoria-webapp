@@ -1,6 +1,9 @@
 import { premiumInvitationPath, type PremiumBookManifest } from './contract';
 
 export interface PremiumBookReaderData {
+  revision?: string;
+  editionLayout?: PremiumBookManifest['editionLayout'];
+  specification?: PremiumBookManifest['specification'];
   title: string;
   locale: string;
   synopsis: string;
@@ -13,6 +16,7 @@ export interface PremiumBookReaderData {
     kind: PremiumBookManifest['pages'][number]['kind'];
     text: string;
     image?: string;
+    previewImage?: string;
     imageDescription?: string;
     link?: { href: string; label: string };
     textBox?: { x: number; y: number; width: number; height: number };
@@ -37,6 +41,9 @@ export function toPremiumBookReaderData(
   const options = { revision: book.revision, shareToken };
   const imagePath = (image: string) => premiumBookImagePath(book.storyId, image, options);
   return {
+    revision: book.revision,
+    editionLayout: book.editionLayout,
+    specification: book.specification,
     title: book.opening.title,
     locale: book.opening.locale,
     synopsis: book.opening.synopsis,
@@ -48,7 +55,8 @@ export function toPremiumBookReaderData(
       number: page.number,
       kind: page.kind,
       text: page.text,
-      image: page.reading ? imagePath(String(page.number)) : undefined,
+      image: page.reading && page.artwork ? imagePath(String(page.number)) : undefined,
+      previewImage: page.reading ? imagePath(String(page.number)) : undefined,
       imageDescription:
         page.kind === 'spread' && !page.text
           ? book.spreads.find((spread) => spread.id === page.spreadId)?.leftDescription
