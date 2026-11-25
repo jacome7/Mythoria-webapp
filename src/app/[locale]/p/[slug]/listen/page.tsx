@@ -10,6 +10,7 @@ import {
   hasAudiobook,
   getAudioChapters,
 } from '@/components/AudioPlayer';
+import PremiumAudiobookPlayer from '@/components/AudioPlayer/PremiumAudiobookPlayer';
 import type { PremiumAudioMetadata } from '@/lib/premium-children-book/audiobook';
 
 interface Chapter {
@@ -70,6 +71,7 @@ export default function PublicListenPage() {
   const [error, setError] = useState<string | null>(null);
   const isPremium = data?.story.bookType === 'premium_children';
   const premiumAudio = data?.story.premiumAudio;
+  const premiumTracks = premiumAudio && 'tracks' in premiumAudio ? premiumAudio.tracks : undefined;
   const runId = premiumAudio?.runId;
   const audioEndpoint = useCallback(
     (index: number) =>
@@ -79,8 +81,8 @@ export default function PublicListenPage() {
 
   const audioChapters = useMemo(
     () =>
-      premiumAudio
-        ? premiumAudio.tracks.map(({ pageNumber, duration }, index) => ({
+      premiumTracks
+        ? premiumTracks.map(({ pageNumber, duration }, index) => ({
             chapterTitle: tListenStory('pageTitle', { number: pageNumber }),
             duration,
             audioUri: audioEndpoint(index),
@@ -90,7 +92,7 @@ export default function PublicListenPage() {
               tPublicStoryPage('listen.chapterFallback', { number }),
             )
           : [],
-    [audioEndpoint, data, premiumAudio, tListenStory, tPublicStoryPage],
+    [audioEndpoint, data, premiumTracks, tListenStory, tPublicStoryPage],
   );
 
   const audioPlayer = useCastAudioPlayer({
@@ -219,7 +221,9 @@ export default function PublicListenPage() {
             </div>
           )}
 
-          {hasAudio ? (
+          {premiumAudio && 'duration' in premiumAudio ? (
+            <PremiumAudiobookPlayer key={runId} src={audioEndpoint(0)} storyId={story.storyId} />
+          ) : hasAudio ? (
             <AudioChapterList
               chapters={audioChapters}
               {...audioControls}

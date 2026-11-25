@@ -71,18 +71,25 @@ function premiumListeningDetails(
       : story.slug
         ? resolvePublicStoryListenUrl(locale, story.slug)
         : null;
+  const resolveStreamUrl = (index: number) =>
+    accessLevel === 'owner'
+      ? `${resolveAuthorStoryAudioApiUrl(story.storyId, index)}?runId=${audio?.runId}`
+      : story.slug
+        ? `${resolveStoryAudioPreviewUrl(story.slug, index)}?runId=${audio?.runId}`
+        : null;
   const entries =
-    audio?.tracks.map(({ pageNumber, duration }, index) => ({
-      pageNumber,
-      duration,
-      streamUrl:
-        accessLevel === 'owner'
-          ? `${resolveAuthorStoryAudioApiUrl(story.storyId, index)}?runId=${audio.runId}`
-          : story.slug
-            ? `${resolveStoryAudioPreviewUrl(story.slug, index)}?runId=${audio.runId}`
-            : null,
-    })) ?? [];
-  return { listenUrl, entries, revision: audio?.revision };
+    audio && 'tracks' in audio
+      ? audio.tracks.map(({ pageNumber, duration }, index) => ({
+          pageNumber,
+          duration,
+          streamUrl: resolveStreamUrl(index),
+        }))
+      : [];
+  const fullAudiobook =
+    audio && 'audio' in audio
+      ? { duration: audio.duration, streamUrl: resolveStreamUrl(0) }
+      : undefined;
+  return { listenUrl, entries, fullAudiobook, revision: audio?.revision };
 }
 
 type StoryAudioGenerationStatus = 'not_started' | 'generating' | 'completed' | 'failed';
@@ -943,7 +950,7 @@ export function registerFulfillmentTools(server: McpServer, authContext: McpAuth
         const accessLevel = resolveStoryAudioAccess(story, authContext, copy);
         if (hasPremiumBookMarker(story.features)) {
           const detail = premiumListeningDetails(story, accessLevel, resolvedLocale);
-          const hasAudio = detail.entries.length > 0;
+          const hasAudio = Boolean(detail.fullAudiobook) || detail.entries.length > 0;
           return toStructuredToolResult(copy.statusReady, {
             locale: resolvedLocale,
             accessLevel,
@@ -964,6 +971,7 @@ export function registerFulfillmentTools(server: McpServer, authContext: McpAuth
                     : 'not_started',
               pageNumbers: detail.entries.map(({ pageNumber }) => pageNumber),
               entries: input.includeChapterDetails === false ? [] : detail.entries,
+              fullAudiobook: detail.fullAudiobook,
             },
             urls: { listenUrl: detail.listenUrl },
           });
@@ -1069,6 +1077,15 @@ export function registerFulfillmentTools(server: McpServer, authContext: McpAuth
         const accessLevel = resolveStoryAudioAccess(story, authContext, copy);
         if (hasPremiumBookMarker(story.features)) {
           const detail = premiumListeningDetails(story, accessLevel, resolvedLocale);
+          if (detail.fullAudiobook) {
+            return toStructuredToolResult(copy.statusReady, {
+              locale: resolvedLocale,
+              accessLevel,
+              status: 'full_audiobook_available',
+              fullAudiobook: detail.fullAudiobook,
+              listenUrl: detail.listenUrl,
+            });
+          }
           const page = detail.entries.find(({ pageNumber }) => pageNumber === input.chapterNumber);
           return toStructuredToolResult(page ? copy.chapterReady : copy.audioUnavailable, {
             locale: resolvedLocale,

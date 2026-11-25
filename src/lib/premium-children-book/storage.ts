@@ -1,6 +1,7 @@
 import { Storage } from '@google-cloud/storage';
 import { createHash } from 'node:crypto';
 import {
+  maxPremiumAudiobookBytes,
   PremiumBookContractError,
   premiumBookManifestSchema,
   premiumInvitationPath,
@@ -13,7 +14,6 @@ import {
 const storage = new Storage({ timeout: 15_000 });
 const maxManifestBytes = 1024 * 1024;
 const maxImageBytes = 24 * 1024 * 1024;
-const maxAudioBytes = 16 * 1024 * 1024;
 const openingKinds = ['title', 'copyright', 'dedication', 'synopsis', 'opener'];
 
 async function downloadVerifiedAsset(asset: PremiumBookAsset, maxBytes: number): Promise<Buffer> {
@@ -190,6 +190,6 @@ export async function downloadPremiumReadingImage(storyId: string, asset: Premiu
   };
 }
 
-export function downloadPremiumPageAudio(asset: PremiumBookAsset) {
-  return downloadVerifiedAsset(asset, maxAudioBytes);
+export function downloadPremiumAudio(asset: PremiumBookAsset) {
+  return downloadVerifiedAsset(asset, maxPremiumAudiobookBytes);
 }

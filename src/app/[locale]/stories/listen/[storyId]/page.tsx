@@ -16,6 +16,8 @@ import {
   hasAudiobook,
   getAudioChapters,
 } from '@/components/AudioPlayer';
+import PremiumAudiobookPlayer from '@/components/AudioPlayer/PremiumAudiobookPlayer';
+import type { PremiumAudioMetadata } from '@/lib/premium-children-book/audiobook';
 import { SelfPrintModal } from '../../../../../components/self-print/SelfPrintModal';
 import VoiceSamplePlayer from '@/components/VoiceSamplePlayer';
 import { AudiobookProgressPanel } from '@/components/AudiobookGenerationProgress';
@@ -32,7 +34,7 @@ interface Story {
   status: 'draft' | 'writing' | 'published';
   bookType?: 'standard' | 'premium_children';
   premiumRevision?: string;
-  premiumAudio?: { runId: string; tracks: { pageNumber: number; duration: number }[] };
+  premiumAudio?: PremiumAudioMetadata;
   audiobookUri?:
     | Array<{
         chapterTitle: string;
@@ -172,8 +174,10 @@ export default function ListenStoryPage() {
   const audiobookIdempotencyKeyRef = useRef<string | null>(null);
   const { toasts, removeToast, successWithAction, error: toastError, info: toastInfo } = useToast();
   const isPremium = story?.bookType === 'premium_children';
-  const premiumRunId = story?.premiumAudio?.runId;
-  const premiumTracks = story?.premiumAudio?.tracks;
+  const premiumAudio = story?.premiumAudio;
+  const premiumRunId = premiumAudio?.runId;
+  const premiumTracks = premiumAudio && 'tracks' in premiumAudio ? premiumAudio.tracks : undefined;
+  const hasFullAudiobook = premiumAudio && 'duration' in premiumAudio;
   const audioEndpoint = useCallback(
     (index: number) =>
       `/api/stories/${storyId}/audio/${index}${premiumRunId ? `?runId=${premiumRunId}` : ''}`,
@@ -196,7 +200,7 @@ export default function ListenStoryPage() {
           : [],
     [audioEndpoint, chapters, premiumTracks, story, tListenStory],
   );
-  const hasAudio = audioChapters.length > 0;
+  const hasAudio = Boolean(hasFullAudiobook) || audioChapters.length > 0;
 
   const audioPlayer = useCastAudioPlayer({
     audioEndpoint,
@@ -211,6 +215,10 @@ export default function ListenStoryPage() {
     storyTitle: story?.title ?? '',
   });
   const { cast, ...audioControls } = audioPlayer;
+  const { currentlyPlaying, stopAudio } = audioControls;
+  useEffect(() => {
+    if (hasFullAudiobook && currentlyPlaying !== null) stopAudio(currentlyPlaying);
+  }, [currentlyPlaying, hasFullAudiobook, stopAudio]);
 
   const playAudioWithCastToast = useCallback(
     async (chapterIndex: number) => {
@@ -572,13 +580,20 @@ export default function ListenStoryPage() {
 
                     {hasAudio ? (
                       <div className="space-y-6">
-                        {/* Audiobook Chapters */}
-                        <AudioChapterList
-                          chapters={audioChapters}
-                          {...castAwareControls}
-                          castControls={isPremium ? undefined : cast}
-                          showTrackIndex={!isPremium}
-                        />
+                        {hasFullAudiobook ? (
+                          <PremiumAudiobookPlayer
+                            key={premiumRunId}
+                            src={audioEndpoint(0)}
+                            storyId={storyId}
+                          />
+                        ) : (
+                          <AudioChapterList
+                            chapters={audioChapters}
+                            {...castAwareControls}
+                            castControls={isPremium ? undefined : cast}
+                            showTrackIndex={!isPremium}
+                          />
+                        )}
 
                         {progressError && !isGeneratingAudio && (
                           <div role="alert" className="text-center">
