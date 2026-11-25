@@ -31,7 +31,6 @@ cd "$fixture"
 mkdir -p socket
 rsync -a --exclude='__pycache__' --exclude='.auth' --exclude='.env*' --exclude='.venv' "$repo"/{src,scripts,public,tests} .
 cp "$repo"/{package.json,package-lock.json,public-asset-aliases.json,next.config.ts,postcss.config.mjs,tailwind.config.ts,tsconfig.json,env.manifest.ts,playwright.config.ts,drizzle.config.ts,jest.setup.ts} .
-ln -s "$repo/node_modules" node_modules
 # Reserve distinct loopback ports, then require both local listeners to start successfully.
 select_port() {
   node -e 'const server = require("node:net").createServer().listen(0,"127.0.0.1",()=>{ console.log(server.address().port); server.close(); })'
@@ -63,12 +62,15 @@ export PLAYWRIGHT_PREMIUM_STORAGE_DIR="$fixture/premium-storage"
 cleanup() {
   if [[ -n "${app_pid:-}" ]]; then kill "$app_pid" 2>/dev/null || true; fi
   if [[ -n "${db_started:-}" ]]; then "$E2E_PG_BIN/pg_ctl" -D "$fixture/pgdata" -m fast -w stop; fi
-  rm -rf "$fixture"/pgdata "$fixture"/.next/cache "$fixture"/.next/standalone
+  rm -rf "$fixture"/pgdata "$fixture"/node_modules "$fixture"/.next/cache "$fixture"/.next/standalone
   rm -f "$fixture"/clerk-session.txt "$fixture"/survey.log "$fixture"/tests/playwright/.auth/user.json
 }
 trap cleanup EXIT
 trap 'exit 130' INT
 trap 'exit 143' TERM
+
+# Keep dependency paths inside the fixture so Next.js can trace the standalone build.
+rsync -a "$repo/node_modules/" node_modules/
 
 fixture_scripts="$fixture/scripts/playwright-fixture"
 "$E2E_PG_BIN/initdb" --no-locale -E UTF8 --auth-local=trust --auth-host=scram-sha-256 \
