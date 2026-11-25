@@ -1,5 +1,5 @@
 // AUTO-GENERATED FILE. Run: npm run i18n:keys
-// Total keys: 3398
+// Total keys: 3401
 export type TranslationKey =
   | 'AIImageEditor.buttons.applyPhoto'
   | 'AIImageEditor.cancelButton'
@@ -2496,6 +2496,7 @@ export type TranslationKey =
   | 'StoryWhisperer.dictate'
   | 'StoryWhisperer.discardDictation'
   | 'StoryWhisperer.discardVoiceConfirm'
+  | 'StoryWhisperer.discardVoiceReply'
   | 'StoryWhisperer.draftSaveFailed'
   | 'StoryWhisperer.error'
   | 'StoryWhisperer.introInputs'
@@ -2608,6 +2609,7 @@ export type TranslationKey =
   | 'StoryWhisperer.recording'
   | 'StoryWhisperer.recoverDictation'
   | 'StoryWhisperer.removePhoto'
+  | 'StoryWhisperer.repeatVoice'
   | 'StoryWhisperer.reply'
   | 'StoryWhisperer.reset'
   | 'StoryWhisperer.resetClarify'
@@ -2634,6 +2636,7 @@ export type TranslationKey =
   | 'StoryWhisperer.switchToText'
   | 'StoryWhisperer.title'
   | 'StoryWhisperer.unfinished'
+  | 'StoryWhisperer.unfinishedVoiceText'
   | 'StoryWhisperer.useExisting'
   | 'StoryWhisperer.working'
   | 'StoryWhisperer.writeReply'

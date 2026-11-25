@@ -1,9 +1,25 @@
 import { body, handle, owner, id } from '@/lib/biographer/http';
-import { cancelWhispererSession, detail, leaseSession } from '@/db/services/biographer';
+import {
+  cancelWhispererSession,
+  detail,
+  leaseSession,
+  whispererSessionStatus,
+} from '@/db/services/biographer';
 import { db } from '@/db';
 import { biographerSessions } from '@/db/schema/biographer';
 import { and, eq } from 'drizzle-orm';
 import { z } from 'zod';
+
+export const GET = (
+  _: Request,
+  context: { params: Promise<{ projectId: string; sessionId: string }> },
+) =>
+  handle(async () => {
+    const author = await owner();
+    const { projectId, sessionId } = await context.params;
+    return whispererSessionStatus(author.authorId, id(projectId), id(sessionId));
+  });
+
 export const PATCH = (
   _: Request,
   c: { params: Promise<{ projectId: string; sessionId: string }> },

@@ -184,6 +184,7 @@ async function main() {
       leaseSession,
       checkpoint,
       cancelWhispererSession,
+      whispererSessionStatus,
     } = require('../src/db/services/biographer.ts');
     const { adminCommand } = require('../src/lib/biographer/admin.ts');
     process.env.BIOGRAPHER_LIVE_URL = 'ws://localhost:8082/live';
@@ -203,15 +204,6 @@ async function main() {
       (await createProject(authorId, 'Rehearsal', { locale: 'en-US', consent: true })).project.id;
     const first = await project(),
       second = await project();
-    await pg.query(
-      'INSERT INTO story_whisperer_interviews(author_id,draft_id,project_id) VALUES ($1,$2,$3)',
-      [authorId, draftId, first],
-    );
-    const firstTicket = await issueSession(authorId, first);
-    assert.equal(firstTicket.remainingSeconds, 10800);
-    const firstCall = await admitSession(firstTicket.ticket, first, firstTicket.sessionId);
-    assert.equal(firstCall.mode, 'story-whisperer');
-    await assert.rejects(admitSession(firstTicket.ticket, first, firstTicket.sessionId));
     const { saveSegment, readSegment } = require('../src/lib/biographer/storage.ts');
     const { sweepRecoveryAudio } = require('../src/lib/biographer/audio-retention.ts');
     const pcm = Buffer.alloc(3200);
@@ -225,11 +217,42 @@ async function main() {
       data: pcm.toString('base64'),
       sha256: createHash('sha256').update(pcm).digest('hex'),
     });
+    // Use the still-supported historical Biographer upload path to seed older recordings.
     const current = segment();
     await saveSegment(authorId, first, current);
-    assert.deepEqual((await readSegment(authorId, first, current.id)).bytes, pcm);
     const other = segment();
     await saveSegment(authorId, first, other);
+    await pg.query(
+      'INSERT INTO story_whisperer_interviews(author_id,draft_id,project_id) VALUES ($1,$2,$3)',
+      [authorId, draftId, first],
+    );
+    const firstTicket = await issueSession(authorId, first);
+    assert.equal(firstTicket.remainingSeconds, 10800);
+    assert.deepEqual(await whispererSessionStatus(authorId, first, firstTicket.sessionId), {
+      settled: true,
+    });
+    const firstCall = await admitSession(firstTicket.ticket, first, firstTicket.sessionId);
+    assert.equal(firstCall.mode, 'story-whisperer');
+    await assert.rejects(admitSession(firstTicket.ticket, first, firstTicket.sessionId));
+    assert.deepEqual(await whispererSessionStatus(authorId, first, firstTicket.sessionId), {
+      settled: false,
+    });
+    await assert.rejects(
+      whispererSessionStatus(randomUUID(), first, firstTicket.sessionId),
+      (err) => err.status === 404,
+    );
+    const oldClientUpload = segment();
+    await assert.rejects(
+      saveSegment(authorId, first, oldClientUpload),
+      (err) => err.status === 410,
+    );
+    assert.equal(objects.size, 2);
+    assert.deepEqual(
+      (await pg.query('SELECT id FROM biographer_turns WHERE id=$1', [oldClientUpload.turnId]))
+        .rows,
+      [],
+    );
+    assert.deepEqual((await readSegment(authorId, first, current.id)).bytes, pcm);
     await checkpoint({
       sessionId: firstTicket.sessionId,
       eventId: randomUUID(),
@@ -239,12 +262,7 @@ async function main() {
       final: true,
     });
     assert.equal(objects.size, 1);
-    assert.deepEqual(await saveSegment(authorId, first, current), {
-      saved: true,
-      id: current.id,
-      sequence: 0,
-      sha256: current.sha256,
-    });
+    await assert.rejects(saveSegment(authorId, first, current), (err) => err.status === 410);
     assert.equal(objects.size, 1);
     await pg.query(
       "UPDATE biographer_segments SET created_at=now()-interval '8 days' WHERE id=$1",
@@ -829,23 +847,31 @@ async function main() {
         .rows[0].n,
       1,
     );
-    const priorRecovery = segment();
-    await saveSegment(inesAuthor, ines.projectId, priorRecovery);
-    // Make the previous recording unambiguously older than the new lease.
-    await pg.query("UPDATE biographer_turns SET created_at=now()-interval '1 minute' WHERE id=$1", [
-      priorRecovery.turnId,
-    ]);
+    const priorTicket = await issueSession(inesAuthor, ines.projectId);
+    const priorLease = await admitSession(
+      priorTicket.ticket,
+      ines.projectId,
+      priorTicket.sessionId,
+    );
+    const priorPartial = randomUUID();
+    await checkpoint({
+      sessionId: priorTicket.sessionId,
+      eventId: randomUUID(),
+      turnId: priorPartial,
+      role: 'user',
+      text: 'Earlier recoverable text',
+      final: false,
+    });
+    await leaseSession(priorTicket.sessionId, priorLease.leaseId, true);
     const cancelTicket = await issueSession(inesAuthor, ines.projectId);
     const cancelLease = await admitSession(
       cancelTicket.ticket,
       ines.projectId,
       cancelTicket.sessionId,
     );
-    const unfinished = segment();
+    const unfinished = randomUUID();
     const assistantTurn = randomUUID();
-    const queuedFinal = segment();
-    await saveSegment(inesAuthor, ines.projectId, unfinished);
-    await saveSegment(inesAuthor, ines.projectId, queuedFinal);
+    const queuedFinal = randomUUID();
     const saveVoice = (turnId, role, text, final) =>
       checkpoint({
         sessionId: cancelTicket.sessionId,
@@ -855,27 +881,29 @@ async function main() {
         text,
         final,
       });
-    await saveVoice(unfinished.turnId, 'user', 'unfinished fragment', false);
+    await saveVoice(unfinished, 'user', 'unfinished fragment', false);
     await saveVoice(assistantTurn, 'assistant', 'unfinished question', false);
     const discard = (turnId) =>
       cancelWhispererSession(inesAuthor, ines.projectId, cancelTicket.sessionId, turnId);
-    await discard(priorRecovery.turnId);
-    await discard(unfinished.turnId);
-    await discard(queuedFinal.turnId);
-    await saveVoice(unfinished.turnId, 'user', 'late partial fragment', false);
-    await saveVoice(queuedFinal.turnId, 'user', 'A completed turn already in the queue.', true);
+    await discard(priorPartial);
+    await discard(unfinished);
+    await discard(queuedFinal);
+    await saveVoice(unfinished, 'user', 'late partial fragment', false);
+    await saveVoice(queuedFinal, 'user', 'A completed turn already in the queue.', true);
     await leaseSession(cancelTicket.sessionId, cancelLease.leaseId, true, [
-      unfinished.turnId,
+      unfinished,
       assistantTurn,
     ]);
-    await assert.rejects(
-      saveSegment(inesAuthor, ines.projectId, unfinished),
-      (err) => err.status === 410,
+    assert.deepEqual(
+      await whispererSessionStatus(inesAuthor, ines.projectId, cancelTicket.sessionId),
+      {
+        settled: true,
+      },
     );
-    assert.deepEqual((await readSegment(inesAuthor, ines.projectId, priorRecovery.id)).bytes, pcm);
     const afterCancel = (await getWhisperer(inesAuthor, inesDraft)).interview;
-    assert(!afterCancel.turns.some(({ id }) => [unfinished.turnId, assistantTurn].includes(id)));
-    assert(afterCancel.turns.some(({ id, final }) => id === queuedFinal.turnId && final));
+    assert(!afterCancel.turns.some(({ id }) => [unfinished, assistantTurn].includes(id)));
+    assert(afterCancel.turns.some(({ id, final }) => id === queuedFinal && final));
+    assert(afterCancel.turns.some(({ id, final }) => id === priorPartial && !final));
     assert(afterCancel.turns.some(({ text }) => text === conversation[0][1]));
     const unadmitted = await issueSession(inesAuthor, ines.projectId);
     await cancelWhispererSession(inesAuthor, ines.projectId, unadmitted.sessionId);

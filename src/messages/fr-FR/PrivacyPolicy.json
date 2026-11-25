@@ -65,7 +65,7 @@
     "storyWhisperer": {
       "title": "Story Whisperer",
       "savedContent": "Lorsque vous utilisez Story Whisperer, nous enregistrons la transcription de la conversation et les photos que vous ajoutez pour vous permettre de reprendre l’entretien et d’utiliser ces éléments pour créer votre histoire. Gemini, le service de Google, traite le texte et l’audio en direct pour permettre la conversation.",
-      "recoveryAudio": "Nous pouvons conserver temporairement l’enregistrement original de votre voix pour vous permettre de récupérer une réponse inachevée. Vous pouvez récupérer cet enregistrement pendant sept jours au maximum à compter de sa capture."
+      "recoveryAudio": "Mythoria ne conserve pas les nouveaux enregistrements des conversations en direct. Les enregistrements précédents peuvent rester disponibles pendant sept jours après leur capture. Si vous utilisez la dictée, votre navigateur peut conserver temporairement l’enregistrement pour vous permettre de réessayer."
     },
     "section4": {
       "title": "4. Pourquoi nous traitons vos données et vos bases juridiques",

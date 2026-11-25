@@ -65,7 +65,7 @@
     "storyWhisperer": {
       "title": "Story Whisperer",
       "savedContent": "When you use Story Whisperer, we save your conversation transcript and any photos you add so you can resume the interview and use the material to create your story. Google’s Gemini processes text and live audio to run the conversation.",
-      "recoveryAudio": "We may keep your original voice recording temporarily so you can recover an unfinished reply. The recording is available for recovery for up to seven days from the time it was recorded."
+      "recoveryAudio": "Mythoria does not keep new recordings of live conversations. Older recordings may remain available for recovery for up to seven days from capture. When you use dictation, your browser may temporarily keep the recording so you can retry."
     },
     "section4": {
       "title": "4. Why we process your data & legal bases",
