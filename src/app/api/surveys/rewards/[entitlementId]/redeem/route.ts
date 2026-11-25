@@ -15,7 +15,9 @@ import {
 } from '@/lib/product-generation';
 import { launchAudiobookWorkflow, launchSelfPrintWorkflow } from '@/lib/product-launch';
 import { getRecommendedVoice, getTTSProvider } from '@/lib/voice-options';
-import { hasPremiumBookMarker } from '@/lib/premium-children-book/contract';
+import { hasPremiumBookMarker, readPremiumBookMarker, PremiumBookContractError } from '@/lib/premium-children-book/contract';
+import { pendingPremiumSelfPrintPin } from '@/lib/premium-children-book/self-print';
+import { loadPublishedPremiumBook } from '@/lib/premium-children-book/storage';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -80,10 +82,25 @@ export async function POST(
     const story = await storyService.getStoryById(storyId);
     if (!story || story.authorId !== author.authorId) return failure('story_not_found', 404);
     if (story.status !== 'published') return failure('story_not_published', 409);
-    if (hasPremiumBookMarker(story.features)) return failure('incompatible_book_features', 422);
+    const premium = hasPremiumBookMarker(story.features)
+      ? readPremiumBookMarker(story.features)
+      : null;
+    if (
+      premium &&
+      (premium.state !== 'published' || (premium.ownerId && premium.ownerId !== author.authorId))
+    )
+      return failure('incompatible_book_features', 422);
 
     // Fail before any state change: a PDF gift is e-mailed to the author.
     if (rewardType === 'pdf' && !author.email) return failure('author_email_missing', 409);
+    const premiumSelfPrint = rewardType === 'pdf' && premium?.state === 'published'
+      ? { premiumBook: premium, generateCMYK: true }
+      : undefined;
+    if (
+      premiumSelfPrint &&
+      view.entitlement.status !== 'processing' &&
+      !(await loadPublishedPremiumBook(storyId, author.authorId, story.features))
+    ) return failure('incompatible_book_features', 422);
 
     await selectReward(entitlementId, author.authorId, rewardType, storyId);
 
@@ -104,6 +121,7 @@ export async function POST(
       creditsSpent: 0,
       creditEventType: rewardType === 'pdf' ? 'selfPrinting' : 'audioBookGeneration',
       funding: { type: 'survey_reward', entitlementId },
+      ...(premiumSelfPrint ? { premiumSelfPrint } : {}),
       attributionId: analytics.attributionId,
       analyticsContext: analytics.context,
       analyticsConsent: analytics.consent,
@@ -114,7 +132,8 @@ export async function POST(
     if (started.request.status === 'failed') {
       return failure('previous_attempt_failed', 409);
     }
-    if (started.duplicate || started.request.status !== 'pending') {
+    const pendingPin = rewardType === 'pdf' ? pendingPremiumSelfPrintPin(started.request) : undefined;
+    if (started.request.status !== 'pending' || (started.duplicate && !pendingPin)) {
       // A retried or concurrent request: the gift is already being produced (or about to be, by
       // the call that created it). Never launch the workflow a second time.
       return NextResponse.json(
@@ -136,23 +155,27 @@ export async function POST(
         runId,
         voice: getRecommendedVoice(getTTSProvider(), story.targetAudience),
         includeBackgroundMusic: true,
+        ...(premium?.state === 'published' && { premiumRevision: premium.revision }),
       });
       if (!launched.ok) return failure('launch_failed', 502, { retryable: true });
     } else {
+      if (premiumSelfPrint && !pendingPin) return failure('incompatible_book_features', 422);
       const launched = await launchSelfPrintWorkflow({
         storyId,
         workflowId: runId,
         locale: story.storyLanguage || 'en-US',
         recipients: [],
-        generateCMYK: true,
+        ...(pendingPin ? { premiumBook: pendingPin.premiumBook } : {}),
+        generateCMYK: pendingPin?.generateCMYK ?? true,
         requestedByAuthorId: author.authorId,
         requestedByEmail: author.email as string,
       });
-      if (!launched.ok) return failure('launch_failed', 502, { retryable: true });
+      if (!launched.ok) return failure('launch_failed', launched.retryable ? 503 : 502, { retryable: true });
     }
 
     return NextResponse.json({ success: true, rewardType, status: 'queued' }, { status: 202 });
   } catch (error) {
+    if (error instanceof PremiumBookContractError) return failure('incompatible_book_features', 422);
     if (error instanceof SurveyRewardError) {
       return failure(error.code, REWARD_ERROR_STATUS[error.code]);
     }

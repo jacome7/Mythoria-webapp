@@ -1,5 +1,6 @@
 {
   "ListenStory": {
+    "pageTitle": "Página {number}",
     "accessRestricted": "Acceso restringido",
     "needSignInToListen": "Debes iniciar sesión para escuchar historias.",
     "listenToStory": "Escuchar \"{title}\"",

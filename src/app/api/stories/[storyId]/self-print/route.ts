@@ -1,5 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { hasPremiumBookMarker } from '@/lib/premium-children-book/contract';
+import {
+  PremiumBookContractError,
+  hasPremiumBookMarker,
+  readPremiumBookMarker,
+} from '@/lib/premium-children-book/contract';
+import { loadPublishedPremiumBook } from '@/lib/premium-children-book/storage';
+import { pendingPremiumSelfPrintPin, selfPrintExecutionReference } from '@/lib/premium-children-book/self-print';
 import { randomUUID } from 'crypto';
 import { getTranslations } from 'next-intl/server';
 import { getCurrentAuthor } from '@/lib/auth';
@@ -94,7 +100,8 @@ export async function POST(
     }
 
     const isOwner = story.authorId === author.authorId;
-    if (!isOwner && !story.isPublic) {
+    const isPremium = hasPremiumBookMarker(story.features);
+    if (!isOwner && (isPremium || !story.isPublic)) {
       return NextResponse.json(
         {
           success: false,
@@ -104,10 +111,15 @@ export async function POST(
       );
     }
 
-    if (hasPremiumBookMarker(story.features)) {
+    const premiumBook = isPremium ? readPremiumBookMarker(story.features) : null;
+    if (
+      isPremium &&
+      (premiumBook?.state !== 'published' ||
+        !(await loadPublishedPremiumBook(storyId, story.authorId, story.features)))
+    ) {
       return NextResponse.json(
-        { success: false, error: 'incompatible_book_features' },
-        { status: 422 },
+        { success: false, error: 'premium_edition_unavailable' },
+        { status: 409 },
       );
     }
 
@@ -143,6 +155,9 @@ export async function POST(
       idempotencyKey: request.headers.get('idempotency-key')?.trim() || randomUUID(),
       creditsSpent: pricing.credits,
       creditEventType: 'selfPrinting',
+      ...(premiumBook?.state === 'published' && {
+        premiumSelfPrint: { premiumBook, generateCMYK: body.generateCMYK !== false },
+      }),
       attributionId: analytics.attributionId,
       analyticsContext: analytics.context,
       analyticsConsent: analytics.consent,
@@ -151,6 +166,10 @@ export async function POST(
       adContext,
     });
     const workflowId = started.request.runId;
+
+    if (started.request.fundingSource === 'survey_reward') {
+      return NextResponse.json({ success: false, error: 'A self-print request is already being prepared.' }, { status: 409 });
+    }
 
     if (started.request.status === 'failed') {
       return NextResponse.json(
@@ -163,7 +182,7 @@ export async function POST(
         success: true,
         storyId,
         workflowId,
-        executionId: started.request.queueReference || '',
+        executionId: selfPrintExecutionReference(started.request.queueReference),
         message: 'Self-print workflow already started',
         recipients: normalizedRequestedEmails,
         creditsDeducted: pricing.credits,
@@ -172,12 +191,17 @@ export async function POST(
       });
     }
 
+    const pendingPin = pendingPremiumSelfPrintPin(started.request);
+    if (isPremium && !pendingPin) {
+      return NextResponse.json({ success: false, error: 'premium_edition_unavailable' }, { status: 409 });
+    }
     const launched = await launchSelfPrintWorkflow({
       storyId,
       workflowId,
       locale: story.storyLanguage || 'en-US',
       recipients: normalizedRequestedEmails.map((email) => ({ email })),
-      generateCMYK: body.generateCMYK !== false,
+      generateCMYK: pendingPin?.generateCMYK ?? body.generateCMYK !== false,
+      ...(pendingPin ? { premiumBook: pendingPin.premiumBook } : {}),
       requestedByAuthorId: author.authorId,
       requestedByEmail: author.email,
     });
@@ -186,6 +210,10 @@ export async function POST(
         locale: author.preferredLocale || 'en-US',
         namespace: 'SelfPrintModal',
       });
+
+      if (launched.retryable) {
+        return NextResponse.json({ success: false, error: t('errors.generic'), retryable: true }, { status: 503 });
+      }
 
       return NextResponse.json(
         {
@@ -213,6 +241,12 @@ export async function POST(
       adEventId: adEventId.selfPrint(workflowId),
     });
   } catch (error) {
+    if (error instanceof PremiumBookContractError) {
+      return NextResponse.json(
+        { success: false, error: 'premium_edition_unavailable' },
+        { status: 409 },
+      );
+    }
     if (error instanceof InsufficientProductCreditsError) {
       const pricing = await pricingService.getPricingByServiceCode(
         (await pricingService.getStoryProductProfile(storyId)) === 'biographer'

@@ -145,6 +145,10 @@ export async function startStoryGeneration(
       input.productProfile || (await pricingService.getStoryProductProfile(input.storyId));
     const marker = readPremiumBookMarker(story.features);
     const bookType = marker ? premiumBookType : 'standard';
+    const localPremiumTest = process.env.MYTHORIA_LOCAL_PREMIUM === 'true';
+    if (localPremiumTest && !marker) {
+      throw new PremiumBookSelectionError('book_type_not_available');
+    }
     if (input.expectedBookType && input.expectedBookType !== bookType) {
       throw new PremiumBookSelectionError('book_type_changed');
     }
@@ -230,7 +234,9 @@ export async function startStoryGeneration(
       })
       .where(eq(stories.storyId, input.storyId));
 
-    const analyticsConsent = input.analyticsContext?.consent || input.analyticsConsent;
+    const analyticsConsent = localPremiumTest
+      ? undefined
+      : input.analyticsContext?.consent || input.analyticsConsent;
 
     await tx.insert(storyGenerationRequests).values({
       runId,
@@ -242,6 +248,7 @@ export async function startStoryGeneration(
       clientId: input.analyticsContext?.clientId,
       sessionId: input.analyticsContext?.sessionId,
       consent: analyticsConsent,
+      ...(localPremiumTest && { availableAt: new Date('9999-01-01T00:00:00.000Z') }),
     });
 
     if (analyticsConsent) {
@@ -266,7 +273,7 @@ export async function startStoryGeneration(
       });
     }
 
-    if (input.adContext !== undefined) {
+    if (!localPremiumTest && input.adContext !== undefined) {
       await enqueueAdConversion(tx, {
         conversion: conversions.storyLead(runId),
         authorId: input.authorId,

@@ -96,33 +96,38 @@ it.each([
   },
 );
 
-it('offers only square hardcover and includes the carrier contact with the global default at None', async () => {
-  const { place, onPlaceOrder } = await show(
-    {
-      luluDefault: false,
-      hardcoverAvailable: true,
-      paperbackAvailable: false,
-      squareEditionRevision: 'revision-1',
-    },
-    true,
-  );
-  expect(screen.getByText('payment.squareHardcoverTitle')).toBeInTheDocument();
-  expect(screen.queryByText('payment.softcoverTitle')).not.toBeInTheDocument();
-  expect(screen.queryByText(/payment.includesFourChapters/)).not.toBeInTheDocument();
-  fireEvent.click(screen.getByRole('button', { name: '+' }));
-  fireEvent.click(place);
-  fireEvent.click(screen.getByRole('button', { name: 'buttons.confirm' }));
-  expect(onPlaceOrder).toHaveBeenCalledWith({
-    numberOfCopies: 2,
-    totalCost: 18,
-    breakdown: { basePrice: 12, extraChaptersCost: 0, extraCopiesCost: 4, shippingCost: 2 },
-    recipient: {
-      name: 'Test Recipient',
-      email: 'reader@example.org',
-      phone_number: '+351210000000',
-    },
-  });
-});
+it.each([false, true])(
+  'offers only square hardcover and reserves carrier details for Lulu (%s)',
+  async (luluDefault) => {
+    const { place, onPlaceOrder } = await show(
+      {
+        luluDefault,
+        hardcoverAvailable: true,
+        paperbackAvailable: false,
+        squareEditionRevision: 'revision-1',
+      },
+      true,
+    );
+    expect(screen.getByText('payment.squareHardcoverTitle')).toBeInTheDocument();
+    expect(screen.queryByText('payment.softcoverTitle')).not.toBeInTheDocument();
+    expect(screen.queryByText(/payment.includesFourChapters/)).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: '+' }));
+    fireEvent.click(place);
+    fireEvent.click(screen.getByRole('button', { name: 'buttons.confirm' }));
+    expect(onPlaceOrder).toHaveBeenCalledWith({
+      numberOfCopies: 2,
+      totalCost: 18,
+      breakdown: { basePrice: 12, extraChaptersCost: 0, extraCopiesCost: 4, shippingCost: 2 },
+      recipient: luluDefault
+        ? {
+            name: 'Test Recipient',
+            email: 'reader@example.org',
+            phone_number: '+351210000000',
+          }
+        : undefined,
+    });
+  },
+);
 it('allows a priced, available hardcover to be confirmed at its own credit price', async () => {
   const { place, onPlaceOrder } = await show({ luluDefault: true, hardcoverAvailable: true }, true);
   const select = screen.getByRole('combobox', { name: /payment.binding/ });

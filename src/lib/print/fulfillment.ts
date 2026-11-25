@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { randomUUID } from 'node:crypto';
-import { and, eq, inArray, isNull, lt, or } from 'drizzle-orm';
+import { and, eq, inArray, isNull, lt, or, sql } from 'drizzle-orm';
 import { db } from '@/db';
 import {
   printFulfillments,
@@ -47,6 +47,7 @@ import {
 } from './proof';
 import {
   getPublishedSquareEdition,
+  configuredSquareSupplier,
   readSquareEdition,
   requireSquareSupplier,
   type PremiumSquareEdition,
@@ -67,20 +68,24 @@ const views = () =>
 
 async function readOrder(id: string) {
   const [row] = await views().where(eq(printFulfillments.printRequestId, id));
-  if (!row)
-    throw new PrintError('print_order_not_found', 'The paid print order was not found.', 404);
+  if (!row) throw new PrintError('print_order_not_found', 'The print request was not found.', 404);
   return row;
 }
 
 type Order = Awaited<ReturnType<typeof readOrder>>;
 type Changes = Partial<typeof printFulfillments.$inferInsert>;
 
+function isStaffProof(order: Order) {
+  const options = order.request.printingOptions;
+  return Boolean(options && typeof options === 'object' && 'staffProofRevision' in options);
+}
+
 function renderInput(order: Order) {
   const edition = readSquareEdition(order.request.printingOptions);
   const provider = providerSchema.parse(order.fulfillment.provider);
   const binding = bindingSchema.parse(order.fulfillment.binding);
-  if (edition && (provider !== 'lulu' || binding !== 'hardcover'))
-    throw new PrintError('square_provider_required', 'Square hardcover orders require Lulu.');
+  if (edition && binding !== 'hardcover')
+    throw new PrintError('square_binding_required', 'Square proofs require hardcover binding.');
   return {
     storyId: order.request.storyId,
     orderId: order.request.id,
@@ -91,7 +96,7 @@ function renderInput(order: Order) {
       ? {
           premiumBook: edition.premiumBook,
           premiumPageCount: edition.pageCount,
-          podPackageId: edition.podPackageId,
+          ...(provider === 'lulu' ? { podPackageId: edition.podPackageId } : {}),
         }
       : {}),
   };
@@ -287,7 +292,7 @@ export async function processPrintProof(id: string) {
     order = await readOrder(id);
     if (order.fulfillment.leaseId !== leaseId) return order;
     if (!order.fulfillment.ticketId)
-      throw new PrintError('missing_print_ticket', 'Paid print ticket is unavailable.', 500);
+      throw new PrintError('missing_print_ticket', 'The print ticket is unavailable.', 500);
     let proof = proofSchema.nullable().parse(order.fulfillment.proof);
     if (!proof) {
       const result = await generateProof(order, leaseId);
@@ -313,7 +318,7 @@ export async function processPrintProof(id: string) {
         leaseUntil: null,
       });
     }
-    if (!order.fulfillment.proofSentAt) {
+    if (!order.fulfillment.proofSentAt && !isStaffProof(order)) {
       const variables = emailVariablesSchema.parse(order.fulfillment.emailVariables);
       if (!variables.proofEmailAttempted) {
         order = await leaseUpdate(order, leaseId, {
@@ -467,7 +472,7 @@ export async function withPrintTicket(id: string, ticketId: string) {
   if (order.fulfillment.ticketId !== ticketId) {
     throw new PrintError(
       'print_ticket_mismatch',
-      'This ticket is not linked to the paid print order.',
+      'This ticket is not linked to the print request.',
       404,
     );
   }
@@ -482,6 +487,7 @@ export async function hasPaidOrderForStory(storyId: string, requestedThrough?: D
     .where(
       and(
         eq(printRequests.storyId, storyId),
+        sql`${printRequests.printingOptions}->>'staffProofRevision' is null`,
         requestedThrough
           ? lt(printRequests.requestedAt, new Date(requestedThrough.getTime() + 1))
           : undefined,
@@ -511,6 +517,7 @@ export async function printOrderView(order: Order) {
     status: row.status,
     binding: row.binding,
     copies: row.copies,
+    proofOnly: isStaffProof(order),
     proofVersion: row.proofVersion,
     ...(edition
       ? {
@@ -564,7 +571,7 @@ export async function setPrintHold(order: Order, reason: string | null) {
     holdReason: reason,
     status: reason
       ? 'held'
-      : order.fulfillment.proofSentAt &&
+      : (order.fulfillment.proofSentAt || (isStaffProof(order) && order.fulfillment.proof)) &&
           (order.fulfillment.provider === 'manual' || order.fulfillment.quote)
         ? 'proof_ready'
         : 'pending',
@@ -601,13 +608,50 @@ export async function revisePrintProof(order: Order, provider?: PrintProvider) {
   const chosen = provider ?? providerSchema.parse(row.provider);
   const edition = readSquareEdition(order.request.printingOptions);
   if (edition) {
-    if (chosen !== 'lulu')
-      throw new PrintError('square_provider_required', 'Square hardcover orders require Lulu.');
     if (provider && provider === row.provider) return order;
-    throw new PrintError(
-      'square_revision_required',
-      'Bind a published correction to this square order while it is on hold.',
-    );
+    if (!provider)
+      throw new PrintError(
+        'square_revision_required',
+        'Bind a published correction to this square order while it is on hold.',
+      );
+    if (chosen === 'manual')
+      return editableUpdate(order, { ...proofRevisionChanges(order), provider: chosen });
+
+    const supplier = configuredSquareSupplier();
+    if (!supplier)
+      throw new PrintError(
+        'square_supplier_unavailable',
+        'Square print setup is incomplete for Lulu.',
+      );
+    if (
+      edition.luluEnvironment &&
+      (edition.luluEnvironment !== supplier.luluEnvironment ||
+        edition.podPackageId !== supplier.podPackageId)
+    )
+      throw new PrintError(
+        'square_supplier_changed',
+        'Restore the Lulu environment and product pinned to this order.',
+      );
+    validateLuluShipping(shippingSchema.parse(row.shippingSnapshot));
+    return db.transaction(async (tx) => {
+      const next = await editableUpdate(
+        order,
+        { ...proofRevisionChanges(order), provider: chosen },
+        tx,
+      );
+      const [request] = await tx
+        .update(printRequests)
+        .set({
+          printingOptions: {
+            ...(order.request.printingOptions as Record<string, unknown>),
+            premiumEdition: { ...edition, ...supplier },
+          },
+          updatedAt: next.fulfillment.updatedAt,
+        })
+        .where(eq(printRequests.id, order.request.id))
+        .returning();
+      return { ...next, request };
+    });
   }
   if (provider && chosen === row.provider) return order;
   if (chosen === 'lulu') {
@@ -625,7 +669,7 @@ export async function correctSquareEdition(
   requireEditable(order);
   const row = order.fulfillment;
   const edition = readSquareEdition(order.request.printingOptions);
-  if (!edition || row.status !== 'held' || !row.holdReason || row.vendor)
+  if (!edition || isStaffProof(order) || row.status !== 'held' || !row.holdReason || row.vendor)
     throw new PrintError(
       'square_correction_not_ready',
       'Place the square order on hold before binding a correction.',
@@ -645,7 +689,14 @@ export async function correctSquareEdition(
       .from(stories)
       .where(and(eq(stories.storyId, order.request.storyId), eq(stories.status, 'published')))
       .for('share');
-    const corrected = story && (await getPublishedSquareEdition(story, edition));
+    const corrected =
+      story &&
+      (await getPublishedSquareEdition(
+        story,
+        edition.luluEnvironment && edition.podPackageId
+          ? { luluEnvironment: edition.luluEnvironment, podPackageId: edition.podPackageId }
+          : null,
+      ));
     if (
       !corrected ||
       corrected.edition.premiumBook.revision !== input.correctedRevision ||
@@ -711,11 +762,13 @@ export async function submitPrintOrder(
   const proof = validationSchema.nullable().parse(row.proof);
   const quote = quoteSchema.nullable().parse(row.quote);
   const edition = readSquareEdition(order.request.printingOptions);
+  const proofOnly = isStaffProof(order);
   if (
     row.provider !== 'lulu' ||
     row.status !== 'proof_ready' ||
     row.holdReason ||
-    !row.proofSentAt ||
+    (!row.proofSentAt && !proofOnly) ||
+    (proofOnly && row.copies !== 1) ||
     !proof?.qaPassed ||
     proof.qaCriticalCount > 0 ||
     !quote ||
@@ -732,7 +785,9 @@ export async function submitPrintOrder(
   ) {
     throw new PrintError(
       'print_not_approved',
-      'Confirm the current emailed proof and landed price first.',
+      proofOnly
+        ? 'Review the current staff proof and confirm the landed price first.'
+        : 'Confirm the current emailed proof and landed price first.',
     );
   }
   if (
@@ -1010,9 +1065,9 @@ export async function reserveManualPrint(
   input: { partnerId: string; proofVersion: number; checkedInbox: true },
   actor: string,
 ) {
-  if (readSquareEdition(order.request.printingOptions))
-    throw new PrintError('square_provider_required', 'Square hardcover orders require Lulu.');
+  const edition = readSquareEdition(order.request.printingOptions);
   const row = order.fulfillment;
+  const proofOnly = isStaffProof(order);
   const proof = proofSchema.nullable().parse(row.proof);
   if (
     row.provider !== 'manual' ||
@@ -1020,13 +1075,16 @@ export async function reserveManualPrint(
     row.proofVersion !== input.proofVersion ||
     row.status !== 'proof_ready' ||
     row.holdReason ||
-    !row.proofSentAt ||
+    (!row.proofSentAt && !proofOnly) ||
+    (proofOnly && row.copies !== 1) ||
     !proof?.qaPassed ||
     proof.qaCriticalCount > 0
   ) {
     throw new PrintError(
       'manual_print_not_ready',
-      'The current emailed proof must pass QA before dispatch.',
+      proofOnly
+        ? 'The current staff proof must pass QA before dispatch.'
+        : 'The current emailed proof must pass QA before dispatch.',
     );
   }
   const [provider] = await db
@@ -1036,9 +1094,23 @@ export async function reserveManualPrint(
   if (!provider)
     throw new PrintError('print_partner_unavailable', 'The manual print provider is unavailable.');
   const context = renderInput(order);
+  requireSquareProofPageCount(edition, proof.pageCount);
+  if (edition) {
+    await Promise.all([
+      ensureProofFileAvailable(proof.interior, context, 'interior'),
+      ensureProofFileAvailable(proof.cover, context, 'cover'),
+    ]);
+  }
   assetFile(proof.interior, context, 'interior');
   assetFile(proof.cover, context, 'cover');
   const reservationId = randomUUID();
+  const squareOrder = edition
+    ? {
+        copies: row.copies,
+        proofOnly,
+        shipping: shippingSchema.parse(row.shippingSnapshot),
+      }
+    : undefined;
   // Use scoped links for a large printer delivery before reserving the dispatch.
   const downloads =
     proof.interior.size + proof.cover.size > 17 * 1024 * 1024
@@ -1052,6 +1124,7 @@ export async function reserveManualPrint(
   });
   return {
     reservationId,
+    ...(squareOrder ? { squareOrder } : {}),
     ...(downloads ? { downloadLinks: { interior: downloads[0], cover: downloads[1] } } : {}),
     interiorUri: `gs://${proof.interior.bucket}/${proof.interior.object}`,
     coverUri: `gs://${proof.cover.bucket}/${proof.cover.object}`,

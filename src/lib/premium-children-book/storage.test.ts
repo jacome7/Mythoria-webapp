@@ -5,6 +5,7 @@ import fixture from './worker-manifest.fixture.json';
 import { loadPublishedPremiumBook } from './storage';
 import { toPremiumBookReaderData } from './reader';
 import { readPremiumBookMarker } from './contract';
+import { frozenPublicationDetails } from '@/test-utils/premium-publication';
 
 const mockDownload = jest.fn();
 const mockFile = jest.fn(() => ({ download: mockDownload }));
@@ -86,6 +87,56 @@ describe('premium manifest storage and reader contract', () => {
     ).rejects.toThrow('Incomplete');
   });
 
+  it('preserves a lower text panel and the canonical copy in the reader view', async () => {
+    const updated = structuredClone(fixture);
+    const page = updated.pages[updated.spreads[0].rightPage - 1];
+    const box = { x: 0.1, y: 0.71, width: 0.8, height: 0.2 };
+    page.textBox = box;
+    const book = await loadPublishedPremiumBook(
+      updated.storyId,
+      updated.ownerId,
+      storedFixture(updated),
+    );
+    if (!book) throw new Error('Fixture should load');
+    const view = toPremiumBookReaderData(book);
+    expect(view.pages[page.number - 1]).toMatchObject({ text: page.text, textBox: box });
+    const left = fixture.pages[updated.spreads[0].leftPage - 1];
+    expect(view.pages[left.number - 1].textBox).toEqual(left.textBox);
+  });
+
+  it('accepts illustrated lettering with a separate transcript, and rejects hybrid editions', async () => {
+    const integrated = {
+      ...fixture,
+      editionLayout: 'embedded-lettering-v2',
+      specification: frozenPublicationDetails,
+      pages: fixture.pages.map((page) => ({ ...page, textBox: undefined })),
+    };
+    const load = (manifest: unknown) =>
+      loadPublishedPremiumBook(fixture.storyId, fixture.ownerId, storedFixture(manifest));
+    const book = await load(integrated);
+    if (!book) throw new Error('Fixture should load');
+    const view = toPremiumBookReaderData(book);
+    expect(view.editionLayout).toEqual(integrated.editionLayout);
+    expect(view.specification).toEqual(frozenPublicationDetails);
+    expect(view.pages[4]).toMatchObject({ text: fixture.pages[4].text, textBox: undefined });
+    expect(view.pages[1]).toMatchObject({ kind: 'copyright', image: undefined });
+    await expect(load({ ...integrated, editionLayout: 'unknown' })).rejects.toThrow('manifest');
+    await expect(
+      load({ ...integrated, specification: { ...frozenPublicationDetails, rights: 'Edited' } }),
+    ).rejects.toThrow('saved text');
+    await expect(load({ ...integrated, pages: fixture.pages })).rejects.toThrow('Incomplete');
+    await expect(load({ ...integrated, editionLayout: undefined })).rejects.toThrow('Incomplete');
+    const specsWithPreview = integrated.pages.map((page) =>
+      page.kind === 'copyright' ? { ...page, reading: fixture.pages[4].reading } : page,
+    );
+    const withPreview = await load({ ...integrated, pages: specsWithPreview });
+    if (!withPreview) throw new Error('Fixture should load');
+    expect(toPremiumBookReaderData(withPreview).pages[1]).toMatchObject({
+      image: undefined,
+      previewImage: `/api/stories/${fixture.storyId}/premium/2?revision=${fixture.revision}`,
+    });
+  });
+
   it('projects a registered opening design and preserves an omitted legacy design', async () => {
     const openingDesign = { background: '#f9efd9', motif: 'paper_boat' };
     const designed = await loadPublishedPremiumBook(
@@ -154,6 +205,7 @@ describe('premium manifest storage and reader contract', () => {
       number: 33,
       kind: 'invitation',
       text: 'Gostaste desta história?\n\nAgora é a tua vez.',
+      reading: fixture.pages[4].reading,
       link: {
         href: 'https://mythoria.pt/pt-PT/tell-your-story',
         label: 'Cria a tua história na Mythoria',
@@ -175,6 +227,7 @@ describe('premium manifest storage and reader contract', () => {
       ...invitation.link,
       href: '/pt-PT/tell-your-story',
     });
+    expect(toPremiumBookReaderData(view).pages.at(-1)?.previewImage).toContain('/premium/33?');
 
     await expect(
       loadPublishedPremiumBook(

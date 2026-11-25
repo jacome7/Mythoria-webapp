@@ -8,6 +8,10 @@ import { hasFeaturedStoryPdfDownloads } from '@/lib/public-story-pdf';
 import { hasPremiumBookMarker } from '@/lib/premium-children-book/contract';
 import { toPremiumBookReaderData } from '@/lib/premium-children-book/reader';
 import { loadPublishedPremiumBook } from '@/lib/premium-children-book/storage';
+import {
+  getCurrentPremiumAudiobook,
+  getPremiumAudioMetadata,
+} from '@/lib/premium-children-book/audiobook';
 import { getPurchasableSquareSupplier } from '@/lib/print/checkout';
 
 export async function GET(request: NextRequest, { params }: { params: Promise<{ slug: string }> }) {
@@ -36,6 +40,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
       }
       const book = await loadPublishedPremiumBook(story.storyId, story.authorId, story.features);
       if (!book) return NextResponse.json({ error: 'Story unavailable' }, { status: 503 });
+      const audio = getCurrentPremiumAudiobook(story.storyId, story.features, story.audiobookUri);
       return NextResponse.json(
         {
           success: true,
@@ -43,6 +48,8 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
             storyId: story.storyId,
             title: book.opening.title,
             authorName: book.opening.author,
+            bookType: book.type,
+            premiumAudio: getPremiumAudioMetadata(audio),
           },
           chapters: [],
           premiumBook: toPremiumBookReaderData(book),
