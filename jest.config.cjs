@@ -3,7 +3,7 @@ module.exports = {
   preset: 'ts-jest',
   testEnvironment: '<rootDir>/jest.environment.cjs',
   moduleNameMapper: {
-    '\\.module\\.css$': '<rootDir>/src/test-utils/style-mock.cjs',
+    '\\.css$': '<rootDir>/src/test-utils/style-mock.cjs',
     '^@/(.*)$': '<rootDir>/src/$1',
   },
   roots: ['<rootDir>/src', '<rootDir>/scripts'],
