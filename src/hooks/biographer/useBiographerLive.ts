@@ -1,15 +1,8 @@
 'use client';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { concatenate, fromBase64, toBase64 } from '@/utils/biographer/audio';
-import { guestIntentHeaders } from '@/utils/biographer/guest';
-import {
-  clearPending,
-  pendingSegments,
-  removePending,
-  savePending,
-  type PendingSegment,
-} from '@/utils/biographer/pending';
+import { fromBase64, toBase64 } from '@/utils/biographer/audio';
+import { clearPending, pendingSegments } from '@/utils/biographer/pending';
 
 function liveDiagnostic(event: string, details?: Record<string, number | string | boolean>) {
   if (process.env.NODE_ENV === 'development') console.info('[Biographer live]', event, details);
@@ -17,20 +10,7 @@ function liveDiagnostic(event: string, details?: Record<string, number | string 
 
 const finalTranscriptTimeoutMs = 20_000;
 
-// Keep this floor aligned with the gateway's test for a possibly audible live input.
-function hasAudiblePcm(data: ArrayBuffer) {
-  if (!data.byteLength || data.byteLength % 2) return true;
-  const pcm = new DataView(data);
-  let squares = 0;
-  for (let offset = 0; offset < pcm.byteLength; offset += 2) {
-    const sample = pcm.getInt16(offset, true);
-    squares += sample * sample;
-  }
-  return squares >= (pcm.byteLength / 2) * 64 ** 2;
-}
-
 export type LiveState = 'paused' | 'connecting' | 'listening' | 'speaking' | 'reconnecting';
-export type SaveState = 'saved' | 'saving' | 'local' | 'attention';
 export interface LiveEvent {
   type: string;
   role?: 'user' | 'assistant';
@@ -45,18 +25,17 @@ export interface LiveEvent {
   data?: string;
   code?: string;
   remainingSeconds?: number;
+  sessionId?: string;
+  unfinishedSpeechIds?: string[];
 }
 
 export function useBiographerLive(
   projectId: string,
   authorId: string,
   onEvent: (event: LiveEvent) => void,
-  guest = false,
-  skipSilentArchive = false,
 ) {
-  const basePath = guest ? '/api/biographer/contribution' : `/api/biographer/projects/${projectId}`;
+  const basePath = `/api/biographer/projects/${projectId}`;
   const [state, setState] = useState<LiveState>('paused');
-  const [saving, setSaving] = useState<SaveState>('saved');
   const [error, setError] = useState(false);
   const eventRef = useRef(onEvent);
   eventRef.current = onEvent;
@@ -68,27 +47,14 @@ export function useBiographerLive(
     source?: MediaStreamAudioSourceNode;
     sessionId?: string;
   }>({});
-  const archive = useRef<ArrayBuffer[]>([]);
-  const archiveStartedForTurn = useRef(false);
-  const archivePreroll = useRef<ArrayBuffer[]>([]);
   const turn = useRef('');
-  const sequence = useRef(0);
-  const queue = useRef(Promise.resolve());
-  const uploadInFlight = useRef<Promise<'timed-out' | undefined> | undefined>(undefined);
-  const dirtyAudio = useRef(false);
-  const queuedWrites = useRef(0);
-  const failedSegments = useRef<PendingSegment[]>([]);
+  const unfinishedSpeech = useRef(new Set<string>());
   const epoch = useRef(0);
   const playback = useRef<{
     context?: AudioContext;
     next: number;
     sources: AudioBufferSourceNode[];
   }>({ next: 0, sources: [] });
-  const archiveStartedAt = useRef<string | undefined>(undefined);
-  const uploadRequest = useRef<AbortController | undefined>(undefined);
-  const uploadingTurn = useRef<string | undefined>(undefined);
-  const cancelledTurns = useRef(new Set<string>());
-  const resetInProgress = useRef(false);
   const advanceCalls = useRef(new Set<string>());
   const captureFrozen = useRef(false);
   const outlinePreparation = useRef<
@@ -98,209 +64,6 @@ export function useBiographerLive(
       }
     | undefined
   >(undefined);
-
-  const uploadPending = useCallback(async () => {
-    const controller = new AbortController();
-    uploadRequest.current = controller;
-    let timedOut = false;
-    let deadline: ReturnType<typeof setTimeout> | undefined;
-    try {
-      const upload = async (segment: PendingSegment) => {
-        if (controller.signal.aborted) return;
-        if (cancelledTurns.current.has(segment.turnId)) {
-          await removePending(segment.id);
-          return;
-        }
-        uploadingTurn.current = segment.turnId;
-        // Each segment can make progress independently, even in a large recovery queue.
-        clearTimeout(deadline);
-        deadline = setTimeout(() => {
-          if (controller.signal.aborted) return;
-          timedOut = true;
-          controller.abort();
-        }, 30_000);
-        const digest = await crypto.subtle.digest('SHA-256', segment.data);
-        if (controller.signal.aborted || cancelledTurns.current.has(segment.turnId)) return;
-        const sha256 = [...new Uint8Array(digest)]
-          .map((byte) => byte.toString(16).padStart(2, '0'))
-          .join('');
-        const response = await fetch(`${basePath}/segments`, {
-          method: 'POST',
-          signal: controller.signal,
-          headers: {
-            'Content-Type': 'application/json',
-            ...(guest ? guestIntentHeaders({ projectId, participantId: authorId }) : {}),
-          },
-          body: JSON.stringify({
-            id: segment.id,
-            turnId: segment.turnId,
-            sequence: segment.sequence,
-            contentType: 'audio/pcm;rate=16000',
-            data: toBase64(segment.data),
-            sha256,
-            durationMs: segment.durationMs,
-            capturedAt: segment.capturedAt,
-          }),
-        });
-        if (response.status === 410) {
-          await removePending(segment.id);
-          return;
-        }
-        if (!response.ok) {
-          const payload = await response
-            .clone()
-            .json()
-            .catch(() => ({}));
-          if (
-            guest &&
-            (response.status === 401 ||
-              (response.status === 409 && String(payload.error || '').includes('session changed')))
-          ) {
-            setError(true);
-            const current = resources.current;
-            current.processor?.disconnect();
-            current.source?.disconnect();
-            current.stream?.getTracks().forEach((track) => track.stop());
-            const buffers = archive.current.splice(0);
-            if (buffers.length && current.sessionId) {
-              const data = concatenate(buffers);
-              const capturedAt = archiveStartedAt.current ?? new Date().toISOString();
-              archiveStartedAt.current = undefined;
-              const tail: PendingSegment = {
-                id: crypto.randomUUID(),
-                authorId,
-                projectId,
-                sessionId: current.sessionId,
-                turnId: turn.current,
-                sequence: sequence.current++,
-                durationMs: Math.round(data.byteLength / 32),
-                data,
-                capturedAt,
-              };
-              try {
-                await savePending(tail);
-              } catch {
-                failedSegments.current.push(tail);
-              }
-            }
-            if (current.context) void current.context.close();
-            current.socket?.close();
-            resources.current = {};
-            setState('paused');
-          }
-          throw new Error('Upload failed');
-        }
-        const ack = await response.json();
-        if (
-          ack.saved !== true ||
-          ack.id !== segment.id ||
-          ack.sequence !== segment.sequence ||
-          ack.sha256 !== sha256
-        )
-          throw new Error('Invalid save acknowledgement');
-        await removePending(segment.id);
-      };
-      const pending = await pendingSegments(authorId, projectId);
-      if (pending.some((segment) => !cancelledTurns.current.has(segment.turnId))) {
-        dirtyAudio.current = true;
-        setSaving((status) => (status === 'saved' ? 'saving' : status));
-      }
-      for (const segment of pending) await upload(segment);
-      while (failedSegments.current.length && !controller.signal.aborted) {
-        const segment = failedSegments.current[0];
-        if (!cancelledTurns.current.has(segment.turnId)) await savePending(segment);
-        failedSegments.current = failedSegments.current.filter(({ id }) => id !== segment.id);
-        await upload(segment);
-      }
-      controller.signal.throwIfAborted();
-      const remaining = await pendingSegments(authorId, projectId);
-      controller.signal.throwIfAborted();
-      dirtyAudio.current = Boolean(
-        remaining.some((segment) => !cancelledTurns.current.has(segment.turnId)) ||
-        queuedWrites.current ||
-        archive.current.length ||
-        failedSegments.current.length,
-      );
-      setSaving(dirtyAudio.current ? 'saving' : 'saved');
-    } catch {
-      if (timedOut) liveDiagnostic('audio-sync-timeout');
-      if ((timedOut || !controller.signal.aborted) && dirtyAudio.current)
-        setSaving(navigator.onLine ? 'attention' : 'local');
-    } finally {
-      clearTimeout(deadline);
-      uploadingTurn.current = undefined;
-      uploadRequest.current = undefined;
-    }
-    return timedOut ? ('timed-out' as const) : undefined;
-  }, [authorId, projectId, basePath, guest]);
-
-  const sync = useCallback(() => {
-    if (uploadInFlight.current) return uploadInFlight.current;
-    if (resetInProgress.current || !authorId) return Promise.resolve();
-    uploadInFlight.current = uploadPending().finally(() => {
-      uploadInFlight.current = undefined;
-    });
-    return uploadInFlight.current;
-  }, [authorId, uploadPending]);
-
-  const flush = useCallback(() => {
-    const buffers = archive.current.splice(0);
-    const capturedAt = archiveStartedAt.current ?? new Date().toISOString();
-    archiveStartedAt.current = undefined;
-    if (!buffers.length || !resources.current.sessionId) return;
-    const data = concatenate(buffers);
-    const segment: PendingSegment = {
-      id: crypto.randomUUID(),
-      authorId,
-      projectId,
-      sessionId: resources.current.sessionId,
-      turnId: turn.current,
-      sequence: sequence.current++,
-      durationMs: Math.round(data.byteLength / 32),
-      data,
-      capturedAt,
-    };
-    dirtyAudio.current = true;
-    setSaving('saving');
-    queuedWrites.current += 1;
-    queue.current = queue.current
-      .then(async () => {
-        if (!cancelledTurns.current.has(segment.turnId)) await savePending(segment);
-        queuedWrites.current -= 1;
-        void sync();
-      })
-      .catch(() => {
-        queuedWrites.current = Math.max(0, queuedWrites.current - 1);
-        if (cancelledTurns.current.has(segment.turnId)) return;
-        failedSegments.current.push(segment);
-        const tail = archive.current.splice(0);
-        if (tail.length) {
-          const capturedAt = archiveStartedAt.current ?? new Date().toISOString();
-          archiveStartedAt.current = undefined;
-          const data = concatenate(tail);
-          failedSegments.current.push({
-            ...segment,
-            sessionId: resources.current.sessionId ?? segment.sessionId,
-            turnId: turn.current,
-            id: crypto.randomUUID(),
-            sequence: sequence.current++,
-            durationMs: Math.round(data.byteLength / 32),
-            data,
-            capturedAt,
-          });
-        }
-        setSaving('attention');
-        setError(true);
-        const current = resources.current;
-        current.processor?.disconnect();
-        current.source?.disconnect();
-        current.stream?.getTracks().forEach((track) => track.stop());
-        if (current.context) void current.context.close();
-        current.socket?.close();
-        resources.current = {};
-        setState('paused');
-      });
-  }, [authorId, projectId, sync]);
 
   const stopPlayback = useCallback(() => {
     playback.current.sources.forEach((source) => {
@@ -320,9 +83,7 @@ export function useBiographerLive(
       advanceCalls.current.clear();
       outlinePreparation.current?.complete(false);
       captureFrozen.current = false;
-      archiveStartedForTurn.current = false;
-      archivePreroll.current = [];
-      if (!discard && !resetInProgress.current) flush();
+      unfinishedSpeech.current.clear();
       const current = resources.current;
       resources.current = {};
       current.processor?.disconnect();
@@ -335,7 +96,7 @@ export function useBiographerLive(
       stopPlayback();
       setState('paused');
     },
-    [flush, stopPlayback],
+    [stopPlayback],
   );
 
   const discardSession = useCallback(
@@ -352,52 +113,32 @@ export function useBiographerLive(
     [basePath],
   );
 
+  const disconnect = useCallback(() => {
+    const { sessionId, processor } = resources.current;
+    const unfinishedSpeechIds = [...unfinishedSpeech.current];
+    pause();
+    if (sessionId && processor) {
+      eventRef.current({ type: 'disconnected', sessionId, unfinishedSpeechIds });
+    } else {
+      setError(true);
+    }
+  }, [pause]);
+
   const cancel = useCallback(() => {
     const { sessionId } = resources.current;
     const turnId = sessionId ? turn.current : undefined;
-    if (turnId) {
-      cancelledTurns.current.add(turnId);
-      if (uploadingTurn.current === turnId) uploadRequest.current?.abort();
-      failedSegments.current = failedSegments.current.filter(
-        (segment) => segment.turnId !== turnId,
-      );
-      void queue.current
-        .then(async () => {
-          const pending = await pendingSegments(authorId, projectId);
-          await Promise.all(
-            pending
-              .filter((segment) => segment.turnId === turnId)
-              .map(({ id }) => removePending(id)),
-          );
-        })
-        .catch(() => liveDiagnostic('cancelled-audio-local-cleanup-failed'))
-        .then(() => {
-          void sync();
-        });
-    }
-    archive.current = [];
-    archiveStartedAt.current = undefined;
     pause(true);
-    dirtyAudio.current = Boolean(failedSegments.current.length);
-    setSaving(dirtyAudio.current ? 'attention' : 'saved');
     setError(false);
-
     const cleanup = sessionId ? discardSession(sessionId, turnId || undefined) : Promise.resolve();
     return { turnId, cleanup };
-  }, [authorId, discardSession, pause, projectId, sync]);
+  }, [discardSession, pause]);
 
-  const stop = useCallback(async () => {
-    const activeUpload = uploadInFlight.current;
-    pause();
-    await queue.current;
-    if ((await (activeUpload ?? uploadInFlight.current)) !== 'timed-out') await sync();
-  }, [pause, sync]);
+  const stop = useCallback(() => pause(), [pause]);
 
   const prepareOutline = useCallback(async () => {
     const socket = resources.current.socket;
     if (socket?.readyState !== WebSocket.OPEN || !resources.current.processor) return false;
     captureFrozen.current = true;
-    flush();
     const id = crypto.randomUUID();
     const startedAt = performance.now();
     const prepared = await new Promise<boolean>((resolve) => {
@@ -420,11 +161,8 @@ export function useBiographerLive(
     liveDiagnostic('outline-preparation-confirmed', {
       elapsedMs: Math.round(performance.now() - startedAt),
     });
-    await queue.current;
-    if ((await uploadInFlight.current) === 'timed-out') return false;
-    await sync();
-    return socket === resources.current.socket && !dirtyAudio.current;
-  }, [flush, sync]);
+    return socket === resources.current.socket;
+  }, []);
 
   const finishOutline = useCallback((callId: string, accepted: boolean) => {
     const socket = resources.current.socket;
@@ -442,22 +180,9 @@ export function useBiographerLive(
   }, []);
 
   const reset = useCallback(async () => {
-    resetInProgress.current = true;
-    uploadRequest.current?.abort();
     pause();
-    try {
-      await queue.current;
-      await uploadInFlight.current;
-      failedSegments.current = [];
-      archive.current = [];
-      archiveStartedAt.current = undefined;
-      await clearPending(authorId, projectId);
-      dirtyAudio.current = false;
-      setSaving('saved');
-      setError(false);
-    } finally {
-      resetInProgress.current = false;
-    }
+    setError(false);
+    await clearPending(authorId, projectId);
   }, [authorId, pause, projectId]);
 
   const play = useCallback((event: LiveEvent) => {
@@ -499,21 +224,15 @@ export function useBiographerLive(
       };
       processor.onprocessorerror = () => {
         if (resources.current.processor !== processor) return;
-        setError(true);
-        pause();
+        disconnect();
       };
       source.connect(processor);
       processor.connect(context.destination);
     },
-    [pause],
+    [disconnect],
   );
 
   const start = useCallback(async () => {
-    if (failedSegments.current.length) {
-      setError(true);
-      setSaving('attention');
-      return;
-    }
     pause();
     const startingEpoch = epoch.current;
     setError(false);
@@ -540,7 +259,6 @@ export function useBiographerLive(
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          ...(guest ? guestIntentHeaders({ projectId, participantId: authorId }) : {}),
         },
         body: '{}',
       });
@@ -551,21 +269,13 @@ export function useBiographerLive(
         liveUrl: string;
       };
       if (epoch.current !== startingEpoch) {
-        if (skipSilentArchive) {
-          void discardSession(session.sessionId).catch(() =>
-            liveDiagnostic('cancelled-session-cleanup-failed'),
-          );
-        } else {
-          void fetch(`${basePath}/sessions/${session.sessionId}`, {
-            method: 'PATCH',
-            headers: guest ? guestIntentHeaders({ projectId, participantId: authorId }) : {},
-          }).catch(() => undefined);
-        }
+        void discardSession(session.sessionId).catch(() =>
+          liveDiagnostic('cancelled-session-cleanup-failed'),
+        );
         return;
       }
       resources.current.sessionId = session.sessionId;
       turn.current = crypto.randomUUID();
-      sequence.current = 0;
       const socket = new WebSocket(session.liveUrl);
       resources.current.socket = socket;
       socket.onopen = () =>
@@ -585,20 +295,14 @@ export function useBiographerLive(
         } catch {
           return;
         }
-        if (
-          skipSilentArchive &&
-          event.type === 'speech_detected' &&
-          event.turnId === turn.current &&
-          !archiveStartedForTurn.current
-        ) {
-          archiveStartedForTurn.current = true;
-          const preroll = archivePreroll.current.splice(0);
-          if (preroll.length) {
-            archive.current.push(...preroll);
-            archiveStartedAt.current ??= new Date().toISOString();
-            dirtyAudio.current = true;
-            setSaving('saving');
-          }
+        if (event.turnId) {
+          if (
+            event.type === 'speech_detected' ||
+            (event.type === 'transcript' && event.role === 'user' && !event.final)
+          )
+            unfinishedSpeech.current.add(event.turnId);
+          if (event.type === 'transcript' && event.role === 'user' && event.final)
+            unfinishedSpeech.current.delete(event.turnId);
         }
         if (event.type === 'outline_prepared') {
           const preparation = outlinePreparation.current;
@@ -611,7 +315,8 @@ export function useBiographerLive(
         if (event.type === 'advance_to_outline_cancelled' && event.callId)
           advanceCalls.current.delete(event.callId);
         if (event.type === 'ready') {
-          if (!resources.current.stream || socket !== resources.current.socket) return;
+          if (!resources.current.stream || resources.current.processor) return;
+          eventRef.current({ type: 'capture_started', turnId: turn.current });
           setState('listening');
           try {
             capture(context, stream, (data) => {
@@ -619,34 +324,16 @@ export function useBiographerLive(
               socket.send(
                 JSON.stringify({ type: 'audio', data: toBase64(data), turnId: turn.current }),
               );
-              if (skipSilentArchive && !archiveStartedForTurn.current) {
-                if (!hasAudiblePcm(data)) {
-                  // Retain a short lead-in for the start of the next recoverable answer.
-                  archivePreroll.current.push(data);
-                  if (archivePreroll.current.length > 5) archivePreroll.current.shift();
-                  return;
-                }
-                archiveStartedForTurn.current = true;
-                archive.current.push(...archivePreroll.current.splice(0));
-              }
-              archiveStartedAt.current ??= new Date().toISOString();
-              dirtyAudio.current = true;
-              archive.current.push(data);
-              setSaving('saving');
-              if (archive.current.reduce((total, item) => total + item.byteLength, 0) >= 32000)
-                flush();
             });
           } catch {
-            setError(true);
-            pause();
+            disconnect();
           }
         }
         if (event.type === 'media') {
           try {
             play(event);
           } catch {
-            setError(true);
-            pause();
+            disconnect();
           }
         }
         if (event.type === 'interrupted') {
@@ -654,39 +341,26 @@ export function useBiographerLive(
           stopPlayback();
           setState('listening');
         }
-        if (
-          (event.type === 'capture_boundary' ||
-            (event.type === 'transcript' && event.role === 'user' && event.final) ||
-            event.type === 'turn_complete') &&
-          event.turnId === turn.current
-        ) {
-          flush();
-          turn.current = event.nextTurnId ?? crypto.randomUUID();
-          sequence.current = 0;
-          archiveStartedForTurn.current = false;
-          archivePreroll.current = [];
-        }
+        if (event.type === 'capture_boundary' && event.turnId === turn.current && event.nextTurnId)
+          turn.current = event.nextTurnId;
         if (event.type === 'reconnecting') setState('reconnecting');
         if (event.type === 'error') {
           liveDiagnostic('gateway-error', {
             code: /^[A-Z_]{1,60}$/.test(event.code ?? '') ? event.code! : 'UNKNOWN',
           });
-          setError(true);
-          pause();
+          disconnect();
         }
         eventRef.current(event);
       };
       socket.onerror = () => {
         if (socket !== resources.current.socket) return;
         liveDiagnostic('socket-error');
-        setError(true);
-        pause();
+        disconnect();
       };
       socket.onclose = (event) => {
         if (resources.current.socket === socket) {
           liveDiagnostic('socket-closed', { code: event.code, clean: event.wasClean });
-          setError(true);
-          pause();
+          disconnect();
         }
       };
     } catch {
@@ -694,55 +368,37 @@ export function useBiographerLive(
       setError(true);
       pause();
     }
-  }, [
-    authorId,
-    basePath,
-    capture,
-    discardSession,
-    flush,
-    guest,
-    pause,
-    play,
-    projectId,
-    skipSilentArchive,
-    stopPlayback,
-  ]);
+  }, [basePath, capture, discardSession, disconnect, pause, play, projectId, stopPlayback]);
+
+  useEffect(() => {
+    if (authorId)
+      // Read only to let the usual retention policy expire legacy entries.
+      void pendingSegments(authorId, projectId).catch(() => {
+        liveDiagnostic('legacy-live-audio-cleanup-failed');
+      });
+  }, [authorId, projectId]);
 
   useEffect(() => {
     const onHidden = () => {
-      if (document.visibilityState === 'hidden') {
-        if (resources.current.socket) liveDiagnostic('page-hidden');
+      if (document.visibilityState !== 'hidden') return;
+      if (resources.current.processor) {
+        liveDiagnostic('page-hidden');
+        disconnect();
+      } else {
         pause();
       }
     };
     document.addEventListener('visibilitychange', onHidden);
-    window.addEventListener('online', sync);
-    void sync();
-    const retry = window.setInterval(() => {
-      void sync();
-    }, 5000);
-    return () => {
-      window.clearInterval(retry);
-      document.removeEventListener('visibilitychange', onHidden);
-      window.removeEventListener('online', sync);
-    };
-  }, [pause, sync]);
-  useEffect(() => {
-    if (saving === 'saved') return;
-    const leave = (event: BeforeUnloadEvent) => event.preventDefault();
-    window.addEventListener('beforeunload', leave);
-    return () => window.removeEventListener('beforeunload', leave);
-  }, [saving]);
+    return () => document.removeEventListener('visibilitychange', onHidden);
+  }, [disconnect, pause]);
   useEffect(() => () => pause(), [pause]);
+
   return {
     state,
-    saving,
     error,
     start,
-    pause,
     stop,
     cancel,
-    sync,
     reset,
     prepareOutline,
     finishOutline,

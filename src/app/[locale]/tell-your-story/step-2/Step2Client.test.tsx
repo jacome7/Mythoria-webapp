@@ -22,9 +22,7 @@ import type { LiveEvent, LiveState } from '@/hooks/biographer/useBiographerLive'
 
 let mockRecordingDictation = false;
 let mockLiveState: LiveState = 'paused';
-let mockLiveSaving: 'saved' | 'saving' | 'attention' | 'local' = 'saved';
 const mockStartLive = jest.fn(async () => undefined);
-const mockSyncLive = jest.fn(async () => undefined);
 const mockPrepareOutline = jest.fn(async () => true);
 const mockFinishOutline = jest.fn((_callId: string, _accepted: boolean) => true);
 const mockStopLive = jest.fn(async () => undefined);
@@ -158,11 +156,9 @@ jest.mock('@/hooks/biographer/useBiographerLive', () => ({
     mockLiveEvent = onEvent;
     return {
       state: mockLiveState,
-      saving: mockLiveSaving,
       start: mockStartLive,
       pause: jest.fn(),
       reset: jest.fn(),
-      sync: mockSyncLive,
       stop: mockStopLive,
       cancel: mockCancelLive,
       prepareOutline: mockPrepareOutline,
@@ -1103,9 +1099,7 @@ describe('Story Whisperer in Step 2', () => {
 
   beforeEach(() => {
     mockLiveState = 'paused';
-    mockLiveSaving = 'saved';
     mockStartLive.mockClear();
-    mockSyncLive.mockClear();
     mockPrepareOutline.mockClear();
     mockFinishOutline.mockClear();
     mockStopLive.mockClear();
@@ -1485,35 +1479,111 @@ describe('Story Whisperer in Step 2', () => {
     expect(mockFetch).toHaveBeenCalledTimes(3);
   });
 
-  it('shows a live-sync retry only when an upload needs attention', async () => {
-    mockFetch.mockResolvedValue(interviewResponse());
-    const renderChat = () => (
+  it('shows a checkpoint as live text until its session settles and keeps older recovery visible', async () => {
+    mockLiveState = 'listening';
+    const older = {
+      id: 'older-voice-turn',
+      projectId,
+      participantId: owner,
+      role: 'user' as const,
+      text: '',
+      originalText: '',
+      revision: 1,
+      final: false,
+      included: true,
+      interrupted: false,
+      recoverableAudio: true,
+      createdAt: '2026-11-22T00:00:00.000Z',
+    };
+    const current = {
+      ...older,
+      id: 'current-voice-turn',
+      recoverableAudio: false,
+      text: 'It started in Lisbon.',
+    };
+    const initial = { ...emptyInterview(), turns: [older] };
+    const latest = { ...initial, revision: 2, turns: [older, current] };
+    let settle!: (response: { ok: boolean; json: () => Promise<{ settled: boolean }> }) => void;
+    mockFetch
+      .mockImplementationOnce(() => new Promise((resolve) => (settle = resolve)))
+      .mockResolvedValueOnce(interviewResponse(latest));
+    const onInterview = jest.fn();
+    const renderChat = (interview: WhispererInterview) => (
       <StoryWhisperer
         draftId={draftId}
         owner={owner}
         onClose={jest.fn()}
-        onInterview={jest.fn()}
+        onInterview={onInterview}
+        onContinue={jest.fn()}
+        availablePhotos={3}
+        inputsBlocked={false}
+        interview={interview}
+      />
+    );
+    const { rerender } = render(renderChat(initial));
+    act(() => {
+      mockLiveEvent({ type: 'capture_started', turnId: current.id });
+      mockLiveEvent({ type: 'transcript', role: 'user', turnId: current.id, text: current.text });
+    });
+    rerender(renderChat(latest));
+    expect(screen.getAllByText(current.text)).toHaveLength(1);
+    expect(screen.queryByText('unfinishedVoiceText')).not.toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'recoverDictation' })).toBeVisible();
+
+    mockLiveState = 'paused';
+    act(() =>
+      mockLiveEvent({
+        type: 'disconnected',
+        sessionId: 'session',
+        unfinishedSpeechIds: [current.id],
+      }),
+    );
+    rerender(renderChat(latest));
+    await waitFor(() =>
+      expect(mockFetch).toHaveBeenCalledWith(
+        `/api/biographer/projects/${projectId}/sessions/session`,
+        expect.objectContaining({ signal: expect.any(AbortSignal) }),
+      ),
+    );
+    expect(screen.queryByText('unfinishedVoiceText')).not.toBeInTheDocument();
+    await waitFor(() => expect(screen.getByRole('textbox', { name: 'reply' })).toBeEnabled());
+    await act(async () => settle({ ok: true, json: async () => ({ settled: true }) }));
+    expect(await screen.findByText('unfinishedVoiceText')).toBeVisible();
+    expect(screen.getByRole('button', { name: 'discardVoiceReply' })).toBeEnabled();
+    const write = screen.getAllByRole('button', { name: 'writeReply' }).at(-1)!;
+    fireEvent.click(write);
+    expect(screen.getByRole('textbox', { name: 'writeReply' })).toHaveValue(current.text);
+    expect(screen.queryByText('repeatVoice')).not.toBeInTheDocument();
+    expect(mockFetch).toHaveBeenCalledTimes(2);
+  });
+
+  it.each([
+    { speechIds: ['missing-voice-turn'], repeat: true },
+    { speechIds: [], repeat: false },
+  ])('only asks to repeat confirmed missing speech ($repeat)', async ({ speechIds, repeat }) => {
+    mockFetch
+      .mockResolvedValueOnce({ ok: true, json: async () => ({ settled: true }) })
+      .mockResolvedValueOnce(interviewResponse());
+    const onInterview = jest.fn();
+    render(
+      <StoryWhisperer
+        draftId={draftId}
+        owner={owner}
+        onClose={jest.fn()}
+        onInterview={onInterview}
         onContinue={jest.fn()}
         availablePhotos={3}
         inputsBlocked={false}
         interview={emptyInterview()}
-      />
+      />,
     );
-    mockLiveSaving = 'saving';
-    const { rerender } = render(renderChat());
-    await screen.findByRole('textbox', { name: 'reply' });
-    expect(screen.queryByRole('button', { name: 'retry' })).not.toBeInTheDocument();
-    expect(screen.queryByText('saveStatus.saving')).not.toBeInTheDocument();
-
-    mockLiveSaving = 'attention';
-    rerender(renderChat());
-    fireEvent.click(within(screen.getByRole('log')).getByRole('button', { name: 'retry' }));
-    await waitFor(() => expect(mockSyncLive).toHaveBeenCalledTimes(1));
-
-    mockLiveSaving = 'saved';
-    rerender(renderChat());
-    expect(screen.queryByRole('button', { name: 'retry' })).not.toBeInTheDocument();
-    expect(screen.queryByText('saveStatus.saved')).not.toBeInTheDocument();
+    await act(async () =>
+      mockLiveEvent({ type: 'disconnected', sessionId: 'session', unfinishedSpeechIds: speechIds }),
+    );
+    await waitFor(() => expect(onInterview).toHaveBeenCalled());
+    if (repeat) expect(screen.getByText('repeatVoice')).toBeVisible();
+    else expect(screen.queryByText('repeatVoice')).not.toBeInTheDocument();
+    expect(screen.getByRole('textbox', { name: 'reply' })).toBeEnabled();
   });
 
   it('shows and updates the live voice status in the conversation', async () => {
@@ -2039,7 +2109,6 @@ describe('Story Whisperer in Step 2', () => {
     'uses freshly assessed and durably saved answers before advancing from Live Voice by %s',
     async (method) => {
       mockLiveState = 'listening';
-      mockLiveSaving = 'saving';
       const initial = emptyInterview();
       const ready: WhispererInterview['readiness'] = {
         rubricVersion: 3,

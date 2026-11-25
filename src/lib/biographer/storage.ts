@@ -59,15 +59,11 @@ export async function saveSegment(
     if (!participant || participant.status === 'closed')
       throw new BiographerError('Contributions closed', 423);
     const [whisperer] = await tx
-      .select({ discarded: isDiscardedLiveTurn(projectId, value.turnId) })
+      .select({ projectId: storyWhispererInterviews.projectId })
       .from(storyWhispererInterviews)
       .where(eq(storyWhispererInterviews.projectId, projectId));
-    if (whisperer) {
-      if (whisperer.discarded) throw new BiographerError('Recording discarded', 410);
-      if (!value.capturedAt) throw new BiographerError('Capture time required');
-      if (capturedAt.getTime() <= Date.now() - audioRetentionMs)
-        throw new BiographerError('Recording expired', 410);
-    }
+    // Older clients clear queued segments on 410 and can keep streaming to the gateway.
+    if (whisperer) throw new BiographerError('Live recordings are no longer stored', 410);
     const objectPath = `biographer/${projectId}/${participant.id}/${value.turnId}/${value.sequence}-${value.id}`;
     const row = {
       id: value.id,
@@ -90,7 +86,6 @@ export async function saveSegment(
         existingTurn.role !== 'user')
     )
       throw new BiographerError('Response conflict', 409);
-    if (whisperer && existingTurn && hasCompleteTranscript(existingTurn)) return row;
     const [existing] = await tx
       .select()
       .from(segments)

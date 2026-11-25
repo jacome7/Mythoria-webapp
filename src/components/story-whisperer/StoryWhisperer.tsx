@@ -316,9 +316,11 @@ function Conversation({
   const resetNoButton = useRef<HTMLButtonElement>(null);
   const restoreResetFocus = useRef<'header' | 'reply' | null>(null);
   const [recoveryDraft, setRecoveryDraft] = useState<{ id: string; text: string }>();
-  const [confirmDiscardVoice, setConfirmDiscardVoice] = useState(false);
+  const [voiceDisconnect, setVoiceDisconnect] = useState<LiveEvent>();
+  const [repeatVoice, setRepeatVoice] = useState(false);
   const [interim, setInterim] = useState<Record<string, LiveLine>>({});
   const activeVoicePartials = useRef(new Set<string>());
+  const [liveAnswerIds, setLiveAnswerIds] = useState<ReadonlySet<string>>(() => new Set());
   const [discardedVoiceTurns, setDiscardedVoiceTurns] = useState<Set<string>>(() => new Set());
   const voiceCancellation = useRef<Promise<void> | undefined>(undefined);
   const [photoOpen, setPhotoOpen] = useState(false);
@@ -404,6 +406,19 @@ function Conversation({
   }, []);
   const onLiveEvent = useCallback(
     (event: LiveEvent) => {
+      if (event.type === 'disconnected') {
+        setVoiceDisconnect(event);
+        return;
+      }
+      const capturingId =
+        event.type === 'capture_boundary'
+          ? event.nextTurnId
+          : ['capture_started', 'speech_detected'].includes(event.type)
+            ? event.turnId
+            : undefined;
+      if (capturingId) {
+        setLiveAnswerIds((ids) => (ids.has(capturingId) ? ids : new Set([...ids, capturingId])));
+      }
       if (event.type === 'advance_to_outline') {
         requestVoiceAdvance.current(event);
         return;
@@ -412,6 +427,13 @@ function Conversation({
       const { turnId, text } = event;
       if (event.final) activeVoicePartials.current.delete(turnId);
       else activeVoicePartials.current.add(turnId);
+      if (event.role === 'user') {
+        if (event.final) {
+          setRepeatVoice(false);
+        } else {
+          setLiveAnswerIds((ids) => (ids.has(turnId) ? ids : new Set([...ids, turnId])));
+        }
+      }
       setInterim((lines) => ({ ...lines, [turnId]: { role: event.role ?? 'user', text } }));
       if (event.final) {
         void refresh().catch(() => setError(true));
@@ -434,7 +456,81 @@ function Conversation({
     },
     [cancelLiveReadiness, draftId, projectId, refresh],
   );
-  const live = useBiographerLive(projectId, owner, onLiveEvent, false, true);
+  const live = useBiographerLive(projectId, owner, onLiveEvent);
+  useEffect(() => {
+    if (!voiceDisconnect?.sessionId) return;
+    const url = `${project}/sessions/${voiceDisconnect.sessionId}`;
+    const controller = new AbortController();
+    const { signal } = controller;
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    let deadline: ReturnType<typeof setTimeout> | undefined;
+    let checking = false;
+    let reachedDeadline = false;
+    const check = async () => {
+      if (checking || reachedDeadline || signal.aborted || !navigator.onLine) return;
+      checking = true;
+      try {
+        const status = await fetch(url, {
+          signal: AbortSignal.any([signal, AbortSignal.timeout(5_000)]),
+        });
+        if (!status.ok) throw new Error('Unable to check voice session');
+        const { settled } = (await status.json()) as { settled: boolean };
+        if (signal.aborted || reachedDeadline) return;
+        if (!settled) {
+          timer = setTimeout(check, 450);
+          return;
+        }
+        const latest = await refresh(AbortSignal.any([signal, AbortSignal.timeout(5_000)]));
+        if (signal.aborted || reachedDeadline) return;
+        const speechIds = voiceDisconnect.unfinishedSpeechIds ?? [];
+        const savedAnswers = latest.turns.filter(
+          (turn) => speechIds.includes(turn.id) && turn.included && turn.text.trim(),
+        );
+        setRepeatVoice(speechIds.length > 0 && savedAnswers.length === 0);
+        const missedFinal = savedAnswers.some((turn) => !isIncompleteAnswer(turn));
+        if (latest.readinessNeedsRefresh && missedFinal) {
+          void assessReadiness(draftId, projectId, AbortSignal.timeout(15_000))
+            .then((assessed) => {
+              if (assessed && activeConversation.current) return refresh();
+            })
+            .catch(() => undefined);
+        }
+        setVoiceDisconnect(undefined);
+      } catch {
+        if (!signal.aborted && !reachedDeadline) timer = setTimeout(check, 1_000);
+      } finally {
+        checking = false;
+      }
+    };
+    const offline = () => {
+      clearTimeout(timer);
+      clearTimeout(deadline);
+    };
+    const online = () => {
+      offline();
+      deadline = setTimeout(() => {
+        reachedDeadline = true;
+        clearTimeout(timer);
+        // The lease could still be releasing. Show any text we can now read without
+        // asking the author to repeat while a final checkpoint might still arrive.
+        void refresh(AbortSignal.any([signal, AbortSignal.timeout(5_000)]))
+          .catch(() => undefined)
+          .finally(() => {
+            if (!signal.aborted) setVoiceDisconnect(undefined);
+          });
+      }, 25_000);
+      void check();
+    };
+    window.addEventListener('online', online);
+    window.addEventListener('offline', offline);
+    if (navigator.onLine) online();
+    return () => {
+      controller.abort();
+      offline();
+      window.removeEventListener('online', online);
+      window.removeEventListener('offline', offline);
+    };
+  }, [draftId, project, projectId, refresh, voiceDisconnect]);
   const dictation = useBiographerDictation(
     draftId,
     projectId,
@@ -466,7 +562,10 @@ function Conversation({
       !discardedVoiceTurns.has(turn.id) || (turn.final && !turn.interrupted && turn.text.trim()),
   );
   const recordedTurns = visibleTurns.filter((turn) => turn.included && turn.text.trim());
-  const incomplete = visibleTurns.filter(isIncompleteAnswer);
+  const incomplete = visibleTurns.filter(
+    (turn) =>
+      isIncompleteAnswer(turn) && !((activeVoice || voiceDisconnect) && liveAnswerIds.has(turn.id)),
+  );
   const pendingLines = Object.entries(interim).filter(
     ([id]) => !turns.some((turn) => turn.id === id),
   );
@@ -481,8 +580,7 @@ function Conversation({
   const openingIsRecorded =
     recordedTurns[0]?.role === 'assistant' && recordedTurns[0].text === opening.question;
   const visiblePhotos = assets.filter((asset) => asset.included);
-  const inputBlocked =
-    busy || activeVoice || dictation.state !== 'idle' || confirmDiscardVoice || !!recoveryDraft;
+  const inputBlocked = busy || activeVoice || dictation.state !== 'idle' || !!recoveryDraft;
   const blocked = inputBlocked || confirmReset;
   const canAttach = visiblePhotos.length < availablePhotos;
   const composerText = confirmReset ? resetReply : pendingReply ? '' : text;
@@ -490,18 +588,15 @@ function Conversation({
   const replyOverLimit = composerText.length > 40000;
   const composerDisabled = inputBlocked || photoOpen || !draftLoaded;
   const sendDisabled = composerDisabled || !hasText || composerText.trim().length > 40000;
-  const voiceSyncFailed = live.saving === 'attention' || live.saving === 'local';
   const advanceBlocked =
     busy ||
     confirmReset ||
     photoOpen ||
     !!recoveryDraft ||
-    confirmDiscardVoice ||
     dictation.state !== 'idle' ||
     dictation.hasPending ||
     !draftLoaded ||
-    voiceSyncFailed ||
-    (!activeVoice && live.saving !== 'saved') ||
+    !!voiceDisconnect ||
     inputsBlocked ||
     visiblePhotos.length > availablePhotos ||
     !!text.trim();
@@ -513,7 +608,7 @@ function Conversation({
         essentials.every((area) => readiness.areas[area] === 'ready')
       : readiness.ready);
   const isRecoveringReply = Boolean(recoveryDraft);
-  const composerOpen = !confirmDiscardVoice && !isRecoveringReply;
+  const composerOpen = !isRecoveringReply;
   const recording = dictation.state === 'recording';
   const voiceControlLabel = activeVoice ? t('pauseVoice') : t('liveVoice');
 
@@ -587,7 +682,8 @@ function Conversation({
     advanceUnavailable,
     live.error,
     live.state,
-    live.saving,
+    voiceDisconnect,
+    repeatVoice,
     dictation.error,
     dictation.state,
     dictation.hasPending,
@@ -595,7 +691,6 @@ function Conversation({
     sendError,
     confirmReset,
     resetReplyUnclear,
-    confirmDiscardVoice,
     isRecoveringReply,
     photoOpen,
     inputContext,
@@ -641,6 +736,7 @@ function Conversation({
   const send = (value: string) => {
     const answer = value.trim();
     if (!answer || answer.length > 40000 || blocked || photoOpen || !draftLoaded) return;
+    setRepeatVoice(false);
     void run(async () => {
       const request =
         turnRequest.current?.text === answer
@@ -738,6 +834,7 @@ function Conversation({
     const partialIds = new Set(activeVoicePartials.current);
     if (turnId) partialIds.add(turnId);
     activeVoicePartials.current.clear();
+    setLiveAnswerIds(new Set());
     setDiscardedVoiceTurns((previous) => new Set([...previous, ...partialIds]));
     setInterim((lines) =>
       Object.fromEntries(Object.entries(lines).filter(([id]) => !partialIds.has(id))),
@@ -913,7 +1010,10 @@ function Conversation({
         {!openingIsRecorded && <Bubble role="assistant" text={opening.question} />}
         {recordedTurns.map((turn) => (
           <Fragment key={turn.id}>
-            <Bubble role={turn.role} text={turn.text} />
+            <Bubble
+              role={turn.role}
+              text={turn.final ? turn.text : interim[turn.id]?.text || turn.text}
+            />
             {usesCurrentRubric &&
               readiness.firstReadyTurnId === turn.id &&
               essentials.every((area) => readiness.areas[area] === 'ready') && (
@@ -925,13 +1025,13 @@ function Conversation({
         ))}
         {incomplete.map((turn) => (
           <div key={turn.id} className="my-2 rounded-xl border border-[#193b54]/15 bg-white p-3">
-            <p>{t('unfinished')}</p>
+            <p>{t(turn.recoverableAudio ? 'unfinished' : 'unfinishedVoiceText')}</p>
             <div className="flex flex-wrap gap-2">
               {turn.recoverableAudio && (
                 <button
                   type="button"
                   className="btn btn-ghost btn-sm"
-                  disabled={blocked || photoOpen || live.saving !== 'saved'}
+                  disabled={blocked || photoOpen}
                   onClick={() =>
                     void run(async () => {
                       const response = await fetch(`${project}/turns/${turn.id}/transcribe`, {
@@ -966,7 +1066,7 @@ function Conversation({
                   })
                 }
               >
-                {t('discardDictation')}
+                {t(turn.recoverableAudio ? 'discardDictation' : 'discardVoiceReply')}
               </button>
             </div>
           </div>
@@ -1089,34 +1189,6 @@ function Conversation({
                 {t('cancel')}
               </button>
             </form>
-          </AssistantNotice>
-        )}
-        {confirmDiscardVoice && (
-          <AssistantNotice>
-            <p>{t('discardVoiceConfirm')}</p>
-            <button
-              type="button"
-              className="btn btn-outline btn-sm"
-              disabled={busy}
-              onClick={() =>
-                void run(async () => {
-                  await live.reset();
-                  setConfirmDiscardVoice(false);
-                  await refresh();
-                  await assess();
-                })
-              }
-            >
-              {t('discardDictation')}
-            </button>
-            <button
-              type="button"
-              className="btn btn-ghost btn-sm"
-              disabled={busy}
-              onClick={() => setConfirmDiscardVoice(false)}
-            >
-              {t('cancel')}
-            </button>
           </AssistantNotice>
         )}
         {photoOpen && (
@@ -1242,32 +1314,9 @@ function Conversation({
             </button>
           </AssistantNotice>
         )}
-        {voiceSyncFailed && (
+        {repeatVoice && (
           <AssistantNotice>
-            <p role="status">{t(`saveStatus.${live.saving}`)}</p>
-            <div className="flex flex-wrap gap-2">
-              <button
-                type="button"
-                className="btn btn-ghost btn-sm"
-                disabled={blocked || photoOpen}
-                onClick={() =>
-                  void run(async () => {
-                    await live.sync();
-                    await assess();
-                  })
-                }
-              >
-                {t('retry')}
-              </button>
-              <button
-                type="button"
-                className="btn btn-ghost btn-sm"
-                disabled={blocked || photoOpen}
-                onClick={() => setConfirmDiscardVoice(true)}
-              >
-                {t('discardDictation')}
-              </button>
-            </div>
+            <p role="status">{t('repeatVoice')}</p>
           </AssistantNotice>
         )}
         {dictation.hasPending && dictation.state === 'idle' && (
@@ -1435,10 +1484,12 @@ function Conversation({
                   className={`btn min-h-11 shrink-0 rounded-xl ${hasText ? 'btn-ghost size-11 px-0' : 'btn-primary gap-1.5 max-sm:size-11 max-sm:px-0 sm:px-3'} ${hasText && !activeVoice ? 'max-sm:hidden' : ''}`}
                   aria-label={voiceControlLabel}
                   title={voiceControlLabel}
-                  disabled={busy || photoOpen || dictation.state !== 'idle'}
+                  disabled={busy || photoOpen || dictation.state !== 'idle' || !!voiceDisconnect}
                   onClick={() => {
                     if (!activeVoice) {
                       activeVoicePartials.current.clear();
+                      setLiveAnswerIds(new Set());
+                      setRepeatVoice(false);
                       void live.start();
                       return;
                     }

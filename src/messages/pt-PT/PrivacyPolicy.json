@@ -65,7 +65,7 @@
     "storyWhisperer": {
       "title": "Guia de escrita",
       "savedContent": "Quando utiliza o Guia de escrita, guardamos a transcrição da conversa e as fotografias que adiciona para que possa retomar a entrevista e usar esse material para criar a sua história. O Gemini da Google processa o texto e o áudio em tempo real para permitir a conversa.",
-      "recoveryAudio": "Podemos guardar temporariamente a gravação original da sua voz para que possa recuperar uma resposta que ficou por terminar. A gravação fica disponível para recuperação até sete dias após ter sido gravada."
+      "recoveryAudio": "A Mythoria não guarda novas gravações das conversas em direto. As gravações anteriores podem ficar disponíveis para recuperação até sete dias após a gravação. Se utilizar o ditado, o navegador pode guardar temporariamente a gravação para que possa tentar novamente."
     },
     "section4": {
       "title": "4. Porque tratamos os seus dados e bases legais",

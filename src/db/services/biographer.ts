@@ -441,6 +441,26 @@ async function clearDiscardedAudio(projectId: string, turnIds: string[]) {
   await Promise.all(turnIds.map((turnId) => clearDiscardedLiveAudio(projectId, turnId)));
 }
 
+export async function whispererSessionStatus(
+  authorId: string,
+  projectId: string,
+  sessionId: string,
+) {
+  const [session] = await db
+    .select({ consumedAt: sessions.consumedAt, endedAt: sessions.endedAt })
+    .from(sessions)
+    .innerJoin(storyWhispererInterviews, eq(storyWhispererInterviews.projectId, sessions.projectId))
+    .where(
+      and(
+        eq(sessions.id, sessionId),
+        eq(sessions.projectId, projectId),
+        eq(storyWhispererInterviews.authorId, authorId),
+      ),
+    );
+  if (!session) throw new BiographerError('Session not found', 404);
+  return { settled: !session.consumedAt || Boolean(session.endedAt) };
+}
+
 export async function cancelWhispererSession(
   authorId: string,
   projectId: string,
