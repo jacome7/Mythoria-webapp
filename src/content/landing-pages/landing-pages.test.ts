@@ -1,4 +1,4 @@
-import { resolvePublicAssetFile } from '../../../scripts/public-asset-file';
+import { resolvePublicAssetFile } from '@/lib/public-asset-file';
 import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
