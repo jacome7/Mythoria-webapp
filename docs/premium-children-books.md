@@ -30,6 +30,10 @@ Owners request printable interior and cover PDFs from the reader or My Stories a
 
 New premium narrations play and download as one MP3. The owner, public slug and signed-in share-link routes expose that file at audio index `0` with the current `runId`. `download=1` requests an attachment. Existing premium page tracks retain their printed page labels and original indexes. Every media request checks current access and edition, verifies the generation-pinned asset and returns private no-store responses. Share-link media checks the link again on each request, including range requests, so new requests honor expiry and revocation.
 
+## Physical hardcover
+
+The 2026-11-25 release opened manual fulfillment for eligible, published square editions. The owner approved the physical proof of _Bea e o Macaco no Nariz_. An author can order a published edition they own or an eligible public edition. The physical print checkout freezes the published revision, page count and shipping data. The purchaser receives the order's private proof pair. Staff review the current proof and the customer reply inbox before dispatching those files to the manual printer partner. The Lulu path requires its own supplier approval and activation. [Release and operating details](./PRINT_FULFILLMENT.md#premium-square-hardcover)
+
 ## Runtime configuration and verification
 
 - `PREMIUM_BOOK_BUCKET` must be the same private GCS bucket used by SGW, with public access prevention enabled. Grant WebApp read access to its generation-pinned objects.
