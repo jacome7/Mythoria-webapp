@@ -3,6 +3,7 @@ import { premiumInvitationPath, type PremiumBookManifest } from './contract';
 export interface PremiumBookReaderData {
   revision?: string;
   editionLayout?: PremiumBookManifest['editionLayout'];
+  audience?: PremiumBookManifest['audience'];
   specification?: PremiumBookManifest['specification'];
   title: string;
   locale: string;
@@ -15,6 +16,8 @@ export interface PremiumBookReaderData {
     number: number;
     kind: PremiumBookManifest['pages'][number]['kind'];
     text: string;
+    renderMode?: PremiumBookManifest['pages'][number]['renderMode'];
+    composition?: PremiumBookManifest['spreads'][number]['composition'];
     image?: string;
     previewImage?: string;
     imageDescription?: string;
@@ -43,6 +46,7 @@ export function toPremiumBookReaderData(
   return {
     revision: book.revision,
     editionLayout: book.editionLayout,
+    audience: book.audience,
     specification: book.specification,
     title: book.opening.title,
     locale: book.opening.locale,
@@ -55,11 +59,15 @@ export function toPremiumBookReaderData(
       number: page.number,
       kind: page.kind,
       text: page.text,
+      renderMode: page.renderMode,
+      composition: book.spreads.find((spread) => spread.id === page.spreadId)?.composition,
       image: page.reading && page.artwork ? imagePath(String(page.number)) : undefined,
       previewImage: page.reading ? imagePath(String(page.number)) : undefined,
       imageDescription:
         page.kind === 'spread' && !page.text
-          ? book.spreads.find((spread) => spread.id === page.spreadId)?.leftDescription
+          ? page.number % 2 === 0
+            ? book.spreads.find((spread) => spread.id === page.spreadId)?.leftDescription
+            : book.spreads.find((spread) => spread.id === page.spreadId)?.rightDescription
           : undefined,
       textBox: page.textBox,
       link:

@@ -1,25 +1,25 @@
 /** @jest-environment node */
 import { createHmac } from 'node:crypto';
 import {
+  LuluHttpError,
+  LuluValidationError,
+  ensureConfiguredLuluWebhook,
+  ensureLuluWebhook,
   findLuluJob,
   getLuluCoverDimensions,
   getLuluJob,
   getLuluJobCosts,
+  listLuluWebhooks,
+  luluConfigured,
   prepareLuluQuote,
   quoteLuluOrder,
+  resetLuluWebhookCacheForTests,
   submitLuluJob,
+  subscribeLuluWebhook,
   validateLuluFile,
+  validateLuluFileDetailed,
   verifyLuluWebhook,
 } from './client';
-jest.mock('google-auth-library', () => ({
-  GoogleAuth: jest.fn(() => ({
-    getClient: async () => ({
-      request: async () => ({
-        data: { payload: { data: Buffer.from('test-only').toString('base64') } },
-      }),
-    }),
-  })),
-}));
 const input = {
   externalId: 'order-fixture',
   copies: 2,
@@ -44,7 +44,7 @@ beforeAll(() => {
   Object.assign(process.env, {
     LULU_PRINT_ENVIRONMENT: 'sandbox',
     LULU_PRINT_CLIENT_KEY: 'fixture',
-    LULU_PRINT_SECRET_VERSION: 'projects/test/secrets/test/versions/1',
+    LULU_PRINT_CLIENT_SECRET: 'test-only',
     LULU_PRINT_CONTACT_EMAIL: 'test@example.org',
   });
   global.fetch = jest.fn(async (url, opts) => {
@@ -270,4 +270,191 @@ it('authenticates the raw bytes before parsing', async () => {
   const signature = createHmac('sha256', 'test-only').update(raw).digest('hex');
   expect(await verifyLuluWebhook(raw, signature)).toBe(true);
   expect(await verifyLuluWebhook(Buffer.from('{"a":1}'), signature)).toBe(false);
+});
+it('accepts Lulu odd-to-even single blank leaf normalization in validateLuluFileDetailed and preserves detail on rejection', async () => {
+  respond = (url) =>
+    url.endsWith('/validate-interior/9/')
+      ? {
+          id: 9,
+          status: 'NORMALIZED',
+          source_page_count: 33,
+          page_count: 34,
+          valid_pod_package_ids: ['0850X0850.FC.PRE.CW.080CW444.MXX'],
+          warnings: ['Added 1 blank page to match duplex binding'],
+        }
+      : { id: 9 };
+  await expect(
+    validateLuluFileDetailed('interior', {
+      sourceUrl: input.interiorUrl,
+      podPackageId: '0850X0850.FC.PRE.CW.080CW444.MXX',
+      pageCount: 33,
+      requirePackageMatch: true,
+    }),
+  ).resolves.toEqual({
+    id: '9',
+    sourcePageCount: 33,
+    normalizedPageCount: 34,
+    addedBlankPages: 1,
+    warnings: ['Added 1 blank page to match duplex binding'],
+  });
+
+  respond = (url) =>
+    url.endsWith('/validate-cover/10/')
+      ? {
+          id: 10,
+          status: 'ERROR',
+          errors: ['Fonts not embedded at https://secret.example/file.pdf'],
+        }
+      : { id: 10 };
+  await expect(
+    validateLuluFileDetailed('cover', {
+      sourceUrl: input.coverUrl,
+      podPackageId: '0850X0850.FC.PRE.CW.080CW444.MXX',
+      pageCount: 34,
+    }),
+  ).rejects.toThrow(LuluValidationError);
+});
+it('extracts optional cost breakdown fields in quoteLuluOrder without changing minimal responses', async () => {
+  respond = (url) =>
+    url.endsWith('/shipping-options/')
+      ? [{ level: 'GROUND', traceable: true }]
+      : {
+          currency: 'EUR',
+          total_cost_incl_tax: '28.50',
+          total_tax: '2.10',
+          line_item_costs: [{ total_cost_excl_tax: '18.40' }],
+          shipping_cost: { total_cost_excl_tax: '8.00' },
+        };
+  await expect(quoteLuluOrder(input)).resolves.toEqual({
+    shippingLevel: 'GROUND',
+    totalEur: 28.5,
+    printCostExclTaxEur: 18.4,
+    shippingCostExclTaxEur: 8.0,
+    totalTaxEur: 2.1,
+  });
+});
+it('sanitizes URLs and emails from LuluHttpError detail', async () => {
+  const savedFetch = global.fetch;
+  global.fetch = (async (u: RequestInfo | URL) => {
+    const url = String(u);
+    if (url.includes('/protocol/openid-connect/token'))
+      return new Response(JSON.stringify({ access_token: 'tok', expires_in: 300 }), {
+        status: 200,
+      });
+    return new Response(
+      'Bad url https://storage.googleapis.com/secret?sig=1 for user@example.com',
+      {
+        status: 400,
+      },
+    );
+  }) as typeof fetch;
+  try {
+    await quoteLuluOrder(input);
+    throw new Error('expected failure');
+  } catch (error) {
+    expect(error).toBeInstanceOf(LuluHttpError);
+    expect((error as LuluHttpError).status).toBe(400);
+    expect((error as LuluHttpError).detail).toContain('[url]');
+    expect((error as LuluHttpError).detail).toContain('[email]');
+    expect((error as LuluHttpError).detail).not.toContain('secret');
+  } finally {
+    global.fetch = savedFetch;
+  }
+});
+
+it('requires LULU_PRINT_CLIENT_SECRET directly across sandbox and production', async () => {
+  const prevEnv = process.env.LULU_PRINT_ENVIRONMENT;
+  const prevSecret = process.env.LULU_PRINT_CLIENT_SECRET;
+  const prevKey = process.env.LULU_PRINT_CLIENT_KEY;
+  try {
+    process.env.LULU_PRINT_ENVIRONMENT = 'production';
+    process.env.LULU_PRINT_CLIENT_KEY = 'prod-key';
+    process.env.LULU_PRINT_CLIENT_SECRET = 'prod-secret';
+
+    expect(luluConfigured()).toBe(true);
+    const raw = Buffer.from('{"event":"PRINT_JOB_STATUS_CHANGED"}');
+    const sig = createHmac('sha256', 'prod-secret').update(raw).digest('hex');
+    await expect(verifyLuluWebhook(raw, sig)).resolves.toBe(true);
+
+    delete process.env.LULU_PRINT_CLIENT_SECRET;
+    expect(luluConfigured()).toBe(false);
+    await expect(quoteLuluOrder(input)).rejects.toThrow('LULU_CREDENTIALS_REQUIRED');
+  } finally {
+    process.env.LULU_PRINT_ENVIRONMENT = prevEnv;
+    if (prevSecret === undefined) delete process.env.LULU_PRINT_CLIENT_SECRET;
+    else process.env.LULU_PRINT_CLIENT_SECRET = prevSecret;
+    process.env.LULU_PRINT_CLIENT_KEY = prevKey;
+  }
+});
+
+it('registers and reactivates Lulu PRINT_JOB_STATUS_CHANGED webhooks via API', async () => {
+  const prevBaseUrl = process.env.NEXT_PUBLIC_BASE_URL;
+  resetLuluWebhookCacheForTests();
+  try {
+    const callbackUrl = 'https://mythoria.pt/api/print/lulu/webhook';
+    respond = () => ({ results: [], next: null });
+    expect(await listLuluWebhooks()).toEqual([]);
+
+    respond = (url) => {
+      if (url.endsWith('/webhooks/')) {
+        return {
+          id: 'wh-1',
+          url: callbackUrl,
+          topics: ['PRINT_JOB_STATUS_CHANGED'],
+          is_active: true,
+        };
+      }
+      return {};
+    };
+    const sub = await subscribeLuluWebhook(callbackUrl);
+    expect(sub).toEqual({
+      id: 'wh-1',
+      url: callbackUrl,
+      topics: ['PRINT_JOB_STATUS_CHANGED'],
+      is_active: true,
+    });
+
+    let patchCalled = false;
+    respond = (url) => {
+      if (url.endsWith('/webhooks/')) {
+        return {
+          results: [
+            {
+              id: 'wh-1',
+              url: callbackUrl,
+              topics: ['PRINT_JOB_STATUS_CHANGED'],
+              is_active: false,
+            },
+          ],
+          next: null,
+        };
+      }
+      if (url.endsWith('/webhooks/wh-1/')) {
+        patchCalled = true;
+        return {
+          id: 'wh-1',
+          url: callbackUrl,
+          topics: ['PRINT_JOB_STATUS_CHANGED'],
+          is_active: true,
+        };
+      }
+      return {};
+    };
+    const ensured = await ensureLuluWebhook(callbackUrl);
+    expect(patchCalled).toBe(true);
+    expect(ensured).toMatchObject({ action: 'updated', webhook: { id: 'wh-1', is_active: true } });
+
+    process.env.NEXT_PUBLIC_BASE_URL = 'http://localhost:3000';
+    await expect(ensureConfiguredLuluWebhook()).resolves.toBeNull();
+
+    process.env.NEXT_PUBLIC_BASE_URL = 'https://mythoria.pt';
+    const registered = await ensureConfiguredLuluWebhook();
+    expect(registered).toMatchObject({ id: 'wh-1', is_active: true });
+    // Cached within TTL
+    await expect(ensureConfiguredLuluWebhook()).resolves.toBeNull();
+  } finally {
+    if (prevBaseUrl === undefined) delete process.env.NEXT_PUBLIC_BASE_URL;
+    else process.env.NEXT_PUBLIC_BASE_URL = prevBaseUrl;
+    resetLuluWebhookCacheForTests();
+  }
 });

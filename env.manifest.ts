@@ -41,7 +41,6 @@ export const envManifest: EnvVarDescriptor[] = [
     'PRINT_SCHEDULER_SERVICE_ACCOUNT',
     'LULU_PRINT_ENVIRONMENT',
     'LULU_PRINT_CLIENT_KEY',
-    'LULU_PRINT_SECRET_VERSION',
     'LULU_PRINT_CONTACT_EMAIL',
     'LULU_PAPERBACK_POD_PACKAGE_ID',
     'LULU_HARDCOVER_POD_PACKAGE_ID',
@@ -53,6 +52,14 @@ export const envManifest: EnvVarDescriptor[] = [
     scopes: ['dev', 'runtime', 'prod'],
     note: 'Paid print configuration. See shared docs/PRINT_FULFILLMENT.md.',
   })),
+  {
+    name: 'LULU_PRINT_CLIENT_SECRET',
+    required: false,
+    scopes: ['dev', 'runtime', 'prod'],
+    secret: true,
+    source: 'secret-manager',
+    note: 'Lulu API client secret injected via Cloud Run Secret Manager binding (:latest) in production and via .env.local in development.',
+  },
   {
     name: 'BIOGRAPHER_COLLABORATION_ENABLED',
     required: false,

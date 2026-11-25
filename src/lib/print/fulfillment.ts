@@ -17,6 +17,7 @@ import {
   getLuluJob,
   getLuluJobCosts,
   LuluHttpError,
+  luluConfigured,
   quoteLuluOrder,
   submitLuluJob,
   validateLuluFile,
@@ -47,9 +48,11 @@ import {
   signedProofLink,
   verifyProofFile,
 } from './proof';
+import * as luluClient from '@/lib/lulu/client';
 import {
-  getPublishedSquareEdition,
+  approvedSquareSupplier,
   configuredSquareSupplier,
+  getPublishedSquareEdition,
   readSquareEdition,
   requireSquareSupplier,
   type PremiumSquareEdition,
@@ -61,6 +64,13 @@ const duration = {
   supplier: 2 * 24 * 60 * 60_000,
   lease: 22 * 60_000,
 };
+const LULU_CANCELABLE_STATUSES = new Set([
+  'CREATED',
+  'UNPAID',
+  'PAYMENT_IN_PROGRESS',
+  'PRODUCTION_DELAYED',
+  'PRODUCTION_READY',
+]);
 const editable = ['pending', 'proof_ready', 'held', 'manual_review'];
 const views = () =>
   db
@@ -80,6 +90,12 @@ type Changes = Partial<typeof printFulfillments.$inferInsert>;
 function isStaffProof(order: Order) {
   const options = order.request.printingOptions;
   return Boolean(options && typeof options === 'object' && 'staffProofRevision' in options);
+}
+
+function isAdminOrder(order: Order) {
+  if (isStaffProof(order)) return true;
+  const options = order.request.printingOptions;
+  return Boolean(options && typeof options === 'object' && 'adminPrintOrder' in options);
 }
 
 function renderInput(order: Order) {
@@ -264,7 +280,7 @@ async function generateProof(order: Order, leaseId: string) {
   ) {
     throw new PrintError('print_proof_mismatch', 'The interior changed while preparing the cover.');
   }
-  return { order, proof: { ...proof, podPackageId } };
+  return { order, proof: { ...proof, podPackageId, coverDimensions: dimensions } };
 }
 
 export async function processPrintProof(id: string) {
@@ -320,7 +336,7 @@ export async function processPrintProof(id: string) {
         leaseUntil: null,
       });
     }
-    if (!order.fulfillment.proofSentAt && !isStaffProof(order)) {
+    if (!order.fulfillment.proofSentAt && !isAdminOrder(order)) {
       const variables = emailVariablesSchema.parse(order.fulfillment.emailVariables);
       if (!variables.proofEmailAttempted) {
         order = await leaseUpdate(order, leaseId, {
@@ -374,7 +390,7 @@ export async function processPrintProof(id: string) {
       leaseUntil: null,
     });
   } catch (error) {
-    const supplierIssue =
+    const rawSupplierIssue =
       error instanceof Error
         ? {
             LULU_INTERIOR_REJECTED: 'Lulu rejected the interior PDF.',
@@ -385,6 +401,12 @@ export async function processPrintProof(id: string) {
               'Lulu requires the shipping address to be reviewed.',
           }[error.message]
         : undefined;
+    const errorDetail =
+      error && typeof error === 'object' && 'detail' in error && typeof error.detail === 'string'
+        ? error.detail
+        : undefined;
+    const supplierIssue =
+      rawSupplierIssue && errorDetail ? `${rawSupplierIssue} (${errorDetail})` : rawSupplierIssue;
     if (error instanceof PrintError && error.code === 'unsupported_hardcover') {
       return leaseUpdate(order, leaseId, {
         status: 'held',
@@ -436,28 +458,66 @@ async function quoteForOrder(order: Order, leaseId: string) {
   const shippingAddress = validateLuluShipping(
     shippingSchema.parse(order.fulfillment.shippingSnapshot),
   );
-  const interiorValidationId = await validateLuluFile(
-    'interior',
-    { ...options, sourceUrl: interiorUrl },
-    proof.interiorValidationId,
-    async (id) => {
-      await leaseUpdate(order, leaseId, {
-        proof: { ...proof, podPackageId, interiorValidationId: id },
-      });
-    },
-  );
+  let workingProof = proof;
+  const interiorValidation =
+    typeof luluClient.validateLuluFileDetailed === 'function'
+      ? await luluClient.validateLuluFileDetailed(
+          'interior',
+          { ...options, sourceUrl: interiorUrl },
+          workingProof.interiorValidationId,
+          async (id) => {
+            workingProof = { ...workingProof, podPackageId, interiorValidationId: id };
+            await leaseUpdate(order, leaseId, { proof: workingProof });
+          },
+        )
+      : {
+          id: await validateLuluFile(
+            'interior',
+            { ...options, sourceUrl: interiorUrl },
+            workingProof.interiorValidationId,
+            async (id) => {
+              workingProof = { ...workingProof, podPackageId, interiorValidationId: id };
+              await leaseUpdate(order, leaseId, { proof: workingProof });
+            },
+          ),
+          sourcePageCount: workingProof.pageCount,
+          normalizedPageCount: workingProof.pageCount,
+          addedBlankPages: 0,
+          warnings: [],
+        };
+  const interiorValidationId = interiorValidation.id;
+  const effectivePageCount = interiorValidation.normalizedPageCount;
+  if (
+    interiorValidation.addedBlankPages > 0 ||
+    workingProof.normalizedPageCount !== effectivePageCount
+  ) {
+    workingProof = {
+      ...workingProof,
+      podPackageId,
+      interiorValidationId,
+      sourcePageCount: interiorValidation.sourcePageCount,
+      normalizedPageCount: effectivePageCount,
+      addedBlankPages: interiorValidation.addedBlankPages,
+    };
+    order = await leaseUpdate(order, leaseId, { proof: workingProof });
+  }
   await validateLuluFile(
     'cover',
-    { ...options, sourceUrl: coverUrl },
-    proof.coverValidationId,
+    { ...options, pageCount: effectivePageCount, sourceUrl: coverUrl },
+    workingProof.coverValidationId,
     async (id) => {
-      await leaseUpdate(order, leaseId, {
-        proof: { ...proof, podPackageId, interiorValidationId, coverValidationId: id },
-      });
+      workingProof = {
+        ...workingProof,
+        podPackageId,
+        interiorValidationId,
+        coverValidationId: id,
+      };
+      await leaseUpdate(order, leaseId, { proof: workingProof });
     },
   );
   const quote = await quoteLuluOrder({
     ...options,
+    pageCount: effectivePageCount,
     copies: order.fulfillment.copies,
     shippingAddress,
   });
@@ -466,6 +526,7 @@ async function quoteForOrder(order: Order, leaseId: string) {
     perCopyEur: quote.totalEur / order.fulfillment.copies,
     confirmationId: randomUUID(),
     podPackageId,
+    ...(effectivePageCount !== proof.pageCount ? { normalizedPageCount: effectivePageCount } : {}),
   });
 }
 
@@ -490,6 +551,7 @@ export async function hasPaidOrderForStory(storyId: string, requestedThrough?: D
       and(
         eq(printRequests.storyId, storyId),
         sql`${printRequests.printingOptions}->>'staffProofRevision' is null`,
+        sql`${printRequests.printingOptions}->>'adminPrintOrder' is null`,
         requestedThrough
           ? lt(printRequests.requestedAt, new Date(requestedThrough.getTime() + 1))
           : undefined,
@@ -510,6 +572,14 @@ export async function printOrderView(order: Order) {
   const { recipient_tax_id: taxId, ...shippingAddress } = shippingSchema.parse(
     row.shippingSnapshot,
   );
+  const parsedLuluVendor = row.provider === 'lulu' ? vendorSchema.safeParse(row.vendor) : null;
+  const vendor = parsedLuluVendor?.success
+    ? {
+        ...parsedLuluVendor.data,
+        unpaid: parsedLuluVendor.data.status.toUpperCase() === 'UNPAID',
+        cancelable: LULU_CANCELABLE_STATUSES.has(parsedLuluVendor.data.status.toUpperCase()),
+      }
+    : row.vendor;
   return {
     shippingAddress,
     taxIdPresent: Boolean(taxId),
@@ -520,6 +590,14 @@ export async function printOrderView(order: Order) {
     binding: row.binding,
     copies: row.copies,
     proofOnly: isStaffProof(order),
+    adminOrder: isAdminOrder(order),
+    orderOrigin: isStaffProof(order)
+      ? ('staff_proof' as const)
+      : isAdminOrder(order)
+        ? ('admin_order' as const)
+        : ('customer' as const),
+    luluConfigured: typeof luluConfigured === 'function' ? luluConfigured() : false,
+    squareLuluCustomerApproved: Boolean(approvedSquareSupplier()),
     proofVersion: row.proofVersion,
     ...(edition
       ? {
@@ -534,6 +612,11 @@ export async function printOrderView(order: Order) {
       : {}),
     proof: proof && {
       pageCount: proof.pageCount,
+      sourcePageCount: proof.sourcePageCount,
+      normalizedPageCount: proof.normalizedPageCount,
+      addedBlankPages: proof.addedBlankPages,
+      coverDimensions: proof.coverDimensions,
+      podPackageId: proof.podPackageId,
       qaPassed: proof.qaPassed && !proof.qaCriticalCount,
       issues: proof.issues,
       sentAt: row.proofSentAt,
@@ -545,7 +628,7 @@ export async function printOrderView(order: Order) {
     },
     holdReason: row.holdReason,
     quote: row.quote,
-    vendor: row.vendor,
+    vendor,
     lastError: row.lastError,
     maxEurPerCopy: settings.maxEurPerCopy,
   };
@@ -567,13 +650,18 @@ export async function queuePrintPreparation(order: Order) {
   return editableUpdate(order, { status: 'pending', lastError: null });
 }
 
+export async function preparePrintOrderNow(order: Order) {
+  const queued = await queuePrintPreparation(order);
+  return processPrintProof(queued.request.id);
+}
+
 export async function setPrintHold(order: Order, reason: string | null) {
   requireEditable(order);
   return editableUpdate(order, {
     holdReason: reason,
     status: reason
       ? 'held'
-      : (order.fulfillment.proofSentAt || (isStaffProof(order) && order.fulfillment.proof)) &&
+      : (order.fulfillment.proofSentAt || (isAdminOrder(order) && order.fulfillment.proof)) &&
           (order.fulfillment.provider === 'manual' || order.fulfillment.quote)
         ? 'proof_ready'
         : 'pending',
@@ -628,7 +716,7 @@ export async function revisePrintProof(order: Order, provider?: PrintProvider) {
     if (
       edition.luluEnvironment &&
       (edition.luluEnvironment !== supplier.luluEnvironment ||
-        edition.podPackageId !== supplier.podPackageId)
+        edition.podPackageId?.replaceAll('.', '') !== supplier.podPackageId.replaceAll('.', ''))
     )
       throw new PrintError(
         'square_supplier_changed',
@@ -765,11 +853,12 @@ export async function submitPrintOrder(
   const quote = quoteSchema.nullable().parse(row.quote);
   const edition = readSquareEdition(order.request.printingOptions);
   const proofOnly = isStaffProof(order);
+  const adminOrder = isAdminOrder(order);
   if (
     row.provider !== 'lulu' ||
     row.status !== 'proof_ready' ||
     row.holdReason ||
-    (!row.proofSentAt && !proofOnly) ||
+    (!row.proofSentAt && !adminOrder) ||
     (proofOnly && row.copies !== 1) ||
     !proof?.qaPassed ||
     proof.qaCriticalCount > 0 ||
@@ -787,8 +876,8 @@ export async function submitPrintOrder(
   ) {
     throw new PrintError(
       'print_not_approved',
-      proofOnly
-        ? 'Review the current staff proof and confirm the landed price first.'
+      adminOrder
+        ? 'Review the current proof and confirm the landed price first.'
         : 'Confirm the current emailed proof and landed price first.',
     );
   }
@@ -814,7 +903,7 @@ export async function submitPrintOrder(
     shippingAddress,
     copies: row.copies,
     podPackageId: quote.podPackageId,
-    pageCount: proof.pageCount,
+    pageCount: proof.normalizedPageCount ?? proof.pageCount,
   }).catch((error: unknown) => {
     if (
       error instanceof Error &&
@@ -872,6 +961,9 @@ export async function submitPrintOrder(
   });
   let receipt: PrintVendor;
   try {
+    if (typeof luluClient.ensureConfiguredLuluWebhook === 'function') {
+      await luluClient.ensureConfiguredLuluWebhook().catch(() => null);
+    }
     receipt = vendorSchema.parse(
       await submitLuluJob({
         externalId: order.request.id,
@@ -890,7 +982,9 @@ export async function submitPrintOrder(
       return editableUpdate(order, {
         status: 'manual_review',
         quote: null,
-        lastError: 'Lulu rejected the print order before creating a job.',
+        lastError: error.detail
+          ? `Lulu rejected the print order: ${error.detail}`
+          : 'Lulu rejected the print order before creating a job.',
       });
     }
     return editableUpdate(order, {
@@ -900,6 +994,45 @@ export async function submitPrintOrder(
     });
   }
   return recordVendor(order, receipt);
+}
+
+export async function cancelSubmittedLuluOrder(order: Order, reason: string, _actor: string) {
+  const row = order.fulfillment;
+  if (row.provider !== 'lulu' || row.status !== 'submitted') {
+    throw new PrintError(
+      'lulu_cancel_unavailable',
+      'Only submitted Lulu print jobs can be canceled.',
+      409,
+    );
+  }
+  const vendor = priorVendor(order);
+  if (!vendor) {
+    throw new PrintError(
+      'lulu_cancel_unavailable',
+      'No Lulu vendor job is linked to this print request yet.',
+      409,
+    );
+  }
+  if (!LULU_CANCELABLE_STATUSES.has(vendor.status.toUpperCase())) {
+    throw new PrintError(
+      'lulu_cancel_unavailable',
+      `Lulu job in status ${vendor.status} can no longer be canceled.`,
+      409,
+    );
+  }
+  if (typeof luluClient.cancelLuluJob !== 'function') {
+    throw new PrintError('lulu_not_configured', 'Lulu cancellation client is unavailable.', 503);
+  }
+  const trimmedReason = reason.trim();
+  if (!trimmedReason) {
+    throw new PrintError('lulu_cancel_reason_required', 'Provide a reason for cancellation.', 400);
+  }
+  const after = await luluClient.cancelLuluJob(vendor.id);
+  const refreshed = await getLuluJob(vendor.id).catch(() => ({
+    ...vendor,
+    status: after.name,
+  }));
+  return recordVendor(order, vendorSchema.parse(refreshed));
 }
 
 function statusForVendor(status: string) {
@@ -1159,6 +1292,7 @@ export async function reserveManualPrint(
   const edition = readSquareEdition(order.request.printingOptions);
   const row = order.fulfillment;
   const proofOnly = isStaffProof(order);
+  const adminOrder = isAdminOrder(order);
   const proof = proofSchema.nullable().parse(row.proof);
   if (
     row.provider !== 'manual' ||
@@ -1166,15 +1300,15 @@ export async function reserveManualPrint(
     row.proofVersion !== input.proofVersion ||
     row.status !== 'proof_ready' ||
     row.holdReason ||
-    (!row.proofSentAt && !proofOnly) ||
+    (!row.proofSentAt && !adminOrder) ||
     (proofOnly && row.copies !== 1) ||
     !proof?.qaPassed ||
     proof.qaCriticalCount > 0
   ) {
     throw new PrintError(
       'manual_print_not_ready',
-      proofOnly
-        ? 'The current staff proof must pass QA before dispatch.'
+      adminOrder
+        ? 'The current admin proof must pass QA before dispatch.'
         : 'The current emailed proof must pass QA before dispatch.',
     );
   }

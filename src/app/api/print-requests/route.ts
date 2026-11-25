@@ -85,6 +85,7 @@ export async function GET(request: NextRequest) {
       and(
         eq(printRequests.authorId, author.authorId),
         sql`${printRequests.printingOptions}->>'staffProofRevision' is null`,
+        sql`${printRequests.printingOptions}->>'adminPrintOrder' is null`,
         or(isNull(printFulfillments.status), ne(printFulfillments.status, 'awaiting_ticket')),
         storyId ? eq(printRequests.storyId, storyId) : undefined,
         status ? eq(printRequests.status, status) : undefined,

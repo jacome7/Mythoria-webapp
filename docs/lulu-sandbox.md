@@ -32,7 +32,7 @@ The default checks a synthetic fixture shape locally. Add `--fixture <path>` to 
 
 ## Sandbox run
 
-Set the shell's `LULU_PRINT_ENVIRONMENT` to `sandbox`. Supply the sandbox client key, Secret Manager version reference, and fulfillment contact using the same `LULU_PRINT_CLIENT_KEY`, `LULU_PRINT_SECRET_VERSION`, and `LULU_PRINT_CONTACT_EMAIL` that the WebApp client reads. Use application default credentials authorized to read the sandbox secret. The CLI does not load production environment files.
+Set the shell's `LULU_PRINT_ENVIRONMENT` to `sandbox`. Supply the sandbox client key, client secret, and fulfillment contact using the same `LULU_PRINT_CLIENT_KEY`, `LULU_PRINT_CLIENT_SECRET`, and `LULU_PRINT_CONTACT_EMAIL` that the WebApp client reads. The CLI does not load production environment files.
 
 ```powershell
 npx tsx scripts/lulu-sandbox-smoke.ts --run-sandbox --fixture "C:\Temp\lulu-synthetic-order.json"
@@ -55,3 +55,8 @@ npx tsx scripts/lulu-sandbox-smoke.ts --run-sandbox --resume "00000000-0000-4000
 ```
 
 Resume reads the existing exact match and attempts to confirm its cancellation. A new execution without `--resume` deliberately starts a separate simulation. Inspect the sandbox Developer Portal if no exact match appears or the simulated job reaches a state that requires supplier support. Physical proofing and actual production charges are outside this sandbox check.
+
+## Square Hardcover Dry-Run & Normalization Notes
+
+- `scripts/lulu-sandbox-smoke.ts` also accepts `product: 'square_hardcover'` (`binding: 'hardcover'`, `24..800` pages) resolving `LULU_SKUS.squareHardcover` (`0850X0850.FC.PRE.CW.080CW444.MXX`).
+- `validateLuluFileDetailed` accepts Lulu's single-blank-leaf odd-to-even normalization (`source_page_count === expected && expected % 2 === 1 && page_count === expected + 1`) — e.g. a 33-page interior normalized by Lulu to 34 pages — and persists `normalizedPageCount` into `print_fulfillments.proof` and `quote` for cover validation and pricing.

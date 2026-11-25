@@ -10,6 +10,7 @@ import {
 import Image from 'next/image';
 import { motion, useReducedMotion } from 'motion/react';
 import PremiumSpreadEditor from './PremiumSpreadEditor';
+import './PremiumTypeset.css';
 import Link from 'next/link';
 import { useTranslations } from 'next-intl';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
@@ -231,7 +232,8 @@ export default function PremiumBookReader({
                 : undefined;
             const box = item.textBox;
             const letteringVisible =
-              book.editionLayout === 'embedded-lettering-v2' &&
+              (item.renderMode === 'embedded_art' ||
+                (!item.renderMode && book.editionLayout === 'embedded-lettering-v2')) &&
               item.image &&
               !failedImages.includes(item.image);
             const textStyle: CSSProperties | undefined = box && {
@@ -249,8 +251,12 @@ export default function PremiumBookReader({
                 aria-label={pageLabel(number)}
                 className={`relative @container flex aspect-square w-full flex-col items-center justify-center overflow-hidden bg-[#fff] text-stone-950 shadow-md ${number % 2 ? 'md:col-start-2' : 'md:col-start-1'}`}
                 style={
-                  openingDesign
-                    ? { backgroundColor: openingDesign.background, color: openingInk }
+                  openingDesign || item.renderMode === 'typeset'
+                    ? {
+                        backgroundColor:
+                          openingDesign?.background ?? book.openingDesign?.background ?? '#fbf5e6',
+                        color: item.renderMode === 'typeset' ? '#243735' : openingInk,
+                      }
                     : undefined
                 }
               >
@@ -259,7 +265,30 @@ export default function PremiumBookReader({
                     item.image,
                     item.imageDescription ?? (item.text ? '' : pageLabel(number)),
                   )}
-                {item.text && !letteringVisible && (
+                {item.renderMode === 'typeset' && item.text && (
+                  <div
+                    className="absolute flex items-center overflow-auto"
+                    style={{
+                      left: number % 2 ? '12.745%' : '9.804%',
+                      top: '10.784%',
+                      width: '77.451%',
+                      height: '78.431%',
+                    }}
+                  >
+                    <p
+                      lang={book.locale}
+                      className="w-full whitespace-pre-wrap [overflow-wrap:anywhere]"
+                      style={{
+                        fontFamily: 'PremiumLiterata, serif',
+                        fontSize: book.audience === 'children_0-2' ? '5.229cqw' : '4.739cqw',
+                        lineHeight: 1.4,
+                      }}
+                    >
+                      {item.text}
+                    </p>
+                  </div>
+                )}
+                {item.text && item.renderMode !== 'typeset' && !letteringVisible && (
                   <p
                     lang={book.locale}
                     className={`whitespace-pre-wrap break-words font-medium leading-snug ${item.image ? 'absolute overflow-y-auto rounded bg-white/95 p-[1.7cqw] text-[clamp(0.625rem,3.2cqw,1.2rem)]' : 'max-h-[72%] w-full overflow-y-auto px-[12cqw] text-center text-[clamp(0.75rem,3.6cqw,1.25rem)]'}`}
@@ -300,15 +329,32 @@ export default function PremiumBookReader({
         )}
       </div>
 
-      {editableStoryId && book.revision && (cover || (page >= 5 && page <= 32)) && (
-        <PremiumSpreadEditor
-          key={page >= 6 && page <= 31 ? page - (page % 2) : page}
-          storyId={editableStoryId}
-          revision={book.revision}
-          page={page}
-          lastPage={lastPage}
-        />
-      )}
+      {editableStoryId &&
+        book.revision &&
+        (cover || (page >= 5 && page <= 32)) &&
+        (cover ? [page] : visible)
+          .filter((number) => book.pages[number - 1]?.renderMode !== 'typeset')
+          .map((number) => {
+            const item = book.pages[number - 1];
+            const side =
+              item?.composition && item.composition !== 'panorama'
+                ? number % 2
+                  ? 'right'
+                  : 'left'
+                : undefined;
+            if (!side && number !== firstVisible && !cover) return null;
+            return (
+              <PremiumSpreadEditor
+                key={`${number}:${side ?? 'spread'}`}
+                storyId={editableStoryId}
+                revision={book.revision!}
+                page={number}
+                lastPage={lastPage}
+                targetSide={side}
+              />
+            );
+          })}
+
       <nav
         aria-label={t('pageNavigation')}
         className="mt-5 flex flex-wrap items-center justify-center gap-3"

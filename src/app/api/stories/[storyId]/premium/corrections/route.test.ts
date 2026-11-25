@@ -15,7 +15,7 @@ jest.mock('@/db/services', () => ({
     calculateRequiredCredits: () => mockCost(),
   },
 }));
-jest.mock('@/lib/sgw-client', () => ({ sgwFetch: () => mockFetch() }));
+jest.mock('@/lib/sgw-client', () => ({ sgwFetch: (...args: unknown[]) => mockFetch(...args) }));
 const id = '32c3cb83-00c2-4933-972b-916ec8065f18';
 const edit = {
   expectedRevision: '22c3cb83-00c2-4933-972b-916ec8065f18',
@@ -86,8 +86,16 @@ it('publishes and charges a prepared edit once and replays a lost response', asy
     Response.json({ revision: edit.correctionId, manifest: ref(edit.correctionId) }),
   );
   mockCost.mockResolvedValue(1);
-  expect((await post(edit)).status).toBe(200);
-  expect((await post(edit)).status).toBe(200);
+  const sideEdit = { ...edit, targetSide: 'right' };
+  expect((await post(sideEdit)).status).toBe(200);
+  expect((await post(sideEdit)).status).toBe(200);
+  expect(mockFetch).toHaveBeenCalledWith(
+    expect.any(String),
+    expect.objectContaining({ body: expect.stringContaining('\"targetSide\":\"right\"') }),
+  );
+  expect(inserted).toHaveBeenCalledWith(
+    expect.objectContaining({ metadata: expect.objectContaining({ targetSide: 'right' }) }),
+  );
   expect(modified).toHaveBeenCalledTimes(1);
   expect(inserted).toHaveBeenCalledTimes(2);
   expect(inserted).toHaveBeenCalledWith(

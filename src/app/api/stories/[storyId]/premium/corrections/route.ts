@@ -21,6 +21,7 @@ const editSchema = z
     correctionId: z.uuid(),
     expectedRevision: z.uuid(),
     spreadId: z.string().regex(/^(?:spread-(?:[1-9]|1[0-3])|front|back|opener|ending)$/),
+    targetSide: z.enum(['left', 'right']).optional(),
     artworkInstructions: z.string().trim().min(1).max(1500),
   })
   .strict()
@@ -110,7 +111,11 @@ export async function POST(request: Request, context: { params: Promise<{ storyI
       authorId: author.authorId,
       storyId,
       action: 'imageEdit',
-      metadata: { spreadId: edit.spreadId, revision: edit.correctionId },
+      metadata: {
+        spreadId: edit.spreadId,
+        targetSide: edit.targetSide,
+        revision: edit.correctionId,
+      },
     });
     await tx
       .update(stories)

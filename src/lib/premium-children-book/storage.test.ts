@@ -87,6 +87,75 @@ describe('premium manifest storage and reader contract', () => {
     ).rejects.toThrow('Incomplete');
   });
 
+  it('accepts a typeset left page facing a silent right illustration and rejects role mismatches', async () => {
+    const mixed = {
+      ...fixture,
+      editionLayout: 'embedded-lettering-v2',
+      spreadLayoutVersion: 1,
+      audience: 'children_3-6',
+      specification: frozenPublicationDetails,
+      spreads: fixture.spreads.map((spread, index) =>
+        index === 0
+          ? {
+              ...spread,
+              composition: 'illustration_facing_text',
+              textLayout: 'left_only',
+              leftDescription: undefined,
+              rightDescription: 'Uma raposa observa as estrelas.',
+            }
+          : { ...spread, composition: 'panorama' },
+      ),
+      pages: fixture.pages.map((page) => {
+        const spread = fixture.spreads.find((item) => item.id === page.spreadId);
+        const base = { ...page, textBox: undefined };
+        if (page.number === 6)
+          return {
+            ...base,
+            renderMode: 'typeset',
+            artwork: undefined,
+            text: 'Primeiro parágrafo.\n\nSegundo parágrafo.',
+          };
+        if (page.number === 7) return { ...base, renderMode: 'illustration', text: '' };
+        if (spread)
+          return {
+            ...base,
+            renderMode:
+              page.number === spread.leftPage && spread.textLayout === 'right_only'
+                ? 'illustration'
+                : 'embedded_art',
+          };
+        return base;
+      }),
+    };
+    const load = (manifest: unknown) =>
+      loadPublishedPremiumBook(fixture.storyId, fixture.ownerId, storedFixture(manifest));
+    const book = await load(mixed);
+    if (!book) throw new Error('Fixture should load');
+    for (const token of [undefined, 'shared-token']) {
+      const view = toPremiumBookReaderData(book, token);
+      expect(view.pages[5]).toMatchObject({
+        renderMode: 'typeset',
+        image: undefined,
+        text: 'Primeiro parágrafo.\n\nSegundo parágrafo.',
+        previewImage: expect.stringContaining('/premium/6?'),
+      });
+      expect(view.pages[6]).toMatchObject({
+        renderMode: 'illustration',
+        text: '',
+        imageDescription: 'Uma raposa observa as estrelas.',
+        image: expect.stringContaining('/premium/7?'),
+      });
+    }
+    const badPages = mixed.pages.map((page) =>
+      page.number === 7 ? { ...page, renderMode: 'embedded_art' } : page,
+    );
+    await expect(load({ ...mixed, pages: badPages })).rejects.toThrow('page role');
+    const missingReading = mixed.pages.map((page) =>
+      page.number === 6 ? { ...page, reading: undefined } : page,
+    );
+    await expect(load({ ...mixed, pages: missingReading })).rejects.toThrow('Incomplete');
+  });
+
   it('preserves a lower text panel and the canonical copy in the reader view', async () => {
     const updated = structuredClone(fixture);
     const page = updated.pages[updated.spreads[0].rightPage - 1];

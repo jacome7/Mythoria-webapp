@@ -210,6 +210,11 @@ import {
       );
       expect(tickets.size).toBe(1);
       expect(checkouts.filter((entry) => !entry.duplicate)).toHaveLength(1);
+      const [authorAfterCheckout] = await mockDatabase
+        .select({ mobilePhone: authors.mobilePhone })
+        .from(authors)
+        .where(eq(authors.authorId, author.authorId));
+      expect(authorAfterCheckout?.mobilePhone).toBe('+351210000000');
       const entries = await mockDatabase
         .select()
         .from(creditLedger)
@@ -463,7 +468,7 @@ import {
         LULU_PRINT_ENVIRONMENT: 'sandbox',
         LULU_PRINT_CLIENT_KEY: 'synthetic-client',
         LULU_PRINT_CONTACT_EMAIL: 'operator@example.test',
-        LULU_PRINT_SECRET_VERSION: 'projects/fixture/secrets/fixture/versions/1',
+        LULU_PRINT_CLIENT_SECRET: 'test-only',
       });
       try {
         delete process.env.PREMIUM_SQUARE_PRINT_APPROVAL;
@@ -614,6 +619,11 @@ import {
           extraChapters: 0,
           premiumEdition: { premiumBook: originalMarker, pageCount },
         });
+        const [squareAuthorAfterFirst] = await mockDatabase
+          .select({ mobilePhone: authors.mobilePhone })
+          .from(authors)
+          .where(eq(authors.authorId, author.authorId));
+        expect(squareAuthorAfterFirst?.mobilePhone).toBe('+351210000000');
 
         await mockDatabase
           .update(stories)

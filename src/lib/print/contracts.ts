@@ -20,6 +20,15 @@ export const proofSchema = z.object({
   interior: assetSchema,
   cover: assetSchema,
   pageCount: z.number().int().positive(),
+  sourcePageCount: z.number().int().positive().optional(),
+  normalizedPageCount: z.number().int().positive().optional(),
+  addedBlankPages: z.number().int().nonnegative().optional(),
+  coverDimensions: z
+    .object({
+      width: z.number().positive(),
+      height: z.number().positive(),
+    })
+    .optional(),
   qaPassed: z.boolean(),
   qaCriticalCount: z.number().int().nonnegative(),
   issues: z.array(z.string()).default([]),
@@ -42,6 +51,10 @@ export const quoteSchema = z.object({
   perCopyEur: z.number().positive(),
   confirmationId: z.string().uuid(),
   podPackageId: z.string().min(1),
+  normalizedPageCount: z.number().int().positive().optional(),
+  printCostExclTaxEur: z.number().nonnegative().optional(),
+  shippingCostExclTaxEur: z.number().nonnegative().optional(),
+  totalTaxEur: z.number().nonnegative().optional(),
 });
 export const vendorSchema = z.object({
   id: z.string().min(1),

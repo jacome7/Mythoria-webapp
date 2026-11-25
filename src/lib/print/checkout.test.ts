@@ -1,11 +1,13 @@
 /** @jest-environment node */
-import { creditLedger, printFulfillments, printRequests } from '@/db/schema';
+import { authors, creditLedger, printFulfillments, printRequests } from '@/db/schema';
 import { LULU_SKUS } from '@/lib/lulu/products';
 import { PREMIUM_SQUARE_PACKAGE } from './premium-edition';
 
 const mockStatements: unknown[] = [];
 const mockInserts = jest.fn();
 const mockValues = jest.fn();
+const mockUpdates = jest.fn();
+const mockUpdateSet = jest.fn();
 const mockLoadManifest = jest.fn();
 const mockTransaction = jest.fn();
 const mockFetch = jest.fn();
@@ -45,7 +47,7 @@ jest.mock('@/config/environment', () => ({
 }));
 
 import { getPublicPrintOptions, startPrintCheckout } from './checkout';
-import { createStaffPrintProof } from './staff-proof';
+import { createAdminPrintOrder, createStaffPrintProof } from './staff-proof';
 
 const storyId = '32c3cb83-00c2-4933-972b-916ec8065f18';
 const shippingId = '8d9f18f9-6a1f-4acd-ac13-a4da2b998cee';
@@ -93,7 +95,15 @@ describe('paid print checkout recovery', () => {
       callback({
         execute: jest.fn().mockResolvedValue(undefined),
         select: mockBuilder,
-        update: mockBuilder,
+        update: (table: unknown) => {
+          mockUpdates(table);
+          return {
+            set: (values: unknown) => {
+              mockUpdateSet(table, values);
+              return mockBuilder();
+            },
+          };
+        },
         insert: (table: unknown) => {
           mockInserts(table);
           return {
@@ -114,7 +124,7 @@ describe('paid print checkout recovery', () => {
     process.env.LULU_PREMIUM_SQUARE_POD_PACKAGE_ID = PREMIUM_SQUARE_PACKAGE;
     process.env.LULU_PRINT_ENVIRONMENT = 'sandbox';
     process.env.LULU_PRINT_CLIENT_KEY = 'fixture';
-    process.env.LULU_PRINT_SECRET_VERSION = 'projects/test/secrets/test/versions/1';
+    process.env.LULU_PRINT_CLIENT_SECRET = 'test-only';
     process.env.LULU_PRINT_CONTACT_EMAIL = 'test@example.test';
     if (approved) process.env.PREMIUM_SQUARE_PRINT_APPROVAL = `${mode}:physical-proof-1`;
     else delete process.env.PREMIUM_SQUARE_PRINT_APPROVAL;
@@ -229,7 +239,7 @@ describe('paid print checkout recovery', () => {
         delete process.env.LULU_PRINT_ENVIRONMENT;
         delete process.env.LULU_PREMIUM_SQUARE_POD_PACKAGE_ID;
         delete process.env.LULU_PRINT_CLIENT_KEY;
-        delete process.env.LULU_PRINT_SECRET_VERSION;
+        delete process.env.LULU_PRINT_CLIENT_SECRET;
         delete process.env.LULU_PRINT_CONTACT_EMAIL;
         process.env.PREMIUM_SQUARE_PRINT_APPROVAL = 'manual:physical-proof-1';
       }
@@ -243,7 +253,15 @@ describe('paid print checkout recovery', () => {
         binding: 'hardcover',
       };
       const paid = { ...staged, ticketId, status: 'pending' };
-      mockStatements.push([request], [staged], [staged], [{ totalCredits: 6 }], undefined, [paid]);
+      mockStatements.push(
+        [request],
+        [staged],
+        undefined,
+        [staged],
+        [{ totalCredits: 6 }],
+        undefined,
+        [paid],
+      );
       mockFetch.mockResolvedValueOnce(
         Response.json({ id: ticketId, metadata: { printRequestId: orderId } }),
       );
@@ -319,7 +337,7 @@ describe('paid print checkout recovery', () => {
       process.env.LULU_PAPERBACK_POD_PACKAGE_ID = LULU_SKUS.paperback;
       process.env.LULU_PRINT_ENVIRONMENT = 'sandbox';
       process.env.LULU_PRINT_CLIENT_KEY = 'test-key';
-      process.env.LULU_PRINT_SECRET_VERSION = 'projects/test/secrets/test/versions/1';
+      process.env.LULU_PRINT_CLIENT_SECRET = 'test-only';
       process.env.LULU_PRINT_CONTACT_EMAIL = 'test@example.test';
       const country = 'country' in address ? address.country : 'PT';
       mockStatements.push(
@@ -441,6 +459,121 @@ describe('paid print checkout recovery', () => {
     await expect(startPrintCheckout(form, author)).resolves.toMatchObject({ duplicate: true });
     expect(mockFetch).toHaveBeenCalledTimes(3);
     expect(mockInserts.mock.calls.flat().filter((table) => table === creditLedger)).toHaveLength(1);
+    expect(mockUpdates.mock.calls.flat()).not.toContain(authors);
+  });
+
+  it('populates missing author mobilePhone on reservation from recipient phone even if ticket creation fails, and does not repeat on retry', async () => {
+    const request = { id: orderId, storyId, shippingId, requestedAt: new Date() };
+    const recipient = {
+      name: 'Name',
+      email: 'author@example.test',
+      phone_number: ' +351912345678 ',
+    };
+    const staged = {
+      status: 'awaiting_ticket',
+      authorId: 'author',
+      creditsSpent: 10,
+      copies: 1,
+      binding: 'paperback',
+      shippingSnapshot: {
+        addressId: shippingId,
+        buyerRecipient: { ...recipient, phone_number: '+351912345678' },
+      },
+    };
+    const paid = { ...staged, status: 'pending', ticketId };
+    const author = { authorId: 'author', displayName: 'Name', email: 'author@example.test' };
+    const form = {
+      storyId,
+      shippingId,
+      intentId,
+      totalCost: 10,
+      numberOfCopies: 1,
+      printingOption: { serviceCode: 'printedSoftCover' as const },
+      recipient: { ...recipient, phone_number: '+351912345678' },
+    };
+    mockStatements.push(
+      [],
+      [{ storyId, title: 'Story', chapterCount: 4 }],
+      [{ addressId: shippingId, country: 'PT', line1: 'Rua 1', city: 'Lisboa' }],
+      [{ id: 'provider', availableCountries: ['PT'] }],
+      [],
+      [{ serviceCode: 'printedSoftCover', credits: 10 }],
+      [{ totalCredits: 20 }],
+      [request],
+      [staged],
+      undefined,
+    );
+    mockFetch.mockRejectedValueOnce(new Error('ticket timeout'));
+    await expect(startPrintCheckout(form, author)).rejects.toMatchObject({
+      code: 'print_ticket_pending',
+    });
+    expect(mockUpdateSet).toHaveBeenCalledWith(authors, { mobilePhone: '+351912345678' });
+    expect(mockUpdates.mock.calls.flat().filter((table) => table === authors)).toHaveLength(1);
+
+    // Retry reuses the reservation and does not re-run the authors update
+    mockStatements.push(
+      [{ request, fulfillment: staged }],
+      [staged],
+      [{ totalCredits: 10 }],
+      undefined,
+      [paid],
+    );
+    mockFetch.mockResolvedValueOnce(
+      Response.json({ id: ticketId, metadata: { printRequestId: orderId } }),
+    );
+    await expect(startPrintCheckout(form, author)).resolves.toMatchObject({ fulfillment: paid });
+    expect(mockUpdates.mock.calls.flat().filter((table) => table === authors)).toHaveLength(1);
+  });
+
+  it('populates missing author mobilePhone on reservation from shipping address phone when recipient is omitted', async () => {
+    const request = { id: orderId, storyId, shippingId, requestedAt: new Date() };
+    const staged = {
+      status: 'awaiting_ticket',
+      authorId: 'author',
+      creditsSpent: 10,
+      copies: 1,
+      binding: 'paperback',
+      shippingSnapshot: { addressId: shippingId },
+    };
+    const paid = { ...staged, status: 'pending', ticketId };
+    const author = { authorId: 'author', displayName: 'Name', email: 'author@example.test' };
+    const form = {
+      storyId,
+      shippingId,
+      intentId,
+      totalCost: 10,
+      numberOfCopies: 1,
+      printingOption: { serviceCode: 'printedSoftCover' as const },
+    };
+    mockStatements.push(
+      [],
+      [{ storyId, title: 'Story', chapterCount: 4 }],
+      [
+        {
+          addressId: shippingId,
+          country: 'PT',
+          line1: 'Rua 1',
+          city: 'Lisboa',
+          phone: ' +351930000111 ',
+        },
+      ],
+      [{ id: 'provider', availableCountries: ['PT'] }],
+      [],
+      [{ serviceCode: 'printedSoftCover', credits: 10 }],
+      [{ totalCredits: 20 }],
+      [request],
+      [staged],
+      undefined,
+      [staged],
+      [{ totalCredits: 10 }],
+      undefined,
+      [paid],
+    );
+    mockFetch.mockResolvedValueOnce(
+      Response.json({ id: ticketId, metadata: { printRequestId: orderId } }),
+    );
+    await expect(startPrintCheckout(form, author)).resolves.toMatchObject({ fulfillment: paid });
+    expect(mockUpdateSet).toHaveBeenCalledWith(authors, { mobilePhone: '+351930000111' });
   });
 
   it('links exactly one staff copy while checkout is disabled and reuses the reservation after a lost ticket response', async () => {
@@ -505,5 +638,84 @@ describe('paid print checkout recovery', () => {
         orderDetails: { printRequestId: orderId, proofOnly: { revision, requestedBy: actor } },
       });
     }
+  });
+
+  it('creates an admin A5 Lulu order for multiple copies and links legacyTicketId', async () => {
+    process.env.LULU_PRINT_ENVIRONMENT = 'sandbox';
+    process.env.LULU_HARDCOVER_POD_PACKAGE_ID = LULU_SKUS.hardcover;
+    const actor = 'operator@example.test';
+    const legacyTicketId = '7c3e4567-e89b-12d3-a456-426614174099';
+    const shippingAddress = {
+      name: 'Admin',
+      street1: 'Example 1',
+      city: 'Lisbon',
+      postcode: '1000-001',
+      country_code: 'PT',
+      phone_number: '+351210000000',
+      email: actor,
+    };
+    const request = {
+      id: orderId,
+      storyId,
+      requestedAt: new Date(),
+      printingOptions: {
+        adminPrintOrder: true,
+        orderKind: 'admin_order',
+        bookFormat: 'standard_a5',
+        requestedBy: actor,
+        legacyTicketId,
+      },
+    };
+    const fulfillment = {
+      authorId: squareStory.authorId,
+      binding: 'hardcover',
+      copies: 3,
+      creditsSpent: 0,
+      provider: 'lulu',
+    };
+    mockStatements.push(
+      [],
+      [squareStory],
+      [{ id: 'provider', availableCountries: ['PT'] }],
+      [request],
+      [fulfillment],
+    );
+    mockFetch.mockResolvedValueOnce(
+      Response.json({
+        id: legacyTicketId,
+        metadata: { printRequestId: orderId },
+      }),
+    );
+
+    await expect(
+      createAdminPrintOrder(
+        {
+          storyId,
+          bookFormat: 'standard_a5',
+          binding: 'hardcover',
+          copies: 3,
+          orderKind: 'admin_order',
+          provider: 'lulu',
+          shippingAddress,
+          legacyTicketId,
+        },
+        actor,
+      ),
+    ).resolves.toEqual({ ticketId: legacyTicketId, printRequestId: orderId });
+
+    expect(mockFetch).toHaveBeenCalledTimes(1);
+    const [url, options] = mockFetch.mock.calls[0];
+    expect(String(url)).toBe('https://admin.test/api/tickets/admin-print');
+    expect(JSON.parse(options.body)).toMatchObject({
+      legacyTicketId,
+      printFormat: 'hardcover',
+      numberOfCopies: 3,
+      orderDetails: {
+        printRequestId: orderId,
+        adminPrintOrder: true,
+        orderKind: 'admin_order',
+        bookFormat: 'standard_a5',
+      },
+    });
   });
 });

@@ -8,12 +8,14 @@ import {
   loadPublishedPremiumBook,
 } from '@/lib/premium-children-book/storage';
 import { getPrintSettings, setPrintSettings } from '@/lib/print/checkout';
-import { PrintError, providerSchema, shippingSchema } from '@/lib/print/contracts';
+import { bindingSchema, PrintError, providerSchema, shippingSchema } from '@/lib/print/contracts';
 import {
+  cancelSubmittedLuluOrder,
   finalizeManualPrint,
   correctPrintShipping,
   correctSquareEdition,
   hasPaidOrderForStory,
+  preparePrintOrderNow,
   printOrderView,
   queuePrintPreparation,
   reconcilePrintOrder,
@@ -24,7 +26,7 @@ import {
   withPrintTicket,
 } from '@/lib/print/fulfillment';
 import { verifyPrintIdentity } from '@/lib/print/oidc';
-import { createStaffPrintProof } from '@/lib/print/staff-proof';
+import { createAdminPrintOrder, createStaffPrintProof } from '@/lib/print/staff-proof';
 
 export const dynamic = 'force-dynamic';
 
@@ -38,6 +40,7 @@ const commandSchema = z.object({
     'getPremiumEdition',
     'getPremiumEditionImage',
     'createStaffProof',
+    'createAdminOrder',
     'get',
     'select',
     'prepare',
@@ -46,6 +49,7 @@ const commandSchema = z.object({
     'revise',
     'submit',
     'reconcile',
+    'cancel',
     'reserveManual',
     'finalizeManual',
     'correctShipping',
@@ -111,6 +115,21 @@ async function runCommand({ actor, operation, input }: z.infer<typeof commandSch
       .parse(input);
     return createStaffPrintProof(values, actor.email);
   }
+  if (operation === 'createAdminOrder') {
+    const values = z
+      .object({
+        storyId: z.uuid().toLowerCase(),
+        bookFormat: z.enum(['premium_square', 'standard_a5']),
+        binding: bindingSchema,
+        copies: z.number().int().min(1).max(10),
+        orderKind: z.enum(['staff_proof', 'admin_order']),
+        provider: providerSchema,
+        shippingAddress: shippingSchema.extend({ phone_number: z.string().trim().min(1).max(30) }),
+        legacyTicketId: z.string().uuid().optional(),
+      })
+      .parse(input);
+    return createAdminPrintOrder(values, actor.email);
+  }
   if (operation === 'hasPaidOrderForStory') {
     const { storyId, requestedThrough } = z
       .object({
@@ -139,8 +158,12 @@ async function runCommand({ actor, operation, input }: z.infer<typeof commandSch
   switch (operation) {
     case 'get':
       return printOrderView(order);
-    case 'prepare':
-      return printOrderView(await queuePrintPreparation(order));
+    case 'prepare': {
+      const { runImmediately } = z.object({ runImmediately: z.boolean().optional() }).parse(input);
+      return printOrderView(
+        runImmediately ? await preparePrintOrderNow(order) : await queuePrintPreparation(order),
+      );
+    }
     case 'select': {
       const { provider } = z.object({ provider: providerSchema }).parse(input);
       return printOrderView(await revisePrintProof(order, provider));
@@ -176,6 +199,10 @@ async function runCommand({ actor, operation, input }: z.infer<typeof commandSch
     }
     case 'reconcile':
       return printOrderView(await reconcilePrintOrder(order));
+    case 'cancel': {
+      const { reason } = z.object({ reason: z.string().trim().min(1).max(800) }).parse(input);
+      return printOrderView(await cancelSubmittedLuluOrder(order, reason, actor.email));
+    }
     case 'correctShipping': {
       const { shippingAddress } = z
         .object({ customerConfirmed: z.literal(true), shippingAddress: shippingSchema })

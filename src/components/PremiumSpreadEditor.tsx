@@ -3,9 +3,21 @@
 import { useState, useEffect, useRef } from 'react';
 import { useTranslations } from 'next-intl';
 
-type Props = { storyId: string; revision: string; page: number; lastPage: number };
+type Props = {
+  storyId: string;
+  revision: string;
+  page: number;
+  lastPage: number;
+  targetSide?: 'left' | 'right';
+};
 
-export default function PremiumSpreadEditor({ storyId, revision, page, lastPage }: Props) {
+export default function PremiumSpreadEditor({
+  storyId,
+  revision,
+  page,
+  lastPage,
+  targetSide,
+}: Props) {
   const t = useTranslations('PremiumBook');
   const facing = page >= 6 && page <= 31;
   const firstPage = facing ? page - (page % 2) : page;
@@ -47,7 +59,7 @@ export default function PremiumSpreadEditor({ storyId, revision, page, lastPage 
     setBusy(true);
     setError(false);
     try {
-      const storageKey = `premium-edit:${storyId}:${revision}:${firstPage}`;
+      const storageKey = `premium-edit:${storyId}:${revision}:${firstPage}:${targetSide ?? 'spread'}`;
       const previous = JSON.parse(sessionStorage.getItem(storageKey) || 'null');
       const correctionId =
         previous?.instructions === instructions ? previous.id : crypto.randomUUID();
@@ -60,6 +72,7 @@ export default function PremiumSpreadEditor({ storyId, revision, page, lastPage 
           correctionId,
           maximumCredits: quote.requiredCredits,
           spreadId: target,
+          targetSide,
           artworkInstructions: instructions.trim(),
         }),
       });
@@ -75,7 +88,7 @@ export default function PremiumSpreadEditor({ storyId, revision, page, lastPage 
   }
   return (
     <details
-      id="illustration-editor"
+      id={targetSide ? `illustration-editor-${targetSide}` : 'illustration-editor'}
       ref={panel}
       className="mx-auto mt-3 max-w-lg"
       onToggle={(e) => {
@@ -83,7 +96,11 @@ export default function PremiumSpreadEditor({ storyId, revision, page, lastPage 
       }}
     >
       <summary className="cursor-pointer font-medium">
-        {facing ? t('editSpread', { first: firstPage, last: firstPage + 1 }) : t('editPrompt')}
+        {targetSide
+          ? `${t('editPrompt')} · ${t('pageNumber', { number: page })}`
+          : facing
+            ? t('editSpread', { first: firstPage, last: firstPage + 1 })
+            : t('editPrompt')}
       </summary>
       <label className="mt-3 block">
         {t('editPrompt')}
@@ -95,7 +112,7 @@ export default function PremiumSpreadEditor({ storyId, revision, page, lastPage 
           className="textarea textarea-bordered mt-1 w-full"
         />
       </label>
-      {facing && <p className="my-2 text-sm">{t('editWarning')}</p>}
+      {facing && !targetSide && <p className="my-2 text-sm">{t('editWarning')}</p>}
       {quote && <p className="text-sm">{t('editCost', { count: quote.requiredCredits })}</p>}
       {quote && !quote.canEdit && <p role="alert">{t('editBalance')}</p>}
       {error && <p role="alert">{t('editError')}</p>}

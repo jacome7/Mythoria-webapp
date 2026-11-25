@@ -51,4 +51,45 @@ describe('premium edition lettering', () => {
       within(screen.getByRole('article')).getByText(manifest.pages[4].text),
     ).toBeInTheDocument();
   });
+  it('renders selectable typeset text and keeps the silent facing illustration accessible', () => {
+    const text = 'Primeiro parágrafo.\n\nSegundo parágrafo.';
+    const pages = legacy.pages.map((page) =>
+      page.number === 6
+        ? {
+            ...page,
+            text,
+            image: undefined,
+            renderMode: 'typeset' as const,
+            composition: 'illustration_facing_text' as const,
+          }
+        : page.number === 7
+          ? {
+              ...page,
+              text: '',
+              renderMode: 'illustration' as const,
+              composition: 'illustration_facing_text' as const,
+              imageDescription: 'Uma raposa observa as estrelas.',
+            }
+          : page,
+    );
+    render(
+      <PremiumBookReader
+        book={{ ...legacy, audience: 'children_3-6', pages }}
+        editableStoryId="story"
+      />,
+    );
+    fireEvent.change(screen.getByRole('combobox'), { target: { value: '6' } });
+    const article = screen.getByRole('article');
+    expect(within(article).getByText('Primeiro parágrafo. Segundo parágrafo.').textContent).toBe(
+      text,
+    );
+    expect(screen.queryByRole('textbox')).toBeNull();
+    fireEvent.change(screen.getByRole('combobox'), { target: { value: '7' } });
+    expect(
+      within(screen.getByRole('article')).getByRole('img', {
+        name: 'Uma raposa observa as estrelas.',
+      }),
+    ).toBeInTheDocument();
+    expect(screen.getByText(/editPrompt/, { selector: 'summary' })).toBeInTheDocument();
+  });
 });

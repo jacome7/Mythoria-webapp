@@ -15,6 +15,7 @@ const httpsFixture = z.url().refine((value) => {
 const fixtureSchema = z
   .object({
     synthetic: z.literal(true),
+    product: z.enum(['paperback', 'hardcover', 'square_hardcover']).optional(),
     binding: z.enum(['paperback', 'hardcover']),
     pageCount: z.number().int().positive(),
     copies: z.number().int().min(1).max(10),
@@ -24,7 +25,12 @@ const fixtureSchema = z
     webhookId: z.string().regex(/^\d+$/).optional(),
   })
   .strict()
-  .refine((data) => luluPageCountSupported(data.binding, data.pageCount));
+  .refine((data) => {
+    if (data.product === 'square_hardcover') {
+      return data.binding === 'hardcover' && luluPageCountSupported('hardcover', data.pageCount);
+    }
+    return luluPageCountSupported(data.binding, data.pageCount);
+  });
 const example = {
   synthetic: true,
   binding: 'paperback',
@@ -107,10 +113,13 @@ async function main() {
   const fixture = fixtureSchema.parse(
     values.fixture ? JSON.parse(await readFile(values.fixture, 'utf8')) : example,
   );
-  const podPackageId = lulu.LULU_SKUS[fixture.binding];
+  const podPackageId =
+    fixture.product === 'square_hardcover'
+      ? lulu.LULU_SKUS.squareHardcover
+      : lulu.LULU_SKUS[fixture.binding];
   console.log(
     'Validated synthetic fixture for',
-    fixture.binding,
+    fixture.product ?? fixture.binding,
     fixture.pageCount,
     'pages and',
     fixture.copies,

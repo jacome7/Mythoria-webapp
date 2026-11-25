@@ -1,4 +1,4 @@
-# Setup Google Cloud Secret Manager secrets for Mythoria deployment
+﻿# Setup Google Cloud Secret Manager secrets for Mythoria deployment
 # Run this script to create the required secrets in Google Cloud Secret Manager
 
 param(
@@ -116,6 +116,7 @@ $LeadBounceApiSecret = $env:LEAD_BOUNCE_API_SECRET
 # Optional: OpenAI ChatGPT Ads Conversions API key. Stored as Secret Manager secret OPENAI_CONVERSIONS_API_KEY
 # and exposed to Cloud Run as OPENAI_ADS_CAPI_KEY (see cloudbuild.yaml --set-secrets).
 $OpenAiConversionsApiKey = if ($env:OPENAI_CONVERSIONS_API_KEY) { $env:OPENAI_CONVERSIONS_API_KEY } else { $env:OPENAI_ADS_CAPI_KEY }
+$LuluPrintClientSecret = $env:LULU_PRINT_CLIENT_SECRET
 
 Write-Host "Setting up Google Cloud Secret Manager secrets for project: $ProjectId" -ForegroundColor Green
 
@@ -300,9 +301,20 @@ if ($OpenAiConversionsApiKey) {
 }
 gcloud secrets describe OPENAI_CONVERSIONS_API_KEY *> $null
 $OpenAiConversionsSecretExists = ($LASTEXITCODE -eq 0)
-if (-not $OpenAiConversionsSecretExists) {
+if ($OpenAiConversionsSecretExists) {
+    Write-Host "OPENAI_CONVERSIONS_API_KEY check complete."
+} else {
     Write-Warn "Secret OPENAI_CONVERSIONS_API_KEY does not exist; cloudbuild.yaml maps it, so deploys will fail until it is created."
 }
+
+if ($LuluPrintClientSecret) {
+    Write-Host "Creating or updating Lulu Print client secret (LULU_PRINT_CLIENT_SECRET)..." -ForegroundColor Blue
+    Set-GcpSecretValue -Name LULU_PRINT_CLIENT_SECRET -Value $LuluPrintClientSecret
+} else {
+    Write-Host "LULU_PRINT_CLIENT_SECRET not provided; leaving the Lulu Print secret value unchanged." -ForegroundColor Yellow
+}
+gcloud secrets describe LULU_PRINT_CLIENT_SECRET *> $null
+$LuluSecretExists = ($LASTEXITCODE -eq 0)
 
 # Grant permissions to Cloud Build service account
 Write-Host "Granting permissions to Cloud Build service account..." -ForegroundColor Blue
@@ -326,6 +338,7 @@ gcloud secrets add-iam-policy-binding KEYINVOICE_API_KEY --member="serviceAccoun
 gcloud secrets add-iam-policy-binding SGW_WEBHOOK_SECRET --member="serviceAccount:$cloudBuildServiceAccount" --role="roles/secretmanager.secretAccessor"
 gcloud secrets add-iam-policy-binding LEAD_BOUNCE_API_SECRET --member="serviceAccount:$cloudBuildServiceAccount" --role="roles/secretmanager.secretAccessor"
 if ($OpenAiConversionsSecretExists) { gcloud secrets add-iam-policy-binding OPENAI_CONVERSIONS_API_KEY --member="serviceAccount:$cloudBuildServiceAccount" --role="roles/secretmanager.secretAccessor" }
+if ($LuluSecretExists) { gcloud secrets add-iam-policy-binding LULU_PRINT_CLIENT_SECRET --member="serviceAccount:$cloudBuildServiceAccount" --role="roles/secretmanager.secretAccessor" }
 
 # Grant permissions to Cloud Run service account (Compute Engine default)
 Write-Host "Granting permissions to Cloud Run service account..." -ForegroundColor Blue
@@ -348,6 +361,7 @@ gcloud secrets add-iam-policy-binding KEYINVOICE_API_KEY --member="serviceAccoun
 gcloud secrets add-iam-policy-binding SGW_WEBHOOK_SECRET --member="serviceAccount:$computeServiceAccount" --role="roles/secretmanager.secretAccessor"
 gcloud secrets add-iam-policy-binding LEAD_BOUNCE_API_SECRET --member="serviceAccount:$computeServiceAccount" --role="roles/secretmanager.secretAccessor"
 if ($OpenAiConversionsSecretExists) { gcloud secrets add-iam-policy-binding OPENAI_CONVERSIONS_API_KEY --member="serviceAccount:$computeServiceAccount" --role="roles/secretmanager.secretAccessor" }
+if ($LuluSecretExists) { gcloud secrets add-iam-policy-binding LULU_PRINT_CLIENT_SECRET --member="serviceAccount:$computeServiceAccount" --role="roles/secretmanager.secretAccessor" }
 
 
 Write-Host "✅ Secrets setup completed successfully!" -ForegroundColor Green
@@ -370,6 +384,7 @@ Write-Host "  - KEYINVOICE_API_KEY" -ForegroundColor White
 Write-Host "  - SGW_WEBHOOK_SECRET" -ForegroundColor White
 Write-Host "  - LEAD_BOUNCE_API_SECRET" -ForegroundColor White
 if ($OpenAiConversionsSecretExists) { Write-Host "  - OPENAI_CONVERSIONS_API_KEY (Cloud Run env OPENAI_ADS_CAPI_KEY)" -ForegroundColor White }
+if ($LuluSecretExists) { Write-Host "  - LULU_PRINT_CLIENT_SECRET (:latest)" -ForegroundColor White }
 
 Write-Host ""
 Write-Host "To verify secrets were created, run:" -ForegroundColor Cyan

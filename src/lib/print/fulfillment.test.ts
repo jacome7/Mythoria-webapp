@@ -4,6 +4,9 @@ const mockSubmit = jest.fn();
 const mockQuote = jest.fn();
 const mockWrite = jest.fn();
 const mockFind = jest.fn();
+const mockCancel = jest.fn();
+const mockGetJob = jest.fn();
+const mockGetJobCosts = jest.fn();
 const mockReadOrder = jest.fn();
 const mockRender = jest.fn();
 const mockDimensions = jest.fn();
@@ -77,12 +80,26 @@ jest.mock('@/lib/lulu/client', () => ({
   luluConfigured: () => true,
   submitLuluJob: (...args: unknown[]) => mockSubmit(...args),
   LuluHttpError: class extends Error {
-    constructor(public status: number) {
-      super('Supplier rejected request');
+    constructor(
+      public status: number,
+      public detail?: string,
+    ) {
+      super('LULU_HTTP_' + status);
+    }
+  },
+  LuluValidationError: class extends Error {
+    constructor(
+      public code: string,
+      public detail?: string,
+    ) {
+      super(code);
     }
   },
   quoteLuluOrder: (...args: unknown[]) => mockQuote(...args),
   findLuluJob: (...args: unknown[]) => mockFind(...args),
+  getLuluJob: (...args: unknown[]) => mockGetJob(...args),
+  getLuluJobCosts: (...args: unknown[]) => mockGetJobCosts(...args),
+  cancelLuluJob: (...args: unknown[]) => mockCancel(...args),
   getLuluCoverDimensions: (...args: unknown[]) => mockDimensions(...args),
   validateLuluFile: (...args: unknown[]) => mockValidate(...args),
 }));
@@ -107,7 +124,10 @@ import { LuluHttpError } from '@/lib/lulu/client';
 import { LULU_SKUS } from '@/lib/lulu/products';
 import { PREMIUM_SQUARE_PACKAGE } from './premium-edition';
 import {
+  cancelSubmittedLuluOrder,
   correctSquareEdition,
+  preparePrintOrderNow,
+  printOrderView,
   processPrintProof,
   reconcilePrintOrder,
   reserveManualPrint,
@@ -232,6 +252,12 @@ describe('Lulu release safety', () => {
     mockPublishedStory = undefined;
     mockDispatchOptions = undefined;
     mockQuote.mockResolvedValue({ shippingLevel: 'EXPRESS', totalEur: 30 });
+    mockGetJobCosts.mockResolvedValue({
+      currency: 'EUR',
+      total: 30,
+      amountExclTax: '25.00',
+      fees: [],
+    });
     jest.replaceProperty(process, 'env', {
       ...process.env,
       LULU_PAPERBACK_POD_PACKAGE_ID: LULU_SKUS.paperback,
@@ -636,5 +662,122 @@ describe('Lulu release safety', () => {
     expect((await reconcilePrintOrder(uncertain)).fulfillment.status).toBe('uncertain');
     expect(mockFind).toHaveBeenCalledWith(id);
     expect(mockSubmit).toHaveBeenCalledTimes(1);
+  });
+
+  it('cancels a cancelable submitted Lulu job and rejects canceling in-production jobs', async () => {
+    process.env.LULU_PRINT_ENVIRONMENT = 'sandbox';
+    const submitted = order({
+      status: 'submitted',
+      vendor: {
+        id: '77',
+        status: 'UNPAID',
+        externalId: id,
+        tracking: [],
+        lines: [{ external_id: id + '-1', tracking_urls: [] }],
+      } as never,
+    });
+    mockCurrentOrder = submitted;
+    mockCancel.mockResolvedValue({ name: 'CANCELED', line_item_statuses: [] });
+    mockGetJob.mockResolvedValue({
+      id: '77',
+      status: 'CANCELED',
+      externalId: id,
+      tracking: [],
+      lines: [{ external_id: id + '-1', tracking_urls: [] }],
+    });
+    const canceled = await cancelSubmittedLuluOrder(
+      submitted,
+      'Admin canceled due to address typo',
+      'operator@example.test',
+    );
+    expect(mockCancel).toHaveBeenCalledWith('77');
+    expect(canceled.fulfillment.vendor).toMatchObject({ id: '77', status: 'CANCELED' });
+
+    const inProduction = order({
+      status: 'submitted',
+      vendor: {
+        id: '78',
+        status: 'IN_PRODUCTION',
+        externalId: id,
+        tracking: [],
+        lines: [{ external_id: id + '-1', tracking_urls: [] }],
+      } as never,
+    });
+    await expect(
+      cancelSubmittedLuluOrder(inProduction, 'Too late', 'operator@example.test'),
+    ).rejects.toMatchObject({ code: 'lulu_cancel_unavailable' });
+  });
+
+  it('prepares and submits multi-copy adminPrintOrder orders without sending customer proof email', async () => {
+    process.env.LULU_PRINT_ENVIRONMENT = 'sandbox';
+    const adminOrder = order({
+      status: 'held',
+      ticketId: id,
+      holdReason: null as never,
+      proof: null as never,
+      quote: null as never,
+      proofSentAt: null as never,
+      copies: 2,
+    } as never);
+    adminOrder.request.printingOptions = { adminPrintOrder: true, orderKind: 'admin_order' };
+    mockCurrentOrder = adminOrder;
+    mockRender.mockResolvedValue(proof);
+    mockDimensions.mockResolvedValue({ width: 1000, height: 650 });
+    mockValidate.mockResolvedValue('val-1');
+    const fetchSpy = jest.spyOn(global, 'fetch');
+
+    const prepared = await preparePrintOrderNow(adminOrder);
+    expect(prepared.fulfillment.status).toBe('proof_ready');
+    expect(prepared.fulfillment.proofSentAt).toBeNull();
+    expect(fetchSpy).not.toHaveBeenCalled();
+
+    mockCurrentOrder = prepared;
+    const readyQuote = prepared.fulfillment.quote as { confirmationId: string; totalEur: number };
+    mockSubmit.mockResolvedValue({
+      id: '99',
+      status: 'CREATED',
+      externalId: id,
+      tracking: [],
+      lines: [{ external_id: id + '-1', tracking_urls: [] }],
+    });
+    mockGetJobCosts.mockResolvedValue({
+      currency: 'EUR',
+      total: 30,
+      amountExclTax: '25.00',
+      fees: [],
+    });
+    const dispatched = await submitPrintOrder(
+      prepared,
+      { confirmationId: readyQuote.confirmationId, confirmedTotalEur: readyQuote.totalEur },
+      'operator@example.test',
+    );
+    expect(dispatched.fulfillment.status).toBe('submitted');
+    expect(mockSubmit).toHaveBeenCalledWith(expect.objectContaining({ copies: 2 }));
+  });
+
+  it('exposes unpaid/cancelable flags on Lulu vendor views without breaking manual_dispatching vendor objects', async () => {
+    const unpaidLulu = order({
+      provider: 'lulu',
+      status: 'submitted',
+      vendor: {
+        id: '77',
+        status: 'UNPAID',
+        externalId: id,
+        tracking: [],
+        lines: [{ external_id: id + '-1', tracking_urls: [] }],
+      } as never,
+    });
+    await expect(printOrderView(unpaidLulu)).resolves.toMatchObject({
+      vendor: { id: '77', status: 'UNPAID', unpaid: true, cancelable: true },
+    });
+
+    const manualDispatching = order({
+      provider: 'manual',
+      status: 'manual_dispatching',
+      vendor: { reservationId: 'r1', partnerId: 'p1' } as never,
+    });
+    await expect(printOrderView(manualDispatching)).resolves.toMatchObject({
+      vendor: { reservationId: 'r1', partnerId: 'p1' },
+    });
   });
 });

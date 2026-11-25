@@ -2,12 +2,13 @@ import { randomUUID } from 'node:crypto';
 import { luluConfigured } from '@/lib/lulu/client';
 import { isDeepStrictEqual } from 'node:util';
 import { getEnvironmentConfig } from '@/config/environment';
-import { and, asc, eq, gte, inArray, or, sql } from 'drizzle-orm';
+import { and, asc, eq, gte, inArray, isNull, or, sql } from 'drizzle-orm';
 import { z } from 'zod';
 import { db } from '@/db';
 import {
   addresses,
   authorCreditBalances,
+  authors,
   creditLedger,
   pricing,
   printFulfillments,
@@ -436,6 +437,18 @@ async function reservePrintCheckout(
         },
       })
       .returning();
+    const candidatePhone = shipping.phone_number.trim();
+    if (candidatePhone) {
+      await tx
+        .update(authors)
+        .set({ mobilePhone: candidatePhone })
+        .where(
+          and(
+            eq(authors.authorId, author.authorId),
+            or(isNull(authors.mobilePhone), sql`btrim(${authors.mobilePhone}) = ''`),
+          ),
+        );
+    }
     return { request, fulfillment, duplicate: false };
   });
 }

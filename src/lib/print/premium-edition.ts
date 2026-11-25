@@ -10,8 +10,9 @@ import {
 import { loadPublishedPremiumBook } from '@/lib/premium-children-book/storage';
 import { PrintError } from './contracts';
 
-export const PREMIUM_SQUARE_PACKAGE = '0850X0850FCPRECW080CW444MXX';
-const squarePackageSchema = z.enum([PREMIUM_SQUARE_PACKAGE, '0850X0850.FC.PRE.CW.080CW444.MXX']);
+export const PREMIUM_SQUARE_PACKAGE = '0850X0850.FC.PRE.CW.080CW444.MXX';
+export const LEGACY_PREMIUM_SQUARE_PACKAGE = '0850X0850FCPRECW080CW444MXX';
+const squarePackageSchema = z.enum([PREMIUM_SQUARE_PACKAGE, LEGACY_PREMIUM_SQUARE_PACKAGE]);
 const profile = 'premium_square_casewrap';
 
 const editionSchema = z
@@ -43,7 +44,8 @@ export function configuredSquareSupplier(): SquareSupplier | null {
     process.env.LULU_PREMIUM_SQUARE_POD_PACKAGE_ID?.trim(),
   );
   if (!podPackageId.success || !luluConfigured()) return null;
-  return { luluEnvironment: mode, podPackageId: podPackageId.data };
+  // Normalize the legacy nodot SKU to the current dotted Lulu pod_package_id.
+  return { luluEnvironment: mode, podPackageId: PREMIUM_SQUARE_PACKAGE };
 }
 
 export function squarePrintApproved(mode: 'manual' | SquareSupplier['luluEnvironment']) {

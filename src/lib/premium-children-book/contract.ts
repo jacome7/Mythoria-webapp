@@ -91,6 +91,7 @@ const pageSchema = z.object({
   ]),
   text: z.string().max(20_000),
   spreadId: z.string().min(1).optional(),
+  renderMode: z.enum(['embedded_art', 'illustration', 'typeset']).optional(),
   artwork: premiumBookAssetSchema.optional(),
   reading: premiumBookAssetSchema.optional(),
   textBox: z.object({ x: unit, y: unit, width: unit, height: unit }).optional(),
@@ -100,6 +101,8 @@ const pageSchema = z.object({
 export const premiumBookManifestSchema = z.object({
   ...markerBase,
   editionLayout: z.literal('embedded-lettering-v2').optional(),
+  spreadLayoutVersion: z.literal(1).optional(),
+  audience: premiumAudienceSchema.optional(),
   specification: publicationDetails.optional(),
   storyId: z.string().uuid(),
   ownerId: z.string().uuid(),
@@ -116,8 +119,12 @@ export const premiumBookManifestSchema = z.object({
         master: premiumBookAssetSchema,
         nativeWidth: z.number().int().positive(),
         nativeHeight: z.number().int().positive(),
-        textLayout: z.enum(['both_pages', 'right_only']).optional(),
+        composition: z
+          .enum(['panorama', 'illustration_facing_text', 'paired_illustrations'])
+          .optional(),
+        textLayout: z.enum(['both_pages', 'right_only', 'left_only', 'wordless']).optional(),
         leftDescription: z.string().trim().min(1).max(250).optional(),
+        rightDescription: z.string().trim().min(1).max(250).optional(),
       }),
     )
     .length(13),

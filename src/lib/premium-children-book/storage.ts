@@ -88,6 +88,9 @@ export async function loadPublishedPremiumBook(
   if (book.pages.length !== book.format.pageCount || (integrated && book.pages.length !== 33)) {
     throw new PremiumBookContractError('Premium book page count mismatch');
   }
+  if (book.spreadLayoutVersion === 1 && (!integrated || !book.audience)) {
+    throw new PremiumBookContractError('Incomplete mixed spread edition metadata');
+  }
   if (integrated) {
     const spec = book.specification;
     if (
@@ -137,24 +140,34 @@ export async function loadPublishedPremiumBook(
       continue;
     }
     const box = page.textBox;
-    const isSilentLeft =
-      page.kind === 'spread' &&
-      page.number % 2 === 0 &&
-      book.spreads[(page.number - 6) / 2]?.textLayout === 'right_only';
-    const hasValidText = isSilentLeft ? page.text === '' : Boolean(page.text.trim());
+    const spread =
+      page.kind === 'spread' ? book.spreads[Math.floor((page.number - 6) / 2)] : undefined;
+    const isLeft = page.number % 2 === 0;
+    const silent =
+      spread &&
+      (spread.textLayout === 'wordless' ||
+        (isLeft && spread.textLayout === 'right_only') ||
+        (!isLeft && spread.textLayout === 'left_only'));
+    const hasValidText = silent ? page.text === '' : Boolean(page.text.trim());
+    const typeset = page.renderMode === 'typeset';
     const hasValidBox =
-      integrated || isSilentLeft
+      integrated || silent || typeset
         ? box === undefined
         : box &&
           box.width > 0 &&
           box.height > 0 &&
           box.x + box.width <= 1 &&
           box.y + box.height <= 1;
-    if (!page.reading || !page.artwork || !hasValidText || !hasValidBox) {
+    if (
+      !page.reading ||
+      (typeset ? Boolean(page.artwork) : !page.artwork) ||
+      !hasValidText ||
+      !hasValidBox
+    ) {
       throw new PremiumBookContractError('Incomplete premium book illustrated page');
     }
     assertStoryImage(storyId, page.reading, 'png');
-    assertStoryImage(storyId, page.artwork, 'jpg');
+    if (page.artwork) assertStoryImage(storyId, page.artwork, 'jpg');
   }
   const spreadIds = new Set<string>();
   for (const [index, spread] of book.spreads.entries()) {
@@ -167,6 +180,33 @@ export async function loadPublishedPremiumBook(
       book.pages[left].spreadId !== spread.id
     ) {
       throw new PremiumBookContractError('Invalid premium book spread order');
+    }
+    if (book.spreadLayoutVersion === 1) {
+      if (
+        !spread.composition ||
+        !spread.textLayout ||
+        (spread.composition === 'panorama' &&
+          !['both_pages', 'right_only'].includes(spread.textLayout)) ||
+        (spread.composition === 'illustration_facing_text' &&
+          !['left_only', 'right_only'].includes(spread.textLayout))
+      ) {
+        throw new PremiumBookContractError('Invalid premium spread composition');
+      }
+      for (const [side, page] of [
+        ['left', book.pages[left - 1]],
+        ['right', book.pages[left]],
+      ] as const) {
+        const narrated = spread.textLayout === 'both_pages' || spread.textLayout === `${side}_only`;
+        const mode = !narrated
+          ? 'illustration'
+          : spread.composition === 'illustration_facing_text'
+            ? 'typeset'
+            : 'embedded_art';
+        const description = side === 'left' ? spread.leftDescription : spread.rightDescription;
+        if (page.renderMode !== mode || Boolean(description) !== (mode === 'illustration')) {
+          throw new PremiumBookContractError('Invalid premium spread page role');
+        }
+      }
     }
     spreadIds.add(spread.id);
     assertStoryImage(storyId, spread.master, 'png');
