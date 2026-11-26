@@ -464,6 +464,44 @@ describe('paid print checkout recovery', () => {
     },
   );
 
+  it.each([
+    ['recipient', 'Inês Exemplo', 'Other Name'],
+    ['account', undefined, 'Inês Exemplo'],
+  ])(
+    'rejects the %s name in the street before creating an order',
+    async (_, recipientName, displayName) => {
+      mockStatements.push(
+        [],
+        [{ storyId, title: 'Story', chapterCount: 4 }],
+        [{ addressId: shippingId, country: 'PT', line1: ' INES   EXEMPLO ', line2: 'Rua Nova 1' }],
+      );
+
+      await expect(
+        startPrintCheckout(
+          {
+            storyId,
+            shippingId,
+            intentId,
+            totalCost: 10,
+            numberOfCopies: 1,
+            printingOption: { serviceCode: 'printedSoftCover' },
+            ...(recipientName && {
+              recipient: {
+                name: recipientName,
+                email: 'author@example.test',
+                phone_number: '+351210000000',
+              },
+            }),
+          },
+          { authorId: 'author', displayName, email: 'author@example.test' },
+        ),
+      ).rejects.toMatchObject({ code: 'shipping_address_review_required', status: 400 });
+
+      expect(mockInserts).not.toHaveBeenCalled();
+      expect(mockFetch).not.toHaveBeenCalled();
+    },
+  );
+
   it('reuses the same order ID after Admin loses a ticket response and charges once after retry', async () => {
     const request = { id: orderId, storyId, shippingId, requestedAt: new Date() };
     const staged = {
@@ -487,7 +525,15 @@ describe('paid print checkout recovery', () => {
     mockStatements.push(
       [],
       [{ storyId, title: 'Story', chapterCount: 4 }],
-      [{ addressId: shippingId, country: 'PT', line1: 'Rua 1', city: 'Lisboa' }],
+      [
+        {
+          addressId: shippingId,
+          country: 'PT',
+          line1: 'Rua Nova',
+          line2: '2.º esquerdo',
+          city: 'Lisboa',
+        },
+      ],
       [{ id: 'provider', availableCountries: ['PT'] }],
       [],
       [{ serviceCode: 'printedSoftCover', credits: 10 }],

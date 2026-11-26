@@ -215,6 +215,10 @@ export async function setPrintSettings(
   });
 }
 
+function normalizeAddressName(value: string) {
+  return value.normalize('NFD').replace(/\p{M}/gu, '').trim().replace(/\s+/g, ' ').toLowerCase();
+}
+
 async function reservePrintCheckout(
   input: z.infer<typeof checkoutSchema>,
   author: {
@@ -280,6 +284,20 @@ async function reservePrintCheckout(
       );
     if (!address)
       throw new PrintError('address_unavailable', 'The shipping address is unavailable.', 404);
+    const street = normalizeAddressName(address.line1);
+    if (
+      address.line2?.trim() &&
+      street &&
+      [input.recipient?.name, author.displayName].some(
+        (name) => name && normalizeAddressName(name) === street,
+      )
+    ) {
+      throw new PrintError(
+        'shipping_address_review_required',
+        'Enter the street and house number on the first address line.',
+        400,
+      );
+    }
     const country = address.country.toUpperCase();
     const availableProviders = await tx
       .select()

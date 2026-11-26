@@ -12,8 +12,8 @@
     },
     "fields": {
       "type": "Type d'adresse",
-      "line1": "Adresse Ligne 1",
-      "line2": "Ligne d'adresse 2",
+      "line1": "Rue et numéro",
+      "line2": "Étage, appartement ou complément (facultatif)",
       "city": "Ville",
       "stateRegion": "État / région",
       "postalCode": "Code Postal",

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useId, useState } from 'react';
 import { Check, Edit, MapPin, Trash2, X } from 'lucide-react';
 import { useLocale, useTranslations } from 'next-intl';
 import { getCountryOptions } from '@/utils/countries';
@@ -27,6 +27,7 @@ interface AddressCardProps {
   isSelected?: boolean;
   onSelect?: () => void;
   hideAddressType?: boolean;
+  shippingAutocomplete?: boolean;
   defaultAddressType?: 'billing' | 'delivery';
 }
 
@@ -40,8 +41,11 @@ export default function AddressCard({
   isSelected = false,
   onSelect,
   hideAddressType = false,
+  shippingAutocomplete = false,
   defaultAddressType = 'delivery',
 }: AddressCardProps) {
+  const fieldId = useId();
+  const addressAutocompletePrefix = shippingAutocomplete ? 'shipping ' : '';
   const tAddresses = useTranslations('Addresses');
   const locale = useLocale();
   const countries = getCountryOptions(locale);
@@ -187,12 +191,15 @@ export default function AddressCard({
 
           {/* Address Line 1 */}
           <div className="form-control">
-            <label className="label">
+            <label className="label" htmlFor={`${fieldId}-line1`}>
               <span className="label-text">{tAddresses('fields.line1')} *</span>
             </label>
             <input
               type="text"
               className="input input-bordered"
+              id={`${fieldId}-line1`}
+              name="line1"
+              autoComplete={`${addressAutocompletePrefix}address-line1`}
               value={formData.line1}
               onChange={(e) => handleInputChange('line1', e.target.value)}
               placeholder={tAddresses('placeholders.line1')}
@@ -201,12 +208,15 @@ export default function AddressCard({
 
           {/* Address Line 2 */}
           <div className="form-control">
-            <label className="label">
+            <label className="label" htmlFor={`${fieldId}-line2`}>
               <span className="label-text">{tAddresses('fields.line2')}</span>
             </label>
             <input
               type="text"
               className="input input-bordered"
+              id={`${fieldId}-line2`}
+              name="line2"
+              autoComplete={`${addressAutocompletePrefix}address-line2`}
               value={formData.line2}
               onChange={(e) => handleInputChange('line2', e.target.value)}
               placeholder={tAddresses('placeholders.line2')}

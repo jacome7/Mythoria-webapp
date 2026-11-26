@@ -301,3 +301,28 @@ it('uses the updated shipping data after editing the selected address', async ()
   fireEvent.click(screen.getByRole('button', { name: 'address-next' }));
   expect(await screen.findByText('Rua nova')).toBeInTheDocument();
 });
+
+it('opens the selected address for correction and accepts checkout after saving it', async () => {
+  const submit = jest
+    .fn()
+    .mockReturnValueOnce({
+      status: 400,
+      json: async () => ({ success: false, code: 'shipping_address_review_required' }),
+    })
+    .mockReturnValueOnce({ status: 200, json: async () => ({ success: true }) });
+  mockFetch({}, submit);
+  await submitOrder();
+
+  expect(await screen.findByRole('alert')).toHaveTextContent(
+    'errors.shippingAddressReviewRequired',
+  );
+  fireEvent.click(await screen.findByRole('button', { name: 'save-address' }));
+  await waitFor(() => expect(screen.queryByRole('alert')).not.toBeInTheDocument());
+  fireEvent.click(screen.getByRole('button', { name: 'address-next' }));
+  expect(await screen.findByText('Rua nova')).toBeInTheDocument();
+  fireEvent.click(screen.getByRole('button', { name: 'select-option' }));
+  fireEvent.click(screen.getByRole('button', { name: 'place-order' }));
+
+  await screen.findByRole('heading', { name: 'confirmation.title' });
+  expect(submit).toHaveBeenCalledTimes(2);
+});

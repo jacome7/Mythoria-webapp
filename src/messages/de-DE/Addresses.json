@@ -12,8 +12,8 @@
     },
     "fields": {
       "type": "Adresstyp",
-      "line1": "Adresszeile 1",
-      "line2": "Adresszeile 2",
+      "line1": "Straße und Hausnummer",
+      "line2": "Etage, Wohnung oder Adresszusatz (optional)",
       "city": "Stadt",
       "stateRegion": "Bundesland/Region",
       "postalCode": "Postleitzahl",

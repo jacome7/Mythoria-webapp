@@ -256,6 +256,11 @@ export default function PrintOrderContent({ storyId }: PrintOrderContentProps) {
         ) {
           setOrderError(tPrintOrder('errors.destinationUnavailable'));
           setCurrentStep('address');
+        } else if (data.code === 'shipping_address_review_required') {
+          setOrderError(tPrintOrder('errors.shippingAddressReviewRequired'));
+          setEditingAddress(selectedAddress);
+          setShowCreateAddress(false);
+          setCurrentStep('address');
         } else if (data.code === 'shipping_details_required') {
           setOrderError(tPrintOrder('errors.shippingDetailsRequired'));
           setPaymentRefreshVersion((version) => version + 1);
@@ -317,6 +322,7 @@ export default function PrintOrderContent({ storyId }: PrintOrderContentProps) {
         }
         setShowCreateAddress(false);
         setEditingAddress(null);
+        setOrderError(null);
       } else {
         throw new Error(data.error || 'Failed to save address');
       }

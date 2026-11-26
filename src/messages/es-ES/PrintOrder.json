@@ -18,6 +18,7 @@
       "pricingChanged": "El precio ha cambiado. Revisa el total actualizado antes de hacer el pedido.",
       "orderPending": "Aún no hemos podido confirmar tu pedido. Comprueba su estado antes de hacer otro.",
       "destinationUnavailable": "No podemos enviar este libro a esa dirección. Elige otra dirección.",
+      "shippingAddressReviewRequired": "Revisa la dirección de envío. Escribe la calle y el número en la primera línea.",
       "shippingDetailsRequired": "Revisa la dirección de envío y completa los datos obligatorios del destinatario.",
       "storyNotFound": "Historia no encontrada",
       "storyNotPublished": "Solo las historias publicadas se pueden imprimir",

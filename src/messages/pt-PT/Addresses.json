@@ -12,8 +12,8 @@
     },
     "fields": {
       "type": "Tipo de Morada",
-      "line1": "Linha de Morada 1",
-      "line2": "Linha de Morada 2",
+      "line1": "Rua e número",
+      "line2": "Andar, fração ou complemento (opcional)",
       "city": "Cidade",
       "stateRegion": "Estado/Região",
       "postalCode": "Código Postal",

@@ -18,6 +18,7 @@
       "pricingChanged": "The price has changed. Review the updated total before placing your order.",
       "orderPending": "We couldn’t confirm your order. Check its status before placing another one.",
       "destinationUnavailable": "This book can’t be shipped to that address. Choose another address.",
+      "shippingAddressReviewRequired": "Review the shipping address. Enter the street and house number on the first line.",
       "shippingDetailsRequired": "Review the shipping address and complete the required recipient details.",
       "storyNotFound": "Story not found",
       "storyNotPublished": "Only published stories can be printed",

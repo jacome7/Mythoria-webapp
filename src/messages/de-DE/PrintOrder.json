@@ -18,6 +18,7 @@
       "pricingChanged": "Der Preis hat sich geändert. Prüfe den aktualisierten Gesamtbetrag vor der Bestellung.",
       "orderPending": "Wir konnten deine Bestellung noch nicht bestätigen. Prüfe den Status, bevor du erneut bestellst.",
       "destinationUnavailable": "Dieses Buch kann nicht an diese Adresse geliefert werden. Wähle eine andere Adresse.",
+      "shippingAddressReviewRequired": "Prüfe die Lieferadresse. Gib Straße und Hausnummer in der ersten Zeile an.",
       "shippingDetailsRequired": "Prüfe die Lieferadresse und vervollständige die erforderlichen Empfängerdaten.",
       "storyNotFound": "Story nicht gefunden",
       "storyNotPublished": "Nur veröffentlichte Stories können gedruckt werden",

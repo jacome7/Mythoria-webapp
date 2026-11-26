@@ -50,6 +50,10 @@ Checkout freezes the current published private manifest by key, generation, SHA-
 
 Place the ticket on hold before binding a correction. Publish the corrected immutable manifest as a direct successor of the ticket’s edition with the same page count. Enter the new revision ID and reason on the ticket. The order records its previous edition, proof, quote, actor and reason, and advances the proof version. Clearing the hold queues the replacement pair and email without charging again. A shipping-only correction keeps the frozen edition and also advances the proof version. Investigate an uncertain or submitted job through reconciliation before handling a cancellation or replacement.
 
+## Shipping address review
+
+The paid checkout returns HTTP 400 with `shipping_address_review_required` before creating a new order if the street line matches the recipient or account name and the second address line is present. The checkout opens the saved address for correction. Editing that address updates the profile for future purchases. For an existing order, confirm the address with the customer and correct the order's shipping address separately in its Admin ticket.
+
 ## Rollback and existing orders
 
 Clear `LULU_PREMIUM_SQUARE_CUSTOMER_COUNTRIES` to pause new customer Lulu releases while **None** keeps manual sales open. To close new square checkout as well, remove `PREMIUM_SQUARE_PRINT_APPROVAL`. Preserve the paid-print worker, private buckets and Lulu environment required by existing tickets. A material change to the stock, binding, template geometry or renderer requires a new physical sign-off before reopening sales.

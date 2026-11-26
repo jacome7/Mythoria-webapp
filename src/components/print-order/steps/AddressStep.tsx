@@ -61,6 +61,7 @@ export default function AddressStep({
           onDelete={async () => {}}
           onCancel={onCancelAddressEdit}
           hideAddressType={true}
+          shippingAutocomplete
           defaultAddressType="delivery"
         />
       ) : (

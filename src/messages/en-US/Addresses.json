@@ -12,8 +12,8 @@
     },
     "fields": {
       "type": "Address Type",
-      "line1": "Address Line 1",
-      "line2": "Address Line 2",
+      "line1": "Street and house number",
+      "line2": "Apartment, unit, or other details (optional)",
       "city": "City",
       "stateRegion": "State/Region",
       "postalCode": "Postal Code",

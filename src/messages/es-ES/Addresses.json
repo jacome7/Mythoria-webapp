@@ -12,8 +12,8 @@
     },
     "fields": {
       "type": "Tipo de Dirección",
-      "line1": "Dirección Línea 1",
-      "line2": "Dirección Línea 2",
+      "line1": "Calle y número",
+      "line2": "Piso, puerta u otros datos (opcional)",
       "city": "Ciudad",
       "stateRegion": "Provincia/Región",
       "postalCode": "Código Postal",
