@@ -1,7 +1,11 @@
 import { NextResponse } from 'next/server';
 import { getCurrentAuthor } from '@/lib/auth';
 import { storyService } from '@/db/services';
-import { hasPremiumBookMarker, premiumBookType } from '@/lib/premium-children-book/contract';
+import {
+  hasPremiumBookMarker,
+  premiumBookType,
+  storyFeatureRecord,
+} from '@/lib/premium-children-book/contract';
 import {
   getCurrentPremiumAudiobook,
   getPublishedPremiumRevision,
@@ -41,7 +45,11 @@ export async function GET() {
           updatedAt: story.updatedAt,
           bookType: premiumBookType,
           coverUri: published ? premiumBookImagePath(story.storyId, 'front') : null,
-          premiumPrintAvailable: published && canPrintPremium,
+          premiumPrintAvailable:
+            published &&
+            canPrintPremium &&
+            storyFeatureRecord(storyFeatureRecord(story.features).premiumBook).readingProof !==
+              true,
           premiumAudiobookAvailable: canNarrate,
           hasAudio:
             canNarrate &&

@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import { SUPPORTED_LOCALES } from '@/config/locales';
 import { premiumOpeningColors, premiumOpeningMotifs } from './opening-design';
+import { premiumCoverFallbackLogo, premiumPublicationDomain } from './cover-brand';
 
 export const premiumBookType = 'premium_children' as const;
 export const bookTypeSchema = z.enum(['standard', premiumBookType]);
@@ -38,6 +39,7 @@ const bookMarkerSchema = z.discriminatedUnion('state', [
     state: z.literal('published'),
     revision: z.string().uuid(),
     manifest: premiumBookAssetSchema,
+    readingProof: z.literal(true).optional(),
     ownerId: z.string().uuid().optional(),
     audience: premiumAudienceSchema.optional(),
   }),
@@ -77,6 +79,25 @@ const publicationDetails = z.object({
   rights: z.string().min(1),
   promotion: z.string().min(1),
 });
+const premiumCoverLogo = z.enum([
+  'anime.jpg',
+  'cartoon.jpg',
+  'claymation.jpg',
+  'colored_pencil.jpg',
+  'comic_book.jpg',
+  'digital_art.jpg',
+  'disney.jpg',
+  'hand_drawn.jpg',
+  'minimalist.jpg',
+  'oil-painting.jpg',
+  'papercut.jpg',
+  'pixar.jpg',
+  'realistic.jpg',
+  'sketch.jpg',
+  'vintage.jpg',
+  'watercolor.jpg',
+  premiumCoverFallbackLogo,
+]);
 const pageSchema = z.object({
   number: z.number().int().min(1).max(33),
   kind: z.enum([
@@ -98,57 +119,79 @@ const pageSchema = z.object({
   link: z.object({ label: z.string().trim().min(1).max(160), href: z.string().url() }).optional(),
 });
 
-export const premiumBookManifestSchema = z.object({
-  ...markerBase,
-  editionLayout: z.literal('embedded-lettering-v2').optional(),
-  spreadLayoutVersion: z.literal(1).optional(),
-  audience: premiumAudienceSchema.optional(),
-  specification: publicationDetails.optional(),
-  storyId: z.string().uuid(),
-  ownerId: z.string().uuid(),
-  revision: z.string().uuid(),
-  previousRevision: z.string().uuid().optional(),
-  pages: z.array(pageSchema).min(32).max(33),
-  covers: z.object({ front: premiumBookAssetSchema, back: premiumBookAssetSchema }),
-  spreads: z
-    .array(
-      z.object({
-        id: z.string().min(1),
-        leftPage: z.number().int(),
-        rightPage: z.number().int(),
-        master: premiumBookAssetSchema,
-        nativeWidth: z.number().int().positive(),
-        nativeHeight: z.number().int().positive(),
-        composition: z
-          .enum(['panorama', 'illustration_facing_text', 'paired_illustrations'])
-          .optional(),
-        textLayout: z.enum(['both_pages', 'right_only', 'left_only', 'wordless']).optional(),
-        leftDescription: z.string().trim().min(1).max(250).optional(),
-        rightDescription: z.string().trim().min(1).max(250).optional(),
-      }),
-    )
-    .length(13),
-  opening: z.object({
-    title: z.string(),
-    author: z.string(),
-    locale: z.enum(SUPPORTED_LOCALES),
-    dedication: z.string(),
-    synopsis: z.string(),
-    createdAt: z.string(),
-  }),
-  openingDesign: z
-    .object({
-      background: z.enum(premiumOpeningColors),
-      motif: z.enum(premiumOpeningMotifs),
-    })
-    .optional(),
-  motifArtwork: premiumBookAssetSchema.optional(),
-  format: z.object({
-    trimPoints: z.literal(612),
-    bleedPoints: z.literal(9),
-    pageCount: z.union([z.literal(32), z.literal(33)]),
-  }),
-});
+export const premiumBookManifestSchema = z
+  .object({
+    ...markerBase,
+    editionLayout: z.literal('embedded-lettering-v2').optional(),
+    spreadLayoutVersion: z.literal(1).optional(),
+    generationDesignVersion: z.literal(1).optional(),
+    coverBrandLogo: premiumCoverLogo.optional(),
+    audience: premiumAudienceSchema.optional(),
+    specification: publicationDetails.optional(),
+    storyId: z.string().uuid(),
+    ownerId: z.string().uuid(),
+    revision: z.string().uuid(),
+    previousRevision: z.string().uuid().optional(),
+    readingProof: z
+      .object({
+        version: z.literal(1),
+        sourceRevision: z.uuid(),
+        evidence: premiumBookAssetSchema,
+        interior: premiumBookAssetSchema,
+        cover: premiumBookAssetSchema,
+      })
+      .optional(),
+    pages: z.array(pageSchema).min(32).max(33),
+    covers: z.object({ front: premiumBookAssetSchema, back: premiumBookAssetSchema }),
+    spreads: z
+      .array(
+        z.object({
+          id: z.string().min(1),
+          leftPage: z.number().int(),
+          rightPage: z.number().int(),
+          master: premiumBookAssetSchema,
+          nativeWidth: z.number().int().positive(),
+          nativeHeight: z.number().int().positive(),
+          composition: z
+            .enum(['panorama', 'illustration_facing_text', 'paired_illustrations'])
+            .optional(),
+          textLayout: z.enum(['both_pages', 'right_only', 'left_only', 'wordless']).optional(),
+          leftDescription: z.string().trim().min(1).max(250).optional(),
+          rightDescription: z.string().trim().min(1).max(250).optional(),
+        }),
+      )
+      .length(13),
+    opening: z.object({
+      title: z.string(),
+      author: z.string(),
+      locale: z.enum(SUPPORTED_LOCALES),
+      dedication: z.string(),
+      synopsis: z.string(),
+      createdAt: z.string(),
+    }),
+    openingDesign: z
+      .object({
+        background: z.enum(premiumOpeningColors),
+        motif: z.enum(premiumOpeningMotifs),
+      })
+      .optional(),
+    motifArtwork: premiumBookAssetSchema.optional(),
+    format: z.object({
+      trimPoints: z.literal(612),
+      bleedPoints: z.literal(9),
+      pageCount: z.union([z.literal(32), z.literal(33)]),
+    }),
+  })
+  .refine(
+    (book) =>
+      book.generationDesignVersion === 1
+        ? book.editionLayout === 'embedded-lettering-v2' &&
+          book.spreadLayoutVersion === 1 &&
+          Boolean(book.coverBrandLogo) &&
+          book.specification?.promotion === premiumPublicationDomain
+        : book.coverBrandLogo === undefined,
+    { path: ['generationDesignVersion'], message: 'Incomplete frozen premium cover design' },
+  );
 export type PremiumBookManifest = z.infer<typeof premiumBookManifestSchema>;
 
 export function premiumInvitationPath(locale: string) {

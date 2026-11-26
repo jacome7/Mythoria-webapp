@@ -19,6 +19,11 @@ import { useTranslations } from 'next-intl';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
 import type { PremiumBookReaderData } from '@/lib/premium-children-book/reader';
 import {
+  premiumOfficialLogoPath,
+  premiumPublicationDomain,
+  premiumPublicationQrPath,
+} from '@/lib/premium-children-book/cover-brand';
+import {
   motifAccent,
   motifInk,
   openingInk,
@@ -26,6 +31,7 @@ import {
 } from '@/lib/premium-children-book/opening-design';
 
 const dualPageQuery = '(min-width: 768px)';
+const publicationUrl = `https://${premiumPublicationDomain}`;
 
 function subscribeToViewport(callback: () => void) {
   const query = window.matchMedia(dualPageQuery);
@@ -67,6 +73,12 @@ export default function PremiumBookReader({
   const lastVisible = visible[visible.length - 1];
   const cover = page === 0 ? book.front : page === lastPage ? book.back : undefined;
   const coverLabel = page === 0 ? t('frontCover') : t('backCover');
+  const brandedCover = book.generationDesignVersion === 1;
+  const coverLogo =
+    book.coverBrandLogo && !failedImages.includes(book.coverBrandLogo)
+      ? book.coverBrandLogo
+      : premiumOfficialLogoPath;
+  const coverTitleVisible = brandedCover && page === 0 && !failedImages.includes(book.front);
   const pageLabel = (number: number) => t('pageNumber', { number });
   const step = (direction: PageTurnDirection) =>
     setPosition((position) => {
@@ -114,7 +126,12 @@ export default function PremiumBookReader({
 
   return (
     <section className="py-6" aria-label={t('readerLabel')} tabIndex={0} onKeyDown={handleKeyDown}>
-      <h1 className="mb-5 px-3 text-center text-2xl font-semibold sm:px-6" lang={book.locale}>
+      <h1
+        className={
+          coverTitleVisible ? 'sr-only' : 'mb-5 px-3 text-center text-2xl font-semibold sm:px-6'
+        }
+        lang={book.locale}
+      >
         {book.title}
       </h1>
       <PremiumBookPageTurn
@@ -131,13 +148,48 @@ export default function PremiumBookReader({
               role="group"
               className="relative aspect-square w-full overflow-hidden bg-base-200 shadow-md"
             >
-              {renderIllustration(cover)}
-              <p
-                lang={book.locale}
-                className={`absolute inset-x-[12%] top-[12%] max-h-[62%] overflow-y-auto whitespace-pre-wrap break-words rounded bg-white/95 p-[3%] text-stone-950 ${page === 0 ? 'text-center text-xl font-semibold sm:text-2xl' : 'text-sm sm:text-base'}`}
-              >
-                {page === 0 ? book.title : book.synopsis}
-              </p>
+              {brandedCover ? (
+                <>
+                  <div className="absolute -inset-[1.47%]">{renderIllustration(cover)}</div>
+                  {page === lastPage && (
+                    <div className="absolute bottom-[9%] left-[9%] grid h-[15%] w-[36%] grid-cols-[minmax(0,1fr)_32%] items-center gap-[6%] bg-[#f5e6d3] p-[2.3%]">
+                      <div className="relative h-full">
+                        <Image
+                          src={coverLogo}
+                          alt="Mythoria"
+                          fill
+                          sizes="(min-width: 768px) 9vw, 18vw"
+                          className="object-contain"
+                          onError={() => setFailedImages((previous) => [...previous, coverLogo])}
+                        />
+                      </div>
+                      <a
+                        href={publicationUrl}
+                        aria-label={premiumPublicationDomain}
+                        className="block"
+                      >
+                        <Image
+                          src={premiumPublicationQrPath}
+                          width={72}
+                          height={72}
+                          alt=""
+                          className="h-auto w-full"
+                        />
+                      </a>
+                    </div>
+                  )}
+                </>
+              ) : (
+                <>
+                  {renderIllustration(cover)}
+                  <p
+                    lang={book.locale}
+                    className={`absolute inset-x-[12%] top-[12%] max-h-[62%] overflow-y-auto whitespace-pre-wrap break-words rounded bg-white/95 p-[3%] text-stone-950 ${page === 0 ? 'text-center text-xl font-semibold sm:text-2xl' : 'text-sm sm:text-base'}`}
+                  >
+                    {page === 0 ? book.title : book.synopsis}
+                  </p>
+                </>
+              )}
             </div>
           </PremiumBookPageFace>
         ) : (
@@ -182,15 +234,15 @@ export default function PremiumBookReader({
                   <p className="mt-1 text-xs">{spec.rights}</p>
                   <div className="mt-[3cqw] flex items-center justify-evenly gap-4 bg-[#fefbf6] p-[2cqw] text-center text-xs">
                     <Image
-                      src="/images/logo/Logo_transparent_background_1024x683.png"
+                      src={premiumOfficialLogoPath}
                       width={168}
                       height={112}
                       alt="Mythoria"
                       className="h-auto w-1/3"
                     />
-                    <a href="https://mythoria.pt" className="max-w-1/2">
+                    <a href={publicationUrl} className="max-w-1/2">
                       <Image
-                        src="/images/logo/publication-qr.png"
+                        src={premiumPublicationQrPath}
                         width={72}
                         height={72}
                         alt=""
@@ -303,7 +355,14 @@ export default function PremiumBookReader({
                     className={`whitespace-pre-wrap break-words font-medium leading-snug ${item.image ? 'absolute overflow-y-auto rounded bg-white/95 p-[1.7cqw] text-[clamp(0.625rem,3.2cqw,1.2rem)]' : 'max-h-[72%] w-full overflow-y-auto px-[12cqw] text-center text-[clamp(0.75rem,3.6cqw,1.25rem)]'}`}
                     style={textStyle}
                   >
-                    {item.text}
+                    {item.dedicationSignature ? (
+                      <>
+                        {item.text.slice(0, -item.dedicationSignature.length)}
+                        <span className="text-[0.7em] italic">{item.dedicationSignature}</span>
+                      </>
+                    ) : (
+                      item.text
+                    )}
                   </p>
                 )}
                 {generatedMotif ? (

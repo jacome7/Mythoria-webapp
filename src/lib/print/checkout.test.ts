@@ -326,6 +326,17 @@ describe('paid print checkout recovery', () => {
     },
   );
 
+  it('refuses a reading proof before reserving a ticket or charging for an approved hardcover', async () => {
+    configureSquare();
+    stageSquareCheckout();
+    mockLoadManifest.mockResolvedValue({ format: { pageCount: 33 }, readingProof: { version: 1 } });
+    await expect(startPrintCheckout(squareForm, buyer)).rejects.toMatchObject({
+      code: 'print_edition_changed',
+    });
+    expect(mockValues).not.toHaveBeenCalled();
+    expect(mockFetch).not.toHaveBeenCalled();
+  });
+
   it('fails before ticketing or charging for unapproved sales, stale editions, or a paperback downgrade', async () => {
     configureSquare(false);
     stageSquareCheckout();

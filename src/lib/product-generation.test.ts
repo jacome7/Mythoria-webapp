@@ -94,6 +94,37 @@ describe('product generation requests', () => {
     );
   });
 
+  it('rejects self-print funding for a reading proof after resolving existing purchases', async () => {
+    const selectRows = [[], [], [{ totalCredits: 10 }]];
+    const tx = {
+      execute: jest.fn(),
+      select: () => ({ from: () => ({ where: async () => selectRows.shift() }) }),
+      insert: jest.fn(),
+      update: jest.fn(),
+    };
+    transactionMock.mockImplementation(async (callback) => callback(tx));
+    await expect(
+      startProductGeneration({
+        ...input,
+        actionType: 'self_print',
+        creditEventType: 'selfPrinting',
+        premiumSelfPrint: {
+          generateCMYK: false,
+          premiumBook: {
+            state: 'published',
+            type: 'premium_children',
+            version: 1,
+            revision: 'proof',
+            readingProof: true,
+            manifest: { key: 'unused', generation: '1', sha256: 'a'.repeat(64), bytes: 1 },
+          },
+        },
+      }),
+    ).rejects.toThrow('unavailable for paid printing');
+    expect(tx.insert).not.toHaveBeenCalled();
+    expect(tx.update).not.toHaveBeenCalled();
+  });
+
   it('returns an existing request without a second debit', async () => {
     const existing = {
       runId: 'run-existing',

@@ -1,4 +1,5 @@
 import { randomUUID } from 'crypto';
+import { PremiumBookContractError } from '@/lib/premium-children-book/contract';
 import { and, eq, inArray, sql } from 'drizzle-orm';
 import { db } from '@/db';
 import {
@@ -234,6 +235,11 @@ export async function startProductGeneration(
       .select({ totalCredits: authorCreditBalances.totalCredits })
       .from(authorCreditBalances)
       .where(eq(authorCreditBalances.authorId, input.authorId));
+    if (input.premiumSelfPrint?.premiumBook.readingProof) {
+      throw new PremiumBookContractError(
+        'Reading proof editions are unavailable for paid printing',
+      );
+    }
     const currentBalance = balance?.totalCredits ?? 0;
     if (currentBalance < input.creditsSpent) {
       throw new InsufficientProductCreditsError(currentBalance);
@@ -393,6 +399,9 @@ async function startRewardFundedGeneration(
       ),
     );
   if (activeRequest) throw new SurveyRewardFundingError('product_in_progress');
+  if (input.premiumSelfPrint?.premiumBook.readingProof) {
+    throw new PremiumBookContractError('Reading proof editions are unavailable for print rewards');
+  }
 
   const runId = randomUUID();
   const now = new Date();

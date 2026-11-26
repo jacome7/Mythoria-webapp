@@ -54,7 +54,8 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
           chapters: [],
           premiumBook: toPremiumBookReaderData(book),
           accessLevel: 'public',
-          canPrint: Boolean(await getPurchasableSquareSupplier().catch(() => null)),
+          canPrint:
+            !book.readingProof && Boolean(await getPurchasableSquareSupplier().catch(() => null)),
         },
         { headers: { 'Cache-Control': 'private, no-store' } },
       );

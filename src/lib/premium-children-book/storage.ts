@@ -84,6 +84,9 @@ export async function loadPublishedPremiumBook(
   if (book.storyId !== storyId || book.ownerId !== ownerId || book.revision !== marker.revision) {
     throw new PremiumBookContractError('Premium book manifest identity mismatch');
   }
+  if (Boolean(book.readingProof) !== Boolean(marker.readingProof)) {
+    throw new PremiumBookContractError('Reading proof marker differs from the pinned edition');
+  }
   const integrated = book.editionLayout === 'embedded-lettering-v2';
   if (book.pages.length !== book.format.pageCount || (integrated && book.pages.length !== 33)) {
     throw new PremiumBookContractError('Premium book page count mismatch');

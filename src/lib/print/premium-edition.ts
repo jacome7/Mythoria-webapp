@@ -135,7 +135,7 @@ export async function getPublishedSquareEdition(
     const premiumBook = readPremiumBookMarker(story.features);
     if (!premiumBook || premiumBook.state !== 'published') return null;
     const manifest = await loadPublishedPremiumBook(story.storyId, story.authorId, story.features);
-    if (!manifest) return null;
+    if (!manifest || manifest.readingProof) return null;
     const edition = editionSchema.parse({
       profile,
       ...supplier,

@@ -45,6 +45,7 @@ export async function GET(
       }
       const owned = story.authorId === currentAuthor.authorId;
       const canPrint =
+        !premium.readingProof &&
         (owned || story.isPublic === true) &&
         Boolean(await getPurchasableSquareSupplier().catch(() => null));
       return NextResponse.json(
@@ -59,7 +60,7 @@ export async function GET(
           premiumBook: toPremiumBookReaderData(premium, { owned }),
           canShare: owned,
           canPrint,
-          canSelfPrint: owned,
+          canSelfPrint: owned && !premium.readingProof,
         },
         { headers: { 'Cache-Control': 'private, no-store' } },
       );

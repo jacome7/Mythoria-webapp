@@ -32,11 +32,15 @@ The worker marks editions with lettering painted into the narrative artwork as
 fails to load, its words appear on the page. Page 2 displays the frozen publication details as selectable text, alongside the publisher logo and QR. The loader checks these fields against the page transcript before displaying them.
 Editions without the layout marker retain their original text placement.
 
+Editions with `generationDesignVersion: 1` show the front title from the approved illustration and keep the exact title in the accessible heading. The back cover displays the frozen style logo and links its QR to `mythoria.pt`. Page 2 uses that same domain as its QR caption. The reader and the print proof use the same cover treatment and retain the publication's localized details and closing invitation.
+
 New publications expose a revision-pinned `previewImage` through the private image endpoint for every interior page. Opening pages and the final invitation retain their selectable HTML and links. Existing editions can omit previews for pages that use HTML.
 
 Owners request printable interior and cover PDFs from the reader or My Stories at the existing self-print rate. The request verifies the currently published edition before taking credits, then follows the existing product request and email lifecycle with private download links.
 
 New premium narrations play and download as one MP3. The owner, public slug and signed-in share-link routes expose that file at audio index `0` with the current `runId`. `download=1` requests an attachment. Existing premium page tracks retain their printed page labels and original indexes. Every media request checks current access and edition, verifies the generation-pinned asset and returns private no-store responses. Share-link media checks the link again on each request, including range requests, so new requests honor expiry and revocation.
+
+The owner, public and shared readers display the version 1 dedication signature in italics at 70% of the dedication copy size. The verified edition's final author line and complete selectable text are preserved.
 
 ## Physical hardcover
 
@@ -48,3 +52,7 @@ The 2026-11-25 release opened manual fulfillment for eligible, published square 
 - `PREMIUM_BOOK_GENERATION_ENABLED=true` is the operator’s admission switch for new starts. Leave it unset until the compatible worker and reader are ready. Disable it to stop new starts while keeping the bucket configured to serve existing books and pinned orders.
 - Customer eligibility continues to use the existing Experimental Features preference. Disabling that preference prevents new premium starts while preserving existing books.
 - The isolated Playwright fixture enables premium admission and uses a synthetic eligible author. It checks format selection, refresh, Step 5 review and switching back in all five locales without contacting SGW or Cloud Storage. The Jest storage fixture comes from SGW’s deterministic premium book manifest generator and exercises mixed and legacy spread layout.
+
+## Imported reading proofs
+
+The version 1 imported reading proof records a private source-resolution report and the two reviewed PDFs on the manifest. Its published marker carries `readingProof: true`. Owners can read and edit these editions. New self-print charges, PDF reward redemptions and physical order reservations require a print-eligible edition. Existing paid requests continue using their original revision pins.

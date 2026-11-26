@@ -1,4 +1,5 @@
 import { premiumInvitationPath, type PremiumBookManifest } from './contract';
+import { premiumCoverFallbackLogo, premiumOfficialLogoPath } from './cover-brand';
 
 interface PremiumPageTextEdit {
   value: string;
@@ -9,6 +10,8 @@ interface PremiumPageTextEdit {
 export interface PremiumBookReaderData {
   revision?: string;
   editionLayout?: PremiumBookManifest['editionLayout'];
+  generationDesignVersion?: PremiumBookManifest['generationDesignVersion'];
+  coverBrandLogo?: string;
   audience?: PremiumBookManifest['audience'];
   specification?: PremiumBookManifest['specification'];
   title: string;
@@ -22,6 +25,7 @@ export interface PremiumBookReaderData {
     number: number;
     kind: PremiumBookManifest['pages'][number]['kind'];
     text: string;
+    dedicationSignature?: string;
     textEdit?: PremiumPageTextEdit;
     renderMode?: PremiumBookManifest['pages'][number]['renderMode'];
     composition?: PremiumBookManifest['spreads'][number]['composition'];
@@ -65,9 +69,17 @@ export function toPremiumBookReaderData(
 ): PremiumBookReaderData {
   const options = { revision: book.revision, shareToken };
   const imagePath = (image: string) => premiumBookImagePath(book.storyId, image, options);
+  const coverBrandLogo = book.coverBrandLogo;
+  const dedicationSignature =
+    book.generationDesignVersion === 1 ? `– ${book.opening.author}` : undefined;
   return {
     revision: book.revision,
     editionLayout: book.editionLayout,
+    generationDesignVersion: book.generationDesignVersion,
+    coverBrandLogo:
+      coverBrandLogo === premiumCoverFallbackLogo
+        ? premiumOfficialLogoPath
+        : coverBrandLogo && `/images/logo/${coverBrandLogo}`,
     audience: book.audience,
     specification: book.specification,
     title: book.opening.title,
@@ -81,6 +93,9 @@ export function toPremiumBookReaderData(
       number: page.number,
       kind: page.kind,
       text: page.text,
+      ...(page.kind === 'dedication' &&
+        dedicationSignature &&
+        page.text.endsWith(`\n\n${dedicationSignature}`) && { dedicationSignature }),
       textEdit: owned ? getTextEdit(book, page) : undefined,
       renderMode: page.renderMode,
       composition: book.spreads.find((spread) => spread.id === page.spreadId)?.composition,

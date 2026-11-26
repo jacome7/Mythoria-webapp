@@ -35,6 +35,48 @@ describe('premium edition lettering', () => {
     });
   });
 
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
+  it('presents the title once and renders the pinned cover badge and domain caption', () => {
+    const newManifest = premiumBookManifestSchema.parse({
+      ...manifest,
+      editionLayout: 'embedded-lettering-v2',
+      spreadLayoutVersion: 1,
+      generationDesignVersion: 1,
+      coverBrandLogo: 'watercolor.jpg',
+      specification: { ...frozenPublicationDetails, promotion: 'mythoria.pt' },
+    });
+    const book = toPremiumBookReaderData(newManifest, { shareToken: 'token' });
+    render(<PremiumBookReader book={book} />);
+    const front = within(screen.getByRole('group', { name: 'frontCover' }));
+    expect(front.queryByText(book.title)).toBeNull();
+    const heading = screen.getByRole('heading', { level: 1 });
+    expect(heading).toHaveClass('sr-only');
+    fireEvent.error(front.getByRole('presentation'));
+    expect(heading).not.toHaveClass('sr-only');
+
+    const navigation = screen.getByRole('combobox');
+    fireEvent.change(navigation, { target: { value: '2' } });
+    const page = within(screen.getByRole('article'));
+    expect(page.getByRole('link')).toHaveTextContent(/^mythoria\.pt$/);
+
+    fireEvent.change(navigation, { target: { value: String(book.pages.length + 1) } });
+    const back = within(screen.getByRole('group', { name: 'backCover' }));
+    expect(back.queryByText(book.synopsis)).toBeNull();
+    const logo = back.getByRole('img', { name: 'Mythoria' });
+    expect(logo.getAttribute('src')).toContain('watercolor.jpg');
+    expect(back.getByRole('link', { name: 'mythoria.pt' })).toHaveAttribute(
+      'href',
+      'https://mythoria.pt',
+    );
+    fireEvent.error(logo);
+    expect(back.getByRole('img', { name: 'Mythoria' }).getAttribute('src')).toContain(
+      'Logo_transparent_background_1024x683.png',
+    );
+  });
+
   it('shows integrated art with an accessible transcript and displays the words if the image fails', () => {
     render(
       <PremiumBookReader
@@ -68,6 +110,46 @@ describe('premium edition lettering', () => {
       within(screen.getByRole('article')).getByText(manifest.pages[4].text),
     ).toBeInTheDocument();
   });
+  it.each([
+    ['owner', { owned: true }],
+    ['public', {}],
+    ['shared', { shareToken: 'token' }],
+  ] as const)(
+    'uses the same smaller italic dedication signature in the %s reader',
+    (_, options) => {
+      const author = 'Fátima & Afonso';
+      const signature = `– ${author}`;
+      const text = `${manifest.opening.title}\n\nPara ti.\n\nO nosso abraço.\n\n${signature}`;
+      const legacyManifest = {
+        ...manifest,
+        opening: { ...manifest.opening, author, dedication: 'Para ti.\n\nO nosso abraço.' },
+        pages: manifest.pages.map((page) => (page.number === 3 ? { ...page, text } : page)),
+      };
+      const versionedManifest = premiumBookManifestSchema.parse({
+        ...legacyManifest,
+        editionLayout: 'embedded-lettering-v2',
+        spreadLayoutVersion: 1,
+        generationDesignVersion: 1,
+        coverBrandLogo: 'watercolor.jpg',
+        specification: { ...frozenPublicationDetails, promotion: 'mythoria.pt' },
+      });
+      const { rerender } = render(
+        <PremiumBookReader book={toPremiumBookReaderData(versionedManifest, options)} />,
+      );
+      fireEvent.change(screen.getByRole('combobox'), { target: { value: '3' } });
+      const page = within(screen.getByRole('article'));
+      const styled = page.getByText(signature);
+      expect(styled).toHaveClass('italic', 'text-[0.7em]');
+      expect(styled.parentElement?.textContent).toBe(text);
+      rerender(
+        <PremiumBookReader
+          book={toPremiumBookReaderData(premiumBookManifestSchema.parse(legacyManifest), options)}
+        />,
+      );
+      expect(page.queryByText(signature)).toBeNull();
+      expect(screen.getByRole('article').textContent).toBe(text);
+    },
+  );
   it('renders selectable typeset text and keeps the silent facing illustration accessible', () => {
     const text = 'Primeiro parágrafo.\n\nSegundo parágrafo.';
     const pages = legacy.pages.map((page) =>
