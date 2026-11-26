@@ -1,5 +1,5 @@
 // AUTO-GENERATED FILE. Run: npm run i18n:keys
-// Total keys: 3411
+// Total keys: 3412
 export type TranslationKey =
   | 'AIImageEditor.buttons.applyPhoto'
   | 'AIImageEditor.cancelButton'
@@ -2120,6 +2120,7 @@ export type TranslationKey =
   | 'StorySteps.step2.alerts.cameraIssue'
   | 'StorySteps.step2.alerts.cameraPermissionError'
   | 'StorySteps.step2.alerts.failedToCreateStory'
+  | 'StorySteps.step2.alerts.fileTooLarge'
   | 'StorySteps.step2.alerts.genAIError'
   | 'StorySteps.step2.alerts.microphoneIssue'
   | 'StorySteps.step2.alerts.microphonePermissionError'

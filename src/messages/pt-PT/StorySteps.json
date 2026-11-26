@@ -173,6 +173,7 @@
         "notSupported": "O seu navegador não suporta o elemento de áudio."
       },
       "alerts": {
+        "fileTooLarge": "Este ficheiro é demasiado grande. Escolha um ficheiro com até {max} MB.",
         "uploadError": "Falha ao carregar ficheiro. Por favor, tente novamente.",
         "recordingError": "Falha ao iniciar gravação. Por favor, verifique as permissões do microfone.",
         "processingError": "Falha ao processar a sua história. Por favor, tente novamente.",

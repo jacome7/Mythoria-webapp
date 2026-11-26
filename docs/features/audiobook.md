@@ -7,7 +7,7 @@
 1. **Open the Listen view** from your story actions. The Listen page is available only to signed-in users and requires the story to be published. If the story is still a draft, the page explains that the story is not available yet. 【F:src/app/[locale]/stories/listen/[storyId]/page.tsx†L128-L262】
 2. **If audio already exists**, the page shows a chapter list with artwork, duration, and playback controls (play/pause, timeline scrubbing, and playback speed). The player supports chapter-by-chapter listening and automatically advances to the next chapter after one finishes. 【F:src/app/[locale]/stories/listen/[storyId]/page.tsx†L526-L571】【F:src/components/AudioPlayer/AudioChapterList.tsx†L41-L206】【F:src/components/AudioPlayer/useAudioPlayer.ts†L21-L182】
 3. **If audio does not exist**, the page prompts you to generate an audiobook. You select a narrator voice, toggle background music, review credit cost vs. balance, and start generation. If credits are insufficient, the UI shows the shortfall and links to pricing. 【F:src/app/[locale]/stories/listen/[storyId]/page.tsx†L662-L793】
-4. **During generation**, the page displays a progress state and polls every 15 seconds until audio becomes available. 【F:src/app/[locale]/stories/listen/[storyId]/page.tsx†L269-L318】【F:src/app/[locale]/stories/listen/[storyId]/page.tsx†L606-L734】
+4. **During generation**, the Listen page checks progress every 10 seconds while visible. If the story is unavailable, it shows a message and a **Check again** button.
 5. **Re-narration** is available even when audio exists. Users can pick a new voice, re-toggle background music, see updated cost, and regenerate the audiobook. The new narration replaces the existing one. 【F:src/app/[locale]/stories/listen/[storyId]/page.tsx†L526-L661】
 
 ### Listen to Public Stories (Anonymous)
@@ -52,9 +52,7 @@ Conventional story Listen pages show a Cast bar when the Cast SDK is available. 
 1. The Listen page calls **`POST /api/stories/{storyId}/generate-audiobook`** with `voice` and `includeBackgroundMusic`. 【F:src/app/[locale]/stories/listen/[storyId]/page.tsx†L320-L378】
 2. The API validates ownership + published status, checks the credit balance, deducts credits, and sets `audiobookStatus = generating`. 【F:src/app/api/stories/[storyId]/generate-audiobook/route.ts†L15-L86】
 3. A Pub/Sub message is published to trigger the async narration workflow. If publishing fails, the API rolls back the story status and refunds credits. 【F:src/app/api/stories/[storyId]/generate-audiobook/route.ts†L73-L108】【F:src/lib/pubsub.ts†L3-L32】
-4. The Listen page polls `/api/stories/{storyId}` every 15 seconds until the `audiobookUri` is populated. 【F:src/app/[locale]/stories/listen/[storyId]/page.tsx†L269-L318】
-
-> Note: There is also a standalone progress UI (`AudiobookGenerationTrigger` + `AudiobookGenerationProgress`) that polls `/api/stories/{storyId}/audiobook-progress` every 3 seconds to show narration steps and simulated progress. It is currently not wired into the Listen page but is ready for reuse elsewhere. 【F:src/components/AudiobookGenerationTrigger.tsx†L1-L189】【F:src/components/AudiobookGenerationProgress.tsx†L1-L231】【F:src/app/api/stories/[storyId]/audiobook-progress/route.ts†L1-L71】
+4. The Listen page and standalone progress panel share `useAudiobookProgress`. They poll `/api/stories/{storyId}/audiobook-progress` during generation and after transient errors. HTTP 404 stops automatic checks for that story, including when the tab becomes visible again. The user can retry manually.
 
 ### Credit & Pricing Data
 

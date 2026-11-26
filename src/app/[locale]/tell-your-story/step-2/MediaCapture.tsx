@@ -6,6 +6,7 @@ import { useTranslations, useLocale } from 'next-intl';
 import { createPortal } from 'react-dom';
 import { UploadedImage, UploadedAudio } from '@/hooks/useStep2Session';
 import { MediaAnalysisError } from '@/lib/media-analysis-errors';
+import { storyInputMaxBytes, storyInputLimitMiB, StoryInputTooLarge } from '@/lib/story-input-size';
 import { useMediaUpload } from '@/hooks/useMediaUpload';
 import styles from './Step2Page.module.css';
 
@@ -63,6 +64,8 @@ export default function MediaCapture({
   const locale = useLocale();
   const { uploadInput, analyzeImage } = useMediaUpload();
 
+  const [oversizedKind, setOversizedKind] = useState<'images' | 'audio' | null>(null);
+  const sizeMessage = t('alerts.fileTooLarge', { max: storyInputLimitMiB });
   const [isCapturing, setIsCapturing] = useState(false);
   const [isRecording, setIsRecording] = useState(false);
   const [detailsId, setDetailsId] = useState<string | null>(null);
@@ -121,6 +124,7 @@ export default function MediaCapture({
       await runAnalysis(id, objectPath, token);
     } catch (e) {
       if (!isCurrentImage(id, token)) return;
+      if (e instanceof StoryInputTooLarge) setOversizedKind('images');
       updateImage(id, {
         status: 'error',
         error: e instanceof Error ? e.message : 'Upload failed',
@@ -131,22 +135,26 @@ export default function MediaCapture({
 
   const addImageFiles = (files: File[]) => {
     const slots = Math.max(0, MAX_IMAGES - uploadedImages.length);
-    files.slice(0, slots).forEach((file) => {
-      const id = crypto.randomUUID();
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        if (!alive.current) return;
-        const preview = (e.target?.result as string) || '';
-        setUploadedImages((prev) =>
-          [...prev, { id, file, preview, status: 'uploading' as const, attempts: 0 }].slice(
-            0,
-            MAX_IMAGES,
-          ),
-        );
-        void processImage(id, file, nextImageOperation(id));
-      };
-      reader.readAsDataURL(file);
-    });
+    setOversizedKind(files.some((file) => file.size > storyInputMaxBytes) ? 'images' : null);
+    files
+      .filter((file) => file.size <= storyInputMaxBytes)
+      .slice(0, slots)
+      .forEach((file) => {
+        const id = crypto.randomUUID();
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          if (!alive.current) return;
+          const preview = (e.target?.result as string) || '';
+          setUploadedImages((prev) =>
+            [...prev, { id, file, preview, status: 'uploading' as const, attempts: 0 }].slice(
+              0,
+              MAX_IMAGES,
+            ),
+          );
+          void processImage(id, file, nextImageOperation(id));
+        };
+        reader.readAsDataURL(file);
+      });
   };
 
   const retryAnalysis = (id: string) => {
@@ -237,6 +245,11 @@ export default function MediaCapture({
 
   const processAudio = async (file: File, preview: string, durationSeconds?: number) => {
     if (!alive.current) return;
+    if (file.size > storyInputMaxBytes) {
+      setOversizedKind('audio');
+      return;
+    }
+    setOversizedKind(null);
     setUploadedAudio({ file, preview, status: 'uploading', durationSeconds });
     try {
       const { objectPath } = await uploadInput('audio', file);
@@ -248,6 +261,7 @@ export default function MediaCapture({
       );
     } catch (e) {
       if (!alive.current) return;
+      if (e instanceof StoryInputTooLarge) setOversizedKind('audio');
       setUploadedAudio((prev) =>
         prev?.file === file && prev.preview === preview
           ? { ...prev, status: 'error', error: e instanceof Error ? e.message : 'Upload failed' }
@@ -261,6 +275,11 @@ export default function MediaCapture({
   const handleAudioUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
+      event.target.value = '';
+      if (file.size > storyInputMaxBytes) {
+        setOversizedKind('audio');
+        return;
+      }
       const reader = new FileReader();
       reader.onload = (e) => void processAudio(file, (e.target?.result as string) || '');
       reader.readAsDataURL(file);
@@ -530,6 +549,11 @@ export default function MediaCapture({
                     </div>
                   </div>
                 )}
+                {oversizedKind === 'images' && (
+                  <p role="alert" className="text-error">
+                    {sizeMessage}
+                  </p>
+                )}
                 <input
                   ref={fileInputRef}
                   type="file"
@@ -778,6 +802,11 @@ export default function MediaCapture({
                       </div>
                     </div>
                   </div>
+                )}
+                {oversizedKind === 'audio' && (
+                  <p role="alert" className="text-error">
+                    {sizeMessage}
+                  </p>
                 )}
                 <input
                   ref={audioInputRef}

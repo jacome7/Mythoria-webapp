@@ -13,9 +13,8 @@ export interface AudiobookProgress {
 export function useAudiobookProgress(storyId: string) {
   const [progress, setProgress] = useState<AudiobookProgress | null>(null);
   const [error, setError] = useState(false);
-  const progressRef = useRef<AudiobookProgress | null>(null);
+  const polling = useRef<'idle' | 'active' | 'unavailable'>('idle');
   const inFlight = useRef(false);
-  const errorRef = useRef(false);
   const controller = useRef<AbortController | null>(null);
   const refreshPending = useRef(false);
   const refresh = useCallback(async (): Promise<void> => {
@@ -32,15 +31,23 @@ export function useAudiobookProgress(storyId: string) {
         `/api/stories/${encodeURIComponent(storyId)}/audiobook-progress`,
         { cache: 'no-store', signal: currentController.signal },
       );
+      if (currentController.signal.aborted) return;
+      if (response.status === 404) {
+        polling.current = 'unavailable';
+        refreshPending.current = false;
+        setProgress(null);
+        setError(true);
+        return;
+      }
       if (!response.ok) throw new Error('Progress unavailable');
       const data: AudiobookProgress = await response.json();
-      progressRef.current = data;
+      if (currentController.signal.aborted) return;
+      polling.current = data.audiobookGenerationStatus === 'generating' ? 'active' : 'idle';
       setProgress(data);
-      errorRef.current = false;
       setError(false);
     } catch {
       if (!currentController.signal.aborted) {
-        errorRef.current = true;
+        polling.current = 'active';
         setError(true);
       }
     } finally {
@@ -55,20 +62,15 @@ export function useAudiobookProgress(storyId: string) {
     }
   }, [storyId]);
   useEffect(() => {
-    progressRef.current = null;
-    errorRef.current = false;
+    polling.current = 'idle';
     setProgress(null);
     setError(false);
     void refresh();
     const interval = setInterval(() => {
-      if (
-        !document.hidden &&
-        (errorRef.current || progressRef.current?.audiobookGenerationStatus === 'generating')
-      )
-        void refresh();
+      if (!document.hidden && polling.current === 'active') void refresh();
     }, 10000);
     const onVisibility = () => {
-      if (!document.hidden) void refresh();
+      if (!document.hidden && polling.current !== 'unavailable') void refresh();
     };
     document.addEventListener('visibilitychange', onVisibility);
     return () => {

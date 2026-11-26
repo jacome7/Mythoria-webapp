@@ -5,6 +5,7 @@ import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
 import { LuCamera } from 'react-icons/lu';
 import { MediaAnalysisError, type MediaAnalysisCode } from '@/lib/media-analysis-errors';
+import { storyInputLimitMiB, StoryInputTooLarge } from '@/lib/story-input-size';
 import { useMediaUpload } from '@/hooks/useMediaUpload';
 import type { QuestionPhoto } from '@/lib/story-templates/journey';
 
@@ -19,6 +20,7 @@ export default function QuestionPhotoAnswer({ value, onChange, unavailable, disa
   const t = useTranslations('StoryTemplates');
   const locale = useLocale();
   const tMedia = useTranslations('StorySteps.step2');
+  const [tooLarge, setTooLarge] = useState(false);
   const [errorCode, setErrorCode] = useState<MediaAnalysisCode>();
   const { uploadInput, analyzeImage } = useMediaUpload();
   const input = useRef<HTMLInputElement>(null);
@@ -65,6 +67,7 @@ export default function QuestionPhotoAnswer({ value, onChange, unavailable, disa
   };
   const upload = async (file: File) => {
     if (disabled || unavailable) return;
+    setTooLarge(false);
     setErrorCode(undefined);
     const token = ++operation.current;
     const photo: QuestionPhoto = { id: crypto.randomUUID(), status: 'uploading' };
@@ -75,9 +78,11 @@ export default function QuestionPhotoAnswer({ value, onChange, unavailable, disa
       const next: QuestionPhoto = { ...photo, ...result, status: 'analyzing' };
       update(next);
       await analyze(next, token);
-    } catch {
-      if (operation.current === token && latest.current.value?.id === photo.id)
+    } catch (error) {
+      if (operation.current === token && latest.current.value?.id === photo.id) {
+        setTooLarge(error instanceof StoryInputTooLarge);
         update({ ...photo, status: 'error' });
+      }
     }
   };
 
@@ -114,11 +119,13 @@ export default function QuestionPhotoAnswer({ value, onChange, unavailable, disa
       )}
       {value?.status === 'error' && (
         <p role="alert">
-          {value.metadata
-            ? t('photoNoSubject')
-            : errorCode
-              ? tMedia(`imageAnalysis.errors.${errorCode}`)
-              : t('photoError')}
+          {tooLarge
+            ? tMedia('alerts.fileTooLarge', { max: storyInputLimitMiB })
+            : value.metadata
+              ? t('photoNoSubject')
+              : errorCode
+                ? tMedia(`imageAnalysis.errors.${errorCode}`)
+                : t('photoError')}
         </p>
       )}
       {value?.status === 'done' && (value.metadata?.characters?.length ?? 0) > 1 && (

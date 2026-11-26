@@ -180,13 +180,13 @@ Guarding logic:
 
 #### AI Structuring & Media
 
-| Endpoint                       | Method | Purpose                                                                                                                                         |
-| ------------------------------ | ------ | ----------------------------------------------------------------------------------------------------------------------------------------------- |
-| `/api/media/input-upload`      | POST   | Upload an input image/audio to GCS under `{authorId}/inputs` (proxies SGW `/ai/media/upload`). Images normalised to JPEG ≤2048px, q95.          |
-| `/api/media/analyze-image`     | POST   | Analyse an uploaded image (type / description / OCR / detected characters); persists a sibling `.json` (proxies SGW `/ai/media/analyze-image`). |
-| `/api/media/signed-upload`     | POST   | Back-compat author-scoped upload shim (prefer `input-upload`).                                                                                  |
-| `/api/stories/genai-structure` | POST   | Start **async** structuring; proxies SGW `POST /api/jobs/story-structure` and returns `{ jobId, estimatedDuration }`.                           |
-| `/api/jobs/:jobId`             | GET    | Poll an async SGW job (structuring, text/image edits) for status + result.                                                                      |
+| Endpoint                       | Method | Purpose                                                                                                                                                                                                             |
+| ------------------------------ | ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `/api/media/input-upload`      | POST   | Upload an authenticated binary image/audio file (up to 16 MiB) to GCS under `{authorId}/inputs`. Images are normalised to JPEG ≤2048px, q95. Older clients can send Base64 JSON. Oversized uploads return HTTP 413. |
+| `/api/media/analyze-image`     | POST   | Analyse an uploaded image (type / description / OCR / detected characters); persists a sibling `.json` (proxies SGW `/ai/media/analyze-image`).                                                                     |
+| `/api/media/signed-upload`     | POST   | Back-compat author-scoped upload shim (prefer `input-upload`).                                                                                                                                                      |
+| `/api/stories/genai-structure` | POST   | Start **async** structuring; proxies SGW `POST /api/jobs/story-structure` and returns `{ jobId, estimatedDuration }`.                                                                                               |
+| `/api/jobs/:jobId`             | GET    | Poll an async SGW job (structuring, text/image edits) for status + result.                                                                                                                                          |
 
 #### Characters
 
@@ -209,7 +209,7 @@ Guarding logic:
 ### AI Structuring & Generation Workflow
 
 - **Image analysis (Step 2, on add):**
-  - Each image is uploaded via `/api/media/input-upload` → SGW `/ai/media/upload`, staged at `{authorId}/inputs/{uuid}.jpg` (normalised JPEG ≤2048px, q95) until a story exists.
+  - Each image is uploaded via the WebApp’s `/api/media/input-upload`, staged at `{authorId}/inputs/{uuid}.jpg` (normalised JPEG ≤2048px, q95) until a story exists.
   - Then `/api/media/analyze-image` → SGW `/ai/media/analyze-image` runs Gen AI (provider from `IMAGE_ANALYZER_PROVIDER` → `IMAGE_PROVIDER`) and writes a sibling `{uuid}.json` with `{ overallImageContent, description, text, characters[] }` (characters include a `box_2d`).
   - The UI tracks per-image status and allows up to 2 analysis retries; **Next** is gated until all images settle.
 

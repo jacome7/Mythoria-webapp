@@ -24,7 +24,7 @@
     "doNotClose": "Please do not close this tab.",
     "errors": {
       "failedToFetch": "Failed to fetch audiobook progress",
-      "failedToLoad": "Failed to load audiobook generation progress"
+      "failedToLoad": "Audiobook progress is unavailable."
     },
     "timeUnits": {
       "second": "second",

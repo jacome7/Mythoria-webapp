@@ -173,6 +173,7 @@
         "notSupported": "Your browser does not support the audio element."
       },
       "alerts": {
+        "fileTooLarge": "This file is too large. Choose a file of {max} MB or less.",
         "uploadError": "Failed to upload file. Please try again.",
         "recordingError": "Failed to start recording. Please check your microphone permissions.",
         "processingError": "Failed to process your story. Please try again.",

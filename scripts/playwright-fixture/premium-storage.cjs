@@ -13,11 +13,34 @@ registerHooks({
     const real = JSON.stringify(resolved.url);
     const source = `
       import { Storage as CloudStorage } from ${real};
-      import { readFile } from 'node:fs/promises';
-      import { join } from 'node:path';
+      import { readFile, mkdir, writeFile } from 'node:fs/promises';
+      import { dirname, join } from 'node:path';
       export * from ${real};
       export class Storage extends CloudStorage {
         bucket(name, ...options) {
+          if (name === 'story-input-fixture') {
+            return {
+              name,
+              file(key) {
+                if (!/^[0-9a-f-]+[/]inputs[/][0-9a-f-]+[.](jpg|webm|wav|mp3|m4a|ogg)$/i.test(key)) {
+                  throw new Error('Invalid story input fixture path');
+                }
+                const path = join(process.env.PLAYWRIGHT_PREMIUM_STORAGE_DIR, key);
+                return {
+                  async save(bytes, options) {
+                    if (options.preconditionOpts?.ifGenerationMatch !== 0) throw new Error('Missing create precondition');
+                    await mkdir(dirname(path), { recursive: true });
+                    try {
+                      await writeFile(path, bytes, { flag: 'wx' });
+                    } catch (error) {
+                      if (error.code === 'EEXIST') throw Object.assign(new Error('Already exists'), { code: 412 });
+                      throw error;
+                    }
+                  },
+                };
+              },
+            };
+          }
           if (name !== 'premium-book-fixture-no-storage') return super.bucket(name, ...options);
           return {
             file(key, { generation }) {

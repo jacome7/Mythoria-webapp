@@ -24,7 +24,7 @@
     "doNotClose": "Por favor não feche este separador.",
     "errors": {
       "failedToFetch": "Falha ao obter progresso do audiolivro",
-      "failedToLoad": "Falha ao carregar progresso da geração do audiolivro"
+      "failedToLoad": "O progresso do audiolivro está indisponível."
     },
     "timeUnits": {
       "second": "segundo",

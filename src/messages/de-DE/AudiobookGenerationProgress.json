@@ -24,7 +24,7 @@
     "doNotClose": "Bitte schließe diesen Tab nicht.",
     "errors": {
       "failedToFetch": "Hörbuch-Fortschritt konnte nicht abgerufen werden",
-      "failedToLoad": "Hörbuch-Generierungsfortschritt konnte nicht geladen werden"
+      "failedToLoad": "Der Fortschritt der Hörbucherstellung ist nicht verfügbar."
     },
     "timeUnits": {
       "second": "Sekunde",

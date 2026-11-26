@@ -173,6 +173,7 @@
         "notSupported": "Dein Browser unterstützt das Audioelement nicht."
       },
       "alerts": {
+        "fileTooLarge": "Diese Datei ist zu groß. Wähle eine Datei mit höchstens {max} MB.",
         "uploadError": "Datei konnte nicht hochgeladen werden. Bitte versuch es erneut.",
         "recordingError": "Aufnahme konnte nicht gestartet werden. Bitte prüf deine Mikrofonberechtigungen.",
         "processingError": "Deine Geschichte konnte nicht verarbeitet werden. Bitte versuch es erneut.",

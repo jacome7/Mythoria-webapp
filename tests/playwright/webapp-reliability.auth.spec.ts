@@ -1,3 +1,6 @@
+import { readFile } from 'node:fs/promises';
+import { join } from 'node:path';
+import { randomUUID } from 'node:crypto';
 import { expect, test } from './support/fixtures';
 import premium from '../../src/lib/premium-children-book/worker-manifest.fixture.json';
 
@@ -83,4 +86,31 @@ test('loads the private reader and print pricing without null URL requests', asy
   expect(anonymousRequests).toEqual([]);
   expect((await context.request.get(optionsPath)).status()).toBe(401);
   expect(nullRequests).toEqual([]);
+});
+
+test('uploads a full-size story input through Next.js and rejects a larger file', async ({
+  page,
+}) => {
+  const storageDir = process.env.PLAYWRIGHT_PREMIUM_STORAGE_DIR;
+  test.skip(
+    !storageDir || process.env.PLAYWRIGHT_CLERK_FIXTURE !== '1',
+    'Requires disposable storage.',
+  );
+  const maxBytes = 16 * 1024 * 1024;
+  const bytes = Buffer.alloc(maxBytes, 0x61);
+  bytes[maxBytes - 1] = 0x7a;
+  const assetId = randomUUID();
+  const headers = { 'content-type': 'audio/wav', 'x-media-kind': 'audio', 'x-media-id': assetId };
+  const route = '/api/media/input-upload';
+  const accepted = await page.request.post(route, { headers, data: bytes });
+  expect(accepted.status()).toBe(200);
+  const { objectPath, publicUrl } = await accepted.json();
+  expect(publicUrl).toBe(`https://storage.googleapis.com/story-input-fixture/${objectPath}`);
+  expect(objectPath).toMatch(new RegExp('/inputs/' + assetId + '[.]wav$'));
+  const stored = await readFile(join(storageDir!, objectPath));
+  expect(stored.equals(bytes)).toBe(true);
+
+  const rejected = await page.request.post(route, { headers, data: Buffer.alloc(maxBytes + 1) });
+  expect(rejected.status()).toBe(413);
+  expect(await rejected.json()).toMatchObject({ code: 'file_too_large', maxBytes });
 });

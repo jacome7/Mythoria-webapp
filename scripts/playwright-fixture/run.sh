@@ -57,6 +57,7 @@ export NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY="pk_live_$(printf 'clerk.fixture.invali
 export CLERK_SECRET_KEY=sk_live_fixture CLERK_E2E_EMAIL=author@fixture.invalid
 export SURVEY_LINK_SECRET=fixture-survey-secret-not-for-production MCP_E2E_BEARER_TOKEN=oat_browser_fixture
 export PREMIUM_BOOK_GENERATION_ENABLED=true PREMIUM_BOOK_BUCKET=premium-book-fixture-no-storage
+export STORAGE_BUCKET_NAME=story-input-fixture
 export PLAYWRIGHT_PREMIUM_STORAGE_DIR="$fixture/premium-storage"
 export PREMIUM_SQUARE_PRINT_APPROVAL=manual:playwright-fixture
 export PRINT_PROOF_BUCKET=print-fixture-no-storage PRINT_INTERNAL_AUDIENCE="$PLAYWRIGHT_BASE_URL"

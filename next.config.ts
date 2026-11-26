@@ -119,6 +119,8 @@ const nextConfig: NextConfig = {
 
   // Other existing configurations...
   experimental: {
+    // Allow the legacy Base64 envelope for a 16 MiB story input. New clients upload binary.
+    proxyClientMaxBodySize: '22mb',
     // Enable optimizations - expanded for better tree shaking
     optimizePackageImports: [
       '@clerk/nextjs',

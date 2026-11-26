@@ -173,6 +173,7 @@
         "notSupported": "Votre navigateur ne supporte pas l’élément audio."
       },
       "alerts": {
+        "fileTooLarge": "Ce fichier est trop volumineux. Choisissez un fichier de {max} Mo maximum.",
         "uploadError": "Échec du téléversement du fichier. Veuillez réessayer.",
         "recordingError": "Échec du démarrage de l’enregistrement. Vérifiez les permissions du micro.",
         "processingError": "Échec du traitement de votre histoire. Veuillez réessayer.",

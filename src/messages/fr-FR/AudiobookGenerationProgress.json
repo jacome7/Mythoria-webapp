@@ -24,7 +24,7 @@
     "doNotClose": "Veuillez ne pas fermer cet onglet.",
     "errors": {
       "failedToFetch": "Échec de l'obtention de la progression du livre audio",
-      "failedToLoad": "Échec de la charge de la génération audio de la génération audio"
+      "failedToLoad": "La progression du livre audio est indisponible."
     },
     "timeUnits": {
       "second": "deuxième",

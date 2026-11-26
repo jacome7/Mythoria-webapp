@@ -171,3 +171,27 @@ it('does not revive a removed photo when an analysis callback arrives late', asy
   );
   expect(screen.queryByText('imageAnalysis.statusAnalyzing')).not.toBeInTheDocument();
 });
+
+it.each(['images', 'audio'] as const)(
+  'rejects an oversized %s selection before reading or uploading it',
+  (activeModal) => {
+    render(
+      <MediaCapture
+        activeModal={activeModal}
+        setActiveModal={jest.fn()}
+        uploadedImages={[]}
+        setUploadedImages={jest.fn()}
+        uploadedAudio={null}
+        setUploadedAudio={jest.fn()}
+        saveToSession={jest.fn()}
+      />,
+    );
+    const file = new File(['x'], 'large', {
+      type: activeModal === 'images' ? 'image/png' : 'audio/wav',
+    });
+    Object.defineProperty(file, 'size', { value: 16 * 1024 * 1024 + 1 });
+    fireEvent.change(document.querySelector('input[type=file]')!, { target: { files: [file] } });
+    expect(screen.getByRole('alert')).toHaveTextContent('alerts.fileTooLarge');
+    expect(mockUpload).not.toHaveBeenCalled();
+  },
+);

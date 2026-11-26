@@ -24,7 +24,7 @@
     "doNotClose": "Por favor no cierres esta pestaña.",
     "errors": {
       "failedToFetch": "Error al obtener el progreso del audiolibro",
-      "failedToLoad": "Error al cargar el progreso de la generación del audiolibro"
+      "failedToLoad": "El progreso del audiolibro no está disponible."
     },
     "timeUnits": {
       "second": "segundo",

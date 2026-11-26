@@ -32,6 +32,16 @@ export function AudiobookProgressPanel({
   refresh: () => Promise<void>;
 }) {
   const t = useTranslations('AudiobookGenerationProgress');
+  if (error) {
+    return (
+      <div role="alert" className="mx-auto max-w-md space-y-3 py-6 text-center">
+        <p>{t('errors.failedToLoad')}</p>
+        <button type="button" className="btn btn-sm" onClick={() => void refresh()}>
+          {t('checkAgain')}
+        </button>
+      </div>
+    );
+  }
   const remaining = progress?.estimatedRemainingSeconds;
   return (
     <div className="mx-auto max-w-md space-y-3 py-6 text-center">
@@ -55,14 +65,6 @@ export function AudiobookProgressPanel({
               : t('preparing')}
       </p>
       <p className="text-sm text-base-content/70">{t('leaveAndReturn')}</p>
-      {error && (
-        <div role="alert">
-          <p>{t('errors.failedToLoad')}</p>
-          <button type="button" className="btn btn-sm" onClick={() => void refresh()}>
-            {t('checkAgain')}
-          </button>
-        </div>
-      )}
     </div>
   );
 }
