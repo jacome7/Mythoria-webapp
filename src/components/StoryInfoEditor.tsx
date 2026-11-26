@@ -7,6 +7,7 @@ import { useTranslations } from 'next-intl';
 import { formatDate } from '@/utils/date';
 import { toAbsoluteImageUrl } from '../utils/image-url';
 import { GraphicalStyle } from '@/types/story-enums';
+import StoryTextField from './StoryTextField';
 
 interface Story {
   storyId: string;
@@ -127,31 +128,27 @@ export default function StoryInfoEditor({
           </div>
 
           {/* Synopsis */}
-          <div className="space-y-2">
-            <label className="block text-sm font-medium text-base-content">
-              {tStoryInfoEditor('synopsis')}
-            </label>
-            <textarea
-              value={formData.synopsis}
-              onChange={(e) => handleInputChange('synopsis', e.target.value)}
-              className="textarea textarea-bordered w-full h-24"
-              placeholder={tStoryInfoEditor('synopsisPlaceholder')}
-            />
-          </div>
+          <StoryTextField
+            label={tStoryInfoEditor('synopsis')}
+            value={formData.synopsis}
+            onChange={(value) => handleInputChange('synopsis', value)}
+            className="h-24"
+            placeholder={tStoryInfoEditor('synopsisPlaceholder')}
+          />
 
           {/* Dedication Message */}
-          <div className="space-y-2">
-            <label className="block text-sm font-medium text-base-content flex items-center gap-2">
-              <Heart className="w-4 h-4" />
-              {tStoryInfoEditor('dedicationMessage')}
-            </label>
-            <textarea
-              value={formData.dedicationMessage}
-              onChange={(e) => handleInputChange('dedicationMessage', e.target.value)}
-              className="textarea textarea-bordered w-full h-20"
-              placeholder={tStoryInfoEditor('dedicationPlaceholder')}
-            />
-          </div>
+          <StoryTextField
+            label={
+              <>
+                <Heart className="w-4 h-4" aria-hidden="true" />
+                {tStoryInfoEditor('dedicationMessage')}
+              </>
+            }
+            value={formData.dedicationMessage}
+            onChange={(value) => handleInputChange('dedicationMessage', value)}
+            className="h-20"
+            placeholder={tStoryInfoEditor('dedicationPlaceholder')}
+          />
 
           {/* Custom Author */}
           <div className="space-y-2">

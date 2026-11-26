@@ -5,7 +5,10 @@ import es from '../../src/messages/es-ES/PremiumBook.json';
 import fr from '../../src/messages/fr-FR/PremiumBook.json';
 import de from '../../src/messages/de-DE/PremiumBook.json';
 import actions from '../../src/messages/pt-PT/Actions.json';
+import imageEditor from '../../src/messages/pt-PT/AIImageEditor.json';
+import myStories from '../../src/messages/pt-PT/MyStoriesPage.json';
 import printOrder from '../../src/messages/pt-PT/PrintOrder.json';
+import storyInfo from '../../src/messages/pt-PT/StoryInfoEditor.json';
 import publishedBook from '../../src/lib/premium-children-book/worker-manifest.fixture.json';
 
 const locales = { 'en-US': en, 'pt-PT': pt, 'es-ES': es, 'fr-FR': fr, 'de-DE': de };
@@ -63,6 +66,106 @@ test.describe('Premium book format', () => {
       }
     });
   }
+
+  test('turns pages in read mode and opens the page editors from My Stories', async ({ page }) => {
+    const { storyId, opening, revision } = publishedBook;
+    const readerPath = `/pt-PT/stories/read/${storyId}`;
+    const chaptersPath = `/api/stories/${storyId}/chapters`;
+    const editsPath = `/api/stories/${storyId}/premium/text-edits`;
+    const read = page.getByRole('button', { name: actions.Actions.read, exact: true });
+    const edit = page.getByRole('button', { name: actions.Actions.edit, exact: true });
+    const cover = page.getByRole('group', { name: pt.frontCover });
+    const coverEdit = page.getByRole('button', {
+      name: pt.editIllustration.replace('{page}', pt.frontCover),
+    });
+    const picker = page.getByRole('combobox', { name: pt.goToPage });
+    const pageThree = pt.pageNumber.replace('{number}', '3');
+    const dedicationEdit = pt.editText.replace('{page}', pageThree);
+    const { AIImageEditor: imageCopy } = imageEditor;
+    const { StoryInfoEditor: textCopy } = storyInfo;
+    let saved: { revision: string; text: string } | undefined;
+
+    await page.route(editsPath, async (route) => {
+      const request = route.request();
+      const input = request.postDataJSON();
+      expect(request.method()).toBe('POST');
+      expect(input).toEqual({
+        expectedRevision: revision,
+        correctionId: expect.any(String),
+        pageNumber: 3,
+        text: 'Para a Inês, com carinho.',
+      });
+      saved = { revision: input.correctionId, text: input.text };
+      await route.fulfill({ json: { revision: saved.revision } });
+    });
+    await page.route(chaptersPath, async (route) => {
+      if (!saved) return route.continue();
+      const response = await route.fetch();
+      const data = await response.json();
+      data.premiumBook.revision = saved.revision;
+      data.premiumBook.pages[2].text = saved.text;
+      data.premiumBook.pages[2].textEdit.value = saved.text;
+      await route.fulfill({ response, json: data });
+    });
+
+    await page.setViewportSize({ width: 1150, height: 850 });
+    await page.goto(readerPath);
+    await page.getByRole('button', { name: 'Recusar opcionais' }).click();
+    await expect(read).toHaveAttribute('aria-pressed', 'true');
+    await expect(coverEdit).toHaveCount(0);
+    const coverBox = await cover.boundingBox();
+    expect(coverBox).not.toBeNull();
+    await cover.click({ position: { x: coverBox!.width * 0.8, y: coverBox!.height * 0.5 } });
+    await expect(picker).toHaveValue('1');
+    await expect(cover).toHaveCount(0);
+
+    await picker.selectOption('0');
+    await edit.click();
+    await expect(edit).toHaveAttribute('aria-pressed', 'true');
+    await coverEdit.click();
+    const imageDialog = page.getByRole('dialog', {
+      name: imageCopy.title.replace('{imageType}', pt.frontCover),
+    });
+    await expect(imageDialog.getByPlaceholder(imageCopy.requestPlaceholder)).toBeVisible();
+    await page.keyboard.press('Escape');
+    await expect(imageDialog).toHaveCount(0);
+    await read.click();
+    await expect(coverEdit).toHaveCount(0);
+
+    await page.setViewportSize({ width: 402, height: 874 });
+    await page.goto('/pt-PT/my-stories');
+    await page.locator(`[data-story-menu="${storyId}"]`).click();
+    const deepLink = page
+      .locator(`[data-story-menu-panel="${storyId}"]`)
+      .getByRole('link', { name: myStories.actions.edit, exact: true });
+    await expect(deepLink).toHaveAttribute('href', `${readerPath}#illustration-editor`);
+    await deepLink.click();
+    await expect(page).toHaveURL(`${readerPath}#illustration-editor`);
+    await expect(edit).toHaveAttribute('aria-pressed', 'true');
+    await expect(coverEdit).toBeVisible();
+
+    await picker.selectOption('3');
+    await page.getByRole('button', { name: dedicationEdit }).click();
+    const textDialog = page.getByRole('dialog', { name: dedicationEdit });
+    const field = textDialog.getByRole('textbox', { name: textCopy.dedicationMessage });
+    await expect(field).toHaveValue(opening.dedication);
+    await field.fill('Para a Inês, com carinho.');
+    await field.press('ArrowRight');
+    await textDialog.getByRole('button', { name: textCopy.saveButton }).click();
+    await expect(textDialog).toHaveCount(0);
+    await expect(picker).toHaveValue('3');
+    await expect(page.getByRole('article', { name: pageThree })).toContainText(
+      'Para a Inês, com carinho.',
+    );
+    await read.click();
+    await expect(page).toHaveURL(readerPath);
+    await page.reload();
+    await picker.selectOption('3');
+    await expect(page.getByRole('article', { name: pageThree })).toContainText(
+      'Para a Inês, com carinho.',
+    );
+    await expect(page.getByRole('button', { name: dedicationEdit })).toHaveCount(0);
+  });
 
   test('orders one paid square hardcover after opening print from the reader and narrow My Stories', async ({
     page,
@@ -231,6 +334,7 @@ test.describe('Premium book format', () => {
       await page.goto(`/pt-PT/s/${token}`);
       await expect(page.getByRole('heading', { name: opening.title })).toBeVisible();
       const sharedView = await (await page.request.get(sharedContent)).json();
+      expect(sharedView.premiumBook.pages.some((item: object) => 'textEdit' in item)).toBe(false);
       expect((await page.request.get(sharedView.premiumBook.front)).status()).toBe(200);
       expect((await page.request.get(sharedView.premiumBook.motifImage)).status()).toBe(200);
       expect((await page.request.delete(`${shareSettings}?linkId=${token}`)).ok()).toBe(true);

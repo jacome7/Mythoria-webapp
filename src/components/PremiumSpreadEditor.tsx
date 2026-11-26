@@ -1,68 +1,72 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslations } from 'next-intl';
+import AIImageEditor from './AIImageEditor';
 
-type Props = {
-  storyId: string;
-  revision: string;
-  page: number;
-  lastPage: number;
-  targetSide?: 'left' | 'right';
+export type PremiumImageEditTarget = {
+  firstPage: number;
+  spreadId: string;
+  side?: 'left' | 'right';
+  imageUri: string;
+  facingImageUri?: string;
+  title: string;
+  imageType: 'cover' | 'backcover' | 'chapter';
 };
+
+type CreditQuote = { canEdit: boolean; requiredCredits: number };
+
+async function checkCredits(storyId: string, signal?: AbortSignal): Promise<CreditQuote> {
+  const response = await fetch('/api/ai-edit/check-credits', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ action: 'imageEdit', storyId }),
+    signal,
+  });
+  if (!response.ok) throw new Error('Credit quote unavailable');
+  return response.json();
+}
 
 export default function PremiumSpreadEditor({
   storyId,
+  bookTitle,
   revision,
-  page,
-  lastPage,
-  targetSide,
-}: Props) {
+  target,
+  onClose,
+  onEditionChanged,
+}: {
+  storyId: string;
+  bookTitle: string;
+  revision: string;
+  target: PremiumImageEditTarget;
+  onClose: () => void;
+  onEditionChanged: () => Promise<void>;
+}) {
   const t = useTranslations('PremiumBook');
-  const facing = page >= 6 && page <= 31;
-  const firstPage = facing ? page - (page % 2) : page;
-  const target = facing
-    ? `spread-${(firstPage - 6) / 2 + 1}`
-    : page === 0
-      ? 'front'
-      : page === lastPage
-        ? 'back'
-        : page === 5
-          ? 'opener'
-          : 'ending';
-  const [instructions, setInstructions] = useState('');
-  const [quote, setQuote] = useState<{ canEdit: boolean; requiredCredits: number } | null>(null);
-  const [busy, setBusy] = useState(false);
-  const [error, setError] = useState(false);
-  const panel = useRef<HTMLDetailsElement>(null);
+  const [quote, setQuote] = useState<CreditQuote>();
+  const [error, setError] = useState<'editError' | 'editRetryLater'>();
+  const panorama = target.spreadId.startsWith('spread-') && !target.side;
+
   useEffect(() => {
-    if (panel.current && window.location.hash === '#illustration-editor') {
-      panel.current.open = true;
-      panel.current.scrollIntoView?.({ block: 'center' });
-    }
-  }, []);
-  async function checkPrice() {
-    try {
-      const response = await fetch('/api/ai-edit/check-credits', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'imageEdit', storyId }),
+    const controller = new AbortController();
+    void checkCredits(storyId, controller.signal)
+      .then((result) => {
+        if (!controller.signal.aborted) setQuote(result);
+      })
+      .catch(() => {
+        if (!controller.signal.aborted) setError('editError');
       });
-      if (!response.ok) throw Error();
-      setQuote(await response.json());
-    } catch {
-      setError(true);
-    }
-  }
-  async function submit() {
-    if (busy || !quote?.canEdit || !instructions.trim()) return;
-    setBusy(true);
-    setError(false);
+    return () => controller.abort();
+  }, [storyId]);
+
+  async function submit(instructions: string) {
+    if (!quote?.canEdit) return;
+    setError(undefined);
     try {
-      const storageKey = `premium-edit:${storyId}:${revision}:${firstPage}:${targetSide ?? 'spread'}`;
-      const previous = JSON.parse(sessionStorage.getItem(storageKey) || 'null');
+      const storageKey = `premium-edit:${storyId}:${revision}:${target.firstPage}:${target.side ?? 'spread'}`;
+      const pending = JSON.parse(sessionStorage.getItem(storageKey) || 'null');
       const correctionId =
-        previous?.instructions === instructions ? previous.id : crypto.randomUUID();
+        pending?.instructions?.trim() === instructions ? pending.id : crypto.randomUUID();
       sessionStorage.setItem(storageKey, JSON.stringify({ id: correctionId, instructions }));
       const response = await fetch(`/api/stories/${storyId}/premium/corrections`, {
         method: 'POST',
@@ -71,59 +75,48 @@ export default function PremiumSpreadEditor({
           expectedRevision: revision,
           correctionId,
           maximumCredits: quote.requiredCredits,
-          spreadId: target,
-          targetSide,
-          artworkInstructions: instructions.trim(),
+          spreadId: target.spreadId,
+          targetSide: target.side,
+          artworkInstructions: instructions,
         }),
       });
-      if (!response.ok) throw Error();
+      if (response.status === 402) {
+        setQuote(undefined);
+        setQuote(await checkCredits(storyId));
+      }
+      if (response.status === 503) {
+        const failure = await response.json().catch(() => null);
+        if (failure?.error === 'premium_stage_busy' || failure?.error === 'edit_unavailable') {
+          setError('editRetryLater');
+          return;
+        }
+      }
+      if (!response.ok) throw new Error('Premium image correction failed');
+      await onEditionChanged();
       sessionStorage.removeItem(storageKey);
-      window.location.reload();
+      onClose();
     } catch {
-      setError(true);
-      await checkPrice();
-    } finally {
-      setBusy(false);
+      setError('editError');
     }
   }
+
   return (
-    <details
-      id={targetSide ? `illustration-editor-${targetSide}` : 'illustration-editor'}
-      ref={panel}
-      className="mx-auto mt-3 max-w-lg"
-      onToggle={(e) => {
-        if (e.currentTarget.open) void checkPrice();
+    <AIImageEditor
+      isOpen
+      onClose={onClose}
+      story={{ storyId, title: bookTitle }}
+      imageData={target}
+      premiumEdit={{
+        canSubmit: quote?.canEdit ?? false,
+        maxLength: 1500,
+        creditLabel: quote ? t('editCost', { count: quote.requiredCredits }) : undefined,
+        warning: panorama ? t('editWarning') : undefined,
+        error: quote && !quote.canEdit ? t('editBalance') : error ? t(error) : undefined,
+        applyLabel: t('editApply'),
+        busyLabel: t('editBusy'),
+        facingImageUri: target.facingImageUri,
+        onSubmit: submit,
       }}
-    >
-      <summary className="cursor-pointer font-medium">
-        {targetSide
-          ? `${t('editPrompt')} · ${t('pageNumber', { number: page })}`
-          : facing
-            ? t('editSpread', { first: firstPage, last: firstPage + 1 })
-            : t('editPrompt')}
-      </summary>
-      <label className="mt-3 block">
-        {t('editPrompt')}
-        <textarea
-          value={instructions}
-          maxLength={1500}
-          disabled={busy}
-          onChange={(e) => setInstructions(e.target.value)}
-          className="textarea textarea-bordered mt-1 w-full"
-        />
-      </label>
-      {facing && !targetSide && <p className="my-2 text-sm">{t('editWarning')}</p>}
-      {quote && <p className="text-sm">{t('editCost', { count: quote.requiredCredits })}</p>}
-      {quote && !quote.canEdit && <p role="alert">{t('editBalance')}</p>}
-      {error && <p role="alert">{t('editError')}</p>}
-      <button
-        type="button"
-        className="btn btn-primary mt-2"
-        disabled={busy || !quote?.canEdit || !instructions.trim()}
-        onClick={() => void submit()}
-      >
-        {t(busy ? 'editBusy' : 'editApply')}
-      </button>
-    </details>
+    />
   );
 }

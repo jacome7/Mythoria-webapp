@@ -56,7 +56,7 @@ export async function GET(
             slug: story.slug,
           },
           chapters: [],
-          premiumBook: toPremiumBookReaderData(premium),
+          premiumBook: toPremiumBookReaderData(premium, { owned }),
           canShare: owned,
           canPrint,
           canSelfPrint: owned,

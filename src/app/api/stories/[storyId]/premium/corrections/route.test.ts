@@ -24,6 +24,21 @@ const edit = {
   artworkInstructions: 'Paint a yellow hat',
   maximumCredits: 1,
 };
+const ref = (revision: string) => ({
+  key: `${id}/premium/revisions/${revision}/manifest.json`,
+  sha256: 'a'.repeat(64),
+  bytes: 100,
+  generation: '12',
+});
+const publishedFeatures = () => ({
+  premiumBook: {
+    version: 1,
+    type: 'premium_children',
+    state: 'published',
+    revision: edit.expectedRevision,
+    manifest: ref(edit.expectedRevision),
+  },
+});
 const post = (input: unknown) =>
   POST(new Request('http://localhost', { method: 'POST', body: JSON.stringify(input) }), {
     params: Promise.resolve({ storyId: id }),
@@ -42,22 +57,33 @@ it('rejects edits to someone else’s story before image generation', async () =
   expect(mockFetch).not.toHaveBeenCalled();
 });
 
-it('publishes and charges a prepared edit once and replays a lost response', async () => {
-  const ref = (revision: string) => ({
-    key: `${id}/premium/revisions/${revision}/manifest.json`,
-    sha256: 'a'.repeat(64),
-    bytes: 100,
-    generation: '12',
+it.each([
+  { code: 'edit_unavailable', reply: () => Promise.reject(new TypeError('fetch failed')) },
+  {
+    code: 'premium_stage_busy',
+    reply: () =>
+      Promise.resolve(
+        Response.json({ code: 'premium_stage_busy', error: 'Internal detail' }, { status: 503 }),
+      ),
+  },
+])('returns $code without charging or publishing', async ({ code, reply }) => {
+  mockGet.mockResolvedValue({
+    authorId: 'owner',
+    status: 'published',
+    features: publishedFeatures(),
   });
-  let features = {
-    premiumBook: {
-      version: 1,
-      type: 'premium_children',
-      state: 'published',
-      revision: edit.expectedRevision,
-      manifest: ref(edit.expectedRevision),
-    },
-  };
+  mockPermission.mockResolvedValue({ canEdit: true, requiredCredits: 1 });
+  mockFetch.mockImplementation(reply);
+
+  const result = await post(edit);
+
+  expect(result.status).toBe(503);
+  await expect(result.json()).resolves.toEqual({ error: code });
+  expect(mockTx).not.toHaveBeenCalled();
+});
+
+it('publishes and charges a prepared edit once and replays a lost response', async () => {
+  let features = publishedFeatures();
   const modified = jest.fn();
   const inserted = jest.fn();
   const update = jest

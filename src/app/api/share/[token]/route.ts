@@ -125,7 +125,7 @@ export async function GET(request: Request, context: { params: Promise<{ token: 
         {
           success: true,
           storyId: book.storyId,
-          premiumBook: toPremiumBookReaderData(book, token),
+          premiumBook: toPremiumBookReaderData(book, { shareToken: token }),
           premiumAudio: getPremiumAudioMetadata(audio),
         },
         { headers: { 'Cache-Control': 'private, no-store' } },

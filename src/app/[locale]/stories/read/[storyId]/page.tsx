@@ -61,6 +61,7 @@ function StoryCover({ storyId }: { storyId: string }) {
   const [story, setStory] = useState<Story | null>(null);
   const [chapters, setChapters] = useState<Chapter[]>([]);
   const [premiumBook, setPremiumBook] = useState<PremiumBookReaderData | undefined>(undefined);
+  const [editingPremiumBook, setEditingPremiumBook] = useState(false);
   const [canSharePremiumBook, setCanSharePremiumBook] = useState(false);
   const [canPrintPremiumBook, setCanPrintPremiumBook] = useState(false);
   const [canSelfPrintPremiumBook, setCanSelfPrintPremiumBook] = useState(false);
@@ -93,6 +94,13 @@ function StoryCover({ storyId }: { storyId: string }) {
           if (data.canSelfPrint && window.location.hash === '#self-print')
             setShowSelfPrintModal(true);
           if (data.canShare && window.location.hash === '#share') setShowShareModal(true);
+          if (
+            data.canShare &&
+            data.premiumBook?.revision &&
+            window.location.hash === '#illustration-editor'
+          ) {
+            setEditingPremiumBook(true);
+          }
         } else if (response.status === 401) {
           setLoadError(tErrors('storySignInRequired'));
         } else if (response.status === 403) {
@@ -114,6 +122,22 @@ function StoryCover({ storyId }: { storyId: string }) {
     void fetchStory();
     return () => controller.abort();
   }, [storyId, tErrors]);
+
+  const refreshPremiumBook = async () => {
+    const response = await fetch(`/api/stories/${storyId}/chapters`, { cache: 'no-store' });
+    if (!response.ok) throw new Error('Could not refresh the premium edition');
+    const data: { premiumBook?: PremiumBookReaderData } = await response.json();
+    if (!data.premiumBook?.revision) throw new Error('Premium edition unavailable');
+    setPremiumBook(data.premiumBook);
+  };
+
+  const leavePremiumEditMode = () => {
+    setEditingPremiumBook(false);
+    if (window.location.hash === '#illustration-editor') {
+      const { pathname, search } = window.location;
+      window.history.replaceState(null, '', pathname + search);
+    }
+  };
 
   const navigateToListen = () => {
     router.push(`/${locale}/stories/listen/${storyId}`);
@@ -213,8 +237,14 @@ function StoryCover({ storyId }: { storyId: string }) {
           </button>
 
           <div className="flex min-w-0 items-center justify-end gap-1.5 sm:gap-2">
-            <button className="btn btn-ghost btn-sm btn-active">
-              <BookOpen className="w-4 h-4" />
+            <button
+              type="button"
+              onClick={premiumBook ? leavePremiumEditMode : undefined}
+              aria-label={tActions('read')}
+              aria-pressed={premiumBook ? !editingPremiumBook : undefined}
+              className={`btn btn-ghost btn-sm ${editingPremiumBook ? '' : 'btn-active'}`}
+            >
+              <BookOpen aria-hidden="true" className="w-4 h-4" />
               <span className="hidden sm:inline sm:ml-2">{tActions('read')}</span>
             </button>
 
@@ -222,15 +252,26 @@ function StoryCover({ storyId }: { storyId: string }) {
               <Volume2 className="w-4 h-4" />
               <span className="hidden sm:inline sm:ml-2">{tActions('listen')}</span>
             </button>
+            {(!premiumBook || (canSharePremiumBook && premiumBook.revision)) && (
+              <button
+                type="button"
+                onClick={
+                  premiumBook
+                    ? editingPremiumBook
+                      ? leavePremiumEditMode
+                      : () => setEditingPremiumBook(true)
+                    : navigateToEdit
+                }
+                aria-label={tActions('edit')}
+                aria-pressed={premiumBook ? editingPremiumBook : undefined}
+                className={`btn btn-ghost btn-sm ${editingPremiumBook ? 'btn-active' : ''}`}
+              >
+                <Edit3 aria-hidden="true" className="w-4 h-4" />
+                <span className="hidden sm:inline sm:ml-2">{tActions('edit')}</span>
+              </button>
+            )}
             {!premiumBook && (
-              <>
-                <button onClick={navigateToEdit} className="btn btn-ghost btn-sm">
-                  <Edit3 className="w-4 h-4" />
-                  <span className="hidden sm:inline sm:ml-2">{tActions('edit')}</span>
-                </button>
-
-                <StoryPrintActions onPrint={handlePrint} onDownload={handleDownload} />
-              </>
+              <StoryPrintActions onPrint={handlePrint} onDownload={handleDownload} />
             )}
             {premiumBook && (canPrintPremiumBook || canSelfPrintPremiumBook) && (
               <StoryPrintActions
@@ -266,6 +307,8 @@ function StoryCover({ storyId }: { storyId: string }) {
         story={story}
         chapters={chapters}
         editablePremium={canSharePremiumBook}
+        editingPremium={editingPremiumBook}
+        onPremiumEditionChanged={refreshPremiumBook}
         premiumBook={premiumBook}
         currentChapter={0} // 0 = first page
       />

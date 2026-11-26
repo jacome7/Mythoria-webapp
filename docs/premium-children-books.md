@@ -16,11 +16,19 @@ The worker publishes an immutable manifest pointer in `stories.features.premiumB
 
 New books add a 33rd interior page inviting the reader to create a story on Mythoria. The invitation shares a localized destination with the printed edition and opens the existing creation flow on the current WebApp host. The 32-page edition continues to open using its existing manifest.
 
-The reader supports two-page spreads on desktop and one square page at a time on narrow screens. Readers can navigate by button, keyboard, swipe or page selector. A spread can carry text on both pages or on its right page only. Illustration-only left pages expose the localized description as alternative text when available. The reader displays the canonical copy in HTML, including cover lettering. Where present, the manifest’s opening design supplies the background for pages 1–4 and the decorative motif for pages 1 and 3. A generated motif uses the same private PNG on both pages and the reader falls back to the curated drawing if the PNG is missing or unavailable. Owners can duplicate the edition, request narration, download self-print files on demand, and describe an illustration change in the reader. The editor shows the existing image-edit rate and preserves earlier paid proofs. The two sides of a facing spread are corrected together. Premium translation remains disabled until pricing is approved. Its paid square hardcover uses the separately approved print profile. [Paid print workflow](./PRINT_FULFILLMENT.md)
+The reader shows two-page spreads on desktop and one edge-to-edge square page on narrow screens. Tap the left third of the book to go back, or the right two thirds to go forward. Swipe left to advance and right to go back. The navigation buttons, arrow keys and page selector also turn pages. The animation respects the reader’s reduced-motion preference.
+
+A spread can carry text on both pages or on its right page only. Illustration-only left pages expose the localized description as alternative text when available. Where present, the manifest’s opening design supplies the background for pages 1–4 and the decorative motif for pages 1 and 3. A generated motif uses the same private PNG on both pages and the reader falls back to the curated drawing if the PNG is missing or unavailable.
+
+Owners enter **Edit** from the top toolbar. On an illustrated page, the AI image editor opens with the current artwork and shows the credit price before submission. Editing a panorama updates both halves. Owners can manually edit the dedication, synopsis and eligible pages with separately rendered text. Saving publishes a new edition revision and preserves earlier paid proofs. **Read** returns to the book.
+
+If the illustration edit is interrupted or still processing, the editor keeps the instructions open. Applying the same change again reuses the original correction ID.
+
+Owners can also duplicate the edition, request narration and download self-print files on demand. Premium translation remains disabled until pricing is approved. Its paid square hardcover uses the separately approved print profile. [Paid print workflow](./PRINT_FULFILLMENT.md)
 
 The worker marks editions with lettering painted into the narrative artwork as
 `editionLayout: "embedded-lettering-v2"`. The reader displays those illustrations on pages
-5–32 and keeps the saved words in **Read page text** for accessible reading. If an image
+5–32 and provides the saved words to screen readers. If an image
 fails to load, its words appear on the page. Page 2 displays the frozen publication details as selectable text, alongside the publisher logo and QR. The loader checks these fields against the page transcript before displaying them.
 Editions without the layout marker retain their original text placement.
 

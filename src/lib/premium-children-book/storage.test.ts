@@ -54,7 +54,7 @@ describe('premium manifest storage and reader contract', () => {
     });
     expect(book?.spreads[0].master.key).toMatch(/\.png$/);
     if (!book) throw new Error('Fixture should load');
-    const view = toPremiumBookReaderData(book, 'shared-token');
+    const view = toPremiumBookReaderData(book, { shareToken: 'shared-token' });
     const silentSpread = book.spreads.find((spread) => spread.textLayout === 'right_only');
     if (!silentSpread) throw new Error('Fixture should include a silent left page');
     expect(silentSpread.leftDescription).toContain('a Inês');
@@ -132,7 +132,7 @@ describe('premium manifest storage and reader contract', () => {
     const book = await load(mixed);
     if (!book) throw new Error('Fixture should load');
     for (const token of [undefined, 'shared-token']) {
-      const view = toPremiumBookReaderData(book, token);
+      const view = toPremiumBookReaderData(book, { shareToken: token });
       expect(view.pages[5]).toMatchObject({
         renderMode: 'typeset',
         image: undefined,
@@ -154,6 +154,16 @@ describe('premium manifest storage and reader contract', () => {
       page.number === 6 ? { ...page, reading: undefined } : page,
     );
     await expect(load({ ...mixed, pages: missingReading })).rejects.toThrow('Incomplete');
+    const owner = toPremiumBookReaderData(book, { owned: true });
+    expect(owner.pages[2].textEdit).toEqual({
+      value: book.opening.dedication,
+      maxLength: 2000,
+      allowEmpty: true,
+    });
+    expect(owner.pages[3].textEdit).toEqual({ value: book.opening.synopsis, maxLength: 600 });
+    expect(owner.pages[5].textEdit).toEqual({ value: book.pages[5].text, maxLength: 420 });
+    for (const index of [0, 1, 4, 6, 7, 32]) expect(owner.pages[index].textEdit).toBeUndefined();
+    expect(toPremiumBookReaderData(book).pages.every(({ textEdit }) => !textEdit)).toBe(true);
   });
 
   it('preserves a lower text panel and the canonical copy in the reader view', async () => {
@@ -171,6 +181,10 @@ describe('premium manifest storage and reader contract', () => {
     expect(view.pages[page.number - 1]).toMatchObject({ text: page.text, textBox: box });
     const left = fixture.pages[updated.spreads[0].leftPage - 1];
     expect(view.pages[left.number - 1].textBox).toEqual(left.textBox);
+    expect(toPremiumBookReaderData(book, { owned: true }).pages[page.number - 1].textEdit).toEqual({
+      value: page.text,
+      maxLength: 110,
+    });
   });
 
   it('accepts illustrated lettering with a separate transcript, and rejects hybrid editions', async () => {
@@ -320,7 +334,7 @@ describe('premium manifest storage and reader contract', () => {
     const features = storedFixture({ ...fixture, openingDesign, motifArtwork });
     const designed = await loadPublishedPremiumBook(fixture.storyId, fixture.ownerId, features);
     if (!designed) throw new Error('Fixture should load');
-    expect(toPremiumBookReaderData(designed, 'viewer').motifImage).toBe(
+    expect(toPremiumBookReaderData(designed, { shareToken: 'viewer' }).motifImage).toBe(
       `/api/stories/${fixture.storyId}/premium/motif?revision=${fixture.revision}&share=viewer`,
     );
     expect(toPremiumBookReaderData({ ...designed, motifArtwork: undefined })).toMatchObject({

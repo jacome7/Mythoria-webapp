@@ -42,6 +42,8 @@ interface StoryReaderProps {
   currentChapter?: number;
   premiumBook?: PremiumBookReaderData;
   editablePremium?: boolean;
+  editingPremium?: boolean;
+  onPremiumEditionChanged?: () => Promise<void>;
 }
 
 export default function StoryReader(props: StoryReaderProps) {
@@ -50,6 +52,8 @@ export default function StoryReader(props: StoryReaderProps) {
       <PremiumBookReader
         book={props.premiumBook}
         editableStoryId={props.editablePremium ? props.storyId : undefined}
+        isEditing={props.editingPremium}
+        onEditionChanged={props.onPremiumEditionChanged}
       />
     );
   return <ChapterStoryReader {...props} />;

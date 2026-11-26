@@ -1,13 +1,14 @@
 'use client';
 
 import ModalPortal from '@/components/ModalPortal';
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, type ReactNode } from 'react';
 import Image from 'next/image';
 import { AlertCircle, AlertTriangle, ImageIcon, Trash2, Upload, X, Zap } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { toAbsoluteImageUrl } from '../utils/image-url';
 import CropperModal from './ai-image-editor/Cropper';
 import { useImageEditJob } from './ai-image-editor/useImageEditJob';
+import PremiumEditorDialog from './PremiumEditorDialog';
 
 interface Story {
   storyId: string;
@@ -18,7 +19,19 @@ interface Story {
   graphicalStyle?: string;
 }
 
-interface AIImageEditorProps {
+interface PremiumImageEdit {
+  canSubmit: boolean;
+  maxLength: number;
+  creditLabel?: string;
+  facingImageUri?: string;
+  warning?: string;
+  error?: string;
+  applyLabel: string;
+  busyLabel: string;
+  onSubmit: (instructions: string) => Promise<void>;
+}
+
+type AIImageEditorProps = {
   isOpen: boolean;
   onClose: () => void;
   story: Story;
@@ -28,9 +41,38 @@ interface AIImageEditorProps {
     chapterNumber?: number;
     title?: string;
   };
-  onImageEditSuccess: (updatedImageData: Record<string, unknown>) => void;
   onOptimisticUpdate?: (updatedImageData: Record<string, unknown>) => void;
   onRevertUpdate?: (originalImageData: Record<string, unknown>) => void;
+} & (
+  | {
+      premiumEdit?: never;
+      onImageEditSuccess: (updatedImageData: Record<string, unknown>) => void;
+    }
+  | {
+      premiumEdit: PremiumImageEdit;
+      onImageEditSuccess?: never;
+    }
+);
+
+function ImageEditorFrame({
+  children,
+  onDismiss,
+}: {
+  children: ReactNode;
+  onDismiss?: () => void;
+}) {
+  if (onDismiss) {
+    return (
+      <PremiumEditorDialog labelId="ai-image-editor-title" onDismiss={onDismiss}>
+        {children}
+      </PremiumEditorDialog>
+    );
+  }
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-2 sm:p-4">
+      {children}
+    </div>
+  );
 }
 
 export default function AIImageEditor({
@@ -39,6 +81,7 @@ export default function AIImageEditor({
   story,
   imageData,
   onImageEditSuccess,
+  premiumEdit,
   onOptimisticUpdate,
   onRevertUpdate,
 }: AIImageEditorProps) {
@@ -290,6 +333,17 @@ export default function AIImageEditor({
 
   // Handle image edit
   const handleImageEdit = async () => {
+    if (premiumEdit) {
+      if (isLoading || !premiumEdit.canSubmit || !userRequest.trim()) return;
+      setIsLoading(true);
+      try {
+        await premiumEdit.onSubmit(userRequest.trim());
+      } finally {
+        setIsLoading(false);
+      }
+      return;
+    }
+
     // Option A: Edit existing image
     if (mode === 'edit') {
       if (!userRequest.trim()) {
@@ -358,7 +412,7 @@ export default function AIImageEditor({
     setIsLoading(false);
   };
   const handleReplaceImage = async () => {
-    if (!newImageGenerated) return;
+    if (premiumEdit || !newImageGenerated) return;
 
     setIsReplacing(true);
     try {
@@ -445,15 +499,19 @@ export default function AIImageEditor({
       ? `${generatedImageUrl}${generatedImageUrl.includes('?') ? '&' : '?'}preview=${newImagePreviewNonce}`
       : generatedImageUrl;
   const displayedImageUrl = newImageGenerated ? generatedPreviewUrl : currentImageUrl;
+  const maxLength = premiumEdit?.maxLength ?? 1000;
+  const closeEditor = () => {
+    if (!premiumEdit || !isLoading) onClose();
+  };
 
   return (
     <ModalPortal>
-      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-2 sm:p-4">
+      <ImageEditorFrame onDismiss={premiumEdit ? closeEditor : undefined}>
         <div
           className="flex max-h-[calc(100dvh-1rem)] w-full max-w-4xl flex-col overflow-hidden rounded-xl bg-white sm:max-h-[90vh]"
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby="ai-image-editor-title"
+          role={premiumEdit ? undefined : 'dialog'}
+          aria-modal={premiumEdit ? undefined : true}
+          aria-labelledby={premiumEdit ? undefined : 'ai-image-editor-title'}
         >
           {/* Header */}
           <div className="flex items-center justify-between gap-3 border-b border-gray-200 px-3 py-3 sm:p-5">
@@ -470,7 +528,8 @@ export default function AIImageEditor({
             </div>
             <button
               type="button"
-              onClick={onClose}
+              onClick={closeEditor}
+              disabled={Boolean(premiumEdit && isLoading)}
               className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-gray-200 transition-colors hover:bg-gray-50 sm:h-10 sm:w-10"
               aria-label={tActions('close')}
             >
@@ -500,7 +559,9 @@ export default function AIImageEditor({
                       : 'border-transparent bg-gray-50'
                   }`}
                 >
-                  <div className="relative mx-auto max-w-sm">
+                  <div
+                    className={`relative mx-auto ${premiumEdit?.facingImageUri ? 'grid max-w-2xl grid-cols-2' : 'max-w-sm'}`}
+                  >
                     <Image
                       key={displayedImageUrl}
                       src={displayedImageUrl}
@@ -508,10 +569,22 @@ export default function AIImageEditor({
                         newImageGenerated ? tAIImageEditor('generatedImageAlt') : getImageTitle()
                       }
                       width={1024}
-                      height={1536}
+                      height={premiumEdit ? 1024 : 1536}
+                      unoptimized={Boolean(premiumEdit)}
                       sizes="(max-width: 640px) calc(100vw - 3rem), 384px"
                       className="w-full h-auto rounded-lg object-cover"
                     />
+                    {premiumEdit?.facingImageUri && (
+                      <Image
+                        src={premiumEdit.facingImageUri}
+                        alt=""
+                        width={1024}
+                        height={1024}
+                        unoptimized
+                        sizes="(max-width: 640px) 50vw, 320px"
+                        className="h-auto w-full rounded-lg object-cover"
+                      />
+                    )}
                   </div>
                   {newImageGenerated && (
                     <p className="mt-3 text-center text-sm text-green-700" role="status">
@@ -524,30 +597,32 @@ export default function AIImageEditor({
               {!newImageGenerated && (
                 <>
                   {/* Mode Toggle (now placed below image) */}
-                  <div className="flex gap-2" role="tablist">
-                    <button
-                      type="button"
-                      role="tab"
-                      onClick={() => setMode('edit')}
-                      className={`min-h-11 min-w-0 flex-1 rounded-lg border px-3 py-2 text-sm font-medium transition-colors sm:flex-none sm:px-4 ${mode === 'edit' ? 'bg-primary text-white border-primary' : 'bg-base-100 text-base-content border-base-300 hover:bg-base-200'}`}
-                      aria-selected={mode === 'edit'}
-                      aria-controls="ai-image-editor-edit-panel"
-                      id="ai-image-editor-edit-tab"
-                    >
-                      {tAIImageEditor('modes.edit')}
-                    </button>
-                    <button
-                      type="button"
-                      role="tab"
-                      onClick={handleSelectUploadMode}
-                      className={`min-h-11 min-w-0 flex-1 rounded-lg border px-3 py-2 text-sm font-medium transition-colors sm:flex-none sm:px-4 ${mode === 'upload' ? 'bg-primary text-white border-primary' : 'bg-base-100 text-base-content border-base-300 hover:bg-base-200'}`}
-                      aria-selected={mode === 'upload'}
-                      aria-controls="ai-image-editor-upload-panel"
-                      id="ai-image-editor-upload-tab"
-                    >
-                      {tAIImageEditor('modes.upload')}
-                    </button>
-                  </div>
+                  {!premiumEdit && (
+                    <div className="flex gap-2" role="tablist">
+                      <button
+                        type="button"
+                        role="tab"
+                        onClick={() => setMode('edit')}
+                        className={`min-h-11 min-w-0 flex-1 rounded-lg border px-3 py-2 text-sm font-medium transition-colors sm:flex-none sm:px-4 ${mode === 'edit' ? 'bg-primary text-white border-primary' : 'bg-base-100 text-base-content border-base-300 hover:bg-base-200'}`}
+                        aria-selected={mode === 'edit'}
+                        aria-controls="ai-image-editor-edit-panel"
+                        id="ai-image-editor-edit-tab"
+                      >
+                        {tAIImageEditor('modes.edit')}
+                      </button>
+                      <button
+                        type="button"
+                        role="tab"
+                        onClick={handleSelectUploadMode}
+                        className={`min-h-11 min-w-0 flex-1 rounded-lg border px-3 py-2 text-sm font-medium transition-colors sm:flex-none sm:px-4 ${mode === 'upload' ? 'bg-primary text-white border-primary' : 'bg-base-100 text-base-content border-base-300 hover:bg-base-200'}`}
+                        aria-selected={mode === 'upload'}
+                        aria-controls="ai-image-editor-upload-panel"
+                        id="ai-image-editor-upload-tab"
+                      >
+                        {tAIImageEditor('modes.upload')}
+                      </button>
+                    </div>
+                  )}
 
                   {/* Helper / Upload Section (Option B) */}
                   {mode === 'upload' && (
@@ -672,28 +747,38 @@ export default function AIImageEditor({
                   {/* User Request / Prompt Section */}
                   {mode === 'edit' && (
                     <div className="space-y-3">
-                      <label className="block text-sm font-medium text-gray-700">
+                      <label
+                        htmlFor="ai-image-editor-instructions"
+                        className="block text-sm font-medium text-gray-700"
+                      >
                         {tAIImageEditor('labels.describeChanges')}
                       </label>
                       <textarea
+                        id="ai-image-editor-instructions"
                         value={userRequest}
                         onChange={(e) => setUserRequest(e.target.value)}
+                        disabled={Boolean(premiumEdit && isLoading)}
                         placeholder={tAIImageEditor('requestPlaceholder')}
                         className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 resize-none"
                         rows={4}
-                        maxLength={1000}
+                        maxLength={maxLength}
                       />
                       <div className="flex justify-between text-xs text-gray-500">
                         <span>
                           {tAIImageEditor('characterCount', {
                             count: userRequest.length,
-                            max: 1000,
+                            max: maxLength,
                           })}
                         </span>
                         <span className="text-primary">
-                          {tAIImageEditor('helper.editUsesCredit')}
+                          {premiumEdit
+                            ? premiumEdit.creditLabel
+                            : tAIImageEditor('helper.editUsesCredit')}
                         </span>
                       </div>
+                      {premiumEdit?.warning && (
+                        <p className="text-sm text-gray-600">{premiumEdit.warning}</p>
+                      )}
                     </div>
                   )}
                   {mode === 'upload' && (
@@ -717,11 +802,11 @@ export default function AIImageEditor({
               )}
 
               {/* Error Display */}
-              {error && (
-                <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+              {(error || premiumEdit?.error) && (
+                <div className="bg-red-50 border border-red-200 rounded-lg p-4" role="alert">
                   <div className="flex items-center space-x-2">
                     <AlertCircle className="w-4 h-4 text-red-600" />
-                    <span className="text-sm text-red-600">{error}</span>
+                    <span className="text-sm text-red-600">{error || premiumEdit?.error}</span>
                   </div>
                 </div>
               )}
@@ -730,7 +815,8 @@ export default function AIImageEditor({
               <div className="flex items-center justify-end gap-2 sm:gap-3">
                 <button
                   type="button"
-                  onClick={onClose}
+                  onClick={closeEditor}
+                  disabled={Boolean(premiumEdit && isLoading)}
                   className="min-h-11 shrink-0 px-3 py-2 text-gray-600 transition-colors hover:text-gray-800 sm:px-4"
                 >
                   {tAIImageEditor('cancelButton')}
@@ -760,6 +846,7 @@ export default function AIImageEditor({
                     onClick={handleImageEdit}
                     disabled={
                       isLoading ||
+                      (premiumEdit && !premiumEdit.canSubmit) ||
                       (mode === 'upload' &&
                         (processingUserImage ||
                           !userImageUri ||
@@ -771,19 +858,20 @@ export default function AIImageEditor({
                     {isLoading ? (
                       <>
                         <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                        <span>{tAIImageEditor('loading')}</span>
+                        <span>{premiumEdit?.busyLabel ?? tAIImageEditor('loading')}</span>
                       </>
                     ) : (
                       <>
                         <Zap className="w-4 h-4" />
                         <span>
-                          {mode === 'edit'
-                            ? tAIImageEditor('generateButton')
-                            : convertToStyle
+                          {premiumEdit?.applyLabel ??
+                            (mode === 'edit'
                               ? tAIImageEditor('generateButton')
-                              : userImageUri
-                                ? tAIImageEditor('buttons.applyPhoto')
-                                : tAIImageEditor('generateButton')}
+                              : convertToStyle
+                                ? tAIImageEditor('generateButton')
+                                : userImageUri
+                                  ? tAIImageEditor('buttons.applyPhoto')
+                                  : tAIImageEditor('generateButton'))}
                         </span>
                       </>
                     )}
@@ -805,7 +893,7 @@ export default function AIImageEditor({
             processing={processingUserImage}
           />
         )}
-      </div>
+      </ImageEditorFrame>
     </ModalPortal>
   );
 }

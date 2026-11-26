@@ -19,12 +19,15 @@
   "imageUnavailable": "Illustration indisponible",
   "generationProgress": "Nous préparons les pages, créons les illustrations et mettons votre livre en forme pour la lecture.",
   "generationInterrupted": "Le livre n’a pas pu être terminé. Vous pouvez consulter son état dans Mes histoires.",
-  "editSpread": "Modifier les pages {first}–{last}",
-  "editPrompt": "Décrivez la modification de l’illustration",
+  "editIllustration": "Modifier l’illustration · {page}",
+  "editText": "Modifier le texte · {page}",
+  "editTextBody": "Texte de la page",
+  "editTextFit": "Le texte ne tient pas sur la page. Raccourcissez-le et réessayez.",
   "editWarning": "Une modification importante peut affecter la continuité de l’image entre les deux pages.",
-  "editCost": "Coût : {count} crédits",
+  "editCost": "Coût : {count, plural, one {# crédit} other {# crédits}}",
   "editBalance": "Vous avez besoin de plus de crédits pour cette modification.",
   "editError": "La modification a échoué. Rouvrez le livre ou réessayez.",
   "editBusy": "Mise à jour de l’illustration…",
+  "editRetryLater": "La mise à jour de l’illustration n’est pas terminée. Attendez quelques minutes, puis appliquez à nouveau la même modification.",
   "editApply": "Appliquer la modification"
 }

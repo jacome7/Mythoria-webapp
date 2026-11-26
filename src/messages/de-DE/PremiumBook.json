@@ -19,12 +19,15 @@
   "imageUnavailable": "Illustration nicht verfügbar",
   "generationProgress": "Wir planen die Seiten, erstellen die Illustrationen und bereiten Ihr Buch zum Lesen vor.",
   "generationInterrupted": "Das Buch konnte nicht fertiggestellt werden. Sie können den Status unter Meine Geschichten prüfen.",
-  "editSpread": "Seiten {first}–{last} bearbeiten",
-  "editPrompt": "Beschreibe die gewünschte Änderung am Bild",
+  "editIllustration": "Illustration bearbeiten · {page}",
+  "editText": "Text bearbeiten · {page}",
+  "editTextBody": "Seitentext",
+  "editTextFit": "Der Text passt nicht auf die Seite. Kürzen Sie ihn und versuchen Sie es erneut.",
   "editWarning": "Bei großen Änderungen passen die beiden Bildhälften möglicherweise nicht mehr genau zusammen.",
-  "editCost": "Kosten: {count} Credits",
+  "editCost": "Kosten: {count, plural, one {# Credit} other {# Credits}}",
   "editBalance": "Für diese Änderung brauchst du mehr Credits.",
   "editError": "Die Änderung konnte nicht übernommen werden. Öffne das Buch erneut oder versuche es noch einmal.",
   "editBusy": "Illustration wird aktualisiert…",
+  "editRetryLater": "Die Aktualisierung der Illustration ist noch nicht abgeschlossen. Warte ein paar Minuten und wende dann dieselbe Änderung erneut an.",
   "editApply": "Änderung übernehmen"
 }

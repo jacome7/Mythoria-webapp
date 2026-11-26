@@ -1,5 +1,11 @@
 import { premiumInvitationPath, type PremiumBookManifest } from './contract';
 
+interface PremiumPageTextEdit {
+  value: string;
+  maxLength: number;
+  allowEmpty?: boolean;
+}
+
 export interface PremiumBookReaderData {
   revision?: string;
   editionLayout?: PremiumBookManifest['editionLayout'];
@@ -16,6 +22,7 @@ export interface PremiumBookReaderData {
     number: number;
     kind: PremiumBookManifest['pages'][number]['kind'];
     text: string;
+    textEdit?: PremiumPageTextEdit;
     renderMode?: PremiumBookManifest['pages'][number]['renderMode'];
     composition?: PremiumBookManifest['spreads'][number]['composition'];
     image?: string;
@@ -24,6 +31,21 @@ export interface PremiumBookReaderData {
     link?: { href: string; label: string };
     textBox?: { x: number; y: number; width: number; height: number };
   }[];
+}
+
+function getTextEdit(
+  book: PremiumBookManifest,
+  page: PremiumBookManifest['pages'][number],
+): PremiumPageTextEdit | undefined {
+  if (page.kind === 'dedication') {
+    return { value: book.opening.dedication, maxLength: 2000, allowEmpty: true };
+  }
+  if (page.kind === 'synopsis') return { value: book.opening.synopsis, maxLength: 600 };
+  if (page.renderMode === 'typeset') return { value: page.text, maxLength: 420 };
+  if (!book.editionLayout && page.renderMode === undefined && page.textBox && page.text) {
+    return { value: page.text, maxLength: 110 };
+  }
+  return undefined;
 }
 
 export function premiumBookImagePath(
@@ -39,7 +61,7 @@ export function premiumBookImagePath(
 
 export function toPremiumBookReaderData(
   book: PremiumBookManifest,
-  shareToken?: string,
+  { shareToken, owned = false }: { shareToken?: string; owned?: boolean } = {},
 ): PremiumBookReaderData {
   const options = { revision: book.revision, shareToken };
   const imagePath = (image: string) => premiumBookImagePath(book.storyId, image, options);
@@ -59,6 +81,7 @@ export function toPremiumBookReaderData(
       number: page.number,
       kind: page.kind,
       text: page.text,
+      textEdit: owned ? getTextEdit(book, page) : undefined,
       renderMode: page.renderMode,
       composition: book.spreads.find((spread) => spread.id === page.spreadId)?.composition,
       image: page.reading && page.artwork ? imagePath(String(page.number)) : undefined,

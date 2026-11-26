@@ -54,8 +54,17 @@ export async function POST(request: Request, context: { params: Promise<{ storyI
     method: 'POST',
     body: JSON.stringify(edit),
     cache: 'no-store',
-  });
-  if (!result.ok) return NextResponse.json({ error: 'edit_failed' }, { status: result.status });
+  }).catch(() => null);
+  if (!result) return NextResponse.json({ error: 'edit_unavailable' }, { status: 503 });
+  if (!result.ok) {
+    if (result.status === 503) {
+      const details = await result.json().catch(() => null);
+      if (details?.code === 'premium_stage_busy') {
+        return NextResponse.json({ error: 'premium_stage_busy' }, { status: 503 });
+      }
+    }
+    return NextResponse.json({ error: 'edit_failed' }, { status: result.status });
+  }
   const prepared = z
     .object({ revision: z.literal(edit.correctionId), manifest: premiumBookAssetSchema })
     .parse(await result.json());
