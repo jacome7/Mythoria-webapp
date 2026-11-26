@@ -134,9 +134,11 @@ import { printRequests, stories } from '@/db/schema';
 import { LuluHttpError } from '@/lib/lulu/client';
 import { LULU_SKUS } from '@/lib/lulu/products';
 import { PREMIUM_SQUARE_PACKAGE } from './premium-edition';
+import { LuluAddressReviewError } from '@/lib/lulu/address-review';
 import {
   cancelSubmittedLuluOrder,
   correctSquareEdition,
+  correctPrintShipping,
   preparePrintOrderNow,
   printOrderView,
   processPrintProof,
@@ -617,7 +619,7 @@ describe('Lulu release safety', () => {
         Number(mismatch === 'the completed render'),
       );
       expect(mockValidate).not.toHaveBeenCalled();
-      expect(mockQuote).not.toHaveBeenCalled();
+      expect(mockQuote).toHaveBeenCalledWith(expect.objectContaining({ pageCount: 33 }));
       expect(send).not.toHaveBeenCalled();
     },
   );
@@ -654,7 +656,7 @@ describe('Lulu release safety', () => {
       expect(mockRender).toHaveBeenCalledTimes(1);
       expect(mockDimensions).not.toHaveBeenCalled();
       expect(mockValidate).not.toHaveBeenCalled();
-      expect(mockQuote).not.toHaveBeenCalled();
+      expect(mockQuote).toHaveBeenCalledWith(expect.objectContaining({ pageCount }));
       expect(send).not.toHaveBeenCalled();
     },
   );
@@ -702,7 +704,7 @@ describe('Lulu release safety', () => {
       fulfillment: { status: 'pending', proofSentAt: null, quote: null },
     });
     expect(send).not.toHaveBeenCalled();
-    expect(mockQuote).not.toHaveBeenCalled();
+    expect(mockQuote).toHaveBeenCalledWith(expect.objectContaining({ pageCount: 33 }));
     await expect(processPrintProof(id)).resolves.toMatchObject({
       fulfillment: { status: 'proof_ready', proof: { squareLuluValidated: true } },
     });
@@ -879,6 +881,98 @@ describe('Lulu release safety', () => {
       submitPrintOrder(order(), { ...approval, confirmedTotalEur: 29 }, actor),
     ).rejects.toMatchObject({ code: 'print_not_approved' });
     expect(mockQuote).not.toHaveBeenCalled();
+    expect(mockSubmit).not.toHaveBeenCalled();
+  });
+
+  it('identifies a one-copy A5 staff proof without a premium revision', async () => {
+    const staff = order({ copies: 1 });
+    staff.request.printingOptions = {
+      adminPrintOrder: true,
+      orderKind: 'staff_proof',
+      bookFormat: 'standard_a5',
+    };
+    await expect(printOrderView(staff)).resolves.toMatchObject({
+      orderOrigin: 'staff_proof',
+      proofOnly: true,
+      purchaserEmail: null,
+    });
+  });
+
+  it('checks A5 shipping after initial pagination and stops before sizing the cover', async () => {
+    const pending = order();
+    Object.assign(pending.fulfillment, {
+      ticketId: id,
+      status: 'pending',
+      proof: null,
+      quote: null,
+      proofSentAt: null,
+    });
+    mockCurrentOrder = pending;
+    mockRender.mockResolvedValueOnce(proof);
+    mockQuote.mockRejectedValueOnce(new LuluAddressReviewError({ street1: 'Example 11' }));
+    const result = await processPrintProof(id);
+    expect(mockRender).toHaveBeenCalledTimes(1);
+    expect(mockQuote).toHaveBeenCalledWith(expect.objectContaining({ pageCount: proof.pageCount }));
+    expect(mockDimensions).not.toHaveBeenCalled();
+    expect(result.fulfillment).toMatchObject({ status: 'held', proofSentAt: null, quote: null });
+  });
+
+  it('holds a square order with the proposed fields before rendering or emailing', async () => {
+    process.env.LULU_PRINT_ENVIRONMENT = 'sandbox';
+    const pending = squareOrder();
+    mockCurrentOrder = pending;
+    Object.assign(pending.fulfillment, {
+      status: 'pending',
+      ticketId: id,
+      proof: null,
+      quote: null,
+      proofSentAt: null,
+    });
+    mockQuote.mockRejectedValueOnce(new LuluAddressReviewError({ postcode: '1000-012' }));
+    const result = await processPrintProof(id);
+    expect(result.fulfillment).toMatchObject({
+      status: 'held',
+      quote: null,
+      proofSentAt: null,
+      shippingSnapshot: {
+        postcode: '1000-001',
+        luluAddressReview: {
+          proofVersion: 1,
+          suggested: { postcode: '1000-012' },
+        },
+      },
+    });
+    expect(mockRender).not.toHaveBeenCalled();
+    expect(mockSubmit).not.toHaveBeenCalled();
+    await expect(
+      correctPrintShipping(result, shippingSnapshot, 'staff@example.test', 2),
+    ).rejects.toMatchObject({ code: 'stale_print_correction' });
+    const corrected = await correctPrintShipping(
+      result,
+      { ...shippingSnapshot, postcode: '1000-012' },
+      'staff@example.test',
+      1,
+    );
+    expect(corrected.fulfillment).toMatchObject({
+      status: 'held',
+      proofVersion: 2,
+      shippingSnapshot: { postcode: '1000-012' },
+    });
+    expect(corrected.fulfillment.shippingSnapshot).not.toHaveProperty('luluAddressReview');
+  });
+
+  it('preserves the suggested fields if the address changes at final release', async () => {
+    mockQuote.mockRejectedValueOnce(new LuluAddressReviewError({ city: 'Porto' }));
+    const result = await submitPrintOrder(
+      order(),
+      { confirmationId, confirmedTotalEur: 30 },
+      'staff@example.test',
+    );
+    expect(result.fulfillment).toMatchObject({
+      status: 'held',
+      quote: null,
+      shippingSnapshot: { city: 'Lisbon', luluAddressReview: { suggested: { city: 'Porto' } } },
+    });
     expect(mockSubmit).not.toHaveBeenCalled();
   });
 

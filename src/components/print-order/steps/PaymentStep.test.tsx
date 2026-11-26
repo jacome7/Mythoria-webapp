@@ -31,6 +31,7 @@ async function show(
   hardPriceActive: boolean,
   country = 'PT',
   address: Partial<ComponentProps<typeof PaymentStep>['address']> = {},
+  showDeliveryRoles = false,
 ) {
   const onPlaceOrder = jest.fn();
   const payloads: Record<string, unknown> = {
@@ -76,6 +77,7 @@ async function show(
         onBack={() => {}}
         onPlaceOrder={onPlaceOrder}
         loading={false}
+        showDeliveryRoles={showDeliveryRoles}
       />
     );
   }
@@ -243,4 +245,43 @@ it('keeps manual checkout available without collecting a carrier email or tax id
   fireEvent.click(place);
   fireEvent.click(screen.getByRole('button', { name: 'buttons.confirm' }));
   expect(onPlaceOrder.mock.calls[0][0]).not.toHaveProperty('recipient');
+});
+
+it('keeps the proof email with the purchaser and requires deliberate gift recipient details', async () => {
+  const { place, onPlaceOrder } = await show(
+    { luluDefault: false, hardcoverAvailable: false },
+    false,
+    'PT',
+    { line2: 'Floor 2' },
+    true,
+  );
+  expect(place).toBeDisabled();
+  expect(screen.getByText('reader@example.org')).toBeVisible();
+  const role = screen.getByRole('combobox', { name: 'payment.deliveryRole' });
+  fireEvent.change(role, { target: { value: 'purchaser' } });
+  expect(screen.getByLabelText('payment.recipientEmail')).toHaveValue('reader@example.org');
+  fireEvent.change(role, { target: { value: 'someone_else' } });
+  expect(screen.getByLabelText('payment.recipientEmail')).toHaveValue('');
+  expect(screen.getByLabelText('payment.recipientName')).toHaveValue('');
+  expect(place).toBeDisabled();
+  fireEvent.change(screen.getByLabelText('payment.recipientName'), {
+    target: { value: 'Gift Recipient' },
+  });
+  fireEvent.change(screen.getByLabelText('payment.recipientEmail'), {
+    target: { value: 'gift@example.org' },
+  });
+  fireEvent.click(place);
+  expect(screen.getByText('Floor 2')).toBeVisible();
+  expect(screen.getByText('Portugal')).toBeVisible();
+  fireEvent.click(screen.getByRole('button', { name: 'buttons.confirm' }));
+  expect(onPlaceOrder).toHaveBeenCalledWith(
+    expect.objectContaining({
+      recipientSource: 'someone_else',
+      recipient: {
+        name: 'Gift Recipient',
+        email: 'gift@example.org',
+        phone_number: '',
+      },
+    }),
+  );
 });

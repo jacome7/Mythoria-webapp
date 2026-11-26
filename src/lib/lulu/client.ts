@@ -1,5 +1,6 @@
 import { createHmac, timingSafeEqual } from 'node:crypto';
 import { z } from 'zod';
+import { checkLuluAddress } from './address-review';
 
 export { LULU_SKUS } from './products';
 
@@ -323,21 +324,11 @@ export async function quoteLuluOrder(
           shipping_address: input.shippingAddress,
         }),
       );
-    const suggested = q.shipping_address?.suggested_address;
-    if (
-      suggested &&
-      Object.entries(suggested).some(([key, value]) => {
-        if (value == null) return false;
-        const proposed = String(value).trim();
-        const current = String(
-          input.shippingAddress[key as keyof LuluShippingAddress] ?? '',
-        ).trim();
-        return key === 'city'
-          ? proposed.toLowerCase() !== current.toLowerCase()
-          : proposed !== current;
-      })
-    )
-      throw new Error('LULU_ADDRESS_CONFIRMATION_REQUIRED');
+    checkLuluAddress(
+      input.shippingAddress,
+      q.shipping_address?.suggested_address,
+      q.shipping_address?.warnings,
+    );
     const lineItemCost = q.line_item_costs?.[0]?.total_cost_excl_tax;
     const shipCost = q.shipping_cost?.total_cost_excl_tax;
     quotes.push({

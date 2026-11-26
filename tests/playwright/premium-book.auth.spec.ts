@@ -167,7 +167,7 @@ test.describe('Premium book format', () => {
     await expect(page.getByRole('button', { name: dedicationEdit })).toHaveCount(0);
   });
 
-  test('orders one paid square hardcover after opening print from the reader and narrow My Stories', async ({
+  test('recovers one paid square hardcover gift after losing the checkout response on mobile', async ({
     page,
   }) => {
     const { storyId, opening, revision } = publishedBook;
@@ -175,6 +175,7 @@ test.describe('Premium book format', () => {
     const checkoutPath = `/pt-PT/stories/print/${storyId}`;
     const creditsPath = '/api/my-credits';
     const requestsPath = '/api/print-requests';
+    const checkoutRequestPath = `${requestsPath}/checkout`;
 
     await page.setViewportSize({ width: 1150, height: 850 });
     await page.goto(`/pt-PT/stories/read/${storyId}`);
@@ -200,33 +201,58 @@ test.describe('Premium book format', () => {
     await page.getByRole('button', { name: copy.buttons.continue }).click();
     await expect(page.getByText(copy.payment.squareHardcoverTitle)).toBeVisible();
     await expect(page.getByText(copy.payment.softcoverTitle)).toHaveCount(0);
+    await page.getByLabel(copy.payment.deliveryRole).selectOption('someone_else');
+    await page.getByLabel(copy.payment.recipientName).fill('Inês da Silva');
+    await page.getByLabel(copy.payment.recipientEmail).fill('recipient@fixture.invalid');
+    await expect(page.getByLabel(copy.payment.taxId)).toHaveCount(0);
     await page.getByRole('button', { name: copy.buttons.placeOrder }).click();
-    const submitted = page.waitForResponse(
-      (response) =>
-        new URL(response.url()).pathname === requestsPath && response.request().method() === 'POST',
-    );
+    let submitted: { body: unknown; requestId: string; intentId: string } | undefined;
+    await page.route(`**${checkoutRequestPath}`, async (route) => {
+      if (route.request().method() !== 'POST') return route.fallback();
+      const body = route.request().postDataJSON();
+      const response = await route.fetch();
+      expect(response.ok()).toBe(true);
+      const order = await response.json();
+      expect(order).toMatchObject({ success: true, request: { storyId, status: 'requested' } });
+      submitted = { body, requestId: order.request.id, intentId: body.checkout.intentId };
+      await route.abort();
+    });
     await page.getByRole('button', { name: copy.buttons.confirm }).click();
-    const response = await submitted;
-    const checkout = response.request().postDataJSON();
+    await expect(page.getByRole('button', { name: copy.buttons.checkOrder })).toBeVisible();
+    if (!submitted) throw new Error('The browser did not submit the print order.');
+    const { body: checkout, requestId, intentId } = submitted;
     expect(checkout).toMatchObject({
       checkout: {
         storyId,
         numberOfCopies: 1,
         totalCost: 27,
+        recipientSource: 'someone_else',
+        recipient: { name: 'Inês da Silva', email: 'recipient@fixture.invalid' },
         printingOption: { serviceCode: 'printedHardCover', editionRevision: revision },
       },
     });
-    const order = await response.json();
-    expect(order).toMatchObject({ success: true, request: { storyId, status: 'requested' } });
+
+    await page.unroute(`**${checkoutRequestPath}`);
+    await page.reload();
+    const recovered = page.waitForResponse(
+      (response) =>
+        new URL(response.url()).pathname === checkoutRequestPath &&
+        response.request().method() === 'POST',
+    );
+    await page.getByRole('button', { name: copy.buttons.checkOrder }).click();
+    const response = await recovered;
+    expect(response.ok()).toBe(true);
+    expect(response.request().postDataJSON()).toMatchObject({ recover: { storyId, intentId } });
+    expect((await response.json()).request.id).toBe(requestId);
     await expect(page.getByRole('heading', { name: copy.confirmation.title })).toBeVisible();
 
-    const replay = await page.request.post(requestsPath, { data: checkout });
+    const replay = await page.request.post(checkoutRequestPath, { data: checkout });
     expect(replay.ok()).toBe(true);
-    expect((await replay.json()).request.id).toBe(order.request.id);
+    expect((await replay.json()).request.id).toBe(requestId);
     const orderList = await page.request.get(`${requestsPath}?storyId=${storyId}`);
     expect(orderList.ok()).toBe(true);
     expect((await orderList.json()).requests.map((request: { id: string }) => request.id)).toEqual([
-      order.request.id,
+      requestId,
     ]);
     const after = await page.request.get(creditsPath);
     expect(after.ok()).toBe(true);

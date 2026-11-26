@@ -2,6 +2,7 @@
 
 import { useTranslations } from 'next-intl';
 import { Plus } from 'lucide-react';
+import { useEffect, useState } from 'react';
 import AddressCard, { type Address as AddressType } from '@/components/AddressCard';
 
 interface Address {
@@ -17,6 +18,7 @@ interface Address {
 }
 
 interface AddressStepProps {
+  storyId?: string;
   addresses: Address[];
   selectedAddress: Address | null;
   onSelectAddress: (address: Address) => void;
@@ -32,6 +34,7 @@ interface AddressStepProps {
 }
 
 export default function AddressStep({
+  storyId,
   addresses,
   selectedAddress,
   onSelectAddress,
@@ -46,6 +49,28 @@ export default function AddressStep({
   onCancelAddressEdit,
 }: AddressStepProps) {
   const tPrintOrder = useTranslations('PrintOrder');
+  const [availability, setAvailability] = useState<{
+    luluDefault: boolean;
+    squareEditionRevision?: string;
+    squareLuluCustomerCountries?: string[];
+  }>();
+
+  useEffect(() => {
+    if (!storyId) return;
+    const controller = new AbortController();
+    void fetch('/api/print-requests/options?' + new URLSearchParams({ storyId }), {
+      signal: controller.signal,
+    })
+      .then(async (response) => {
+        if (response.ok) setAvailability(await response.json());
+      })
+      .catch(() => {
+        // Payment rechecks the provider and validates the frozen address before purchase.
+      });
+    return () => controller.abort();
+  }, [storyId]);
+
+  const squareDestinations = availability?.squareLuluCustomerCountries ?? [];
 
   return (
     <div>
@@ -62,6 +87,11 @@ export default function AddressStep({
           onCancel={onCancelAddressEdit}
           hideAddressType={true}
           shippingAutocomplete
+          requiresLuluAddress={(country) =>
+            availability?.squareEditionRevision
+              ? squareDestinations.includes(country)
+              : Boolean(availability?.luluDefault)
+          }
           defaultAddressType="delivery"
         />
       ) : (

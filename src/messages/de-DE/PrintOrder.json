@@ -74,7 +74,15 @@
       "addressTooLong": "Gehe zurück und kürze den Ortsnamen und jede Adresszeile auf höchstens 30 Zeichen.",
       "postalCodeRequired": "Gehe zurück und ergänze die Postleitzahl der Lieferadresse.",
       "subdivisionRequired": "Gehe zurück und gib das Kürzel für den Bundesstaat, die Provinz oder die Region ein.",
-      "spanishProvinceRequired": "Geh zurück und gib den Namen oder das Kürzel der Provinz ein."
+      "spanishProvinceRequired": "Geh zurück und gib den Namen oder das Kürzel der Provinz ein.",
+      "purchaser": "Käufer",
+      "proofRecipient": "Druckfahne geht an",
+      "deliveryRole": "Wer soll das gedruckte Buch erhalten?",
+      "chooseDeliveryRole": "Empfänger auswählen",
+      "deliveryToMe": "Ich",
+      "deliveryToSomeoneElse": "Jemand anderes",
+      "shipTo": "Lieferung an",
+      "optionalRecipientPhone": "Telefonnummer für den Versanddienst (optional)"
     },
     "confirmation": {
       "title": "Bestellung erfolgreich aufgegeben!",

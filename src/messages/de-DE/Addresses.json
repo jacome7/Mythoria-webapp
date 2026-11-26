@@ -4,7 +4,11 @@
     "editAddress": "Adresse bearbeiten",
     "confirmDelete": "Bist du sicher, dass du diese Adresse löschen möchtest?",
     "validation": {
-      "requiredFields": "Bitte fülle alle Pflichtfelder aus (Adresszeile 1, Stadt, Land)"
+      "requiredFields": "Bitte fülle alle Pflichtfelder aus (Adresszeile 1, Stadt, Land)",
+      "addressTooLong": "Verwende höchstens 30 Zeichen für den Ort und jede Adresszeile.",
+      "postalCodeRequired": "Gib die Postleitzahl ein.",
+      "spanishProvinceRequired": "Gib den Namen oder das Kürzel der Provinz ein.",
+      "subdivisionRequired": "Gib das Kürzel des Bundesstaats, der Provinz oder der Region ein."
     },
     "errors": {
       "saveFailed": "Adresse konnte nicht gespeichert werden. Bitte versuche es erneut.",
@@ -26,7 +30,8 @@
       "city": "Stadt eingeben",
       "stateRegion": "Bundesland oder Region eingeben",
       "postalCode": "Postleitzahl eingeben",
-      "phone": "Telefonnummer eingeben"
+      "phone": "Telefonnummer eingeben",
+      "country": "Land auswählen"
     },
     "types": {
       "delivery": "Lieferadresse",
@@ -49,7 +54,17 @@
     },
     "buttons": {
       "save": "Adresse speichern",
-      "cancel": "Abbrechen"
+      "cancel": "Abbrechen",
+      "addLine2": "Zweite Adresszeile hinzufügen",
+      "deleteAddress": "Adresse löschen",
+      "selectedAddress": "Adresse ausgewählt",
+      "useAddress": "Diese Adresse verwenden"
+    },
+    "regionLabels": {
+      "state": "Bundesstaat",
+      "province": "Provinz",
+      "provinceTerritory": "Provinz oder Territorium",
+      "region": "Region"
     }
   }
 }

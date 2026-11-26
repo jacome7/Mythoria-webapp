@@ -4,7 +4,11 @@
     "editAddress": "Editar Morada",
     "confirmDelete": "Tem a certeza que quer eliminar esta morada?",
     "validation": {
-      "requiredFields": "Por favor preencha todos os campos obrigatórios (Linha de Morada 1, Cidade, País)"
+      "requiredFields": "Por favor preencha todos os campos obrigatórios (Linha de Morada 1, Cidade, País)",
+      "addressTooLong": "Use até 30 caracteres para a localidade e para cada linha da morada.",
+      "postalCodeRequired": "Indique o código postal.",
+      "spanishProvinceRequired": "Indique o nome ou o código da província.",
+      "subdivisionRequired": "Indique o código do estado, província ou região."
     },
     "errors": {
       "saveFailed": "Falha ao guardar morada. Por favor tente novamente.",
@@ -26,7 +30,8 @@
       "city": "Insira a cidade",
       "stateRegion": "Insira estado ou região",
       "postalCode": "Insira o código postal",
-      "phone": "Insira o número de telefone"
+      "phone": "Insira o número de telefone",
+      "country": "Selecione um país"
     },
     "types": {
       "delivery": "Entrega",
@@ -49,7 +54,17 @@
     },
     "buttons": {
       "save": "Guardar Morada",
-      "cancel": "Cancelar"
+      "cancel": "Cancelar",
+      "addLine2": "Adicionar uma segunda linha à morada",
+      "deleteAddress": "Eliminar morada",
+      "selectedAddress": "Morada selecionada",
+      "useAddress": "Usar esta morada"
+    },
+    "regionLabels": {
+      "state": "Estado",
+      "province": "Província",
+      "provinceTerritory": "Província ou território",
+      "region": "Região"
     }
   }
 }

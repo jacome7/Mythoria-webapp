@@ -47,10 +47,8 @@ type Step = 'story' | 'address' | 'payment';
 
 interface PrintOrderSubmission {
   body: string;
-  storageKey: string;
-  storyId: string;
-  numberOfCopies: number;
-  totalCost: number;
+  numberOfCopies?: number;
+  totalCost?: number;
 }
 
 interface PrintOrderContentProps {
@@ -59,7 +57,7 @@ interface PrintOrderContentProps {
 
 export default function PrintOrderContent({ storyId }: PrintOrderContentProps) {
   const [accepted, setAccepted] = useState(false);
-  const intent = useRef<{ key: string; id: string } | null>(null);
+  const storageKey = `mythoria:print-intent:story:${storyId}`;
   const submittingOrder = useRef(false);
   const locale = useLocale();
   const tPrintOrder = useTranslations('PrintOrder');
@@ -83,6 +81,8 @@ export default function PrintOrderContent({ storyId }: PrintOrderContentProps) {
   const [error, setError] = useState<string | null>(null);
   const [orderError, setOrderError] = useState<string | null>(null);
   const [pendingSubmission, setPendingSubmission] = useState<PrintOrderSubmission | null>(null);
+  const [recoveringIntent, setRecoveringIntent] = useState<string | null>(null);
+  const [topUpRequired, setTopUpRequired] = useState(false);
   const [paymentRefreshVersion, setPaymentRefreshVersion] = useState(0);
   const [showCreateAddress, setShowCreateAddress] = useState(false);
   const [editingAddress, setEditingAddress] = useState<Address | null>(null);
@@ -133,6 +133,12 @@ export default function PrintOrderContent({ storyId }: PrintOrderContentProps) {
   };
 
   useEffect(() => {
+    try {
+      const stored = sessionStorage.getItem(storageKey);
+      if (stored) setRecoveringIntent(stored);
+    } catch {
+      // Checkout reports a failure before submission if browser storage is unavailable.
+    }
     loadStoryData();
     loadAddresses();
   }, [storyId]); // eslint-disable-line react-hooks/exhaustive-deps
@@ -153,57 +159,48 @@ export default function PrintOrderContent({ storyId }: PrintOrderContentProps) {
       setOrderLoading(true);
       setOrderError(null);
       if (!submission) {
-        if (!details || !story || !selectedAddress || !selectedPrintingOption) {
-          setOrderError(tPrintOrder('errors.missingRequiredFields'));
-          return;
-        }
-        if (story.editionRevision !== selectedPrintingOption.editionRevision) {
-          await reviewCurrentEdition();
-          return;
-        }
-        const { numberOfCopies, totalCost, recipient } = details;
-        const { serviceCode, editionRevision } = selectedPrintingOption;
         const analyticsContext = await getGoogleAnalyticsContext();
-        const key = JSON.stringify([
-          story.storyId,
-          selectedAddress.addressId,
-          serviceCode,
-          numberOfCopies,
-          totalCost,
-          recipient,
-          ...(editionRevision ? [editionRevision] : []),
-        ]);
-        const hash = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(key));
-        const fingerprint = Array.from(new Uint8Array(hash), (byte) =>
-          byte.toString(16).padStart(2, '0'),
-        ).join('');
-        const storageKey = 'mythoria:print-intent:' + fingerprint;
-        if (intent.current?.key !== key) {
-          const id = sessionStorage.getItem(storageKey) ?? crypto.randomUUID();
-          sessionStorage.setItem(storageKey, id);
-          intent.current = { key, id };
+        if (recoveringIntent) {
+          submission = {
+            body: JSON.stringify({
+              recover: { storyId, intentId: recoveringIntent, analyticsContext },
+            }),
+          };
+        } else {
+          if (!details || !story || !selectedAddress || !selectedPrintingOption) {
+            setOrderError(tPrintOrder('errors.missingRequiredFields'));
+            return;
+          }
+          if (story.editionRevision !== selectedPrintingOption.editionRevision) {
+            await reviewCurrentEdition();
+            return;
+          }
+          const { numberOfCopies, totalCost, recipient, recipientSource } = details;
+          const { serviceCode, editionRevision } = selectedPrintingOption;
+          const intentId = sessionStorage.getItem(storageKey) ?? crypto.randomUUID();
+          // Persist before submitting so a lost response can be recovered without saving contact details.
+          sessionStorage.setItem(storageKey, intentId);
+          submission = {
+            numberOfCopies,
+            totalCost,
+            body: JSON.stringify({
+              checkout: {
+                storyId: story.storyId,
+                shippingId: selectedAddress.addressId,
+                recipient,
+                recipientSource,
+                intentId,
+                printingOption: { serviceCode, editionRevision },
+                totalCost,
+                numberOfCopies,
+                analyticsContext,
+              },
+            }),
+          };
         }
-        submission = {
-          storageKey,
-          storyId: story.storyId,
-          numberOfCopies,
-          totalCost,
-          body: JSON.stringify({
-            checkout: {
-              storyId: story.storyId,
-              shippingId: selectedAddress.addressId,
-              recipient,
-              intentId: intent.current.id,
-              printingOption: { serviceCode, editionRevision },
-              totalCost,
-              numberOfCopies,
-              analyticsContext,
-            },
-          }),
-        };
       }
 
-      const response = await fetch('/api/print-requests', {
+      const response = await fetch('/api/print-requests/checkout', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -214,19 +211,20 @@ export default function PrintOrderContent({ storyId }: PrintOrderContentProps) {
       const data = await response.json();
 
       if (data.success) {
-        sessionStorage.removeItem(submission.storageKey);
-        intent.current = null;
-        setPendingSubmission(null);
         setAccepted(true);
-        trackPaidAction({
-          action_type: 'print',
-          story_id: submission.storyId,
-          credits_spent: submission.totalCost,
-        });
-        if (typeof data.adEventId === 'string' && data.adEventId) {
+        setPendingSubmission(null);
+        setRecoveringIntent(null);
+        setTopUpRequired(false);
+        sessionStorage.removeItem(storageKey);
+        const creditsSpent = data.request?.creditsSpent ?? submission.totalCost;
+        const copies = data.request?.copies ?? submission.numberOfCopies;
+        if (typeof creditsSpent === 'number') {
+          trackPaidAction({ action_type: 'print', story_id: storyId, credits_spent: creditsSpent });
+        }
+        if (typeof data.adEventId === 'string' && data.adEventId && typeof copies === 'number') {
           const printRequestId = typeof data.request?.id === 'string' ? data.request.id : '';
           trackOpenAiAdsEvent({
-            ...conversions.printOrderRequested(printRequestId, submission.numberOfCopies),
+            ...conversions.printOrderRequested(printRequestId, copies),
             eventId: data.adEventId,
           });
         }
@@ -235,7 +233,24 @@ export default function PrintOrderContent({ storyId }: PrintOrderContentProps) {
         setOrderError(tPrintOrder('errors.orderPending'));
       } else {
         setPendingSubmission(null);
-        if (response.status === 402) {
+        if (data.code === 'print_intent_not_found') {
+          setRecoveringIntent(null);
+          setTopUpRequired(false);
+          setOrderError(tPrintOrder('errors.orderFailed'));
+        } else if (
+          data.code === 'print_intent_conflict' ||
+          data.code === 'print_reserved_insufficient_credits'
+        ) {
+          setRecoveringIntent(sessionStorage.getItem(storageKey));
+          setTopUpRequired(data.code === 'print_reserved_insufficient_credits');
+          setOrderError(
+            tPrintOrder(
+              data.code === 'print_reserved_insufficient_credits'
+                ? 'errors.insufficientCredits'
+                : 'errors.orderPending',
+            ),
+          );
+        } else if (response.status === 402) {
           setOrderError(tPrintOrder('errors.insufficientCredits'));
           setPaymentRefreshVersion((version) => version + 1);
         } else if (data.code === 'print_edition_changed') {
@@ -381,6 +396,30 @@ export default function PrintOrderContent({ storyId }: PrintOrderContentProps) {
       </main>
     );
 
+  if (recoveringIntent) {
+    return (
+      <main className="mx-auto max-w-4xl space-y-4">
+        <h1 className="text-3xl font-bold">{tPrintOrder('title')}</h1>
+        <p role="status">{orderError ?? tPrintOrder('errors.orderPending')}</p>
+        <div className="flex flex-wrap gap-2">
+          <button
+            type="button"
+            className="btn btn-primary"
+            disabled={orderLoading}
+            onClick={() => void handlePlaceOrder()}
+          >
+            {tPrintOrder('buttons.checkOrder')}
+          </button>
+          {topUpRequired && (
+            <Link className="btn btn-outline" href={`/${locale}/pricing#buy-credits`}>
+              {tPrintOrder('payment.getMoreCredits')}
+            </Link>
+          )}
+        </div>
+      </main>
+    );
+  }
+
   if (loading) {
     return (
       <div className="max-w-4xl mx-auto">
@@ -476,6 +515,7 @@ export default function PrintOrderContent({ storyId }: PrintOrderContentProps) {
 
           {currentStep === 'address' && (
             <AddressStep
+              storyId={storyId}
               addresses={addresses}
               selectedAddress={selectedAddress}
               onSelectAddress={setSelectedAddress}
@@ -501,6 +541,7 @@ export default function PrintOrderContent({ storyId }: PrintOrderContentProps) {
                 onPlaceOrder={handlePlaceOrder}
                 loading={orderLoading}
                 refreshVersion={paymentRefreshVersion}
+                showDeliveryRoles
               />
             </fieldset>
           )}

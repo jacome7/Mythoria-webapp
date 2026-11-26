@@ -74,7 +74,15 @@
       "addressTooLong": "Go back and shorten the city and each address line to 30 characters or fewer.",
       "postalCodeRequired": "Go back and add the postal code to the shipping address.",
       "subdivisionRequired": "Go back and enter the short code for the state, province, or region.",
-      "spanishProvinceRequired": "Go back and enter the province name or its short code."
+      "spanishProvinceRequired": "Go back and enter the province name or its short code.",
+      "purchaser": "Purchaser",
+      "proofRecipient": "Proof sent to",
+      "deliveryRole": "Who will receive the printed book?",
+      "chooseDeliveryRole": "Choose a recipient",
+      "deliveryToMe": "Me",
+      "deliveryToSomeoneElse": "Someone else",
+      "shipTo": "Ship to",
+      "optionalRecipientPhone": "Carrier phone number (optional)"
     },
     "confirmation": {
       "title": "Order Placed Successfully!",

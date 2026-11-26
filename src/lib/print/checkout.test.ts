@@ -47,9 +47,14 @@ jest.mock('@/config/environment', () => ({
   }),
 }));
 
-import { getPublicPrintOptions, startPrintCheckout } from './checkout';
+import { getPublicPrintOptions, recoverPrintCheckout, startPrintCheckout } from './checkout';
 import { validateLuluShipping } from './contracts';
-import { createAdminPrintOrder, createStaffPrintProof } from './staff-proof';
+import {
+  createAdminPrintOrder,
+  createStaffPrintProof,
+  recoverAdminPrintOrder,
+  recoverLegacyPrintOrderLink,
+} from './staff-proof';
 
 const storyId = '32c3cb83-00c2-4933-972b-916ec8065f18';
 const shippingId = '8d9f18f9-6a1f-4acd-ac13-a4da2b998cee';
@@ -776,6 +781,202 @@ describe('paid print checkout recovery', () => {
     }
   });
 
+  it('recovers an Admin intent before consulting changed story, price or provider settings', async () => {
+    const actor = 'operator@example.test';
+    const input = {
+      storyId,
+      intentId,
+      bookFormat: 'standard_a5' as const,
+      binding: 'paperback' as const,
+      copies: 2,
+      orderKind: 'admin_order' as const,
+      provider: 'manual' as const,
+      shippingAddress: {
+        name: 'Gift recipient',
+        street1: 'Example 1',
+        city: 'Lisbon',
+        postcode: '1000-001',
+        country_code: 'PT',
+        phone_number: '+351210000000',
+        email: 'gift@example.test',
+      },
+    };
+    const insertedRequest = { id: orderId, storyId, requestedAt: new Date() };
+    const fulfillment = {
+      authorId: 'author',
+      binding: 'paperback',
+      copies: 2,
+      status: 'awaiting_ticket',
+      intentId,
+    };
+    mockStatements.push(
+      [],
+      [{ ...squareStory, features: {} }],
+      [],
+      [{ id: 'provider', availableCountries: ['PT'] }],
+      [insertedRequest],
+      [fulfillment],
+    );
+    mockFetch.mockRejectedValueOnce(new Error('Response lost'));
+    await expect(createAdminPrintOrder(input, actor)).rejects.toMatchObject({
+      code: 'print_ticket_pending',
+    });
+    const request = {
+      ...insertedRequest,
+      printingOptions: mockValues.mock.calls.find(([table]) => table === printRequests)?.[1]
+        .printingOptions,
+    };
+
+    mockStatements.push([{ request, fulfillment }]);
+    await expect(createAdminPrintOrder({ ...input, copies: 3 }, actor)).rejects.toMatchObject({
+      code: 'print_intent_conflict',
+      status: 409,
+    });
+    expect(mockFetch).toHaveBeenCalledTimes(1);
+
+    mockStatements.push([{ request, fulfillment }], undefined);
+    mockFetch.mockResolvedValueOnce(
+      Response.json({ id: ticketId, metadata: { printRequestId: orderId } }),
+    );
+    await expect(recoverAdminPrintOrder(storyId, intentId, actor)).resolves.toEqual({
+      ticketId,
+      printRequestId: orderId,
+    });
+    expect(mockInserts.mock.calls.flat()).toEqual([printRequests, printFulfillments]);
+    expect(mockFetch).toHaveBeenCalledTimes(2);
+  });
+
+  it('offers the original proof across both Admin entry points without allocating another order', async () => {
+    const actor = 'operator@example.test';
+    const shippingAddress = {
+      name: 'Staff',
+      street1: 'Example 1',
+      city: 'Lisbon',
+      postcode: '1000-001',
+      country_code: 'PT',
+      phone_number: '+351210000000',
+      email: actor,
+    };
+    const request = {
+      id: orderId,
+      storyId,
+      printingOptions: { requestedBy: actor, staffProofRevision: revision },
+    };
+    const fulfillment = {
+      ticketId,
+      binding: 'hardcover',
+      provider: 'manual',
+      copies: 1,
+      shippingSnapshot: shippingAddress,
+    };
+    mockStatements.push([], [{ request, fulfillment }]);
+    await expect(
+      createAdminPrintOrder(
+        {
+          storyId,
+          revision,
+          intentId,
+          bookFormat: 'premium_square',
+          binding: 'hardcover',
+          copies: 1,
+          orderKind: 'staff_proof',
+          provider: 'lulu',
+          shippingAddress,
+        },
+        actor,
+      ),
+    ).resolves.toMatchObject({
+      status: 'possible_match',
+      matches: [{ ticketId, printRequestId: orderId, purpose: 'staff_proof' }],
+    });
+    expect(mockInserts).not.toHaveBeenCalled();
+    expect(mockFetch).not.toHaveBeenCalled();
+  });
+
+  it('recovers a completed customer checkout even when checkout and its inputs are unavailable', async () => {
+    delete process.env.PRINT_PROOF_BUCKET;
+    const request = { id: orderId, storyId };
+    const fulfillment = { ticketId, status: 'pending' };
+    mockStatements.push([{ request, fulfillment }]);
+    await expect(recoverPrintCheckout({ storyId, intentId }, 'author')).resolves.toEqual({
+      request,
+      fulfillment,
+      duplicate: true,
+    });
+    expect(mockFetch).not.toHaveBeenCalled();
+    expect(mockTransaction).toHaveBeenCalledTimes(1);
+  });
+
+  it('reconciles a linked legacy ticket from another tab without the original browser intent', async () => {
+    const actor = 'operator@example.test';
+    const request = {
+      id: orderId,
+      storyId,
+      printingOptions: {
+        adminPrintOrder: true,
+        bookFormat: 'standard_a5',
+        orderKind: 'admin_order',
+        legacyTicketId: ticketId,
+        requestedBy: actor,
+      },
+    };
+    const fulfillment = {
+      authorId: 'author',
+      binding: 'paperback',
+      copies: 1,
+      status: 'awaiting_ticket',
+      intentId,
+    };
+    mockStatements.push([{ request, fulfillment }], undefined);
+    mockFetch.mockResolvedValueOnce(
+      Response.json({ id: ticketId, metadata: { printRequestId: orderId } }),
+    );
+    await expect(recoverLegacyPrintOrderLink(orderId, ticketId, actor)).resolves.toBe(true);
+    expect(mockFetch).toHaveBeenCalledTimes(1);
+    expect(mockInserts).not.toHaveBeenCalled();
+  });
+
+  it('offers a paid order with the same story for comparison without claiming the legacy ticket', async () => {
+    const originalPaidTicket = 'bb3517fe-a406-493b-bda7-9cad123bd372';
+    const paidOrder = {
+      request: { id: orderId, storyId, printingOptions: {} },
+      fulfillment: {
+        ticketId: originalPaidTicket,
+        copies: 2,
+        shippingSnapshot: { country_code: 'PT' },
+      },
+    };
+    mockStatements.push([], [paidOrder]);
+    await expect(
+      createAdminPrintOrder(
+        {
+          storyId,
+          legacyTicketId: ticketId,
+          bookFormat: 'standard_a5',
+          binding: 'paperback',
+          copies: 1,
+          orderKind: 'admin_order',
+          provider: 'manual',
+          shippingAddress: {
+            name: 'Different recipient',
+            street1: 'Example 1',
+            city: 'Lisbon',
+            postcode: '1000-001',
+            country_code: 'PT',
+            phone_number: '+351210000000',
+            email: 'other@example.test',
+          },
+        },
+        'operator@example.test',
+      ),
+    ).resolves.toMatchObject({
+      status: 'possible_match',
+      matches: [{ ticketId: originalPaidTicket, printRequestId: orderId, purpose: 'paid' }],
+    });
+    expect(mockInserts).not.toHaveBeenCalled();
+    expect(mockFetch).not.toHaveBeenCalled();
+  });
+
   it('creates an admin A5 Lulu order for multiple copies and links legacyTicketId', async () => {
     process.env.LULU_PRINT_ENVIRONMENT = 'sandbox';
     process.env.LULU_HARDCOVER_POD_PACKAGE_ID = LULU_SKUS.hardcover;
@@ -834,6 +1035,7 @@ describe('paid print checkout recovery', () => {
           provider: 'lulu',
           shippingAddress,
           legacyTicketId,
+          confirmSeparateLegacyShipment: true,
         },
         actor,
       ),

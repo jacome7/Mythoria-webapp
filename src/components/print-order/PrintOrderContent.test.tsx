@@ -152,7 +152,7 @@ function mockFetch(
         json: async () => ({ success: true, address: JSON.parse(String(init.body)) }),
       };
     }
-    if (url === '/api/print-requests') {
+    if (url === '/api/print-requests/checkout') {
       return onSubmit?.(init) ?? { ok: true, status: 200, json: async () => printBody };
     }
     throw new Error(`Unexpected fetch ${url}`);
@@ -216,13 +216,18 @@ it('reuses a pending checkout intent after response loss and reload, then clears
     mockFetch({ success: true, request: { id: 'paid-order' } }, (init) => {
       const body = JSON.parse(String(init?.body));
       expect(body).not.toHaveProperty('storyId');
-      ids.push(body.checkout.intentId);
+      ids.push(body.checkout?.intentId ?? body.recover?.intentId);
+      if (ids.length === 2)
+        expect(body).toEqual({
+          recover: expect.objectContaining({ storyId: 'story-1', intentId: ids[0] }),
+        });
       if (ids.length === 1) throw new TypeError('Interrupted after submission');
     });
     const first = await submitOrder();
     await screen.findByText('errors.orderPending');
     first.unmount();
-    const replay = await submitOrder();
+    const replay = render(<PrintOrderContent storyId="story-1" />);
+    fireEvent.click(await screen.findByRole('button', { name: 'buttons.checkOrder' }));
     await screen.findByRole('heading', { name: 'confirmation.title' });
     replay.unmount();
     await placeOrder();

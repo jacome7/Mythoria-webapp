@@ -7,10 +7,11 @@ import { CreditCard } from 'lucide-react';
 import { useState, useEffect, useCallback, type Dispatch, type SetStateAction } from 'react';
 import {
   luluAddressIssue,
-  luluPhonePattern,
+  luluContactIssue,
   luluRequiresTaxId,
   luluShippingLimits,
 } from '@/lib/print/lulu-shipping';
+import { subdivisionOptions } from '@/lib/print/delivery-regions';
 
 interface Story {
   storyId: string;
@@ -39,6 +40,7 @@ export interface PaymentOrderBreakdown {
 
 export interface PaymentOrderDetails {
   recipient?: { name: string; email: string; phone_number: string; recipient_tax_id?: string };
+  recipientSource?: 'purchaser' | 'someone_else';
   numberOfCopies: number;
   totalCost: number;
   breakdown: PaymentOrderBreakdown;
@@ -61,6 +63,7 @@ interface PaymentStepProps {
   onPlaceOrder: (order: PaymentOrderDetails) => void;
   loading: boolean;
   refreshVersion?: number;
+  showDeliveryRoles?: boolean;
 }
 
 interface ServiceResponse {
@@ -92,6 +95,7 @@ export default function PaymentStep({
   onPlaceOrder,
   loading,
   refreshVersion = 0,
+  showDeliveryRoles = false,
 }: PaymentStepProps) {
   const tPrintOrder = useTranslations('PrintOrder');
   const locale = useLocale();
@@ -111,15 +115,30 @@ export default function PaymentStep({
   const [recipientName, setRecipientName] = useState<string>();
   const [recipientEmail, setRecipientEmail] = useState<string>();
   const [recipientPhone, setRecipientPhone] = useState<string>();
+  const [recipientSource, setRecipientSource] = useState<'' | 'purchaser' | 'someone_else'>('');
   const [taxId, setTaxId] = useState('');
-  const name = (recipientName ?? user?.fullName ?? '').trim();
-  const email = (recipientEmail ?? user?.primaryEmailAddress?.emailAddress ?? '').trim();
-  const phone = (recipientPhone ?? address.phone ?? '').trim();
-  const country = address.country.toUpperCase();
+  const purchaserEmail = user?.primaryEmailAddress?.emailAddress ?? '';
+  const purchaserName = user?.fullName ?? purchaserEmail;
+  const usePurchaser = !showDeliveryRoles || recipientSource === 'purchaser';
+  const defaultName = usePurchaser ? (user?.fullName ?? '') : '';
+  const defaultEmail = usePurchaser ? purchaserEmail : '';
+  const defaultPhone = usePurchaser ? (address.phone ?? '') : '';
+  const name = (recipientName ?? defaultName).trim();
+  const email = (recipientEmail ?? defaultEmail).trim();
+  const phone = (recipientPhone ?? defaultPhone).trim();
+  const country = address.country.trim().toUpperCase();
+  const countryLabel = /^[A-Z]{2}$/.test(country)
+    ? new Intl.DisplayNames(locale, { type: 'region', fallback: 'code' }).of(country)
+    : country;
+  const regionLabel =
+    subdivisionOptions(country, locale).find(
+      ({ value }) => value === address.stateRegion?.toUpperCase(),
+    )?.label ?? address.stateRegion;
   const squareLuluEligible = settings?.squareLuluCustomerCountries?.includes(country) ?? false;
   const requiresCarrierContact = isSquare ? squareLuluEligible : Boolean(settings?.luluDefault);
   const squareLuluDestinationBlocked = isSquare && settings?.luluDefault && !squareLuluEligible;
   const needsTaxId = requiresCarrierContact && luluRequiresTaxId(country);
+  const showRecipientForm = showDeliveryRoles || requiresCarrierContact;
   const addressIssue = requiresCarrierContact
     ? luluAddressIssue({
         street1: address.line1,
@@ -131,13 +150,20 @@ export default function PaymentStep({
       })
     : undefined;
   const contactValid =
-    !requiresCarrierContact ||
-    (name.length > 0 &&
-      name.length <= luluShippingLimits.name &&
+    !showRecipientForm ||
+    ((!showDeliveryRoles || Boolean(recipientSource)) &&
+      name.length > 0 &&
+      name.length <= 120 &&
+      email.length <= 255 &&
       /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) &&
-      phone.length <= luluShippingLimits.phone &&
-      luluPhonePattern.test(phone) &&
-      (!needsTaxId || taxId.trim().length > 0));
+      phone.length <= 30 &&
+      (!requiresCarrierContact ||
+        !luluContactIssue({
+          name,
+          phone_number: phone,
+          country_code: country,
+          recipient_tax_id: taxId.trim(),
+        })));
 
   const fetchPrintingOptions = useCallback(
     async (signal: AbortSignal) => {
@@ -335,7 +361,7 @@ export default function PaymentStep({
       numberOfCopies,
       totalCost: calculateTotalCost(),
       breakdown,
-      ...(requiresCarrierContact
+      ...(showRecipientForm
         ? {
             recipient: {
               name,
@@ -345,6 +371,7 @@ export default function PaymentStep({
             },
           }
         : {}),
+      ...(recipientSource ? { recipientSource } : {}),
     });
   };
 
@@ -406,7 +433,42 @@ export default function PaymentStep({
             ) : (
               <p>{selectedPrintingOption.title}</p>
             )}
-            {requiresCarrierContact && (
+            {showDeliveryRoles && (
+              <div className="mt-4 space-y-3">
+                <dl className="grid gap-2 text-sm sm:grid-cols-2">
+                  <div>
+                    <dt className="font-semibold">{tPrintOrder('payment.purchaser')}</dt>
+                    <dd>{purchaserName}</dd>
+                  </div>
+                  <div className="min-w-0">
+                    <dt className="font-semibold">{tPrintOrder('payment.proofRecipient')}</dt>
+                    <dd className="break-all">{purchaserEmail}</dd>
+                  </div>
+                </dl>
+                <label className="form-control">
+                  <span className="font-semibold">{tPrintOrder('payment.deliveryRole')}</span>
+                  <select
+                    className="select select-bordered"
+                    value={recipientSource}
+                    required
+                    onChange={(event) => {
+                      setRecipientSource(event.target.value as typeof recipientSource);
+                      setRecipientName(undefined);
+                      setRecipientEmail(undefined);
+                      setRecipientPhone(undefined);
+                      setTaxId('');
+                    }}
+                  >
+                    <option value="">{tPrintOrder('payment.chooseDeliveryRole')}</option>
+                    <option value="purchaser">{tPrintOrder('payment.deliveryToMe')}</option>
+                    <option value="someone_else">
+                      {tPrintOrder('payment.deliveryToSomeoneElse')}
+                    </option>
+                  </select>
+                </label>
+              </div>
+            )}
+            {showRecipientForm && (!showDeliveryRoles || recipientSource) && (
               <fieldset className="grid gap-2 my-4">
                 <legend className="font-semibold">{tPrintOrder('payment.recipient')}</legend>
                 <label>
@@ -414,8 +476,9 @@ export default function PaymentStep({
                   <input
                     className="input input-bordered w-full"
                     autoComplete="shipping name"
-                    maxLength={luluShippingLimits.name}
-                    value={recipientName ?? user?.fullName ?? ''}
+                    maxLength={requiresCarrierContact ? luluShippingLimits.name : 120}
+                    required
+                    value={recipientName ?? defaultName}
                     onChange={(e) => setRecipientName(e.target.value)}
                   />
                 </label>
@@ -425,18 +488,25 @@ export default function PaymentStep({
                     className="input input-bordered w-full"
                     autoComplete="shipping email"
                     type="email"
-                    value={recipientEmail ?? user?.primaryEmailAddress?.emailAddress ?? ''}
+                    maxLength={255}
+                    required
+                    value={recipientEmail ?? defaultEmail}
                     onChange={(e) => setRecipientEmail(e.target.value)}
                   />
                 </label>
                 <label>
-                  {tPrintOrder('payment.recipientPhone')}
+                  {tPrintOrder(
+                    requiresCarrierContact
+                      ? 'payment.recipientPhone'
+                      : 'payment.optionalRecipientPhone',
+                  )}
                   <input
                     className="input input-bordered w-full"
                     autoComplete="shipping tel"
                     type="tel"
-                    maxLength={luluShippingLimits.phone}
-                    value={recipientPhone ?? address.phone ?? ''}
+                    maxLength={requiresCarrierContact ? luluShippingLimits.phone : 30}
+                    required={requiresCarrierContact}
+                    value={recipientPhone ?? defaultPhone}
                     onChange={(e) => setRecipientPhone(e.target.value)}
                   />
                 </label>
@@ -445,6 +515,10 @@ export default function PaymentStep({
                     {tPrintOrder('payment.taxId')}
                     <input
                       className="input input-bordered w-full"
+                      type="password"
+                      autoComplete="off"
+                      maxLength={luluShippingLimits.taxId}
+                      required
                       value={taxId}
                       onChange={(e) => setTaxId(e.target.value)}
                     />
@@ -630,6 +704,18 @@ export default function PaymentStep({
               <p className="text-sm text-base-content/70 mb-6">
                 {tPrintOrder('payment.confirmOrderDescription')}
               </p>
+              {showDeliveryRoles && (
+                <address className="mt-3 not-italic">
+                  <p className="font-semibold">{tPrintOrder('payment.shipTo')}</p>
+                  <p>{name}</p>
+                  <p>{address.line1}</p>
+                  {address.line2 && <p>{address.line2}</p>}
+                  <p>
+                    {[address.city, regionLabel, address.postalCode].filter(Boolean).join(', ')}
+                  </p>
+                  <p>{countryLabel}</p>
+                </address>
+              )}
               <div className="modal-action">
                 <button className="btn btn-primary" onClick={handleConfirmOrder}>
                   {tPrintOrder('buttons.confirm')}

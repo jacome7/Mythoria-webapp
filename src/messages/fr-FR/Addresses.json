@@ -4,7 +4,11 @@
     "editAddress": "Modifier l'adresse",
     "confirmDelete": "Êtes-vous sûr de vouloir supprimer cette adresse?",
     "validation": {
-      "requiredFields": "Veuillez remplir tous les champs requis (ligne d'adresse 1, ville, pays)"
+      "requiredFields": "Veuillez remplir tous les champs requis (ligne d'adresse 1, ville, pays)",
+      "addressTooLong": "Utilisez 30 caractères au maximum pour la ville et chaque ligne d’adresse.",
+      "postalCodeRequired": "Saisissez le code postal.",
+      "spanishProvinceRequired": "Saisissez le nom ou le code de la province.",
+      "subdivisionRequired": "Saisissez le code de l’État, de la province ou de la région."
     },
     "errors": {
       "saveFailed": "Échec de l'enregistrement de l'adresse. Veuillez réessayer.",
@@ -26,7 +30,8 @@
       "city": "Entrer dans la ville",
       "stateRegion": "Entrez l'État ou la région",
       "postalCode": "Entrez le code postal",
-      "phone": "Entrez le numéro de téléphone"
+      "phone": "Entrez le numéro de téléphone",
+      "country": "Sélectionnez un pays"
     },
     "types": {
       "delivery": "Livraison",
@@ -49,7 +54,17 @@
     },
     "buttons": {
       "save": "ARRESSION SAVE",
-      "cancel": "Annuler"
+      "cancel": "Annuler",
+      "addLine2": "Ajouter une deuxième ligne d’adresse",
+      "deleteAddress": "Supprimer l’adresse",
+      "selectedAddress": "Adresse sélectionnée",
+      "useAddress": "Utiliser cette adresse"
+    },
+    "regionLabels": {
+      "state": "État",
+      "province": "Province",
+      "provinceTerritory": "Province ou territoire",
+      "region": "Région"
     }
   }
 }

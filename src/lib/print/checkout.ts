@@ -46,11 +46,12 @@ export const checkoutSchema = z.object({
   totalCost: z.number().int().positive(),
   numberOfCopies: z.number().int().min(1).max(10).default(1),
   analyticsContext: z.unknown().optional(),
+  recipientSource: z.enum(['purchaser', 'someone_else']).optional(),
   recipient: z
     .object({
       name: z.string().trim().min(1).max(120),
       email: z.string().trim().email().max(255),
-      phone_number: z.string().trim().min(1).max(30),
+      phone_number: z.string().trim().max(30),
       recipient_tax_id: z.string().trim().max(40).optional(),
     })
     .optional(),
@@ -219,6 +220,25 @@ function normalizeAddressName(value: string) {
   return value.normalize('NFD').replace(/\p{M}/gu, '').trim().replace(/\s+/g, ' ').toLowerCase();
 }
 
+function readPaidCheckoutIntent(
+  reader: Pick<typeof db, 'select'>,
+  authorId: string,
+  intentId: string,
+) {
+  return reader
+    .select({ fulfillment: printFulfillments, request: printRequests })
+    .from(printFulfillments)
+    .innerJoin(printRequests, eq(printRequests.id, printFulfillments.printRequestId))
+    .where(
+      and(
+        eq(printFulfillments.authorId, authorId),
+        eq(printFulfillments.intentId, intentId),
+        sql`${printRequests.printingOptions}->>'staffProofRevision' is null`,
+        sql`${printRequests.printingOptions}->>'adminPrintOrder' is null`,
+      ),
+    );
+}
+
 async function reservePrintCheckout(
   input: z.infer<typeof checkoutSchema>,
   author: {
@@ -231,16 +251,7 @@ async function reservePrintCheckout(
 ) {
   return db.transaction(async (tx) => {
     await tx.execute(sql`select pg_advisory_xact_lock(hashtext(${author.authorId}))`);
-    const [previous] = await tx
-      .select({ fulfillment: printFulfillments, request: printRequests })
-      .from(printFulfillments)
-      .innerJoin(printRequests, eq(printRequests.id, printFulfillments.printRequestId))
-      .where(
-        and(
-          eq(printFulfillments.authorId, author.authorId),
-          eq(printFulfillments.intentId, input.intentId),
-        ),
-      );
+    const [previous] = await readPaidCheckoutIntent(tx, author.authorId, input.intentId);
     if (previous) {
       const edition = readSquareEdition(previous.request.printingOptions);
       if (
@@ -252,6 +263,8 @@ async function reservePrintCheckout(
             null,
           input.recipient ?? null,
         ) ||
+        (previous.request.printingOptions as { buyerRecipientSource?: string } | null | undefined)
+          ?.buyerRecipientSource !== input.recipientSource ||
         previous.fulfillment.copies !== input.numberOfCopies ||
         previous.fulfillment.creditsSpent !== input.totalCost ||
         (edition
@@ -440,6 +453,7 @@ async function reservePrintCheckout(
           totalCost,
           extraChapters,
           numberOfCopies: input.numberOfCopies,
+          ...(input.recipientSource ? { buyerRecipientSource: input.recipientSource } : {}),
           ...(premiumEdition
             ? { premiumEdition, originalEditionRevision: premiumEdition.premiumBook.revision }
             : {}),
@@ -487,7 +501,7 @@ async function reservePrintCheckout(
       })
       .returning();
     const candidatePhone = shipping.phone_number.trim();
-    if (candidatePhone) {
+    if (candidatePhone && input.recipientSource !== 'someone_else') {
       await tx
         .update(authors)
         .set({ mobilePhone: candidatePhone })
@@ -556,12 +570,32 @@ export async function startPrintCheckout(
   input: Parameters<typeof reservePrintCheckout>[0],
   author: Parameters<typeof reservePrintCheckout>[1],
 ) {
-  const order = await reservePrintCheckout(input, author);
+  return confirmPrintCheckout(await reservePrintCheckout(input, author), author.authorId);
+}
+
+export async function recoverPrintCheckout(
+  input: { storyId: string; intentId: string },
+  authorId: string,
+) {
+  const [order] = await db.transaction(async (tx) => {
+    await tx.execute(sql`select pg_advisory_xact_lock(hashtext(${authorId}))`);
+    return readPaidCheckoutIntent(tx, authorId, input.intentId);
+  });
+  if (!order || order.request.storyId !== input.storyId) {
+    throw new PrintError(
+      'print_intent_not_found',
+      'No order has been recorded for this attempt.',
+      404,
+    );
+  }
+  return confirmPrintCheckout({ ...order, duplicate: true }, authorId);
+}
+
+async function confirmPrintCheckout(order: CheckoutOrder, authorId: string) {
   if (order.fulfillment.status !== 'awaiting_ticket') return order;
-  requirePrintReady();
   const ticketId = await createOrderTicket(order);
   return db.transaction(async (tx) => {
-    await tx.execute(sql`select pg_advisory_xact_lock(hashtext(${author.authorId}))`);
+    await tx.execute(sql`select pg_advisory_xact_lock(hashtext(${authorId}))`);
     const [current] = await tx
       .select()
       .from(printFulfillments)
@@ -578,14 +612,20 @@ export async function startPrintCheckout(
       })
       .where(
         and(
-          eq(authorCreditBalances.authorId, author.authorId),
+          eq(authorCreditBalances.authorId, authorId),
           gte(authorCreditBalances.totalCredits, current.creditsSpent),
         ),
       )
       .returning();
-    if (!balance) throw new PrintError('insufficient_credits', 'Insufficient credits.', 402);
+    if (!balance) {
+      throw new PrintError(
+        'print_reserved_insufficient_credits',
+        'Add credits to confirm this order.',
+        402,
+      );
+    }
     await tx.insert(creditLedger).values({
-      authorId: author.authorId,
+      authorId: authorId,
       amount: -current.creditsSpent,
       creditEventType: 'printOrder',
       storyId: order.request.storyId,

@@ -167,3 +167,7 @@ Premium books publish as online editions. The owner reader and My Stories use th
 ## Product experiments
 
 The reviewed rollout windows, first-party assignment contract, and D7/D30 readout are documented in [product experiments](docs/analytics/product-experiments.md). Keep new enrollment disabled until v2 measurement reconciles.
+
+## Print order recovery
+
+WebApp owns physical order intents, immutable shipping snapshots and the credit debit. Customer checkout can resume a reserved order after a lost response. Keep proof preparation and supplier release separate. Coordinate changes to Admin create/recover commands and held-address corrections with the [print runbook](docs/PRINT_FULFILLMENT.md#order-recovery-and-address-preflight).

@@ -16,7 +16,7 @@ import { resolveServerAnalyticsContext } from '@/lib/analytics/server-context';
 import { resolveAdContextSafely } from '@/lib/openai-ads/context';
 import { conversions } from '@/lib/openai-ads/events';
 import { enqueueAdConversion } from '@/lib/openai-ads/outbox';
-import { checkoutSchema, startPrintCheckout } from '@/lib/print/checkout';
+import { checkoutSchema, recoverPrintCheckout, startPrintCheckout } from '@/lib/print/checkout';
 import { PrintError } from '@/lib/print/contracts';
 
 const statuses = z.enum([
@@ -28,7 +28,18 @@ const statuses = z.enum([
   'cancelled',
   'error',
 ]);
-const checkoutEnvelope = z.object({ checkout: checkoutSchema });
+const checkoutEnvelope = z.union([
+  z.object({ checkout: checkoutSchema }).strict(),
+  z
+    .object({
+      recover: z.object({
+        storyId: z.uuid(),
+        intentId: z.uuid(),
+        analyticsContext: z.unknown().optional(),
+      }),
+    })
+    .strict(),
+]);
 const legacyCheckout = z.object({ storyId: z.string().uuid() });
 
 export async function GET(request: NextRequest) {
@@ -109,13 +120,20 @@ export async function POST(request: NextRequest) {
         'refresh_print_checkout',
         'This checkout has been updated. If you already submitted an order, check your email. Reload the page to start a new order.',
       );
-    const { checkout: input } = checkoutEnvelope.parse(body);
-    const order = await startPrintCheckout(input, author);
+    const envelope = checkoutEnvelope.parse(body);
+    const order =
+      'checkout' in envelope
+        ? await startPrintCheckout(envelope.checkout, author)
+        : await recoverPrintCheckout(envelope.recover, author.authorId);
+    const analyticsContext =
+      'checkout' in envelope
+        ? envelope.checkout.analyticsContext
+        : envelope.recover.analyticsContext;
     const { id, storyId, status, requestedAt } = order.request;
     const adConversion = conversions.printOrderRequested(id, order.fulfillment.copies);
     try {
       const analytics = await resolveServerAnalyticsContext({
-        browserContext: input.analyticsContext,
+        browserContext: analyticsContext,
         attributionId: request.cookies.get('mythoria_attribution')?.value,
         authorId: author.authorId,
         storedConsentValue: request.cookies.get('mythoria_consent')?.value,
@@ -154,7 +172,14 @@ export async function POST(request: NextRequest) {
     });
     return NextResponse.json({
       success: true,
-      request: { id, storyId, status, requestedAt },
+      request: {
+        id,
+        storyId,
+        status,
+        requestedAt,
+        copies: order.fulfillment.copies,
+        creditsSpent: order.fulfillment.creditsSpent,
+      },
       adEventId: adConversion.eventId,
     });
   } catch (error) {

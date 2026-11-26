@@ -74,7 +74,15 @@
       "addressTooLong": "Reviens en arrière et raccourcis la ville et chaque ligne de l’adresse à 30 caractères maximum.",
       "postalCodeRequired": "Reviens en arrière et ajoute le code postal à l’adresse de livraison.",
       "subdivisionRequired": "Reviens en arrière et saisis le code abrégé de l’État, de la province ou de la région.",
-      "spanishProvinceRequired": "Reviens en arrière et saisis le nom de la province ou son code abrégé."
+      "spanishProvinceRequired": "Reviens en arrière et saisis le nom de la province ou son code abrégé.",
+      "purchaser": "Acheteur",
+      "proofRecipient": "Épreuve envoyée à",
+      "deliveryRole": "Qui recevra le livre imprimé ?",
+      "chooseDeliveryRole": "Sélectionnez le destinataire",
+      "deliveryToMe": "Moi",
+      "deliveryToSomeoneElse": "Quelqu’un d’autre",
+      "shipTo": "Livrer à",
+      "optionalRecipientPhone": "Téléphone pour le transporteur (facultatif)"
     },
     "confirmation": {
       "title": "Ordre passé avec succès!",

@@ -3,6 +3,7 @@ import { NextRequest } from 'next/server';
 import { PrintError } from '@/lib/print/contracts';
 
 const mockStartPrintCheckout = jest.fn();
+const mockRecoverPrintCheckout = jest.fn();
 const mockGetCurrentAuthor = jest.fn();
 const mockEnqueueAdConversion = jest.fn();
 const storyId = '32c3cb83-00c2-4933-972b-916ec8065f18';
@@ -14,6 +15,7 @@ jest.mock('@/lib/auth', () => ({ getCurrentAuthor: () => mockGetCurrentAuthor() 
 jest.mock('@/lib/print/checkout', () => ({
   ...jest.requireActual('@/lib/print/checkout'),
   startPrintCheckout: (...args: unknown[]) => mockStartPrintCheckout(...args),
+  recoverPrintCheckout: (...args: unknown[]) => mockRecoverPrintCheckout(...args),
 }));
 jest.mock('@/lib/analytics/server-context', () => ({
   resolveServerAnalyticsContext: jest.fn(async () => ({})),
@@ -77,6 +79,22 @@ describe('POST /api/print-requests', () => {
       adContext: { adConsent: 'denied' },
       occurredAt: requestedAt,
     });
+  });
+
+  it('recovers the order using just the authenticated owner, story and stored intent', async () => {
+    const requestedAt = new Date('2026-11-16T10:00:00.000Z');
+    mockRecoverPrintCheckout.mockResolvedValueOnce({
+      request: { id: 'print-1', storyId, status: 'requested', requestedAt },
+      fulfillment: { creditsSpent: 30, copies: 3 },
+      duplicate: true,
+    });
+    const response = await POST(request({ recover: { storyId, intentId } }, true));
+    expect(response.status).toBe(200);
+    expect(await response.json()).toMatchObject({
+      request: { id: 'print-1', copies: 3, creditsSpent: 30 },
+    });
+    expect(mockRecoverPrintCheckout).toHaveBeenCalledWith({ storyId, intentId }, 'author-1');
+    expect(mockStartPrintCheckout).not.toHaveBeenCalled();
   });
 
   it.each([

@@ -2,9 +2,9 @@ import { z } from 'zod';
 import { LULU_SKUS } from '@/lib/lulu/products';
 import {
   luluAddressIssue,
-  luluPhonePattern,
-  luluRequiresTaxId,
-  luluShippingLimits,
+  luluContactIssue,
+  luluShippingIssueMessages,
+  normalizeShippingSubdivision,
 } from './lulu-shipping';
 
 export const providerSchema = z.enum(['manual', 'lulu']);
@@ -162,29 +162,12 @@ export function luluPackageId(binding: PrintBinding) {
 export type PrintShippingAddress = z.infer<typeof shippingSchema>;
 
 export function validateLuluShipping(shipping: PrintShippingAddress) {
-  const addressIssue = luluAddressIssue(shipping);
-  const message = addressIssue
-    ? {
-        addressTooLong: 'Use at most 30 characters for the city and each shipping address line.',
-        postalCodeRequired: 'Enter the postal code for the shipping address.',
-        spanishProvinceRequired: 'Enter the province name or short code for the shipping address.',
-        subdivisionRequired:
-          'Enter the short state, province, or region code for the shipping address.',
-      }[addressIssue]
-    : shipping.name.length > luluShippingLimits.name
-      ? 'Use at most 35 characters for the shipping recipient name.'
-      : !luluPhonePattern.test(shipping.phone_number) ||
-          shipping.phone_number.length > luluShippingLimits.phone
-        ? 'Enter a carrier phone number using 8 to 20 characters.'
-        : luluRequiresTaxId(shipping.country_code) && !shipping.recipient_tax_id
-          ? 'Enter the recipient tax ID for this destination.'
-          : undefined;
-  if (message) throw new PrintError('shipping_details_required', message, 400);
-  const state = shipping.state_code;
+  const issue = luluAddressIssue(shipping) ?? luluContactIssue(shipping);
+  if (issue)
+    throw new PrintError('shipping_details_required', luluShippingIssueMessages[issue], 400);
   return {
     ...shipping,
     // Lulu's Spain suggestions can contain a spelled-out province such as Madrid.
-    state_code:
-      shipping.country_code === 'ES' && state && state.length > 3 ? state : state?.toUpperCase(),
+    state_code: normalizeShippingSubdivision(shipping.country_code, shipping.state_code),
   };
 }

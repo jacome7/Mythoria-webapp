@@ -50,6 +50,12 @@ Checkout freezes the current published private manifest by key, generation, SHA-
 
 Place the ticket on hold before binding a correction. Publish the corrected immutable manifest as a direct successor of the ticket’s edition with the same page count. Enter the new revision ID and reason on the ticket. The order records its previous edition, proof, quote, actor and reason, and advances the proof version. Clearing the hold queues the replacement pair and email without charging again. A shipping-only correction keeps the frozen edition and also advances the proof version. Investigate an uncertain or submitted job through reconciliation before handling a cancellation or replacement.
 
+## Order recovery and address preflight
+
+The customer checkout saves an opaque attempt ID in the tab before submitting. The signed-in purchaser can recover the original order after reloading. WebApp links the ticket before the one-time debit. Admin creation uses a separate intent and preserves one proof per published square revision. An intentional additional shipment gets its own order and ticket.
+
+Square Lulu preparation checks shipping against the frozen edition’s page count before rendering. A5 checks after initial pagination. When normalization changes the final count, preparation requotes for that count. Material address changes hold the order before proof email or supplier submission. Whitespace differences and changes of case in city, country or subdivision alone are accepted. A manager sees the proposed address fields on the held ticket. Saving a confirmed correction advances the proof version, invalidates the quote and preserves the purchaser’s address book. Clear the hold to prepare the replacement proof.
+
 ## Shipping address review
 
 The paid checkout returns HTTP 400 with `shipping_address_review_required` before creating a new order if the street line matches the recipient or account name and the second address line is present. The checkout opens the saved address for correction. Editing that address updates the profile for future purchases. For an existing order, confirm the address with the customer and correct the order's shipping address separately in its Admin ticket.
@@ -60,7 +66,7 @@ Clear `LULU_PREMIUM_SQUARE_CUSTOMER_COUNTRIES` to pause new customer Lulu releas
 
 Switch the default to None to prepare new orders for manual production. Continue processing paid proofs, monitoring the reply inbox and reconciling submitted or uncertain jobs. Keep the immutable file pair available while a supplier may still fetch it. Legacy tickets lacking a verified paid-order link require the original manual workflow. Never attach the latest story-level PDFs to a new-format paid order.
 
-Keep the WebApp command API and proof worker available for paid tickets through rollback. An older checkout tab receives a reload prompt on the new server. A new checkout tab sends a versioned request body that the previous server rejects before charging credits.
+Keep the WebApp command API and proof worker available for paid tickets through rollback. An older checkout tab receives a reload prompt when its request format is retired. New checkout tabs submit and recover through `POST /api/print-requests/checkout`. New Admin forms use `createAdminOrderV2` with a required intent ID. Those entry points only exist on the compatible WebApp. When it is restored, already reserved intents can still recover.
 
 ## Printing costs
 

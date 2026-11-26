@@ -24,6 +24,7 @@ import {
   validateLuluFileDetailed,
 } from '@/lib/lulu/client';
 import { getPrintSettings } from './checkout';
+import { LuluAddressReviewError, luluAddressReviewSchema } from '@/lib/lulu/address-review';
 import { convertLuluCostToEur, recordLuluNativeCost } from './lulu-costs';
 import { luluOrderNumberPattern, printOrderNumber, printOrderNumberInUse } from './order-number';
 import {
@@ -94,7 +95,12 @@ type Changes = Partial<typeof printFulfillments.$inferInsert>;
 
 function isStaffProof(order: Order) {
   const options = order.request.printingOptions;
-  return Boolean(options && typeof options === 'object' && 'staffProofRevision' in options);
+  return Boolean(
+    options &&
+    typeof options === 'object' &&
+    ('staffProofRevision' in options ||
+      ('orderKind' in options && options.orderKind === 'staff_proof')),
+  );
 }
 
 function isAdminOrder(order: Order) {
@@ -489,9 +495,56 @@ async function generateSquareLuluProof(
   }
 }
 
-async function generateProof(order: Order, leaseId: string, edition: PremiumSquareEdition | null) {
-  if (edition && order.fulfillment.provider === 'lulu')
+// A quote belongs to the frozen shipping snapshot for this worker attempt. A changed
+// page count after supplier normalization needs a fresh cost calculation.
+function quoteForSnapshot(order: Order) {
+  const cached = new Map<string, Awaited<ReturnType<typeof quoteLuluOrder>>>();
+  const shippingAddress =
+    order.fulfillment.provider === 'lulu'
+      ? validateLuluShipping(shippingSchema.parse(order.fulfillment.shippingSnapshot))
+      : null;
+  return async (podPackageId: string, pageCount: number) => {
+    const key = `${podPackageId}/${pageCount}`;
+    const existing = cached.get(key);
+    if (existing) return existing;
+    if (!shippingAddress)
+      throw new PrintError('print_provider_changed', 'Prepare this order for Lulu first.');
+    const quote = await quoteLuluOrder({
+      shippingAddress,
+      copies: order.fulfillment.copies,
+      podPackageId,
+      pageCount,
+    });
+    cached.set(key, quote);
+    return quote;
+  };
+}
+
+function addressReviewHold(order: Order, error: LuluAddressReviewError): Changes {
+  return {
+    status: 'held',
+    holdReason: 'Confirm the delivery address before preparing this order for Lulu.',
+    quote: null,
+    shippingSnapshot: {
+      ...(order.fulfillment.shippingSnapshot as object),
+      luluAddressReview: {
+        proofVersion: order.fulfillment.proofVersion,
+        suggested: error.suggested,
+      },
+    },
+  };
+}
+
+async function generateProof(
+  order: Order,
+  leaseId: string,
+  edition: PremiumSquareEdition | null,
+  getQuote: ReturnType<typeof quoteForSnapshot>,
+) {
+  if (edition && order.fulfillment.provider === 'lulu') {
+    await getQuote(requireSquareSupplier(edition), edition.pageCount);
     return generateSquareLuluProof(order, leaseId, edition);
+  }
   const input = renderInput(order);
   if (input.provider === 'manual')
     return { order, proof: proofSchema.parse(await renderOrderProof(input)) };
@@ -514,6 +567,7 @@ async function generateProof(order: Order, leaseId: string, edition: PremiumSqua
       proof: proofSchema.parse(await renderOrderProof(renderInput(fallback))),
     };
   }
+  await getQuote(podPackageId, preliminary.pageCount);
   const dimensions = await getLuluCoverDimensions({
     podPackageId,
     pageCount: preliminary.pageCount,
@@ -576,6 +630,7 @@ export async function processPrintProof(id: string) {
         });
       }
     }
+    const getQuote = quoteForSnapshot(order);
     let proof = readCompletedProof(order.fulfillment.proof);
     if (
       squareLulu &&
@@ -589,7 +644,7 @@ export async function processPrintProof(id: string) {
       proof = null;
     }
     if (!proof) {
-      const result = await generateProof(order, leaseId, edition);
+      const result = await generateProof(order, leaseId, edition, getQuote);
       order = result.order;
       proof = result.proof;
       const input = renderInput(order);
@@ -618,6 +673,11 @@ export async function processPrintProof(id: string) {
         'Lulu must validate the complete square proof.',
       );
     }
+    let quote = quoteSchema.nullable().parse(order.fulfillment.quote);
+    if (order.fulfillment.provider === 'lulu' && !quote) {
+      quote = await quoteForOrder(order, leaseId, getQuote);
+      order = await leaseUpdate(order, leaseId, { quote });
+    }
     if (!order.fulfillment.proofSentAt && !isAdminOrder(order)) {
       const variables = emailVariablesSchema.parse(order.fulfillment.emailVariables);
       if (!variables.proofEmailAttempted) {
@@ -628,43 +688,6 @@ export async function processPrintProof(id: string) {
       await notifyProof(order, proof);
       order = await leaseUpdate(order, leaseId, { proofSentAt: new Date() });
     }
-    let quote = quoteSchema.nullable().parse(order.fulfillment.quote);
-    if (order.fulfillment.provider === 'lulu' && !quote) {
-      try {
-        quote = await quoteForOrder(order, leaseId);
-        order = await leaseUpdate(order, leaseId, { quote });
-      } catch (error) {
-        if (!(error instanceof Error) || error.message !== 'LULU_NO_TRACKED_SHIPPING') throw error;
-        if (order.fulfillment.binding === 'hardcover') {
-          return leaseUpdate(order, leaseId, {
-            status: 'held',
-            holdReason: 'No tracked hardcover shipping is available.',
-            leaseId: null,
-            leaseUntil: null,
-          });
-        }
-        const variables = emailVariablesSchema.parse(order.fulfillment.emailVariables);
-        return leaseUpdate(order, leaseId, {
-          emailVariables: {
-            ...variables,
-            previousProofMayHaveSent: true,
-            proofEmailAttempted: false,
-          },
-          status: 'pending',
-          provider: 'manual',
-          runId: randomUUID(),
-          proofVersion: order.fulfillment.proofSentAt
-            ? order.fulfillment.proofVersion + 1
-            : order.fulfillment.proofVersion,
-          proof: null,
-          proofSentAt: null,
-          quote: null,
-          leaseId: null,
-          leaseUntil: null,
-          lastError: 'Lulu has no tracked shipping for the destination. Preparing a manual proof.',
-        });
-      }
-    }
     return leaseUpdate(order, leaseId, {
       quote,
       status: 'proof_ready',
@@ -673,6 +696,57 @@ export async function processPrintProof(id: string) {
       leaseUntil: null,
     });
   } catch (error) {
+    if (error instanceof LuluAddressReviewError) {
+      return leaseUpdate(order, leaseId, {
+        ...addressReviewHold(order, error),
+        leaseId: null,
+        leaseUntil: null,
+      });
+    }
+    if (error instanceof PrintError && error.code === 'shipping_details_required') {
+      return leaseUpdate(order, leaseId, {
+        status: 'held',
+        holdReason: error.message,
+        quote: null,
+        leaseId: null,
+        leaseUntil: null,
+      });
+    }
+    if (error instanceof Error && error.message === 'LULU_NO_TRACKED_SHIPPING') {
+      if (order.fulfillment.binding === 'hardcover') {
+        return leaseUpdate(order, leaseId, {
+          status: 'held',
+          holdReason: 'No tracked hardcover shipping is available.',
+          leaseId: null,
+          leaseUntil: null,
+        });
+      }
+      const variables = emailVariablesSchema.parse(order.fulfillment.emailVariables);
+      return leaseUpdate(order, leaseId, {
+        emailVariables: {
+          ...variables,
+          previousProofMayHaveSent: Boolean(
+            variables.previousProofMayHaveSent ||
+            variables.proofEmailAttempted ||
+            order.fulfillment.proofSentAt,
+          ),
+          proofEmailAttempted: false,
+        },
+        status: 'pending',
+        provider: 'manual',
+        runId: randomUUID(),
+        proofVersion:
+          order.fulfillment.proofSentAt || variables.proofEmailAttempted
+            ? order.fulfillment.proofVersion + 1
+            : order.fulfillment.proofVersion,
+        proof: null,
+        proofSentAt: null,
+        quote: null,
+        leaseId: null,
+        leaseUntil: null,
+        lastError: 'Lulu has no tracked shipping for the destination. Preparing a manual proof.',
+      });
+    }
     const rawSupplierIssue =
       error instanceof Error
         ? {
@@ -682,7 +756,6 @@ export async function processPrintProof(id: string) {
             LULU_VALIDATION_ID_MISMATCH: squareLulu
               ? 'Lulu returned an unexpected PDF validation reference.'
               : undefined,
-            LULU_NO_TRACKED_SHIPPING: 'Lulu returned no tracked shipping option for this address.',
             LULU_ADDRESS_CONFIRMATION_REQUIRED:
               'Lulu requires the shipping address to be reviewed.',
           }[error.message]
@@ -723,7 +796,11 @@ export async function processPrintProof(id: string) {
   }
 }
 
-async function quoteForOrder(order: Order, leaseId: string) {
+async function quoteForOrder(
+  order: Order,
+  leaseId: string,
+  getQuote: ReturnType<typeof quoteForSnapshot>,
+) {
   const proof = validationSchema.parse(order.fulfillment.proof);
   const edition = readSquareEdition(order.request.printingOptions);
   requireSquareProofPageCount(edition, proof.pageCount);
@@ -736,9 +813,6 @@ async function quoteForOrder(order: Order, leaseId: string) {
       'Prepare a new proof for the configured Lulu product.',
     );
   }
-  const shippingAddress = validateLuluShipping(
-    shippingSchema.parse(order.fulfillment.shippingSnapshot),
-  );
   let effectivePageCount: number;
   if (edition) {
     if (!isValidatedSquareLuluProof(proof, edition)) {
@@ -751,12 +825,7 @@ async function quoteForOrder(order: Order, leaseId: string) {
   } else {
     effectivePageCount = await validateA5Proof(order, leaseId, proof, podPackageId);
   }
-  const quote = await quoteLuluOrder({
-    podPackageId,
-    pageCount: effectivePageCount,
-    copies: order.fulfillment.copies,
-    shippingAddress,
-  });
+  const quote = await getQuote(podPackageId, effectivePageCount);
   return quoteSchema.parse({
     ...quote,
     perCopyEur: quote.totalEur / order.fulfillment.copies,
@@ -876,6 +945,9 @@ export async function printOrderView(order: Order) {
   const { recipient_tax_id: taxId, ...shippingAddress } = shippingSchema.parse(
     row.shippingSnapshot,
   );
+  const review = luluAddressReviewSchema.safeParse(
+    (row.shippingSnapshot as { luluAddressReview?: unknown }).luluAddressReview,
+  ).data;
   let squareLuluBlockReason: string | undefined;
   if (edition && editable.includes(row.status)) {
     try {
@@ -895,6 +967,14 @@ export async function printOrderView(order: Order) {
     : row.vendor;
   return {
     shippingAddress,
+    purchaserEmail: isAdminOrder(order)
+      ? null
+      : (z.object({ email: z.string().email() }).safeParse(row.emailVariables).data?.email ?? null),
+    ...(row.provider === 'lulu' &&
+    row.status === 'held' &&
+    review?.proofVersion === row.proofVersion
+      ? { addressReview: review }
+      : {}),
     taxIdPresent: Boolean(taxId),
     printRequestId: row.printRequestId,
     ticketId: row.ticketId,
@@ -1220,6 +1300,7 @@ export async function submitPrintOrder(
     podPackageId: quote.podPackageId,
     pageCount: proof.normalizedPageCount ?? proof.pageCount,
   }).catch((error: unknown) => {
+    if (error instanceof LuluAddressReviewError) return error;
     if (
       error instanceof Error &&
       ['LULU_ADDRESS_CONFIRMATION_REQUIRED', 'LULU_NO_TRACKED_SHIPPING'].includes(error.message)
@@ -1227,6 +1308,8 @@ export async function submitPrintOrder(
       return null;
     throw error;
   });
+  if (fresh instanceof LuluAddressReviewError)
+    return editableUpdate(order, addressReviewHold(order, fresh));
   if (!fresh) {
     return editableUpdate(order, {
       status: 'held',
@@ -1737,9 +1820,16 @@ export async function correctPrintShipping(
   order: Order,
   correction: PrintShippingAddress,
   actor: string,
+  expectedProofVersion?: number,
 ) {
   requireEditable(order);
   const row = order.fulfillment;
+  if (expectedProofVersion !== undefined && expectedProofVersion !== row.proofVersion) {
+    throw new PrintError(
+      'stale_print_correction',
+      'Reload the ticket and confirm the current address.',
+    );
+  }
   if (row.status !== 'held' || !row.holdReason) {
     throw new PrintError(
       'print_order_hold_required',
@@ -1749,7 +1839,10 @@ export async function correctPrintShipping(
   const previous = shippingSchema.parse(row.shippingSnapshot);
   const recipientTaxId =
     correction.recipient_tax_id ??
-    (correction.country_code === previous.country_code ? previous.recipient_tax_id : undefined);
+    (correction.country_code === previous.country_code &&
+    correction.name.trim() === previous.name.trim()
+      ? previous.recipient_tax_id
+      : undefined);
   const shipping = shippingSchema.parse({ ...correction, recipient_tax_id: recipientTaxId });
   await requireAvailablePrintCountry(shipping.country_code);
   if (row.provider === 'lulu') validateLuluShipping(shipping);

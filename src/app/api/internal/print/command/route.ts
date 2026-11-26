@@ -26,7 +26,13 @@ import {
   withPrintTicket,
 } from '@/lib/print/fulfillment';
 import { verifyPrintIdentity } from '@/lib/print/oidc';
-import { createAdminPrintOrder, createStaffPrintProof } from '@/lib/print/staff-proof';
+import {
+  createAdminPrintOrder,
+  createStaffPrintProof,
+  findAdminPrintOrderMatches,
+  recoverAdminPrintOrder,
+  recoverLegacyPrintOrderLink,
+} from '@/lib/print/staff-proof';
 
 export const dynamic = 'force-dynamic';
 
@@ -41,6 +47,9 @@ const commandSchema = z.object({
     'getPremiumEditionImage',
     'createStaffProof',
     'createAdminOrder',
+    'createAdminOrderV2',
+    'recoverAdminOrder',
+    'findAdminOrderMatches',
     'get',
     'select',
     'prepare',
@@ -110,12 +119,14 @@ async function runCommand({ actor, operation, input }: z.infer<typeof commandSch
       .object({
         storyId: z.uuid().toLowerCase(),
         revision: z.uuid().toLowerCase(),
+        intentId: z.uuid().toLowerCase().optional(),
         shippingAddress: shippingSchema.extend({ phone_number: z.string().trim().min(1).max(30) }),
       })
       .parse(input);
     return createStaffPrintProof(values, actor.email);
   }
-  if (operation === 'createAdminOrder') {
+  if (operation === 'createAdminOrder' || operation === 'createAdminOrderV2') {
+    const intentId = z.uuid().toLowerCase();
     const values = z
       .object({
         storyId: z.uuid().toLowerCase(),
@@ -125,10 +136,41 @@ async function runCommand({ actor, operation, input }: z.infer<typeof commandSch
         orderKind: z.enum(['staff_proof', 'admin_order']),
         provider: providerSchema,
         shippingAddress: shippingSchema.extend({ phone_number: z.string().trim().min(1).max(30) }),
-        legacyTicketId: z.string().uuid().optional(),
+        legacyTicketId: z.uuid().toLowerCase().optional(),
+        intentId: operation === 'createAdminOrderV2' ? intentId : intentId.optional(),
+        revision: z.uuid().toLowerCase().optional(),
+        allowRepeat: z.boolean().optional(),
+        confirmSeparateLegacyShipment: z.boolean().optional(),
       })
       .parse(input);
-    return createAdminPrintOrder(values, actor.email);
+    const result = await createAdminPrintOrder(values, actor.email);
+    if (operation === 'createAdminOrder' && 'status' in result) {
+      throw new PrintError(
+        'print_order_match',
+        'An existing print order may cover this request. Review the existing ticket before creating another.',
+      );
+    }
+    return result;
+  }
+  if (operation === 'recoverAdminOrder') {
+    const { storyId, intentId } = z
+      .object({ storyId: z.uuid().toLowerCase(), intentId: z.uuid().toLowerCase() })
+      .parse(input);
+    return recoverAdminPrintOrder(storyId, intentId, actor.email);
+  }
+  if (operation === 'findAdminOrderMatches') {
+    const { storyId, requestedThrough, revision } = z
+      .object({
+        storyId: z.uuid().toLowerCase(),
+        requestedThrough: z.iso.datetime({ offset: true }).optional(),
+        revision: z.uuid().toLowerCase().optional(),
+      })
+      .parse(input);
+    return findAdminPrintOrderMatches(
+      storyId,
+      requestedThrough ? new Date(requestedThrough) : undefined,
+      revision,
+    );
   }
   if (operation === 'hasPaidOrderForStory') {
     const { storyId, requestedThrough } = z
@@ -153,7 +195,18 @@ async function runCommand({ actor, operation, input }: z.infer<typeof commandSch
     );
   }
   const { printRequestId, ticketId } = ticket.parse(input);
-  const order = await withPrintTicket(printRequestId, ticketId);
+  const order = await withPrintTicket(printRequestId, ticketId).catch(async (error: unknown) => {
+    if (
+      operation !== 'get' ||
+      !(error instanceof PrintError) ||
+      error.code !== 'print_ticket_mismatch'
+    ) {
+      throw error;
+    }
+    // The Admin ticket already references this legacy upgrade, but the WebApp may have lost the reply.
+    if (!(await recoverLegacyPrintOrderLink(printRequestId, ticketId, actor.email))) throw error;
+    return withPrintTicket(printRequestId, ticketId);
+  });
 
   switch (operation) {
     case 'get':
@@ -204,10 +257,16 @@ async function runCommand({ actor, operation, input }: z.infer<typeof commandSch
       return printOrderView(await cancelSubmittedLuluOrder(order, reason, actor.email));
     }
     case 'correctShipping': {
-      const { shippingAddress } = z
-        .object({ customerConfirmed: z.literal(true), shippingAddress: shippingSchema })
+      const { shippingAddress, expectedProofVersion } = z
+        .object({
+          customerConfirmed: z.literal(true),
+          shippingAddress: shippingSchema,
+          expectedProofVersion: z.number().int().positive().optional(),
+        })
         .parse(input);
-      return printOrderView(await correctPrintShipping(order, shippingAddress, actor.email));
+      return printOrderView(
+        await correctPrintShipping(order, shippingAddress, actor.email, expectedProofVersion),
+      );
     }
     case 'reserveManual': {
       const approval = z
