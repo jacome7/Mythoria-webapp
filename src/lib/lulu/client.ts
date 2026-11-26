@@ -326,12 +326,16 @@ export async function quoteLuluOrder(
     const suggested = q.shipping_address?.suggested_address;
     if (
       suggested &&
-      Object.entries(suggested).some(
-        ([key, value]) =>
-          value != null &&
-          String(value).trim() !==
-            String(input.shippingAddress[key as keyof LuluShippingAddress] ?? '').trim(),
-      )
+      Object.entries(suggested).some(([key, value]) => {
+        if (value == null) return false;
+        const proposed = String(value).trim();
+        const current = String(
+          input.shippingAddress[key as keyof LuluShippingAddress] ?? '',
+        ).trim();
+        return key === 'city'
+          ? proposed.toLowerCase() !== current.toLowerCase()
+          : proposed !== current;
+      })
     )
       throw new Error('LULU_ADDRESS_CONFIRMATION_REQUIRED');
     const lineItemCost = q.line_item_costs?.[0]?.total_cost_excl_tax;
